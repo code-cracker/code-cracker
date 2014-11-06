@@ -10,14 +10,7 @@ namespace CodeCracker.Test
 {
     public class RethrowExceptionTests : CodeFixVerifier
     {
-        private const string test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
+        private const string sourceWithoutUsingSystem = @"
     namespace ConsoleApplication1
     {
         class TypeName
@@ -25,13 +18,14 @@ namespace CodeCracker.Test
             public void Foo()
             {
                 try { }
-                catch (Exception ex)
+                catch (System.Exception ex)
                 {
                     throw ex;
                 }
             }
         }
     }";
+        private const string sourceWithUsingSystem = "\n    using System;" + sourceWithoutUsingSystem;
 
         [Fact]
         public void WhenThrowingOriginalExceptionAnalyzerCreatesDiagnostic()
@@ -43,11 +37,11 @@ namespace CodeCracker.Test
                 Severity = DiagnosticSeverity.Error,
                 Locations =
                     new[] {
-                            new DiagnosticResultLocation("Test0.cs", 18, 21)
+                            new DiagnosticResultLocation("Test0.cs", 12, 21)
                         }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            VerifyCSharpDiagnostic(sourceWithUsingSystem, expected);
         }
 
         [Fact]
@@ -56,12 +50,6 @@ namespace CodeCracker.Test
 
             var fixtest = @"
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
         class TypeName
@@ -69,28 +57,21 @@ namespace CodeCracker.Test
             public void Foo()
             {
                 try { }
-                catch (Exception ex)
+                catch (System.Exception ex)
                 {
                     throw new Exception(""some reason to rethrow"", ex);
                 }
             }
         }
     }";
-            VerifyCSharpFix(test, fixtest, 0);
+            VerifyCSharpFix(sourceWithUsingSystem, fixtest, 0);
         }
 
         [Fact]
         public void WhenThrowingOriginalExceptionAndApplyingRethrowFix()
         {
-
             var fixtest = @"
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
     namespace ConsoleApplication1
     {
         class TypeName
@@ -98,14 +79,36 @@ namespace CodeCracker.Test
             public void Foo()
             {
                 try { }
-                catch (Exception ex)
+                catch (System.Exception ex)
                 {
                     throw;
                 }
             }
         }
     }";
-            VerifyCSharpFix(test, fixtest, 1);
+            VerifyCSharpFix(sourceWithUsingSystem, fixtest, 1);
+        }
+
+        [Fact]
+        public void WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionCompleteExceptionDeclationFix()
+        {
+
+            var fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                try { }
+                catch (System.Exception ex)
+                {
+                    throw new System.Exception(""some reason to rethrow"", ex);
+                }
+            }
+        }
+    }";
+            VerifyCSharpFix(sourceWithoutUsingSystem, fixtest, 0);
         }
 
 

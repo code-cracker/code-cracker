@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 
 namespace CodeCracker
 {
@@ -59,10 +60,18 @@ namespace CodeCracker
         private async Task<Document> MakeThrowAsInnerAsync(Document document, ThrowStatementSyntax throwStatement, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
-            //var exceptionType = SyntaxFactory.ParseExpression("System.Exception").WithAdditionalAnnotations(Simplifier.Annotation);
-            //var newThrow = (ThrowStatementSyntax)SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(exceptionType, SyntaxFactory.ArgumentList(new SeparatedSyntaxList<ArgumentSyntax>() { SyntaxFactory.Argument(SyntaxFactory.ParseExpression("ex")) }), SyntaxFactory.InitializerExpression(SyntaxKind.ObjectCreationExpression)));
-            var newThrow = (ThrowStatementSyntax)SyntaxFactory.ParseStatement("throw new Exception(\"some reason to rethrow\", ex);")
+            var ident = throwStatement.Expression as IdentifierNameSyntax;
+            var exSymbol = semanticModel.GetSymbolInfo(ident).Symbol as ILocalSymbol;
+            var exceptionType = SyntaxFactory.ParseTypeName("System.Exception").WithAdditionalAnnotations(Simplifier.Annotation);
+            var objectCreationExpressionSyntax = SyntaxFactory.ObjectCreationExpression(exceptionType).WithArgumentList(
+                                    SyntaxFactory.ArgumentList(
+                                        SyntaxFactory.SeparatedList(
+                                        new[]
+                                            {
+                                                    SyntaxFactory.Argument(SyntaxFactory.ParseExpression("\"some reason to rethrow\"")),
+                                                    SyntaxFactory.Argument(SyntaxFactory.ParseExpression(exSymbol.Name))
+                                            })));
+            var newThrow = SyntaxFactory.ThrowStatement(objectCreationExpressionSyntax)
                 .WithLeadingTrivia(throwStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(throwStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
@@ -71,7 +80,6 @@ namespace CodeCracker
             var newRoot = root.ReplaceNode(throwStatement, newThrow);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
-
         }
     }
 }
