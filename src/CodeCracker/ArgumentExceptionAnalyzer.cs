@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace CodeCracker
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class WrongArgumentNameAnalyzerAnalyzer : DiagnosticAnalyzer
+    public class ArgumentExceptionAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CodeCracker.ArgumentExceptionAnalyzer";
         internal const string Title = "Invalid argument name";

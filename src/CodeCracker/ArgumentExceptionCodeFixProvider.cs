@@ -16,11 +16,11 @@ using Microsoft.CodeAnalysis.Text;
 namespace CodeCracker
 {
     [ExportCodeFixProvider("CodeCrackerArgumentExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
-    public class WrongArgumentNameAnalyzerCodeFixProvider : CodeFixProvider
+    public class ArgumentExceptionCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
         {
-            return ImmutableArray.Create(WrongArgumentNameAnalyzerAnalyzer.DiagnosticId);
+            return ImmutableArray.Create(ArgumentExceptionAnalyzer.DiagnosticId);
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
