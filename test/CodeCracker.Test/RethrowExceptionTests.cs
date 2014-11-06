@@ -10,11 +10,7 @@ namespace CodeCracker.Test
 {
     public class RethrowExceptionTests : CodeFixVerifier
     {
-
-        [Fact]
-        public void WhenThrowingOriginalExceptionShowsAnalyzer()
-        {
-            var test = @"
+        private const string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -36,6 +32,10 @@ namespace CodeCracker.Test
             }
         }
     }";
+
+        [Fact]
+        public void WhenThrowingOriginalExceptionAnalyzerCreatesDiagnostic()
+        {
             var expected = new DiagnosticResult
             {
                 Id = RethrowExceptionAnalyzer.DiagnosticId,
@@ -48,6 +48,11 @@ namespace CodeCracker.Test
             };
 
             VerifyCSharpDiagnostic(test, expected);
+        }
+
+        [Fact]
+        public void WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionFix()
+        {
 
             var fixtest = @"
     using System;
@@ -73,6 +78,36 @@ namespace CodeCracker.Test
     }";
             VerifyCSharpFix(test, fixtest, 0);
         }
+
+        [Fact]
+        public void WhenThrowingOriginalExceptionAndApplyingRethrowFix()
+        {
+
+            var fixtest = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                try { }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+        }
+    }";
+            VerifyCSharpFix(test, fixtest, 1);
+        }
+
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
