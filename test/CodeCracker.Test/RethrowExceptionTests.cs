@@ -1,29 +1,18 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using TestHelper;
 using CodeCracker;
+using Xunit;
 
 namespace CodeCracker.Test
 {
-    [TestClass]
-    public class UnitTest : CodeFixVerifier
+    public class RethrowExceptionTests : CodeFixVerifier
     {
 
-        //No diagnostics expected to show up
-        [TestMethod]
-        public void TestMethod1()
-        {
-            var test = @"";
-
-            VerifyCSharpDiagnostic(test);
-        }
-
-        //Diagnostic and CodeFix both triggered and checked for
-        [TestMethod]
-        public void TestMethod2()
+        [Fact]
+        public void WhenThrowingOriginalExceptionShowsAnalyzer()
         {
             var test = @"
     using System;
@@ -36,17 +25,25 @@ namespace CodeCracker.Test
     namespace ConsoleApplication1
     {
         class TypeName
-        {   
+        {
+            public void Foo()
+            {
+                try { }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
         }
     }";
             var expected = new DiagnosticResult
             {
                 Id = RethrowExceptionAnalyzer.DiagnosticId,
-                Message = String.Format("Type name '{0}' contains lowercase letters", "TypeName"),
-                Severity = DiagnosticSeverity.Warning,
+                Message = "Don't throw the same exception you caught, you lose the original stack trace.",
+                Severity = DiagnosticSeverity.Error,
                 Locations =
                     new[] {
-                            new DiagnosticResultLocation("Test0.cs", 11, 15)
+                            new DiagnosticResultLocation("Test0.cs", 18, 21)
                         }
             };
 
@@ -62,11 +59,19 @@ namespace CodeCracker.Test
 
     namespace ConsoleApplication1
     {
-        class TYPENAME
-        {   
+        class TypeName
+        {
+            public void Foo()
+            {
+                try { }
+                catch (Exception ex)
+                {
+                    throw new Exception(""some reason to rethrow"", ex);
+                }
+            }
         }
     }";
-            VerifyCSharpFix(test, fixtest);
+            VerifyCSharpFix(test, fixtest, 0);
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()

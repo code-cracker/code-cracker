@@ -3,10 +3,10 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Xunit;
 
 namespace TestHelper
 {
@@ -41,8 +41,13 @@ namespace TestHelper
         /// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
         /// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        protected void VerifyCSharpFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
+        protected void VerifyCSharpFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true)
         {
+            if (formatBeforeCompare)
+            {
+                oldSource = FormatSource(LanguageNames.CSharp, oldSource);
+                newSource = FormatSource(LanguageNames.CSharp, newSource);
+            }
             VerifyFix(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
         }
 
@@ -107,7 +112,7 @@ namespace TestHelper
                     document = document.WithSyntaxRoot(Formatter.Format(document.GetSyntaxRootAsync().Result, Formatter.Annotation, document.Project.Solution.Workspace));
                     newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));
 
-                    Assert.IsTrue(false,
+                    Assert.True(false,
                         string.Format("Fix introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",
                             string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())),
                             document.GetSyntaxRootAsync().Result.ToFullString()));
@@ -122,7 +127,14 @@ namespace TestHelper
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
             var actual = GetStringFromDocument(document);
-            Assert.AreEqual(newSource, actual);
+            Assert.Equal(newSource, actual);
+        }
+
+        public static string FormatSource(string language, string source)
+        {
+            var document = CreateDocument(source, language);
+            var newDoc = Formatter.FormatAsync(document).Result;
+            return newDoc.GetSyntaxRootAsync().Result.ToFullString();
         }
     }
 }
