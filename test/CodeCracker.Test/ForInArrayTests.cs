@@ -287,6 +287,28 @@ namespace CodeCracker.Test
         }
 
         [Fact]
+        public void ForWhereIndexIsUsedThroughtBodyAnalyzerDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var array = new [] {1};
+                for (var i = 0; i < array.Length; i++)
+                {
+                    var item = array[i];
+                    var j = i;
+                }
+            }
+        }
+    }";
+            VerifyCSharpHasNoDiagnostics(source);
+        }
+
+        [Fact]
         public void ForInArrayAnalyzerCreatesDiagnostic()
         {
             const string source = @"

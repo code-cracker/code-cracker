@@ -42,6 +42,8 @@ namespace CodeCracker
             if (!literalExpression?.IsKind(SyntaxKind.NumericLiteralExpression) ?? false) return;
             if (literalExpression.Token.ValueText != "0") return;
             var controlVarId = context.SemanticModel.GetDeclaredSymbol(forStatement.Declaration.Variables.Single());
+            var otherUsesOfIndexToken = forBlock.DescendantTokens().Count(t => t.Text == forStatement.Declaration.Variables.Single().Identifier.Text);
+            if (otherUsesOfIndexToken != 1) return;
 
             var arrayAccessorSymbols = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
                                         where s.Declaration.Variables.Count == 1
