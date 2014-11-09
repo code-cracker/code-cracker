@@ -34,6 +34,8 @@
   <ItemGroup>
     <Compile Include="ArgumentExceptionAnalyzer.cs" />
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
+    <Compile Include="TernaryOperatorCodeFixProvider.cs" />
+    <Compile Include="TernaryOperatorAnalyzer.cs" />
     <Compile Include="RethrowExceptionCodeFixProvider.cs" />
     <Compile Include="RethrowExceptionAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
