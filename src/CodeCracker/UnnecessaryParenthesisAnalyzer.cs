@@ -33,7 +33,7 @@ namespace CodeCracker
         {
             var objectCreation = context.Node as ObjectCreationExpressionSyntax;
 
-            if (objectCreation.Initializer != null && !objectCreation.ArgumentList.Arguments.Any())
+            if (objectCreation.Initializer != null && objectCreation.ArgumentList != null && !objectCreation.ArgumentList.Arguments.Any())
             {
                 var diagnostic = Diagnostic.Create(Rule, objectCreation.ArgumentList.OpenParenToken.GetLocation(), "Remove unnecessary parenthesis.");
                 context.ReportDiagnostic(diagnostic);

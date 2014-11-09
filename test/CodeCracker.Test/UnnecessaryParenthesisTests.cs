@@ -11,7 +11,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class UnnecessaryParenthesisTests : DiagnosticVerifier
+    public class UnnecessaryParenthesisTests : CodeFixVerifier
     {
         [Fact]
         public void ConstructorWithEmptyParenthesisWithInitializerTriggersFix()
@@ -66,9 +66,23 @@ namespace CodeCracker.Test
             VerifyCSharpHasNoDiagnostics(source);
         }
 
+        [Fact]
+        public void RemoveUnnecessaryParenthesisInConstructorCall()
+        {
+            const string oldSource = @"var a = new B() { X = 1 };";
+            const string newSource = @"var a = new B { X = 1 };";
+
+            VerifyCSharpFix(oldSource, newSource);
+        }
+
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
             return new UnnecessaryParenthesisAnalyzer();
+        }
+
+        protected override CodeFixProvider GetCSharpCodeFixProvider()
+        {
+            return new UnnecessaryParenthesisCodeFixProvider();
         }
     }
 }

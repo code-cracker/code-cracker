@@ -42,6 +42,7 @@
     <Compile Include="RethrowExceptionAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnnecessaryParenthesisAnalyzer.cs" />
+    <Compile Include="UnnecessaryParenthesisCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Diagnostic.nuspec">
