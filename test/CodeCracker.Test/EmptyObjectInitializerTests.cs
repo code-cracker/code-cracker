@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
+using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace CodeCracker.Test
 {
@@ -31,6 +32,24 @@ namespace CodeCracker.Test
         }
 
         [Fact]
+        public void EmptyObjectInitializerIsRemoved()
+        {
+            var oldCode = @"var a = new A() {};";
+            var newCode = @"var a = new A();";
+
+            VerifyCSharpFix(oldCode, newCode);
+        }
+
+        [Fact]
+        public void EmptyObjectInitializerWithNoArgsIsRemovedAndAddsEmptyArgs()
+        {
+            var oldCode = @"var a = new A {};";
+            var newCode = @"var a = new A();";
+
+            VerifyCSharpFix(oldCode, newCode);
+        }
+
+        [Fact]
         public void FilledObjectInitializerIsIgnored()
         {
             var code = @"var a = new A { X = 1 };";
@@ -47,6 +66,11 @@ namespace CodeCracker.Test
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
             return new EmptyObjectInitializerAnalyzer();
+        }
+
+        protected override CodeFixProvider GetCSharpCodeFixProvider()
+        {
+            return new EmptyObjectInitializerCodeFixProvider();
         }
     }
 }
