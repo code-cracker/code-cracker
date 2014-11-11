@@ -100,6 +100,7 @@
   <ItemGroup>
     <Compile Include="ArgumentExceptionTests.cs" />
     <Compile Include="ForInArrayTests.cs" />
+    <Compile Include="CatchEmptyTests.cs" />
     <Compile Include="TernaryOperatorTests.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
