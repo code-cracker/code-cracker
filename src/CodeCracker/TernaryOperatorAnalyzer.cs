@@ -13,14 +13,18 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TernaryOperatorAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.TernaryOperatorAnalyzer";
-        internal const string Title = "User ternary operator";
-        internal const string MessageFormat = "{0}";
+        public const string DiagnosticIdForIfWithReturn = "CodeCracker.TernaryOperatorWithReturnAnalyzer";
+        internal const string TitleForIfWithReturn = "User ternary operator";
+        internal const string MessageFormatForIfWithReturn = "{0}";
         internal const string Category = "Syntax";
+        public const string DiagnosticIdForIfWithAssignment = "CodeCracker.TernaryOperatorWithAssignmentAnalyzer";
+        internal const string TitleForIfWithAssignment = "User ternary operator";
+        internal const string MessageFormatForIfWithAssignment = "{0}";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
+        internal static DiagnosticDescriptor RuleForIfWithReturn = new DiagnosticDescriptor(DiagnosticIdForIfWithReturn, TitleForIfWithReturn, MessageFormatForIfWithReturn, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
+        internal static DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(DiagnosticIdForIfWithAssignment, TitleForIfWithAssignment, MessageFormatForIfWithAssignment, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForIfWithReturn, RuleForIfWithAssignment); } }
 
         public override void Initialize(AnalysisContext context)
         {
@@ -44,7 +48,21 @@ namespace CodeCracker
                 var statementInsideElse = elseStatement.Statement is BlockSyntax ? ((BlockSyntax)elseStatement.Statement).Statements.Single() : elseStatement.Statement;
                 if (statementInsideIf is ReturnStatementSyntax && statementInsideElse is ReturnStatementSyntax)
                 {
-                    var diagnostic = Diagnostic.Create(Rule, ifStatement.IfKeyword.GetLocation(), "You can use a ternary operator.");
+                    var diagnostic = Diagnostic.Create(RuleForIfWithReturn, ifStatement.IfKeyword.GetLocation(), "You can use a ternary operator.");
+                    context.ReportDiagnostic(diagnostic);
+                    return;
+                }
+                var expressionInsideIf = statementInsideIf as ExpressionStatementSyntax;
+                var expressionInsideElse = statementInsideElse as ExpressionStatementSyntax;
+                if (expressionInsideIf != null && expressionInsideIf.Expression.IsKind(SyntaxKind.SimpleAssignmentExpression) && expressionInsideElse != null && expressionInsideElse.Expression.IsKind(SyntaxKind.SimpleAssignmentExpression))
+                {
+                    var assignmentExpressionInsideIf = (AssignmentExpressionSyntax)expressionInsideIf.Expression;
+                    var assignmentExpressionInsideElse = (AssignmentExpressionSyntax)expressionInsideElse.Expression;
+                    var variableIdentifierInsideIf = assignmentExpressionInsideIf.Left as IdentifierNameSyntax;
+                    var variableIdentifierInsideElse = assignmentExpressionInsideElse.Left as IdentifierNameSyntax;
+                    if (variableIdentifierInsideIf == null || variableIdentifierInsideElse == null
+                        || variableIdentifierInsideIf.Identifier.Text != variableIdentifierInsideElse.Identifier.Text) return;
+                    var diagnostic = Diagnostic.Create(RuleForIfWithAssignment, ifStatement.IfKeyword.GetLocation(), "You can use a ternary operator.");
                     context.ReportDiagnostic(diagnostic);
                 }
             }

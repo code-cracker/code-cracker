@@ -8,7 +8,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class TernaryOperatorTests : CodeFixVerifier
+    public class TernaryOperatorWithAssignmentTests : CodeFixVerifier
     {
         private const string source = @"
     namespace ConsoleApplication1
@@ -154,7 +154,7 @@ namespace CodeCracker.Test
         {
             var expected = new DiagnosticResult
             {
-                Id = TernaryOperatorAnalyzer.DiagnosticId,
+                Id = TernaryOperatorAnalyzer.DiagnosticIdForIfWithReturn,
                 Message = "You can use a ternary operator.",
                 Severity = DiagnosticSeverity.Error,
                 Locations =
@@ -187,7 +187,137 @@ namespace CodeCracker.Test
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new TernaryOperatorCodeFixProvider();
+            return new TernaryOperatorWithReturnCodeFixProvider();
+        }
+
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        {
+            return new TernaryOperatorAnalyzer();
+        }
+    }
+
+    public class TernaryOperatorWithReturnTests : CodeFixVerifier
+    {
+
+        [Fact]
+        public void WhenUsingIfAndElseWithAssignmentChangeToTernaryFix()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                if (something)
+                {
+                    a = ""a"";
+                }
+                else
+                {
+                    a = ""b"";
+                }
+            }
+        }
+    }";
+            var fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                a = something ? ""a"" : ""b"";
+            }
+        }
+    }";
+            VerifyCSharpFix(source, fixtest, 0);
+        }
+
+
+        [Fact]
+        public void WhenUsingIfAndElseWithComplexAssignmentChangeToTernaryFix()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                if (something)
+                {
+                    a = ""a"" + ""b"";
+                }
+                else
+                {
+                    a = ""c"" + GetInfo(1);
+                }
+            }
+        }
+    }";
+            var fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                a = something ? ""a"" + ""b"" : ""c"" + GetInfo(1);
+            }
+        }
+    }";
+            VerifyCSharpFix(source, fixtest, 0);
+        }
+
+        [Fact]
+        public void WhenUsingIfAndElseWithAssignmentAnalyzerCreatesDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                if (something)
+                {
+                    a = ""a"";
+                }
+                else
+                {
+                    a = ""b"";
+                }
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = TernaryOperatorAnalyzer.DiagnosticIdForIfWithAssignment,
+                Message = "You can use a ternary operator.",
+                Severity = DiagnosticSeverity.Error,
+                Locations =
+                    new[] {
+                            new DiagnosticResultLocation("Test0.cs", 10, 17)
+                        }
+            };
+
+            VerifyCSharpDiagnostic(source, expected);
+        }
+
+        protected override CodeFixProvider GetCSharpCodeFixProvider()
+        {
+            return new TernaryOperatorWithAssignmentCodeFixProvider();
         }
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
