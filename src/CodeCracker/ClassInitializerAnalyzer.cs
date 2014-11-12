@@ -35,32 +35,7 @@ namespace CodeCracker
             if (!expressionStatement?.Expression?.IsKind(SyntaxKind.SimpleAssignmentExpression) ?? false) return;
             var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
             var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
-
-            var blockParent = expressionStatement.FirstAncestorOrSelf<BlockSyntax>();
-            var isBefore = true;
-            var assignmentExpressions = new List<ExpressionStatementSyntax>();
-            foreach (var statement in blockParent.Statements)
-            {
-                if (isBefore)
-                {
-                    if (statement.Equals(expressionStatement)) isBefore = false;
-                }
-                else
-                {
-                    var theExpressionStatement = statement as ExpressionStatementSyntax;
-                    if (theExpressionStatement == null) break;
-                    var theAssignmentExpression = theExpressionStatement.Expression as AssignmentExpressionSyntax;
-                    if (theAssignmentExpression == null || !theAssignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression)) break;
-                    var memberAccess = theAssignmentExpression.Left as MemberAccessExpressionSyntax;
-                    if (memberAccess == null || !memberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression)) break;
-                    var memberIdentifier = memberAccess.Expression as IdentifierNameSyntax;
-                    if (memberIdentifier == null) break;
-                    var propertyIdentifier = memberAccess.Name as IdentifierNameSyntax;
-                    if (propertyIdentifier == null) break;
-                    if (!semanticModel.GetSymbolInfo(memberIdentifier).Symbol.Equals(variableSymbol)) break;
-                    assignmentExpressions.Add(theExpressionStatement);
-                }
-            }
+            var assignmentExpressions = FindAssingmentExpressions(semanticModel, expressionStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
 
             var diagnostic = Diagnostic.Create(Rule, expressionStatement.GetLocation(), "You can use initializers in here.");
@@ -77,18 +52,27 @@ namespace CodeCracker
             if (localDeclarationStatement.Declaration.Variables.Count > 1) return;
             var variable = localDeclarationStatement.Declaration.Variables.Single();
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
-            var blockParent = localDeclarationStatement.FirstAncestorOrSelf<BlockSyntax>();
+            var assignmentExpressions = FindAssingmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
+            if (!assignmentExpressions.Any()) return;
+
+            var diagnostic = Diagnostic.Create(Rule, localDeclarationStatement.GetLocation(), "You can use initializers in here.");
+            context.ReportDiagnostic(diagnostic);
+        }
+
+        public static List<ExpressionStatementSyntax> FindAssingmentExpressions(SemanticModel semanticModel, StatementSyntax statement, ISymbol variableSymbol)
+        {
+            var blockParent = statement.FirstAncestorOrSelf<BlockSyntax>();
             var isBefore = true;
             var assignmentExpressions = new List<ExpressionStatementSyntax>();
-            foreach (var statement in blockParent.Statements)
+            foreach (var blockStatement in blockParent.Statements)
             {
                 if (isBefore)
                 {
-                    if (statement.Equals(localDeclarationStatement)) isBefore = false;
+                    if (blockStatement.Equals(statement)) isBefore = false;
                 }
                 else
                 {
-                    var expressionStatement = statement as ExpressionStatementSyntax;
+                    var expressionStatement = blockStatement as ExpressionStatementSyntax;
                     if (expressionStatement == null) break;
                     var assignmentExpression = expressionStatement.Expression as AssignmentExpressionSyntax;
                     if (assignmentExpression == null || !assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression)) break;
@@ -102,10 +86,9 @@ namespace CodeCracker
                     assignmentExpressions.Add(expressionStatement);
                 }
             }
-            if (!assignmentExpressions.Any()) return;
 
-            var diagnostic = Diagnostic.Create(Rule, localDeclarationStatement.GetLocation(), "You can use initializers in here.");
-            context.ReportDiagnostic(diagnostic);
+            return assignmentExpressions;
         }
+
     }
 }

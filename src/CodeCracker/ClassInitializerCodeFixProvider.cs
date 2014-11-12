@@ -42,36 +42,34 @@ namespace CodeCracker
         private async Task<Document> MakeClassInitializerForDeclarationAsync(Document document, LocalDeclarationStatementSyntax localDeclarationStatement, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
-            var objectCreationExpressions = localDeclarationStatement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().ToList();
-            var objectCreationExpression = objectCreationExpressions.Single();
             var variable = localDeclarationStatement.Declaration.Variables.Single();
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
-            var blockParent = localDeclarationStatement.FirstAncestorOrSelf<BlockSyntax>();
-            var isBefore = true;
-            var assignmentExpressions = new List<ExpressionStatementSyntax>();
-            foreach (var statement in blockParent.Statements)
-            {
-                if (isBefore)
-                {
-                    if (statement.Equals(localDeclarationStatement)) isBefore = false;
-                }
-                else
-                {
-                    var expressionStatement = statement as ExpressionStatementSyntax;
-                    if (expressionStatement == null) break;
-                    var assignmentExpression = expressionStatement.Expression as AssignmentExpressionSyntax;
-                    if (assignmentExpression == null || !assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression)) break;
-                    var memberAccess = assignmentExpression.Left as MemberAccessExpressionSyntax;
-                    if (memberAccess == null || !memberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression)) break;
-                    var memberIdentifier = memberAccess.Expression as IdentifierNameSyntax;
-                    if (memberIdentifier == null) break;
-                    var propertyIdentifier = memberAccess.Name as IdentifierNameSyntax;
-                    if (propertyIdentifier == null) break;
-                    if (!semanticModel.GetSymbolInfo(memberIdentifier).Symbol.Equals(variableSymbol)) break;
-                    assignmentExpressions.Add(expressionStatement);
-                }
-            }
+            return await MakeClassInitializerAsync(document, localDeclarationStatement, variableSymbol, semanticModel, cancellationToken);
+        }
+
+        private async Task<Document> MakeClassInitializerForAssignmentAsync(Document document, ExpressionStatementSyntax expressionStatement, CancellationToken cancellationToken)
+        {
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
+            var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
+            return await MakeClassInitializerAsync(document, expressionStatement, variableSymbol, semanticModel, cancellationToken);
+        }
+
+        private async Task<Document> MakeClassInitializerAsync(Document document, StatementSyntax statement, ISymbol variableSymbol, SemanticModel semanticModel, CancellationToken cancellationToken)
+        {
+            var blockParent = statement.FirstAncestorOrSelf<BlockSyntax>();
+            var objectCreationExpression = statement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Single();
+            var newBlockParent = CreateNewBlockParent(statement, semanticModel, objectCreationExpression, variableSymbol);
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
+            var newRoot = root.ReplaceNode(blockParent, newBlockParent);
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            return newDocument;
+        }
+
+        private static BlockSyntax CreateNewBlockParent(StatementSyntax statement, SemanticModel semanticModel, ObjectCreationExpressionSyntax objectCreationExpression, ISymbol variableSymbol)
+        {
+            var blockParent = statement.FirstAncestorOrSelf<BlockSyntax>();
+            var assignmentExpressions = ClassInitializerAnalyzer.FindAssingmentExpressions(semanticModel, statement, variableSymbol);
             var newBlockParent = SyntaxFactory.Block()
                 .WithLeadingTrivia(blockParent.GetLeadingTrivia())
                 .WithTrailingTrivia(blockParent.GetTrailingTrivia())
@@ -79,8 +77,8 @@ namespace CodeCracker
             var newAssignmentExpressions = new List<ExpressionStatementSyntax>();
             for (int i = 0; i < blockParent.Statements.Count; i++)
             {
-                var statement = blockParent.Statements[i];
-                if (statement.Equals(localDeclarationStatement))
+                var blockStatement = blockParent.Statements[i];
+                if (blockStatement.Equals(statement))
                 {
                     var initializationExpressions = new List<AssignmentExpressionSyntax>();
                     foreach (var expressionStatement in assignmentExpressions)
@@ -101,106 +99,23 @@ namespace CodeCracker
                         .WithLeadingTrivia(objectCreationExpression.GetLeadingTrivia())
                         .WithTrailingTrivia(objectCreationExpression.GetTrailingTrivia())
                         .WithAdditionalAnnotations(Formatter.Annotation);
-                    var newLocalDeclarationStatement = localDeclarationStatement.ReplaceNode(objectCreationExpression, newObjectCreationExpression)
-                        .WithLeadingTrivia(localDeclarationStatement.GetLeadingTrivia())
-                        .WithTrailingTrivia(localDeclarationStatement.GetTrailingTrivia())
+                    var newLocalDeclarationStatement = statement.ReplaceNode(objectCreationExpression, newObjectCreationExpression)
+                        .WithLeadingTrivia(statement.GetLeadingTrivia())
+                        .WithTrailingTrivia(statement.GetTrailingTrivia())
                         .WithAdditionalAnnotations(Formatter.Annotation);
                     newBlockParent = newBlockParent.AddStatements(newLocalDeclarationStatement);
                     i += initializationExpressions.Count;
                 }
                 else
                 {
-                    newBlockParent = newBlockParent.AddStatements(statement
-                        .WithLeadingTrivia(statement.GetLeadingTrivia())
-                        .WithTrailingTrivia(statement.GetTrailingTrivia())
+                    newBlockParent = newBlockParent.AddStatements(blockStatement
+                        .WithLeadingTrivia(blockStatement.GetLeadingTrivia())
+                        .WithTrailingTrivia(blockStatement.GetTrailingTrivia())
                         .WithAdditionalAnnotations(Formatter.Annotation));
                 }
             }
-            var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode(blockParent, newBlockParent);
-            var newDocument = document.WithSyntaxRoot(newRoot);
-            return newDocument;
-        }
 
-        private async Task<Document> MakeClassInitializerForAssignmentAsync(Document document, ExpressionStatementSyntax expressionStatement, CancellationToken cancellationToken)
-        {
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
-            var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
-
-            var blockParent = expressionStatement.FirstAncestorOrSelf<BlockSyntax>();
-            var isBefore = true;
-            var assignmentExpressions = new List<ExpressionStatementSyntax>();
-            foreach (var statement in blockParent.Statements)
-            {
-                if (isBefore)
-                {
-                    if (statement.Equals(expressionStatement)) isBefore = false;
-                }
-                else
-                {
-                    var theExpressionStatement = statement as ExpressionStatementSyntax;
-                    if (theExpressionStatement == null) break;
-                    var theAssignmentExpression = theExpressionStatement.Expression as AssignmentExpressionSyntax;
-                    if (theAssignmentExpression == null || !theAssignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression)) break;
-                    var memberAccess = theAssignmentExpression.Left as MemberAccessExpressionSyntax;
-                    if (memberAccess == null || !memberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression)) break;
-                    var memberIdentifier = memberAccess.Expression as IdentifierNameSyntax;
-                    if (memberIdentifier == null) break;
-                    var propertyIdentifier = memberAccess.Name as IdentifierNameSyntax;
-                    if (propertyIdentifier == null) break;
-                    assignmentExpressions.Add(theExpressionStatement);
-                }
-            }
-            var newBlockParent = SyntaxFactory.Block()
-                .WithLeadingTrivia(blockParent.GetLeadingTrivia())
-                .WithTrailingTrivia(blockParent.GetTrailingTrivia())
-                .WithAdditionalAnnotations(Formatter.Annotation);
-            var newAssignmentExpressions = new List<ExpressionStatementSyntax>();
-            for (int i = 0; i < blockParent.Statements.Count; i++)
-            {
-                var statement = blockParent.Statements[i];
-                if (statement.Equals(expressionStatement))
-                {
-                    var initializationExpressions = new List<AssignmentExpressionSyntax>();
-                    foreach (var theExpressionStatement in assignmentExpressions)
-                    {
-                        var theAssignmentExpression = theExpressionStatement.Expression as AssignmentExpressionSyntax;
-                        var memberAccess = theAssignmentExpression.Left as MemberAccessExpressionSyntax;
-                        var propertyIdentifier = memberAccess.Name as IdentifierNameSyntax;
-                        initializationExpressions.Add(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, propertyIdentifier, theAssignmentExpression.Right));
-                    }
-                    var initializers = SyntaxFactory.SeparatedList<ExpressionSyntax>(initializationExpressions);
-                    var objectCreationExpression = expressionStatement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Single();
-                    var newObjectCreationExpression = objectCreationExpression.WithInitializer(
-                        SyntaxFactory.InitializerExpression(
-                            SyntaxKind.ObjectInitializerExpression,
-                            SyntaxFactory.Token(SyntaxFactory.ParseLeadingTrivia(" "), SyntaxKind.OpenBraceToken, SyntaxFactory.ParseTrailingTrivia("\n")),
-                            initializers,
-                            SyntaxFactory.Token(SyntaxFactory.ParseLeadingTrivia(" "), SyntaxKind.CloseBraceToken, SyntaxFactory.ParseTrailingTrivia(""))
-                        ))
-                        .WithLeadingTrivia(objectCreationExpression.GetLeadingTrivia())
-                        .WithTrailingTrivia(objectCreationExpression.GetTrailingTrivia())
-                        .WithAdditionalAnnotations(Formatter.Annotation);
-                    var newExpressionStatement = expressionStatement.ReplaceNode(objectCreationExpression, newObjectCreationExpression)
-                        .WithLeadingTrivia(expressionStatement.GetLeadingTrivia())
-                        .WithTrailingTrivia(expressionStatement.GetTrailingTrivia())
-                        .WithAdditionalAnnotations(Formatter.Annotation);
-                    newBlockParent = newBlockParent.AddStatements(newExpressionStatement);
-                    i += initializationExpressions.Count;
-                }
-                else
-                {
-                    newBlockParent = newBlockParent.AddStatements(statement
-                        .WithLeadingTrivia(statement.GetLeadingTrivia())
-                        .WithTrailingTrivia(statement.GetTrailingTrivia())
-                        .WithAdditionalAnnotations(Formatter.Annotation));
-                }
-            }
-            var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode(blockParent, newBlockParent);
-            var newDocument = document.WithSyntaxRoot(newRoot);
-            return newDocument;
+            return newBlockParent;
         }
     }
 }
