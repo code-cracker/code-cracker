@@ -127,7 +127,7 @@ namespace CodeCracker.Test
         }
 
         [Fact]
-        public void WhenAssigningToPropertiesOfJustCreatedObjectChangeToClassInitializersFix()
+        public void WhenUsingANewVariableDeclaredAndAssigningToPropertiesOfJustCreatedObjectChangeToClassInitializersFix()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -266,6 +266,51 @@ namespace CodeCracker.Test
         }
     }";
             VerifyCSharpHasNoDiagnostics(source);
+        }
+
+        [Fact]
+        public void WhenUsingAPreviouslyDeclaredVariableAndAssigningToPropertiesOfJustCreatedObjectChangeToClassInitializersFix()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                string a;
+                //some comment before
+                Person p;
+                p = new Person();
+                p.Name = ""Giovanni"";
+                p.Age = 25;
+                //some comment after
+                string b;
+            }
+        }
+    }";
+
+            var fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                string a;
+                //some comment before
+                Person p;
+                p = new Person()
+                {
+                    Name = ""Giovanni"",
+                    Age = 25
+                };
+                //some comment after
+                string b;
+            }
+        }
+    }";
+            VerifyCSharpFix(source, fixtest, 0);
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()

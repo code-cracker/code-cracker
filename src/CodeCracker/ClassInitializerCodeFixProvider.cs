@@ -126,9 +126,85 @@ namespace CodeCracker
             return newDocument;
         }
 
-        private async Task<Document> MakeClassInitializerForAssignmentAsync(Document document, ExpressionStatementSyntax localDeclarationStatement, CancellationToken cancellationToken)
+        private async Task<Document> MakeClassInitializerForAssignmentAsync(Document document, ExpressionStatementSyntax expressionStatement, CancellationToken cancellationToken)
         {
-            return document;
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
+            var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
+
+            var blockParent = expressionStatement.FirstAncestorOrSelf<BlockSyntax>();
+            var isBefore = true;
+            var assignmentExpressions = new List<ExpressionStatementSyntax>();
+            foreach (var statement in blockParent.Statements)
+            {
+                if (isBefore)
+                {
+                    if (statement.Equals(expressionStatement)) isBefore = false;
+                }
+                else
+                {
+                    var theExpressionStatement = statement as ExpressionStatementSyntax;
+                    if (theExpressionStatement == null) break;
+                    var theAssignmentExpression = theExpressionStatement.Expression as AssignmentExpressionSyntax;
+                    if (theAssignmentExpression == null || !theAssignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression)) break;
+                    var memberAccess = theAssignmentExpression.Left as MemberAccessExpressionSyntax;
+                    if (memberAccess == null || !memberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression)) break;
+                    var memberIdentifier = memberAccess.Expression as IdentifierNameSyntax;
+                    if (memberIdentifier == null) break;
+                    var propertyIdentifier = memberAccess.Name as IdentifierNameSyntax;
+                    if (propertyIdentifier == null) break;
+                    assignmentExpressions.Add(theExpressionStatement);
+                }
+            }
+            var newBlockParent = SyntaxFactory.Block()
+                .WithLeadingTrivia(blockParent.GetLeadingTrivia())
+                .WithTrailingTrivia(blockParent.GetTrailingTrivia())
+                .WithAdditionalAnnotations(Formatter.Annotation);
+            var newAssignmentExpressions = new List<ExpressionStatementSyntax>();
+            for (int i = 0; i < blockParent.Statements.Count; i++)
+            {
+                var statement = blockParent.Statements[i];
+                if (statement.Equals(expressionStatement))
+                {
+                    var initializationExpressions = new List<AssignmentExpressionSyntax>();
+                    foreach (var theExpressionStatement in assignmentExpressions)
+                    {
+                        var theAssignmentExpression = theExpressionStatement.Expression as AssignmentExpressionSyntax;
+                        var memberAccess = theAssignmentExpression.Left as MemberAccessExpressionSyntax;
+                        var propertyIdentifier = memberAccess.Name as IdentifierNameSyntax;
+                        initializationExpressions.Add(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, propertyIdentifier, theAssignmentExpression.Right));
+                    }
+                    var initializers = SyntaxFactory.SeparatedList<ExpressionSyntax>(initializationExpressions);
+                    var objectCreationExpression = expressionStatement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Single();
+                    var newObjectCreationExpression = objectCreationExpression.WithInitializer(
+                        SyntaxFactory.InitializerExpression(
+                            SyntaxKind.ObjectInitializerExpression,
+                            SyntaxFactory.Token(SyntaxFactory.ParseLeadingTrivia(" "), SyntaxKind.OpenBraceToken, SyntaxFactory.ParseTrailingTrivia("\n")),
+                            initializers,
+                            SyntaxFactory.Token(SyntaxFactory.ParseLeadingTrivia(" "), SyntaxKind.CloseBraceToken, SyntaxFactory.ParseTrailingTrivia(""))
+                        ))
+                        .WithLeadingTrivia(objectCreationExpression.GetLeadingTrivia())
+                        .WithTrailingTrivia(objectCreationExpression.GetTrailingTrivia())
+                        .WithAdditionalAnnotations(Formatter.Annotation);
+                    var newExpressionStatement = expressionStatement.ReplaceNode(objectCreationExpression, newObjectCreationExpression)
+                        .WithLeadingTrivia(expressionStatement.GetLeadingTrivia())
+                        .WithTrailingTrivia(expressionStatement.GetTrailingTrivia())
+                        .WithAdditionalAnnotations(Formatter.Annotation);
+                    newBlockParent = newBlockParent.AddStatements(newExpressionStatement);
+                    i += initializationExpressions.Count;
+                }
+                else
+                {
+                    newBlockParent = newBlockParent.AddStatements(statement
+                        .WithLeadingTrivia(statement.GetLeadingTrivia())
+                        .WithTrailingTrivia(statement.GetTrailingTrivia())
+                        .WithAdditionalAnnotations(Formatter.Annotation));
+                }
+            }
+            var root = await document.GetSyntaxRootAsync();
+            var newRoot = root.ReplaceNode(blockParent, newBlockParent);
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            return newDocument;
         }
     }
 }

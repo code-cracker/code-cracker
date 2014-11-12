@@ -76,7 +76,6 @@ namespace CodeCracker
             if (localDeclarationStatement == null) return;
             var objectCreationExpressions = localDeclarationStatement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().ToList();
             if (objectCreationExpressions.Count != 1) return;
-            var objectCreationExpression = objectCreationExpressions.Single();
             if (localDeclarationStatement.Declaration.Variables.Count > 1) return;
             var variable = localDeclarationStatement.Declaration.Variables.Single();
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
