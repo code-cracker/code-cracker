@@ -76,6 +76,8 @@ They are easily reachable through Twitter or on Github. Before you code discuss 
 
 * [Giovanni Bassi](http://blog.lambda3.com.br/L3/giovannibassi/), [Lambda3](http://www.lambda3.com.br), [@giovannibassi](http://twitter.com/giovannibassi)
 * [Elemar Jr.](http://elemarjr.net/), [@elemarjr](http://twitter.com/elemarjr)
+* [Carlos dos Santos](http://carloscds.net/), [CDS Informática](http://www.cds-software.com.br/), [@cdssoftware](http://twitter.com/cdssoftware)
+* [Vinicius Hana](https://blog.lambda3.com.br/L3/vinicius-hana/), [Lambda3](http://www.lambda3.com.br), [@viniciushana](http://twitter.com/viniciushana)
 
 Contributors can be found at the [contributors](https://github.com/giggio/CodeCracker/graphs/contributors) page on Github.
 
