@@ -16,7 +16,7 @@ namespace CodeCracker.Test
             {
                 Id = UnnecessaryParenthesisAnalyzer.DiagnosticId,
                 Message = "Remove unnecessary parenthesis.",
-                Severity = DiagnosticSeverity.Error,
+                Severity = DiagnosticSeverity.Warning,
                 Locations =
                     new[] {
                             new DiagnosticResultLocation("Test0.cs", 1, 14)

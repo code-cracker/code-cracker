@@ -16,7 +16,7 @@ namespace CodeCracker.Test
             {
                 Id = EmptyObjectInitializerAnalyzer.DiagnosticId,
                 Message = "Remove empty object initializer.",
-                Severity = DiagnosticSeverity.Error,
+                Severity = DiagnosticSeverity.Warning,
                 Locations =
                     new[] {
                             new DiagnosticResultLocation("Test0.cs", 1, 15)

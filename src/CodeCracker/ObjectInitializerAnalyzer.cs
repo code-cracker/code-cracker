@@ -18,7 +18,7 @@ namespace CodeCracker
         public const string DiagnosticIdAssignment = "CodeCracker.ObjectInitializerAssignmentAnalyzer";
         internal const string TitleAssignment = "Use object initializer";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticIdLocalDeclaration, TitleLocalDeclaration, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticIdLocalDeclaration, TitleLocalDeclaration, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

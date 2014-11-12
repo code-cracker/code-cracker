@@ -29,7 +29,7 @@ namespace CodeCracker.Test
             {
                 Id = ArgumentExceptionAnalyzer.DiagnosticId,
                 Message = "Type argument 'c' is not in the argument list.",
-                Severity = DiagnosticSeverity.Error,
+                Severity = DiagnosticSeverity.Warning,
                 Locations =
                     new[] {
                             new DiagnosticResultLocation("Test0.cs", 10, 56)

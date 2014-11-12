@@ -118,7 +118,7 @@ namespace CodeCracker.Test
             {
                 Id = ObjectInitializerAnalyzer.DiagnosticIdLocalDeclaration,
                 Message = "You can use initializers in here.",
-                Severity = DiagnosticSeverity.Error,
+                Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 17) }
             };
             VerifyCSharpDiagnostic(source, expected);
@@ -220,7 +220,7 @@ namespace CodeCracker.Test
             {
                 Id = ObjectInitializerAnalyzer.DiagnosticIdLocalDeclaration,
                 Message = "You can use initializers in here.",
-                Severity = DiagnosticSeverity.Error,
+                Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
             VerifyCSharpDiagnostic(source, expected);

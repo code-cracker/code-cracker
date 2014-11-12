@@ -154,7 +154,7 @@ namespace CodeCracker.Test
             {
                 Id = TernaryOperatorAnalyzer.DiagnosticIdForIfWithReturn,
                 Message = "You can use a ternary operator.",
-                Severity = DiagnosticSeverity.Error,
+                Severity = DiagnosticSeverity.Warning,
                 Locations =
                     new[] {
                             new DiagnosticResultLocation("Test0.cs", 9, 17)
@@ -303,7 +303,7 @@ namespace CodeCracker.Test
             {
                 Id = TernaryOperatorAnalyzer.DiagnosticIdForIfWithAssignment,
                 Message = "You can use a ternary operator.",
-                Severity = DiagnosticSeverity.Error,
+                Severity = DiagnosticSeverity.Warning,
                 Locations =
                     new[] {
                             new DiagnosticResultLocation("Test0.cs", 10, 17)
