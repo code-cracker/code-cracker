@@ -1,15 +1,11 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Immutable;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Threading;
+using System.Collections.Immutable;
 using System.Composition;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CodeCracker
 {
@@ -26,7 +22,7 @@ namespace CodeCracker
             root = root.RemoveNode(declaration, SyntaxRemoveOptions.KeepTrailingTrivia);
 
             var newDocument = context.Document.WithSyntaxRoot(root);
-            
+
             context.RegisterFix(CodeAction.Create("Remove unnecessary parenthesis", newDocument), diagnostic);
         }
 

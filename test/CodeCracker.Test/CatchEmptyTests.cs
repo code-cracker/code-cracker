@@ -1,16 +1,12 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
+﻿using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using TestHelper;
-using CodeCracker;
 using Xunit;
 
 namespace CodeCracker.Test
 {
     public class CatchEmptyTests : CodeFixVerifier
     {
-        
 
         [Fact]
         public void CatchEmptyAnalyserCreateDiagnostic()
@@ -63,7 +59,7 @@ namespace CodeCracker.Test
         }
     }";
 
-        var fixtest = @"
+            var fixtest = @"
     using System;
 
     namespace ConsoleApplication1

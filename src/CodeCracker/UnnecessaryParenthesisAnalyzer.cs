@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 
 namespace CodeCracker
 {
@@ -37,7 +32,7 @@ namespace CodeCracker
             {
                 var diagnostic = Diagnostic.Create(Rule, objectCreation.ArgumentList.OpenParenToken.GetLocation(), "Remove unnecessary parenthesis.");
                 context.ReportDiagnostic(diagnostic);
-            }            
+            }
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using TestHelper;
-using CodeCracker;
 using Xunit;
 
 namespace CodeCracker.Test

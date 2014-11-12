@@ -44,15 +44,15 @@ namespace CodeCracker
             var controlVarId = semanticModel.GetDeclaredSymbol(forStatement.Declaration.Variables.Single());
 
             var arrayDeclarations = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
-                                        where s.Declaration.Variables.Count == 1
-                                        let declaration = s.Declaration.Variables.First()
-                                        where declaration?.Initializer?.Value is ElementAccessExpressionSyntax
-                                        let init = (ElementAccessExpressionSyntax)declaration.Initializer.Value
-                                        let initSymbol = semanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
-                                        where controlVarId.Equals(initSymbol)
-                                        let someArrayInit = semanticModel.GetSymbolInfo(init.Expression).Symbol as ILocalSymbol
-                                        where someArrayInit.Equals(arrayId)
-                                        select s).ToList();
+                                     where s.Declaration.Variables.Count == 1
+                                     let declaration = s.Declaration.Variables.First()
+                                     where declaration?.Initializer?.Value is ElementAccessExpressionSyntax
+                                     let init = (ElementAccessExpressionSyntax)declaration.Initializer.Value
+                                     let initSymbol = semanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
+                                     where controlVarId.Equals(initSymbol)
+                                     let someArrayInit = semanticModel.GetSymbolInfo(init.Expression).Symbol as ILocalSymbol
+                                     where someArrayInit.Equals(arrayId)
+                                     select s).ToList();
 
             var arrayDeclaration = arrayDeclarations.First();
             var blockForFor = forBlock.RemoveNode(arrayDeclaration, SyntaxRemoveOptions.KeepLeadingTrivia);

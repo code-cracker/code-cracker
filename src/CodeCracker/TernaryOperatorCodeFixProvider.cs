@@ -74,9 +74,9 @@ namespace CodeCracker
 
         private async Task<Document> MakeTernaryAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)
         {
-            var expressionInsideIf  = (ExpressionStatementSyntax)(ifStatement.Statement is BlockSyntax ? ((BlockSyntax)ifStatement.Statement).Statements.Single() : ifStatement.Statement);
+            var expressionInsideIf = (ExpressionStatementSyntax)(ifStatement.Statement is BlockSyntax ? ((BlockSyntax)ifStatement.Statement).Statements.Single() : ifStatement.Statement);
             var elseStatement = ifStatement.Else;
-            var expressionInsideElse  = (ExpressionStatementSyntax)(elseStatement.Statement is BlockSyntax ? ((BlockSyntax)elseStatement.Statement).Statements.Single() : elseStatement.Statement);
+            var expressionInsideElse = (ExpressionStatementSyntax)(elseStatement.Statement is BlockSyntax ? ((BlockSyntax)elseStatement.Statement).Statements.Single() : elseStatement.Statement);
 
             var assignmentExpressionInsideIf = (AssignmentExpressionSyntax)expressionInsideIf.Expression;
             var assignmentExpressionInsideElse = (AssignmentExpressionSyntax)expressionInsideElse.Expression;

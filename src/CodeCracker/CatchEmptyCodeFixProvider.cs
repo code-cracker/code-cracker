@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker
 {
-    [ExportCodeFixProvider("CatchEmptyCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider("CodeCrackerCatchEmptyCodeFixProvider", LanguageNames.CSharp), Shared]
     public class CatchEmptyCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
@@ -31,25 +31,20 @@ namespace CodeCracker
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Put an Exception class", c => MakeCatchEmptyAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Add an Exception class", c => MakeCatchEmptyAsync(context.Document, declaration, c)), diagnostic);
         }
 
         private async Task<Document> MakeCatchEmptyAsync(Document document, CatchClauseSyntax catchStatement, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
-            var newCatch = SyntaxFactory.CatchClause()
-                                    .WithDeclaration(
-                                        SyntaxFactory.CatchDeclaration(
-                                            SyntaxFactory.IdentifierName(
-                                                @"Exception"))
-                                        .WithIdentifier(
-                                            SyntaxFactory.Identifier(
-                                                @"ex")))
-                                        .WithBlock(catchStatement.Block)
-                                        .WithLeadingTrivia(catchStatement.GetLeadingTrivia())
-                                        .WithTrailingTrivia(catchStatement.GetTrailingTrivia())
-                                        .WithAdditionalAnnotations(Formatter.Annotation);
+            var newCatch = SyntaxFactory.CatchClause().WithDeclaration(
+                SyntaxFactory.CatchDeclaration(SyntaxFactory.IdentifierName("Exception"))
+                .WithIdentifier(SyntaxFactory.Identifier("ex")))
+                .WithBlock(catchStatement.Block)
+                .WithLeadingTrivia(catchStatement.GetLeadingTrivia())
+                .WithTrailingTrivia(catchStatement.GetTrailingTrivia())
+                .WithAdditionalAnnotations(Formatter.Annotation);
 
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(catchStatement, newCatch);
