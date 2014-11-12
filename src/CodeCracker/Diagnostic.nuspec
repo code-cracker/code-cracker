@@ -1,25 +1,28 @@
-﻿<?xml version="1.0"?>
-<package>
-  <metadata>
-    <id>CodeCracker</id>
-    <version>1.0.0.0</version>
-    <title>CodeCracker</title>
-    <authors>CodeCracker</authors>
-    <owners>CodeCracker</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>CodeCracker</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
-    <copyright>Copyright</copyright>
-    <tags>Tag1 Tag2</tags>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System" targetFramework="" />
-    </frameworkAssemblies>
-  </metadata>
-  <files>
-    <file src="*.dll" target="tools\analyzers\" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*" />
-    <file src="tools\*.ps1" target="tools\" />
-  </files>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+    <metadata>
+        <id>codecracker</id>
+        <version>1.0.0-alpha1</version>
+        <title>CodeCracker</title>
+        <authors>giggio,elemarjr,carloscds,viniciushana</authors>
+        <owners>giggio,elemarjr,carloscds,viniciushana</owners>
+        <licenseUrl>https://github.com/code-cracker/code-cracker/blob/master/LICENSE.txt</licenseUrl>
+        <projectUrl>https://github.com/code-cracker/code-cracker</projectUrl>
+        <iconUrl>https://avatars1.githubusercontent.com/u/9695920?v=3&amp;s=200</iconUrl>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <description>A analyzer library for C# that uses Roslyn to produce refactorings, code analysis, and other niceties.
+
+This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this software, nor it will be. Ever.</description>
+        <releaseNotes>First alpha release</releaseNotes>
+        <copyright>Copyright CodeCracker 2014</copyright>
+        <tags>roslyn, analyzers</tags>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System" targetFramework="" />
+        </frameworkAssemblies>
+    </metadata>
+    <files>
+        <file src="tools\install.ps1" target="tools\install.ps1" />
+        <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
+        <file src="CodeCracker.dll" target="tools\analyzers\CodeCracker.dll" />
+    </files>
 </package>
