@@ -330,10 +330,7 @@ namespace CodeCracker.Test
                 Id = ForInArrayAnalyzer.DiagnosticId,
                 Message = "You can use foreach instead of for.",
                 Severity = DiagnosticSeverity.Warning,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 9, 17)
-                        }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
             VerifyCSharpDiagnostic(source, expected);
         }

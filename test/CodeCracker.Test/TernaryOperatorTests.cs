@@ -155,10 +155,7 @@ namespace CodeCracker.Test
                 Id = TernaryOperatorAnalyzer.DiagnosticIdForIfWithReturn,
                 Message = "You can use a ternary operator.",
                 Severity = DiagnosticSeverity.Warning,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 9, 17)
-                        }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
             VerifyCSharpDiagnostic(source, expected);
@@ -304,10 +301,7 @@ namespace CodeCracker.Test
                 Id = TernaryOperatorAnalyzer.DiagnosticIdForIfWithAssignment,
                 Message = "You can use a ternary operator.",
                 Severity = DiagnosticSeverity.Warning,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 10, 17)
-                        }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
 
             VerifyCSharpDiagnostic(source, expected);
