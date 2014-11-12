@@ -43,11 +43,34 @@ Then add a reference to CodeCracker.dll from within the Analyzers node inside Re
 
 ## Contributing
 
-Questions, comments, bug reports, and pull requests are all welcome.  Submit them at
-[the project on GitHub](https://github.com/giggio/CodeCracker/).
-
+Questions, comments, bug reports, and pull requests are all welcome.
 Bug reports that include steps-to-reproduce (including code) are the
 best. Even better, make them in the form of pull requests.
+Before you start to work on an existing issue, check if it is not assigned
+to anyone yet, and if it is, talk to that person.
+Also check the project [board](http://huboard.com/giggio/CodeCracker/board)
+and verify it is not being worked on (it will also be tagged with the `working` tag).
+If it is not being worked on, before you start check if the item is `ready`.
+We don't yet have a Definition Of Ready (DOR) yet, but right now being ready means
+having at least the basic test cases written on the item. View examples at
+issues [#7](https://github.com/giggio/CodeCracker/issues/7)
+and [#10](https://github.com/giggio/CodeCracker/issues/10).
+Once it is Ready and agreed on by any one of the maintainers, just state in
+a comment that you intend to start working on that item and mention any/all
+the mainteners so they can tag it correctly and move it on the board.
+When you are done, issue a [pull request](https://help.github.com/articles/using-pull-requests/) and mention the issue you were working on.
+
+### Rules for contribution
+
+* Every pull request must have unit tests. PRs without tests will be denied without checking any other code.
+* Must build and all tests must pass
+* Must mention an existing issue on Github
+* Don't reformat any code but the one you produced
+* Follow the coding standards already in place within the project
+
+If you work on something that you have not yet discussed with the maintainers
+there is a big chance the code might be denied.
+They are easily reachable through Twitter or on Github. Before you code discuss it with it them.
 
 ## Maintainers
 
