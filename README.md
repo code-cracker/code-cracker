@@ -29,7 +29,7 @@ Grab the extension at the Visual Studio Extensions site: (TODO: add site)
 To build from source:
 
 ```shell
-git clone https://github.com/giggio/CodeCracker.git
+git clone https://github.com/code-cracker/code-cracker.git
 cd CodeCracker
 msbuild
 ```
@@ -38,8 +38,8 @@ Then add a reference to CodeCracker.dll from within the Analyzers node inside Re
 
 ## Issues and task board
 
-* The task board is at [Huboard](http://huboard.com/giggio/CodeCracker/board).
-* You can also check the [Github backlog](https://github.com/giggio/CodeCracker/issues) directly.
+* The task board is at [Huboard](http://huboard.com/code-cracker/code-cracker/board).
+* You can also check the [Github backlog](https://github.com/code-cracker/code-cracker/issues) directly.
 
 ## Contributing
 
@@ -48,13 +48,13 @@ Bug reports that include steps-to-reproduce (including code) are the
 best. Even better, make them in the form of pull requests.
 Before you start to work on an existing issue, check if it is not assigned
 to anyone yet, and if it is, talk to that person.
-Also check the project [board](http://huboard.com/giggio/CodeCracker/board)
+Also check the project [board](http://huboard.com/code-cracker/code-cracker/board)
 and verify it is not being worked on (it will also be tagged with the `working` tag).
 If it is not being worked on, before you start check if the item is `ready`.
 We don't yet have a Definition Of Ready (DOR) yet, but right now being ready means
 having at least the basic test cases written on the item. View examples at
-issues [#7](https://github.com/giggio/CodeCracker/issues/7)
-and [#10](https://github.com/giggio/CodeCracker/issues/10).
+issues [#7](https://github.com/code-cracker/code-cracker/issues/7)
+and [#10](https://github.com/code-cracker/code-cracker/issues/10).
 Once it is Ready and agreed on by any one of the maintainers, just state in
 a comment that you intend to start working on that item and mention any/all
 the mainteners so they can tag it correctly and move it on the board.
@@ -74,17 +74,17 @@ They are easily reachable through Twitter or on Github. Before you code discuss 
 
 ## Maintainers
 
-* [Giovanni Bassi](http://blog.lambda3.com.br/L3/giovannibassi/), [Lambda3](http://www.lambda3.com.br), [@giovannibassi](http://twitter.com/giovannibassi)
+* [Giovanni Bassi](http://blog.lambda3.com.br/L3/giovannibassi/), aka Giggio, [Lambda3](http://www.lambda3.com.br), [@giovannibassi](http://twitter.com/giovannibassi)
 * [Elemar Jr.](http://elemarjr.net/), [@elemarjr](http://twitter.com/elemarjr)
 * [Carlos dos Santos](http://carloscds.net/), [CDS Informática](http://www.cds-software.com.br/), [@cdssoftware](http://twitter.com/cdssoftware)
 * [Vinicius Hana](https://blog.lambda3.com.br/L3/vinicius-hana/), [Lambda3](http://www.lambda3.com.br), [@viniciushana](http://twitter.com/viniciushana)
 
-Contributors can be found at the [contributors](https://github.com/giggio/CodeCracker/graphs/contributors) page on Github.
+Contributors can be found at the [contributors](https://github.com/code-cracker/code-cracker/graphs/contributors) page on Github.
 
 ## License
 
 This software is open source, licensed under the Apache License, Version 2.0.
-See [LICENSE.txt](https://github.com/giggio/CodeCracker/blob/master/LICENSE.txt) for details.
+See [LICENSE.txt](https://github.com/code-cracker/code-cracker/blob/master/LICENSE.txt) for details.
 Check out the terms of the license before you contribute, fork, copy or do anything
 with the code. If you decide to contribute you agree to grant copyright of all your contribution to this project, and agree to
 mention clearly if do not agree to these terms. Your work will be licensed with the project at Apache V2, along the rest of the code.
