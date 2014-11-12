@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
+﻿using System;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
 using Xunit;
@@ -80,6 +81,16 @@ namespace CodeCracker.Test
         }
     }";
             VerifyCSharpFix(test, fixtest, 0);
+        }
+
+        protected override CodeFixProvider GetBasicCodeFixProvider()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
+        {
+            throw new NotImplementedException();
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()

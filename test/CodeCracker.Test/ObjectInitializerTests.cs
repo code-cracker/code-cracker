@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
@@ -176,6 +177,16 @@ namespace CodeCracker.Test
         {
             return new ObjectInitializerAnalyzer();
         }
+
+        protected override CodeFixProvider GetBasicCodeFixProvider()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class ObjectInitializerWithAssingmentTests : CodeFixVerifier
@@ -319,6 +330,16 @@ namespace CodeCracker.Test
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
             return new ObjectInitializerAnalyzer();
+        }
+
+        protected override CodeFixProvider GetBasicCodeFixProvider()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
+        {
+            throw new NotImplementedException();
         }
     }
 }
