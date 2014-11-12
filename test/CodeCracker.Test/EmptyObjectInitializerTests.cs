@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
@@ -63,6 +64,16 @@ namespace CodeCracker.Test
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
             return new EmptyObjectInitializerCodeFixProvider();
+        }
+
+        protected override CodeFixProvider GetBasicCodeFixProvider()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
+        {
+            throw new NotImplementedException();
         }
     }
 }
