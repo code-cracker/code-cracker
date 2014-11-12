@@ -102,7 +102,7 @@
     <Compile Include="EmptyObjectInitializerTests.cs" />
     <Compile Include="ForInArrayTests.cs" />
     <Compile Include="CatchEmptyTests.cs" />
-    <Compile Include="ClassInitializerTests.cs" />
+    <Compile Include="ObjectInitializerTests.cs" />
     <Compile Include="TernaryOperatorTests.cs" />
     <Compile Include="UnnecessaryParenthesisTests.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />

@@ -9,14 +9,14 @@ using System.Linq;
 namespace CodeCracker
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class ClassInitializerAnalyzer : DiagnosticAnalyzer
+    public class ObjectInitializerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticIdLocalDeclaration = "CodeCracker.ClassInitializerLocalDeclarationAnalyzer";
-        internal const string TitleLocalDeclaration = "Use class initializer";
+        public const string DiagnosticIdLocalDeclaration = "CodeCracker.ObjectInitializerLocalDeclarationAnalyzer";
+        internal const string TitleLocalDeclaration = "Use object initializer";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-        public const string DiagnosticIdAssignment = "CodeCracker.ClassInitializerAssignmentAnalyzer";
-        internal const string TitleAssignment = "Use class initializer";
+        public const string DiagnosticIdAssignment = "CodeCracker.ObjectInitializerAssignmentAnalyzer";
+        internal const string TitleAssignment = "Use object initializer";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticIdLocalDeclaration, TitleLocalDeclaration, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
 

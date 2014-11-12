@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class ClassInitializerWithLocalDeclarationTests : CodeFixVerifier
+    public class ObjectInitializerWithLocalDeclarationTests : CodeFixVerifier
     {
 
         [Fact]
@@ -116,7 +116,7 @@ namespace CodeCracker.Test
     }";
             var expected = new DiagnosticResult
             {
-                Id = ClassInitializerAnalyzer.DiagnosticIdLocalDeclaration,
+                Id = ObjectInitializerAnalyzer.DiagnosticIdLocalDeclaration,
                 Message = "You can use initializers in here.",
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 17) }
@@ -125,7 +125,7 @@ namespace CodeCracker.Test
         }
 
         [Fact]
-        public void WhenUsingANewVariableDeclaredAndAssigningToPropertiesOfJustCreatedObjectChangeToClassInitializersFix()
+        public void WhenUsingANewVariableDeclaredAndAssigningToPropertiesOfJustCreatedObjectChangeToObjectInitializersFix()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -169,16 +169,16 @@ namespace CodeCracker.Test
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new ClassInitializerCodeFixProvider();
+            return new ObjectInitializerCodeFixProvider();
         }
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
-            return new ClassInitializerAnalyzer();
+            return new ObjectInitializerAnalyzer();
         }
     }
 
-    public class ClassInitializerWithAssingmentTests : CodeFixVerifier
+    public class ObjectInitializerWithAssingmentTests : CodeFixVerifier
     {
 
         [Fact]
@@ -218,7 +218,7 @@ namespace CodeCracker.Test
     }";
             var expected = new DiagnosticResult
             {
-                Id = ClassInitializerAnalyzer.DiagnosticIdLocalDeclaration,
+                Id = ObjectInitializerAnalyzer.DiagnosticIdLocalDeclaration,
                 Message = "You can use initializers in here.",
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
@@ -267,7 +267,7 @@ namespace CodeCracker.Test
         }
 
         [Fact]
-        public void WhenUsingAPreviouslyDeclaredVariableAndAssigningToPropertiesOfJustCreatedObjectChangeToClassInitializersFix()
+        public void WhenUsingAPreviouslyDeclaredVariableAndAssigningToPropertiesOfJustCreatedObjectChangeToObjectInitializersFix()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -313,12 +313,12 @@ namespace CodeCracker.Test
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new ClassInitializerCodeFixProvider();
+            return new ObjectInitializerCodeFixProvider();
         }
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
-            return new ClassInitializerAnalyzer();
+            return new ObjectInitializerAnalyzer();
         }
     }
 }
