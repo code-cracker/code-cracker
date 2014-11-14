@@ -34,6 +34,8 @@
   <ItemGroup>
     <Compile Include="ArgumentExceptionAnalyzer.cs" />
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
+    <Compile Include="EmptyCatchBlockCodeFixProvider.cs" />
+    <Compile Include="EmptyCatchBlockAnalyzer.cs" />
     <Compile Include="EmptyObjectInitializerCodeFixProvider.cs" />
     <Compile Include="EmptyObjectInitializerAnalyzer.cs" />
     <Compile Include="ForInArrayAnalyzer.cs" />

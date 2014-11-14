@@ -89,7 +89,7 @@ namespace CodeCracker.Test
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
-            return new CatchEmptyAnalyser();
+            return new CatchEmptyAnalyzer();
         }
     }
 }

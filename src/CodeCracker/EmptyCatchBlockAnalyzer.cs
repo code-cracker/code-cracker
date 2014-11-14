@@ -7,14 +7,14 @@ using System.Collections.Immutable;
 namespace CodeCracker
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class CatchEmptyAnalyzer : DiagnosticAnalyzer
+    public class EmptyCatchBlockAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.CatchEmptyAnalyzer";
-        internal const string Title = "Your catch maybe include some Exception";
+        public const string DiagnosticId = "CodeCracker.EmptyCatchBlockAnalyzer";
+        internal const string Title = "Catch block cannot be empty";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -27,10 +27,9 @@ namespace CodeCracker
         {
             var catchStatement = (CatchClauseSyntax)context.Node;
 
-            if (catchStatement.Declaration != null) return;
-            if (catchStatement.Block?.Statements.Count == 0) return; // there is another analizer for this: EmptyCatchBlock
+            if (catchStatement.Block?.Statements.Count != 0) return;
 
-            var diagnostic = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Consider put an Exception Class in catch.");
+            var diagnostic = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Empty Catch Block.");
             context.ReportDiagnostic(diagnostic);
         }
     }
