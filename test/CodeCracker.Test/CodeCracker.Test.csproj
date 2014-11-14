@@ -100,6 +100,7 @@
   <ItemGroup>
     <Compile Include="ArgumentExceptionTests.cs" />
     <Compile Include="EmptyObjectInitializerTests.cs" />
+    <Compile Include="IfReturnTrueTests.cs" />
     <Compile Include="ForInArrayTests.cs" />
     <Compile Include="CatchEmptyTests.cs" />
     <Compile Include="ObjectInitializerTests.cs" />
