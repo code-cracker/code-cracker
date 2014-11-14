@@ -41,7 +41,9 @@
     <Compile Include="CatchEmptyAnalyzer.cs" />
     <Compile Include="CatchEmptyCodeFixProvider.cs" />
     <Compile Include="ObjectInitializerAnalyzer.cs" />
+    <Compile Include="IfReturnTrueCodeFixProvider.cs" />
     <Compile Include="ObjectInitializerCodeFixProvider.cs" />
+    <Compile Include="IfReturnTrueAnalyzer.cs" />
     <Compile Include="TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorAnalyzer.cs" />
     <Compile Include="RethrowExceptionCodeFixProvider.cs" />
