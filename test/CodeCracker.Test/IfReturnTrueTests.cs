@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class IfReturnTrueTests : CodeFixVerifier
+    public class IfReturnTrueTests : CodeFixTest<IfReturnTrueAnalyzer, IfReturnTrueCodeFixProvider>
     {
 
         [Fact]
@@ -281,16 +281,6 @@ namespace CodeCracker.Test
         }
     }";
             VerifyCSharpFix(source, fixtest, 0);
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new IfReturnTrueCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new IfReturnTrueAnalyzer();
         }
     }
 }

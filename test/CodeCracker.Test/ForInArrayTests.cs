@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class ForInArrayTests : CodeFixVerifier
+    public class ForInArrayTests : CodeFixTest<ForInArrayAnalyzer, ForInArrayCodeFixProvider>
     {
 
         [Fact]
@@ -378,16 +378,6 @@ namespace CodeCracker.Test
         }
     }";
             VerifyCSharpFix(source, fixtest, 0);
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new ForInArrayCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new ForInArrayAnalyzer();
         }
     }
 }
