@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class RethrowExceptionTests : CodeFixVerifier
+    public class RethrowExceptionTests : CodeFixTest<RethrowExceptionAnalyzer, RethrowExceptionCodeFixProvider>
     {
         private const string sourceWithoutUsingSystem = @"
     namespace ConsoleApplication1
@@ -104,17 +104,6 @@ namespace CodeCracker.Test
         }
     }";
             VerifyCSharpFix(sourceWithoutUsingSystem, fixtest, 0);
-        }
-
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new RethrowExceptionCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new RethrowExceptionAnalyzer();
         }
     }
 }

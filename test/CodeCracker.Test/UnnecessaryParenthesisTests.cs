@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class UnnecessaryParenthesisTests : CodeFixVerifier
+    public class UnnecessaryParenthesisTests : CodeFixTest<UnnecessaryParenthesisAnalyzer, UnnecessaryParenthesisCodeFixProvider>
     {
         [Fact]
         public void ConstructorWithEmptyParenthesisWithInitializerTriggersFix()
@@ -65,16 +65,6 @@ namespace CodeCracker.Test
             const string newSource = @"var a = new B { X = 1 };";
 
             VerifyCSharpFix(oldSource, newSource);
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new UnnecessaryParenthesisAnalyzer();
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new UnnecessaryParenthesisCodeFixProvider();
         }
     }
 }

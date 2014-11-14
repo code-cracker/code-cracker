@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class TernaryOperatorWithAssignmentTests : CodeFixVerifier
+    public class TernaryOperatorWithAssignmentTests : CodeFixTest<TernaryOperatorAnalyzer, TernaryOperatorWithAssignmentCodeFixProvider>
     {
         private const string source = @"
     namespace ConsoleApplication1
@@ -162,39 +162,6 @@ namespace CodeCracker.Test
         }
 
         [Fact]
-        public void WhenUsingIfAndElseWithDirectReturnChangeToTernaryFix()
-        {
-
-            var fixtest = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public int Foo()
-            {
-                var something = true;
-                return something ? 1 : 2;
-            }
-        }
-    }";
-            VerifyCSharpFix(source, fixtest, 0);
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new TernaryOperatorWithReturnCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new TernaryOperatorAnalyzer();
-        }
-    }
-
-    public class TernaryOperatorWithReturnTests : CodeFixVerifier
-    {
-
-        [Fact]
         public void WhenUsingIfAndElseWithAssignmentChangeToTernaryFix()
         {
             const string source = @"
@@ -272,6 +239,43 @@ namespace CodeCracker.Test
     }";
             VerifyCSharpFix(source, fixtest, 0);
         }
+    }
+
+    public class TernaryOperatorWithReturnTests : CodeFixTest<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
+    {
+        [Fact]
+        public void WhenUsingIfAndElseWithDirectReturnChangeToTernaryFix()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                if (something)
+                    return 1;
+                else
+                    return 2;
+            }
+        }
+    }";
+
+        var fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                return something ? 1 : 2;
+            }
+        }
+    }";
+            VerifyCSharpFix(source, fixtest, 0);
+        }
 
         [Fact]
         public void WhenUsingIfAndElseWithAssignmentAnalyzerCreatesDiagnostic()
@@ -305,16 +309,6 @@ namespace CodeCracker.Test
             };
 
             VerifyCSharpDiagnostic(source, expected);
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new TernaryOperatorWithAssignmentCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new TernaryOperatorAnalyzer();
         }
     }
 }
