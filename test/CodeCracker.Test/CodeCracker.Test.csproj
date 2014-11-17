@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentExceptionTests.cs" />
+    <Compile Include="RegexTests.cs" />
     <Compile Include="EmptyCatchBlockTests.cs" />
     <Compile Include="EmptyObjectInitializerTests.cs" />
     <Compile Include="IfReturnTrueTests.cs" />
