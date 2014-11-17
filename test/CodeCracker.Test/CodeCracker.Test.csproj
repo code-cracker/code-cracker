@@ -108,7 +108,9 @@
     <Compile Include="ObjectInitializerTests.cs" />
     <Compile Include="TernaryOperatorTests.cs" />
     <Compile Include="UnnecessaryParenthesisTests.cs" />
+    <Compile Include="Verifiers\CodeFixTest.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
+    <Compile Include="Verifiers\DiagnosticTest.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />
     <Compile Include="Helpers\DiagnosticResult.cs" />

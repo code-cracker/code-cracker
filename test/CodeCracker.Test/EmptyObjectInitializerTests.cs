@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class EmptyObjectInitializerTests : CodeFixVerifier
+    public class EmptyObjectInitializerTests : CodeFixTest<EmptyObjectInitializerAnalyzer, EmptyObjectInitializerCodeFixProvider>
     {
         [Fact]
         public void EmptyObjectInitializerTriggersFix()
@@ -53,16 +53,6 @@ namespace CodeCracker.Test
         {
             var code = @"var a = new A();";
             VerifyCSharpHasNoDiagnostics(code);
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new EmptyObjectInitializerAnalyzer();
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new EmptyObjectInitializerCodeFixProvider();
         }
     }
 }

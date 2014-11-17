@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class ObjectInitializerWithLocalDeclarationTests : CodeFixVerifier
+    public class ObjectInitializerWithLocalDeclarationTests : CodeFixTest<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
     {
 
         [Fact]
@@ -178,7 +178,7 @@ namespace CodeCracker.Test
         }
     }
 
-    public class ObjectInitializerWithAssingmentTests : CodeFixVerifier
+    public class ObjectInitializerWithAssingmentTests : CodeFixTest<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
     {
 
         [Fact]
@@ -309,16 +309,6 @@ namespace CodeCracker.Test
         }
     }";
             VerifyCSharpFix(source, fixtest, 0);
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new ObjectInitializerCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new ObjectInitializerAnalyzer();
         }
     }
 }

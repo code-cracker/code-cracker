@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class ArgumentExceptionTests : CodeFixVerifier
+    public class ArgumentExceptionTests : CodeFixTest<ArgumentExceptionAnalyzer, ArgumentExceptionCodeFixProvider>
     {
         private const string test = @"
     using System;
@@ -72,16 +72,6 @@ namespace CodeCracker.Test
         }
     }";
             VerifyCSharpFix(test, fixtest, 1);
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new ArgumentExceptionCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new ArgumentExceptionAnalyzer();
         }
     }
 }

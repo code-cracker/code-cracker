@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class EmptyCatchBlockTests : CodeFixVerifier
+    public class EmptyCatchBlockTests : CodeFixTest<EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider>
     {
         string test = @"
     using System;
@@ -123,16 +123,6 @@ namespace CodeCracker.Test
     }";
 
             VerifyCSharpFix(test, fixtest, 2, false, true);
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new EmptyCatchBlockCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new EmptyCatchBlockAnalyzer();
         }
     }
 }
