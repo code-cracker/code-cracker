@@ -98,6 +98,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlwaysUseVarTests.cs" />
     <Compile Include="ArgumentExceptionTests.cs" />
     <Compile Include="EmptyCatchBlockTests.cs" />
     <Compile Include="EmptyObjectInitializerTests.cs" />
