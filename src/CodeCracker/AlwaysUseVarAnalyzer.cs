@@ -12,8 +12,8 @@ namespace CodeCracker
     public class AlwaysUseVarAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CodeCracker.AlwaysUseVarAnalyzer";
-        internal const string Title = "You should use 'var' always it is possible.";
-        internal const string MessageFormat = "Use 'var' instead specifying the type name.";
+        internal const string Title = "You should use 'var' whenever possible.";
+        internal const string MessageFormat = "Use 'var' instead of specifying the type name.";
         internal const string Category = "Syntax";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
@@ -23,8 +23,6 @@ namespace CodeCracker
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LocalDeclarationStatement);
-
-            int i = 10;
         }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
