@@ -34,6 +34,8 @@
   <ItemGroup>
     <Compile Include="ArgumentExceptionAnalyzer.cs" />
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
+    <Compile Include="ChangeNamespaceAnalyzer.cs" />
+    <Compile Include="ChangeNamespaceCodeFix.cs" />
     <Compile Include="RegexAnalyzer.cs" />
     <Compile Include="EmptyCatchBlockCodeFixProvider.cs" />
     <Compile Include="EmptyCatchBlockAnalyzer.cs" />
