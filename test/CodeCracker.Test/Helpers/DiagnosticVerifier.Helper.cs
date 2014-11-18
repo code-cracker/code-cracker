@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -27,6 +28,8 @@ namespace TestHelper
         internal static string CSharpDefaultFilePath = DefaultFilePathPrefix + 0 + "." + CSharpDefaultFileExt;
         internal static string VisualBasicDefaultFilePath = DefaultFilePathPrefix + 0 + "." + VisualBasicDefaultExt;
         internal static string TestProjectName = "TestProject";
+
+        public static string TempPath = "";
 
         #region  Get Diagnostics
 
@@ -169,6 +172,10 @@ namespace TestHelper
             foreach (var source in sources)
             {
                 var newFileName = fileNamePrefix + count + "." + fileExt;
+                if(TempPath != "")
+                {
+                    newFileName = Path.Combine(TempPath, newFileName);
+                }
                 var documentId = DocumentId.CreateNewId(projectId, debugName: newFileName);
                 solution = solution.AddDocument(documentId, newFileName, SourceText.From(source));
                 count++;
@@ -178,4 +185,3 @@ namespace TestHelper
         #endregion
     }
 }
-

@@ -7,7 +7,28 @@ namespace CodeCracker.Test
 {
     public class ChangeNamespaceTests : CodeFixTest<ChangeNamespaceAnalyzer, ChangeNamespaceCodeFixProvider>
     {
-        string test = @"
+        [Fact]
+        public void ChangeNamespaceAnalyzerCreateDiagnostic()
+        {
+            string test = @"
+    using System;
+
+    namespace Temp
+    {
+        class TypeName
+        {
+            
+        }
+    }";
+            DiagnosticVerifier.TempPath = @"c:\Temp";
+            VerifyCSharpHasNoDiagnostics(test);
+            DiagnosticVerifier.TempPath = "";
+        }
+
+        [Fact]
+        public void WhenChangeNamespaceStatement()
+        {
+            string test = @"
     using System;
 
     namespace ConsoleApplication1
@@ -18,27 +39,19 @@ namespace CodeCracker.Test
         }
     }";
 
-        [Fact]
-        public void ChangeNamespaceAnalyzerCreateDiagnostic()
-        {
-            VerifyCSharpHasNoDiagnostics(test);
-        }
-
-        [Fact]
-        public void WhenChangeNamespaceStatement()
-        {
-
             var fixtest = @"
     using System;
 
-    namespace ConsoleApplication1
+    namespace Temp
     {
         class TypeName
         {
            
         }
     }";
+            DiagnosticVerifier.TempPath = @"c:\Temp";
             VerifyCSharpFix(test, fixtest, 0, false, true);
-        }        
+            DiagnosticVerifier.TempPath = "";
+        }
     }
 }
