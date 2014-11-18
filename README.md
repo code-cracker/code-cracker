@@ -1,6 +1,6 @@
 # Code Cracker
 
-A analyzer library for C# that uses [Roslyn](http://msdn.microsoft.com/en-us/vstudio/roslyn.aspx) to produce refactorings, code analysis, and other niceties.
+An analyzer library for C# that uses [Roslyn](http://msdn.microsoft.com/en-us/vstudio/roslyn.aspx) to produce refactorings, code analysis, and other niceties.
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this
 software, nor it will be. Ever.
@@ -11,11 +11,11 @@ You may use CodeCracker in two ways: as an analyzer library that you install wit
 The way you want to use it depends on the scenario you are working on. You most likely want the Nuget package.
 
 If you want the analyzers to work during your build, and generate warnings and errors during the build, also on build servers, than you want
-to use the Nuget package.
+to use the Nuget package. The package is available on nuget at [nuget.org/packages/codecracker](https://www.nuget.org/packages/codecracker).
 If you want to be able to configure which analyzers are being used in your project, and which ones you will ignore, and commit those
 changes to source control and share with your team, then you also want the Nuget package.
 
-To install from Nuget (TODO: add package to Nuget):
+To install from Nuget:
 
 ```powershell
 Install-Package CodeCracker
@@ -51,25 +51,75 @@ to anyone yet, and if it is, talk to that person.
 Also check the project [board](http://huboard.com/code-cracker/code-cracker/board)
 and verify it is not being worked on (it will also be tagged with the `working` tag).
 If it is not being worked on, before you start check if the item is `ready`.
-We don't yet have a Definition Of Ready (DOR) yet, but right now being ready means
-having at least the basic test cases written on the item. View examples at
-issues [#7](https://github.com/code-cracker/code-cracker/issues/7)
+
+### Definition of Ready (DoR)
+
+An item should only have its work started after the backlog item is ready. We have
+defined ready as:
+
+1. Have most of the scenarios/test cases defined on the issue on Github
+2. Have some of the maintainers verify it (cannot be the same one who wrote the issue and/or test cases)
+
+The first one is important so we have clearly defined what we will build. The second one
+is important so we don't go on building something that will not be usable, will hurt users, or will
+be a waste of effort.
+
+View examples at issues [#7](https://github.com/code-cracker/code-cracker/issues/7)
 and [#10](https://github.com/code-cracker/code-cracker/issues/10).
+
+### Start working
+
 Once it is Ready and agreed on by any one of the maintainers, just state in
 a comment that you intend to start working on that item and mention any/all
-the mainteners so they can tag it correctly and move it on the board.
-When you are done, issue a [pull request](https://help.github.com/articles/using-pull-requests/) and mention the issue you were working on.
+the maintainers (use @code-cracker/owners) so they can tag it correctly and move it on the board.
+
+To start working fork the project on Github to your own account and clone it **from there**. Don't clone
+from the main CodeCracker repository. Before you start coding create a new branch and name it in a way that makes
+sense for the issue that you will be working on. Don't work on the `master` branch because that may make
+things harder if you have to update your pull request or your repository later, assume your `master` branch
+is always equals the main repo `master` branch, and code on a different branch.
+
+When you commit, mention the issue number use the pound sign (#). Avoid making a lot of small commits
+unless they are meaningful. For most analyzers and code fixes a single commit should be enough. If you
+prefer to work with a lot commits at the end squash them.
+
+Make your first commit lines mean something, specially the first one.
+[Here](http://robots.thoughtbot.com/5-useful-tips-for-a-better-commit-message) and
+[here](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) are some tips on a good
+commit first line/message.
+
+**Do not**, under any circumstance, reformat the code to fit your standards. Follow the project standards,
+and if you do not agree with them discuss them openly with the Code Cracker community. Also, avoid end of line
+white spaces at all costs. Keep your code clean.
+
+Always write unit tests for your analyzers, code fixes and analyzers.
+
+### Pull request
+
+When you are done, pull the changes from the `master` branch on the main CodeCracker repo and integrate them. If
+you know git well, rebase your changes. If not, it is ok to merge them. When your changes are up to date with the
+`master` branch then issue a [pull request](https://help.github.com/articles/using-pull-requests/) and
+mention the issue you were working on. Make your PR message clear. If when you are creating the pull request on
+Github it mentions that the PR cannot be merged because there are conflicts it means you forgot to integrate
+the `master` branch. Correct that and issue the PR again. The project maintainers should not have to resolve
+merge conflicts.
+
+After your pull request is accepted you may delete your local branch if you want. Update your `master` branch
+so you can continue to contribute in the future. And thank you! :)
+
+If your pull request is denied try to understand why. It is not uncommon that PRs are denied but after some
+discussing and fixing they are accepted. Work with the community to get it to be the best possible code. And thank you!
 
 ### Rules for contribution
 
-* Every pull request must have unit tests. PRs without tests will be denied without checking any other code.
+* Every pull request must have unit tests. PRs without tests will be denied without checking anything else.
 * Must build and all tests must pass
 * Must mention an existing issue on Github
 * Don't reformat any code but the one you produced
 * Follow the coding standards already in place within the project
 
 If you work on something that you have not yet discussed with the maintainers
-there is a big chance the code might be denied.
+there is a chance the code might be denied.
 They are easily reachable through Twitter or on Github. Before you code discuss it with it them.
 
 ## Maintainers
