@@ -32,6 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AlwaysUseVarAnalyzer.cs" />
+    <Compile Include="AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="ArgumentExceptionAnalyzer.cs" />
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
     <Compile Include="RegexAnalyzer.cs" />
