@@ -96,6 +96,9 @@
     <Reference Include="xunit">
       <HintPath>..\..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
     </Reference>
+    <Reference Include="xunit.extensions">
+      <HintPath>..\..\packages\xunit.extensions.1.9.2\lib\net20\xunit.extensions.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlwaysUseVarTests.cs" />
@@ -107,6 +110,7 @@
     <Compile Include="ForInArrayTests.cs" />
     <Compile Include="CatchEmptyTests.cs" />
     <Compile Include="ObjectInitializerTests.cs" />
+    <Compile Include="RemoveWhereWhenItIsPossibleTests.cs" />
     <Compile Include="TernaryOperatorTests.cs" />
     <Compile Include="UnnecessaryParenthesisTests.cs" />
     <Compile Include="Verifiers\CodeFixTest.cs" />
