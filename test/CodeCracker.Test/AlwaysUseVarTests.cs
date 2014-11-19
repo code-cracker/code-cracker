@@ -112,7 +112,7 @@ namespace CodeCracker.Test
             var expected = new DiagnosticResult
             {
                 Id = AlwaysUseVarAnalyzer.DiagnosticId,
-                Message = "Use 'var' instead specifying the type name.",
+                Message = "Use 'var' instead of specifying the type name.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
