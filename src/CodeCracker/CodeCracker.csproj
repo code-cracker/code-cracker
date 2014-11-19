@@ -49,6 +49,8 @@
     <Compile Include="IfReturnTrueCodeFixProvider.cs" />
     <Compile Include="ObjectInitializerCodeFixProvider.cs" />
     <Compile Include="IfReturnTrueAnalyzer.cs" />
+    <Compile Include="RemoveWhereWhenItIsPossibleAnalyzer.cs" />
+    <Compile Include="RemoveWhereWhenItIsPossibleCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorAnalyzer.cs" />
     <Compile Include="RethrowExceptionCodeFixProvider.cs" />
