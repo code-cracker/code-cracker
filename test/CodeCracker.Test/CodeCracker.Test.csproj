@@ -64,6 +64,7 @@
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-beta1-20141031-01\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -111,6 +112,7 @@
     <Compile Include="CatchEmptyTests.cs" />
     <Compile Include="ObjectInitializerTests.cs" />
     <Compile Include="RemoveWhereWhenItIsPossibleTests.cs" />
+    <Compile Include="SealedAttributeTests.cs" />
     <Compile Include="TernaryOperatorTests.cs" />
     <Compile Include="UnnecessaryParenthesisTests.cs" />
     <Compile Include="Verifiers\CodeFixTest.cs" />
