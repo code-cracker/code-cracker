@@ -63,8 +63,10 @@ An item should only have its work started after the backlog item is ready. We ha
 defined ready as:
 
 1. Have most of the scenarios/test cases defined on the issue on Github
-2. If it has an analyzer than the warning level of the analyzer must be in the issue's description (`Information`, `Warning`, or `Error`)
-3. If it has a code fix than the category should be in the issue's description. Which categories we are going to support is not clear at this moment so this point is not active at the moment and we are always using `Syntax`.
+2. If it has an analyzer then
+  1. The warning level of the analyzer must be in the issue's description (`Information`, `Warning`, or `Error`)
+  2. The diagnostics it provides should already have numeric ids defined formated as `CC0000`.
+3. If it has a code fix then the category should be in the issue's description. Which categories we are going to support is not clear at this moment so this point is not active at the moment and we are always using `Syntax`.
 4. Have some of the maintainers verify it (cannot be the same one who wrote the issue and/or test cases)
 
 The first one is important so we have clearly defined what we will build. The last one
@@ -79,6 +81,25 @@ and [#10](https://github.com/code-cracker/code-cracker/issues/10).
 1. **Info**: Just an alternative way (ex: replacing for with foreach). Clearly a matter of opinition. All options are correct.
 2. **Warning**: Code that could/should be improved. It is a code smell and most likely is wrong, but there are situations where the pattern is acceptable or desired.
 3. **Error**: Clearly a mistake (ex: throwing ArgumentException with an non-existent parameter). There is no situation where this code could be correct. There are no differences of opinion.
+
+
+### Definition of Done
+
+The DoD is still evolving. At the present time the checklist is as follows:
+
+1. Builds
+2. Has tests for analyzers, code fixes and refactoring (analyzers have to include test cases where they do not provide diagnostics as well)
+3. All tests pass
+4. Analyzers follow the guidelines for names
+  1. Always named `<featurename>Analyzer`
+  2. Always name the diagnostic ids formated as `CC0000`.
+5. Code fixes should follow the guidelines for names
+  1. Always named `<featurename>CodeFixProvider`
+  2. Always export the name in the format `CodeCracker<featurename>CodeFixProvider`
+5. Refactorings should follow the guidelines for names
+  1. Always named `<featurename>CodeRefactoringProvider`
+  2. Always name the refactoring id as `CodeCracker<featurename>`
+6. Follow the coding standards present on the other code files.
 
 ### Start working
 
