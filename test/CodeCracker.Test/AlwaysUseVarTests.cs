@@ -4,8 +4,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class AlwaysUseVarTests
-         : CodeFixTest<AlwaysUseVarAnalyzer, AlwaysUseVarCodeFixProvider>
+    public class AlwaysUseVarTests : CodeFixTest<AlwaysUseVarAnalyzer, AlwaysUseVarCodeFixProvider>
     {
         [Fact]
         public void IgnoresConstantDeclarations()

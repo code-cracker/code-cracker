@@ -14,7 +14,6 @@ namespace CodeCracker
         internal const string Title = "Your Regex expression is wrong";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -29,8 +28,7 @@ namespace CodeCracker
             var invocationExpression = (InvocationExpressionSyntax)context.Node;
 
             var memberExpresion = invocationExpression.Expression as MemberAccessExpressionSyntax;
-            if (memberExpresion == null) return;
-            if (memberExpresion.Name.ToString() != "Match") return;
+            if (memberExpresion?.Name?.ToString() != "Match") return;
 
             var memberSymbol = context.SemanticModel.GetSymbolInfo(memberExpresion).Symbol as IMethodSymbol;
             if (!memberSymbol?.ToString().StartsWith("System.Text.RegularExpressions.Regex.Match") ?? true) return;

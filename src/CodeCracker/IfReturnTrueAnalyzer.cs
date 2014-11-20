@@ -14,7 +14,6 @@ namespace CodeCracker
         internal const string Title = "Return Condition directly";
         internal const string Message = "{0}";
         internal const string Category = "Syntax";
-
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, Message, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }

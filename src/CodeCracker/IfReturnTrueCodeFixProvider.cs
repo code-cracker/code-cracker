@@ -57,6 +57,5 @@ namespace CodeCracker
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
-
     }
 }

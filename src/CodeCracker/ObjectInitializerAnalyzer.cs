@@ -89,6 +89,5 @@ namespace CodeCracker
 
             return assignmentExpressions;
         }
-
     }
 }

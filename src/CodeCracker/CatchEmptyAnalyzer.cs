@@ -13,7 +13,6 @@ namespace CodeCracker
         internal const string Title = "Your catch maybe include some Exception";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -27,7 +26,7 @@ namespace CodeCracker
         {
             var catchStatement = (CatchClauseSyntax)context.Node;
 
-            if (catchStatement.Declaration != null) return;
+            if (catchStatement == null || catchStatement.Declaration != null) return;
             if (catchStatement.Block?.Statements.Count == 0) return; // there is another analizer for this: EmptyCatchBlock
 
             var diagnostic = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Consider put an Exception Class in catch.");

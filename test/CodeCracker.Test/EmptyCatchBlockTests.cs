@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
+﻿using TestHelper;
 using Xunit;
 
 namespace CodeCracker.Test
@@ -22,7 +20,6 @@ namespace CodeCracker.Test
                 }
                 catch
                 {
-                   
                 }
             }
         }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using TestHelper;
-using Xunit;
 using Xunit.Extensions;
 
 namespace CodeCracker.Test

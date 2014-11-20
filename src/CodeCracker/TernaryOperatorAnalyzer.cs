@@ -17,7 +17,6 @@ namespace CodeCracker
         public const string DiagnosticIdForIfWithAssignment = "CC0014";
         internal const string TitleForIfWithAssignment = "User ternary operator";
         internal const string MessageFormatForIfWithAssignment = "{0}";
-
         internal static DiagnosticDescriptor RuleForIfWithReturn = new DiagnosticDescriptor(DiagnosticIdForIfWithReturn, TitleForIfWithReturn, MessageFormatForIfWithReturn, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
         internal static DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(DiagnosticIdForIfWithAssignment, TitleForIfWithAssignment, MessageFormatForIfWithAssignment, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
@@ -38,8 +37,6 @@ namespace CodeCracker
             if (((blockIf ?? blockElse) == null) ||
                 (blockIf.Statements.Count == 1 && blockElse.Statements.Count == 1))
             {
-                //add diagnostic, only 1 statement for if and else
-                //or not one direct statement, but could be one in each block, lets check
                 var statementInsideIf = ifStatement.Statement is BlockSyntax ? ((BlockSyntax)ifStatement.Statement).Statements.Single() : ifStatement.Statement;
                 var elseStatement = ifStatement.Else;
                 var statementInsideElse = elseStatement.Statement is BlockSyntax ? ((BlockSyntax)elseStatement.Statement).Statements.Single() : elseStatement.Statement;

@@ -1,6 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
 using Xunit;
 
@@ -338,7 +336,6 @@ namespace CodeCracker.Test
         [Fact]
         public void WhenUsingForWithAnArrayThenChangesToForeach()
         {
-
             const string source = @"
     namespace ConsoleApplication1
     {

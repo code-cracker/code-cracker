@@ -39,18 +39,14 @@ namespace CodeCracker
         private async Task<Document> MakeThrowAsync(Document document, ThrowStatementSyntax throwStatement, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
-
             var newThrow = (ThrowStatementSyntax)SyntaxFactory.ParseStatement("throw;")
                 .WithLeadingTrivia(throwStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(throwStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(throwStatement, newThrow);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
-
         }
 
         private async Task<Document> MakeThrowAsInnerAsync(Document document, ThrowStatementSyntax throwStatement, CancellationToken cancellationToken)
@@ -71,7 +67,6 @@ namespace CodeCracker
                 .WithLeadingTrivia(throwStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(throwStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(throwStatement, newThrow);
             var newDocument = document.WithSyntaxRoot(newRoot);

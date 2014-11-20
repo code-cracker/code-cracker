@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -29,17 +28,11 @@ namespace CodeCracker
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-
-            // Find the type declaration identified by the diagnostic.
             var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
-
             string message = "Use 'var'";
-            context.RegisterFix(
-                CodeAction.Create(message, c => UseVarAsync(context.Document, localDeclaration, c)),
-                diagnostic);
+            context.RegisterFix(CodeAction.Create(message, c => UseVarAsync(context.Document, localDeclaration, c)), diagnostic);
         }
 
         private async Task<Document> UseVarAsync(Document document, LocalDeclarationStatementSyntax localDeclaration, CancellationToken cancellationToken)
@@ -47,17 +40,12 @@ namespace CodeCracker
             var variableDeclaration = localDeclaration.ChildNodes()
                 .OfType<VariableDeclarationSyntax>()
                 .FirstOrDefault();
-
-            
             var root = await document.GetSyntaxRootAsync();
             var @var = SyntaxFactory.IdentifierName("var")
                 .WithLeadingTrivia(variableDeclaration.Type.GetLeadingTrivia())
                 .WithTrailingTrivia(variableDeclaration.Type.GetTrailingTrivia());
-
             var newRoot = root.ReplaceNode(variableDeclaration.Type, @var);
-
             var newDocument = document.WithSyntaxRoot(newRoot);
-
             return newDocument;
         }
     }

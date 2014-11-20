@@ -14,7 +14,6 @@ namespace CodeCracker
         internal const string Title = "Your throw does nothing";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }

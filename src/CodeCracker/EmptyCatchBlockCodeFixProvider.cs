@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -76,7 +75,6 @@ namespace CodeCracker
                 .WithLeadingTrivia(catchStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(catchStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(catchStatement, newCatch);
             var newDocument = document.WithSyntaxRoot(newRoot);

@@ -45,7 +45,6 @@ namespace CodeCracker
                 .WithLeadingTrivia(catchStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(catchStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(catchStatement, newCatch);
             var newDocument = document.WithSyntaxRoot(newRoot);
