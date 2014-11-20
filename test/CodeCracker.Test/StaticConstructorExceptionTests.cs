@@ -41,7 +41,7 @@ namespace CodeCracker.Test
         [Fact]
         public void InstanceConstructorWithoutException()
         {
-            var test = @"public class MyClass { static MyClass() { } }";
+            var test = @"public class MyClass { public MyClass() { } }";
 
             VerifyCSharpDiagnostic(test);
         }
