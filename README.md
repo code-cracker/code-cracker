@@ -31,7 +31,7 @@ Install-Package CodeCracker
 Or use the Package Manager in Visual Studio.
 
 If you want global analyzers that will work on every project you open in Visual Studio, then you want the Extension.
-Grab the extension at the Visual Studio Extensions site: (TODO: add site)
+Grab the extension at the [Visual Studio Extensions Gallery](https://visualstudiogallery.msdn.microsoft.com/ab588981-91a5-478c-8e65-74d0ff450862).
 
 To build from source:
 
