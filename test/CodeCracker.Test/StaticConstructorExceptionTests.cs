@@ -29,5 +29,21 @@ namespace CodeCracker.Test
 
             VerifyCSharpDiagnostic(test);
         }
+
+        [Fact]
+        public void StaticConstructorWithoutException()
+        {
+            var test = @"public class MyClass { static MyClass() { } }";
+
+            VerifyCSharpDiagnostic(test);
+        }
+
+        [Fact]
+        public void InstanceConstructorWithoutException()
+        {
+            var test = @"public class MyClass { static MyClass() { } }";
+
+            VerifyCSharpDiagnostic(test);
+        }
     }
 }
