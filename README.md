@@ -144,7 +144,7 @@ git remote add codecracker https://github.com/code-cracker/code-cracker.git
 # checkout the master branch
 git checkout master
 # download the latest changes from the master repo
-git pull codecracer master
+git pull codecracker master
 # go back to your working branch
 git checkout <youbranchname>
 # integrate your changes
