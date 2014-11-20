@@ -10,7 +10,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ArgumentExceptionAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.ArgumentExceptionAnalyzer";
+        public const string DiagnosticId = "CC0002";
         internal const string Title = "Invalid argument name";
         internal const string MessageFormat = "Type argument '{0}' is not in the argument list.";
         internal const string Category = "Naming";

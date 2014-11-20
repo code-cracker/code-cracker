@@ -9,7 +9,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class CatchEmptyAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.CatchEmptyAnalyzer";
+        public const string DiagnosticId = "CC0003";
         internal const string Title = "Your catch maybe include some Exception";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";

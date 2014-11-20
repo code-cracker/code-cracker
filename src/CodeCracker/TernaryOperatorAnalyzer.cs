@@ -10,11 +10,11 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TernaryOperatorAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticIdForIfWithReturn = "CodeCracker.TernaryOperatorWithReturnAnalyzer";
+        public const string DiagnosticIdForIfWithReturn = "CC0013";
         internal const string TitleForIfWithReturn = "User ternary operator";
         internal const string MessageFormatForIfWithReturn = "{0}";
         internal const string Category = "Syntax";
-        public const string DiagnosticIdForIfWithAssignment = "CodeCracker.TernaryOperatorWithAssignmentAnalyzer";
+        public const string DiagnosticIdForIfWithAssignment = "CC0014";
         internal const string TitleForIfWithAssignment = "User ternary operator";
         internal const string MessageFormatForIfWithAssignment = "{0}";
 

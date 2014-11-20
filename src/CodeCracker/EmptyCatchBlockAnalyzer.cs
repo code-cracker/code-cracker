@@ -9,7 +9,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyCatchBlockAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.EmptyCatchBlockAnalyzer";
+        public const string DiagnosticId = "CC0004";
         internal const string Title = "Catch block cannot be empty";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";

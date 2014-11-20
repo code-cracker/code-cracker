@@ -11,7 +11,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AlwaysUseVarAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.AlwaysUseVarAnalyzer";
+        public const string DiagnosticId = "CC0001";
         internal const string Title = "You should use 'var' whenever possible.";
         internal const string MessageFormat = "Use 'var' instead of specifying the type name.";
         internal const string Category = "Syntax";

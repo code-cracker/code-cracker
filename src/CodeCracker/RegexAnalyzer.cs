@@ -10,7 +10,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RegexAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.RegexAnalyzer";
+        public const string DiagnosticId = "CC0010";
         internal const string Title = "Your Regex expression is wrong";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";

@@ -11,11 +11,11 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ObjectInitializerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticIdLocalDeclaration = "CodeCracker.ObjectInitializerLocalDeclarationAnalyzer";
+        public const string DiagnosticIdLocalDeclaration = "CC0008";
         internal const string TitleLocalDeclaration = "Use object initializer";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-        public const string DiagnosticIdAssignment = "CodeCracker.ObjectInitializerAssignmentAnalyzer";
+        public const string DiagnosticIdAssignment = "CC0009";
         internal const string TitleAssignment = "Use object initializer";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticIdLocalDeclaration, TitleLocalDeclaration, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);

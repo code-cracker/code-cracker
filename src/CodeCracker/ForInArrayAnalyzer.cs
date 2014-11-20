@@ -10,7 +10,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ForInArrayAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.ForInArrayAnalyzer ";
+        public const string DiagnosticId = "CC0006";
         internal const string Title = "Use foreach";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";

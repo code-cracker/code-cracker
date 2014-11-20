@@ -9,7 +9,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UnnecessaryParenthesisAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.UnnecessaryParenthesisAnalyzer";
+        public const string DiagnosticId = "CC0015";
         internal const string Title = "Unnecessary Parenthesis";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";

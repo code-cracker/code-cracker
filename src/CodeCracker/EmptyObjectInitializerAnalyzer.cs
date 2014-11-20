@@ -9,7 +9,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyObjectInitializerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.EmptyObjectInitializerAnalyzer";
+        public const string DiagnosticId = "CC0005";
         internal const string Title = "Empty Object Initializer";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";

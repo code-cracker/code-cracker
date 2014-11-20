@@ -14,7 +14,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RemoveWhereWhenItIsPossibleAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.RemoveWhereWhenPossible";
+        public const string DiagnosticId = "CC0011";
         internal const string Title = "You should remove the 'Where' invokation when it is possible.";
         internal const string MessageFormat = "You can remove 'Where' moving the predicate to '{0}'.";
         internal const string Category = "Syntax";

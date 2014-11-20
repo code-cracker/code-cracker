@@ -10,7 +10,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RethrowExceptionAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.RethrowExceptionAnalyzer ";
+        public const string DiagnosticId = "CC0012";
         internal const string Title = "Your throw does nothing";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
