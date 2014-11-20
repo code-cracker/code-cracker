@@ -113,6 +113,7 @@
     <Compile Include="ObjectInitializerTests.cs" />
     <Compile Include="RemoveWhereWhenItIsPossibleTests.cs" />
     <Compile Include="SealedAttributeTests.cs" />
+    <Compile Include="StaticConstructorExceptionTests.cs" />
     <Compile Include="TernaryOperatorTests.cs" />
     <Compile Include="UnnecessaryParenthesisTests.cs" />
     <Compile Include="Verifiers\CodeFixTest.cs" />
