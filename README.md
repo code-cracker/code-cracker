@@ -4,6 +4,8 @@ An analyzer library for C# that uses [Roslyn](http://msdn.microsoft.com/en-us/vs
 
 Check the official project site on [code-cracker.github.io](code-cracker.github.io) (still under construction).
 
+[![Build status](https://ci.appveyor.com/api/projects/status/h21sli3jkumuswyi?svg=true)](https://ci.appveyor.com/project/code-cracker/code-cracker)
+
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this
 software, nor it will be. Ever.
 
