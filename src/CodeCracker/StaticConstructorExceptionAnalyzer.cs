@@ -28,13 +28,11 @@ namespace CodeCracker
         {
             var ctor = (ConstructorDeclarationSyntax)context.Node;
 
-            if (!ctor.Modifiers.Any(SyntaxKind.StaticKeyword))
-                return;
+            if (!ctor.Modifiers.Any(SyntaxKind.StaticKeyword)) return;
 
             var @throw = ctor.Body.ChildNodes().OfType<ThrowStatementSyntax>().FirstOrDefault();
 
-            if (@throw == null)
-                return;
+            if (@throw == null) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, @throw.GetLocation(), ctor.Identifier.Text));
         }

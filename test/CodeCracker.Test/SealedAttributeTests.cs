@@ -49,7 +49,7 @@ namespace CodeCracker.Test
         [Fact]
         public void NotApplySealedWhenIsInterface()
         {
-            var test = @"public struct MyStruct { }";
+            var test = @"public interface ITest { }";
 
             VerifyCSharpDiagnostic(test);
         }

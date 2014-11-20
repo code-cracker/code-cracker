@@ -25,14 +25,11 @@ namespace CodeCracker
         {
             var type = (INamedTypeSymbol)context.Symbol;
 
-            if (type.TypeKind != TypeKind.Class)
-                return;
+            if (type.TypeKind != TypeKind.Class) return;
 
-            if (type.BaseType.ToString() != "System.Attribute")
-                return;
+            if (type.BaseType.ToString() != "System.Attribute") return;
 
-            if (type.IsAbstract || type.IsSealed)
-                return;
+            if (type.IsAbstract || type.IsSealed) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, type.Locations[0], type.Name));
         }

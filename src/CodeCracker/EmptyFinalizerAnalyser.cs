@@ -28,8 +28,7 @@ namespace CodeCracker
         {
             var finalizer = (DestructorDeclarationSyntax)context.Node;
 
-            if (finalizer.Body.DescendantNodes()?.Count() > 0)
-                return;
+            if (finalizer.Body.DescendantNodes()?.Count() > 0) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, finalizer.GetLocation(), finalizer.Identifier.Text));
         }
