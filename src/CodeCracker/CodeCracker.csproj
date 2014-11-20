@@ -36,6 +36,8 @@
     <Compile Include="AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="ArgumentExceptionAnalyzer.cs" />
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
+    <Compile Include="EmptyFinalizerAnalyser.cs" />
+    <Compile Include="EmptyFinalizerCodeFixProvider.cs" />
     <Compile Include="RegexAnalyzer.cs" />
     <Compile Include="EmptyCatchBlockCodeFixProvider.cs" />
     <Compile Include="EmptyCatchBlockAnalyzer.cs" />

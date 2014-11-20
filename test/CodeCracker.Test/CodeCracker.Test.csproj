@@ -104,6 +104,7 @@
   <ItemGroup>
     <Compile Include="AlwaysUseVarTests.cs" />
     <Compile Include="ArgumentExceptionTests.cs" />
+    <Compile Include="EmptyFinalizerTests.cs" />
     <Compile Include="RegexTests.cs" />
     <Compile Include="EmptyCatchBlockTests.cs" />
     <Compile Include="EmptyObjectInitializerTests.cs" />
