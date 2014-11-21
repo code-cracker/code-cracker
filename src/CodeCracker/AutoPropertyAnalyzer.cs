@@ -32,6 +32,8 @@ namespace CodeCracker
         {
             var property = (PropertyDeclarationSyntax)context.Node;
 
+            if (PropertyHasAutoGetter(property))
+            { return; }
             if (PropertyHasGetterWithMultipleStatements(property))
             { return; }
             if (PropertyHasGetterWithComplexReturnStatement(property))
@@ -43,6 +45,12 @@ namespace CodeCracker
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, property.GetLocation()));
 
+        }
+
+        private bool PropertyHasAutoGetter(PropertyDeclarationSyntax property)
+        {
+            var getter = property.AccessorList.Accessors.First(a => a.Keyword.Text == "get");
+            return getter.Body == null;
         }
 
         private bool PropertyHasGetterWithMultipleStatements(PropertyDeclarationSyntax property)

@@ -140,5 +140,76 @@ namespace CodeCracker.Test
 
             VerifyCSharpHasNoDiagnostics(source);
         }
+
+        [Fact]
+        public void PropertyWithAutoGetterAndSetterIsNotDetectedForUsingAutoProperty()
+        {
+            const string source = @"public int Value { get; set; }";
+
+            VerifyCSharpHasNoDiagnostics(source);
+        }
+
+        [Fact]
+        public void PropertyWithAutoGetterAndPrivateSetterIsNotDetectedForUsingAutoProperty()
+        {
+            const string source = @"public int Value { get; private set; }";
+
+            VerifyCSharpHasNoDiagnostics(source);
+        }
+
+        [Fact]
+        public void PropertyWithAutoGetterIsNotDetectedForUsingAutoProperty()
+        {
+            const string source = @"public int Value { get; }";
+
+            VerifyCSharpHasNoDiagnostics(source);
+        }
+
+        [Fact]
+        public void PropertyWithGetterAndSetterUsingInternalValueIsRefactoredToUseAutoProperty()
+        {
+            const string sourceBefore = 
+                @"public int Value
+                {
+                    get { return _value; }
+                    set { _value = value; }
+                }
+            ";
+
+            const string sourceAfter = @"public int Value { get; set; }";
+
+            VerifyCSharpFix(sourceBefore, sourceAfter);
+        }
+
+        [Fact]
+        public void PropertyWithGetterAndPrivateSetterUsingInternalValueIsRefactoredToUseAutoProperty()
+        {
+            const string sourceBefore =
+                @"public int Value
+                {
+                    get { return _value; }
+                    private set { _value = value; }
+                }
+            ";
+
+            const string sourceAfter = @"public int Value { get; private set; }";
+
+            VerifyCSharpFix(sourceBefore, sourceAfter);
+        }
+
+        [Fact]
+        public void PropertyWithGetterAndNoSetterUsingInternalValueIsRefactoredToUseAutoProperty()
+        {
+            const string sourceBefore =
+                @"public int Value
+                {
+                    get { return _value; }
+                }
+            ";
+
+            const string sourceAfter = @"public int Value { get; }";
+
+            VerifyCSharpFix(sourceBefore, sourceAfter);
+        }
     }
 }
