@@ -23,6 +23,25 @@ namespace CodeCracker.Test
         }
 
         [Fact]
+        public void ApplySealedWhenClassInheritsIndirectlyFromSystemAttributeClass()
+        {
+            var test = @"
+                public abstract class MyAttribute : System.Attribute { }
+
+                public class OtherAttribute : MyAttribute { }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = SealedAttributeAnalyzer.DiagnosticId,
+                Message = "Mark 'OtherAttribute' as sealed.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 30) }
+            };
+
+            VerifyCSharpDiagnostic(test, expected);
+        }
+
+        [Fact]
         public void NotApplySealedWhenClassThatInheritsFromSystemAttributeClassIsAbstract()
         {
             var test = @"public abstract class MyAttribute : System.Attribute { }";

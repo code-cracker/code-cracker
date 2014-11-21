@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using System.Collections.Immutable;
 
 namespace CodeCracker
@@ -27,11 +28,27 @@ namespace CodeCracker
 
             if (type.TypeKind != TypeKind.Class) return;
 
-            if (type.BaseType.ToString() != "System.Attribute") return;
+            if (!IsAttribute(type)) return;
 
             if (type.IsAbstract || type.IsSealed) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, type.Locations[0], type.Name));
+        }
+
+        public static bool IsAttribute(ITypeSymbol symbol)
+        {
+            var @base = symbol.BaseType;
+            var attributeName = typeof(Attribute).Name;
+
+            while (@base != null)
+            {
+                if (@base.Name == attributeName)
+                    return true;
+
+                @base = @base.BaseType;
+            }
+
+            return false;
         }
     }
 }
