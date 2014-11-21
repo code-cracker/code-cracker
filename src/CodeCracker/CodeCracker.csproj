@@ -60,7 +60,7 @@
     <Compile Include="UnnecessaryParenthesisCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Diagnostic.nuspec">
+    <None Include="CodeCracker.nuspec">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

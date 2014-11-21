@@ -23,6 +23,6 @@ This is a community project, free and open source. Everyone is invited to contri
     <files>
         <file src="tools\install.ps1" target="tools\install.ps1" />
         <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
-        <file src="CodeCracker.dll" target="tools\analyzers\CodeCracker.dll" />
+        <file src="bin\debug\CodeCracker.dll" target="tools\analyzers\CodeCracker.dll" />
     </files>
 </package>
