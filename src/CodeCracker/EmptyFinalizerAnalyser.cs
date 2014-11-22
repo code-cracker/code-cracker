@@ -27,8 +27,9 @@ namespace CodeCracker
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
             var finalizer = (DestructorDeclarationSyntax)context.Node;
+            var body = finalizer.Body;
 
-            if (finalizer.Body.DescendantNodes()?.Count() > 0) return;
+            if (body.DescendantNodes().Count(n => !n.IsKind(SyntaxKind.SingleLineCommentTrivia | SyntaxKind.MultiLineCommentTrivia)) > 0) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, finalizer.GetLocation(), finalizer.Identifier.Text));
         }
