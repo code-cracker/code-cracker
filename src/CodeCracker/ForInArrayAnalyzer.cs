@@ -52,8 +52,8 @@ namespace CodeCracker
                                         let initSymbol = context.SemanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
                                         where controlVarId.Equals(initSymbol)
                                         let someArrayInit = context.SemanticModel.GetSymbolInfo(init.Expression).Symbol as ILocalSymbol
-                                        where someArrayInit.Equals(arrayId)
-                                        select someArrayInit).ToList();
+                                        where someArrayInit == null || someArrayInit.Equals(arrayId)
+                                        select arrayId).ToList();
             if (!arrayAccessorSymbols.Any()) return;
 
             var diagnostic = Diagnostic.Create(Rule, forStatement.ForKeyword.GetLocation(), "You can use foreach instead of for.");
