@@ -10,7 +10,7 @@ namespace CodeCracker.Test
         [Fact]
         public void IfRegexIdentifierIsNotFoundDoesNotCreateDiagnostic()
         {
-            string test = @"
+            var test = @"
     using System;
 
     namespace ConsoleApplication1
@@ -29,7 +29,7 @@ namespace CodeCracker.Test
         [Fact]
         public void IfRegexIdentifierFoundButRegexTextIsCorrectDoesNotCreateDiagnostic()
         {
-            string test = @"
+            var test = @"
     using System;
 
     namespace ConsoleApplication1
@@ -48,7 +48,7 @@ namespace CodeCracker.Test
         [Fact]
         public void IfRegexIdentifierFoundAndRegexTextIsIncorrectCreatesDiagnostic()
         {
-            string source = @"
+            var source = @"
     using System;
     using System.Text.RegularExpressions;
 
@@ -76,7 +76,7 @@ namespace CodeCracker.Test
         [Fact]
         public void IfRegexIdentifierFoundAndAbbreviatedAndRegexTextIsIncorrectCreatesDiagnostic()
         {
-            string source = @"
+            var source = @"
     using System;
     using System.Text.RegularExpressions;
 

@@ -31,7 +31,7 @@ namespace CodeCracker
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
-            string message = "Use 'var'";
+            var message = "Use 'var'";
             context.RegisterFix(CodeAction.Create(message, c => UseVarAsync(context.Document, localDeclaration, c)), diagnostic);
         }
 

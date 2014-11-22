@@ -18,7 +18,7 @@ namespace CodeCracker.Test
         [InlineData("Count")]
         public void CreateDiagnosticWhenUsingWhereWith(string method)
         {
-            string test = @"
+            var test = @"
 using System.Linq;
 
 namespace Sample
@@ -56,7 +56,7 @@ namespace Sample
         [InlineData("Count")]
         public void DoNotCreateDiagnosticWhenUsingWhereAndAnotherMethodWithPredicates(string method)
         {
-            string test = @"
+            var test = @"
 using System.Linq;
 
 namespace Sample
@@ -87,7 +87,7 @@ namespace Sample
         [InlineData("Count")]
         public void FixRemovesWhereMovingPredicateTo(string method)
         {
-            string test = @"
+            var test = @"
 using System.Linq;
 
 namespace Sample
@@ -102,7 +102,7 @@ namespace Sample
     }
 }";
 
-            string expected = @"
+            var expected = @"
 using System.Linq;
 
 namespace Sample
@@ -132,7 +132,7 @@ namespace Sample
         [InlineData("Count")]
         public void FixRemovesWherePreservingPreviousExpressionsMovingPredicateTo(string method)
         {
-            string test = @"
+            var test = @"
 using System.Linq;
 
 namespace Sample
@@ -147,7 +147,7 @@ namespace Sample
     }
 }";
 
-            string expected = @"
+            var expected = @"
 using System.Linq;
 
 namespace Sample
