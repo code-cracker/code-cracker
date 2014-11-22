@@ -31,7 +31,7 @@ namespace CodeCracker
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var whereInvoke = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
             var nextMethodInvoke = whereInvoke.Parent.FirstAncestorOrSelf<InvocationExpressionSyntax>();
-            string message = "Remove 'Where' moving predicate to '" + RemoveWhereWhenItIsPossibleAnalyzer.GetNameOfTheInvokedMethod(nextMethodInvoke) + "'";
+            var message = "Remove 'Where' moving predicate to '" + RemoveWhereWhenItIsPossibleAnalyzer.GetNameOfTheInvokedMethod(nextMethodInvoke) + "'";
             context.RegisterFix(CodeAction.Create(message, c => RemoveWhere(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic);
         }
 

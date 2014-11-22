@@ -34,7 +34,7 @@ namespace CodeCracker
             var parameters = ancestorMethod.ParameterList.Parameters.Select(p => p.Identifier.ToString()).ToArray();
             foreach (var param in parameters)
             {
-                string message = "Use '" + param + "'";
+                var message = "Use '" + param + "'";
                 context.RegisterFix(CodeAction.Create(message, c => FixParamAsync(context.Document, objectCreation, param, c)), diagnostic);
             }
         }

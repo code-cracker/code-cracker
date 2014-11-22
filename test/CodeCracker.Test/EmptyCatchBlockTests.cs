@@ -27,7 +27,7 @@ namespace CodeCracker.Test
         [Fact]
         public void EmptyCatchBlockAnalyzerCreateDiagnostic()
         {
-            string test = @"
+            var test = @"
     using System;
 
     namespace ConsoleApplication1

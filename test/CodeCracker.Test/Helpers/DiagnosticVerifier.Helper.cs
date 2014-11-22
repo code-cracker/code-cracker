@@ -120,7 +120,7 @@ namespace TestHelper
 
             for (int i = 0; i < sources.Length; i++)
             {
-                string fileName = language == LanguageNames.CSharp ? "Test" + i + ".cs" : "Test" + i + ".vb";
+                var fileName = language == LanguageNames.CSharp ? "Test" + i + ".cs" : "Test" + i + ".vb";
             }
 
             var project = CreateProject(sources, language);
@@ -153,8 +153,8 @@ namespace TestHelper
         /// <returns>A Project created out of the Douments created from the source strings</returns>
         private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp)
         {
-            string fileNamePrefix = DefaultFilePathPrefix;
-            string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
+            var fileNamePrefix = DefaultFilePathPrefix;
+            var fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
 
             var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
@@ -167,7 +167,7 @@ namespace TestHelper
                 .AddMetadataReference(projectId, CSharpSymbolsReference)
                 .AddMetadataReference(projectId, CodeAnalysisReference);
 
-            int count = 0;
+            var count = 0;
             foreach (var source in sources)
             {
                 var newFileName = fileNamePrefix + count + "." + fileExt;
