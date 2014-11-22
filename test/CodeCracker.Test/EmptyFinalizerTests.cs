@@ -22,14 +22,6 @@ namespace CodeCracker.Test
             VerifyCSharpDiagnostic(test, expected);
         }
 
-        public class MyClass
-        {
-            ~MyClass()
-            {
-                //comments...
-            }
-        }
-
         [Fact]
         public void RemoveEmptyFinalizerWithSingleLineComment()
         {
