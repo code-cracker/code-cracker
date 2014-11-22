@@ -9,14 +9,21 @@ namespace CodeCracker.Test
         [Fact]
         public void RemoveEmptyFinalizerWhenIsEmpty()
         {
-            var test = @"public class MyClass { ~MyClass() { } }";
+            var test = @"
+                public class MyClass 
+                { 
+                    ~MyClass() 
+                    { 
+
+                    } 
+                }";
 
             var expected = new DiagnosticResult
             {
                 Id = EmptyFinalizerAnalyser.DiagnosticId,
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 0, 24) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
             };
 
             VerifyCSharpDiagnostic(test, expected);
@@ -79,10 +86,13 @@ namespace CodeCracker.Test
                 {
                     private System.IntPtr pointer;
 
-                    ~MyClass() { pointer = System.IntPtr.Zero; }
+                    ~MyClass() 
+                    { 
+                        pointer = System.IntPtr.Zero; 
+                    }
                 }";
 
-            VerifyCSharpDiagnostic(test);
+            VerifyCSharpHasNoDiagnostics(test);
         }
     }
 }

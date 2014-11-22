@@ -9,14 +9,21 @@ namespace CodeCracker.Test
         [Fact]
         public void WarningIfExceptionIsThrowInsideStaticConstructor()
         {
-            var test = @"public class MyClass { static MyClass() { throw new System.Exception(""error message""); } }";
+            var test = @"
+                public class MyClass 
+                { 
+                    static MyClass() 
+                    { 
+                        throw new System.Exception(""error message""); 
+                    } 
+                }";
 
             var expected = new DiagnosticResult
             {
                 Id = StaticConstructorExceptionAnalyzer.DiagnosticId,
                 Message = "Don't throw exception inside static constructors.",
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 0, 43) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
             };
 
             VerifyCSharpDiagnostic(test, expected);
@@ -25,25 +32,46 @@ namespace CodeCracker.Test
         [Fact]
         public void NotWarningWhenNoExceptionIsThrowInsideStaticConstructor()
         {
-            var test = @"public class MyClass { public MyClass() { throw new System.Exception(""error message""); } }";
+            var test = @"
+                public class MyClass 
+                { 
+                    public MyClass() 
+                    { 
+                        throw new System.Exception(""error message""); 
+                    } 
+                }";
 
-            VerifyCSharpDiagnostic(test);
+            VerifyCSharpHasNoDiagnostics(test);
         }
 
         [Fact]
         public void StaticConstructorWithoutException()
         {
-            var test = @"public class MyClass { static MyClass() { } }";
+            var test = @"
+                public class MyClass 
+                { 
+                    static MyClass() 
+                    { 
 
-            VerifyCSharpDiagnostic(test);
+                    } 
+                }";
+
+            VerifyCSharpHasNoDiagnostics(test);
         }
 
         [Fact]
         public void InstanceConstructorWithoutException()
         {
-            var test = @"public class MyClass { public MyClass() { } }";
+            var test = @"
+                public class MyClass 
+                { 
+                    public MyClass() 
+                    { 
+                    
+                    } 
+                }";
 
-            VerifyCSharpDiagnostic(test);
+            VerifyCSharpHasNoDiagnostics(test);
         }
     }
 }
