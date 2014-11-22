@@ -29,6 +29,8 @@ namespace CodeCracker
             var finalizer = (DestructorDeclarationSyntax)context.Node;
             var body = finalizer.Body;
 
+            if (body == null) return;
+
             if (body.DescendantNodes().Count(n => !n.IsKind(SyntaxKind.SingleLineCommentTrivia | SyntaxKind.MultiLineCommentTrivia)) > 0) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, finalizer.GetLocation(), finalizer.Identifier.Text));
