@@ -17,7 +17,7 @@ software, nor it will be. Ever.
 You may use CodeCracker in two ways: as an analyzer library that you install with Nuget into your project or as a Visual Studio extension.
 The way you want to use it depends on the scenario you are working on. You most likely want the Nuget package.
 
-If you want the analyzers to work during your build, and generate warnings and errors during the build, also on build servers, than you want
+If you want the analyzers to work during your build, and generate warnings and errors during the build, also on build servers, then you want
 to use the Nuget package. The package is available on nuget at [nuget.org/packages/codecracker](https://www.nuget.org/packages/codecracker).
 If you want to be able to configure which analyzers are being used in your project, and which ones you will ignore, and commit those
 changes to source control and share with your team, then you also want the Nuget package.
