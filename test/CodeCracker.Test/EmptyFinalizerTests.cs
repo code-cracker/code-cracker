@@ -4,7 +4,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class EmptyFinalizerTests : CodeFixTest<EmptyFinalizerAnalyser, EmptyFinalizerCodeFixProvider>
+    public class EmptyFinalizerTests : CodeFixTest<EmptyFinalizerAnalyzer, EmptyFinalizerCodeFixProvider>
     {
         [Fact]
         public void RemoveEmptyFinalizerWhenIsEmpty()
@@ -20,7 +20,7 @@ namespace CodeCracker.Test
 
             var expected = new DiagnosticResult
             {
-                Id = EmptyFinalizerAnalyser.DiagnosticId,
+                Id = EmptyFinalizerAnalyzer.DiagnosticId,
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
@@ -43,7 +43,7 @@ namespace CodeCracker.Test
 
             var expected = new DiagnosticResult
             {
-                Id = EmptyFinalizerAnalyser.DiagnosticId,
+                Id = EmptyFinalizerAnalyzer.DiagnosticId,
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
@@ -69,7 +69,7 @@ namespace CodeCracker.Test
 
             var expected = new DiagnosticResult
             {
-                Id = EmptyFinalizerAnalyser.DiagnosticId,
+                Id = EmptyFinalizerAnalyzer.DiagnosticId,
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }

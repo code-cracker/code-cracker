@@ -8,7 +8,7 @@ using System.Linq;
 namespace CodeCracker
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class EmptyFinalizerAnalyser : DiagnosticAnalyzer
+    public class EmptyFinalizerAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CC0025";
         internal const string Title = "Remove Empty Finalizers";
