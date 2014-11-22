@@ -334,6 +334,39 @@ namespace CodeCracker.Test
         }
 
         [Fact]
+        public void ForInArrayAnalyzerWhereArrayIsInitializedOutsideTheScopeCreatesDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Bar()
+            {
+                var array = new [] {1};
+                Foo(array);
+            }
+            public int Foo(int[] array)
+            {
+                for (var i = 0; i < array.Length; i++)
+                {
+                    var item = array[i];
+                    // whatever comes after
+                }
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = ForInArrayAnalyzer.DiagnosticId,
+                Message = "You can use foreach instead of for.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 17) }
+            };
+            VerifyCSharpDiagnostic(source, expected);
+        }
+
+        [Fact]
         public void WhenUsingForWithAnArrayThenChangesToForeach()
         {
             const string source = @"
