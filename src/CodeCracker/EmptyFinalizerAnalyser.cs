@@ -10,7 +10,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyFinalizerAnalyser : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.EmptyFinalizerAnalyser";
+        public const string DiagnosticId = "CC0025";
         internal const string Title = "Remove Empty Finalizers";
         internal const string MessageFormat = "Remove Empty Finalizers";
         internal const string Category = "Performance";

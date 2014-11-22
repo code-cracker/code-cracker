@@ -10,7 +10,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StaticConstructorExceptionAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.StaticConstructorExceptionAnalyzer";
+        public const string DiagnosticId = "CC0024";
         internal const string Title = "Don't throw exception inside static constructors.";
         internal const string MessageFormat = "Don't throw exception inside static constructors.";
         internal const string Category = "Usage";

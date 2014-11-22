@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker
 {
-    [ExportCodeFixProvider("SealedAttributeCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerSealedAttributeCodeFixProvider", LanguageNames.CSharp)]
     public class SealedAttributeCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()

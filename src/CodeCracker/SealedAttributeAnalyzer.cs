@@ -8,7 +8,7 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class SealedAttributeAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.SealedAttributeAnalyzer";
+        public const string DiagnosticId = "CC0023";
         internal const string Title = "Unsealed Attribute";
         internal const string MessageFormat = "Mark '{0}' as sealed.";
         internal const string Category = "Performance";

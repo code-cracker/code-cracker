@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker
 {
-    [ExportCodeFixProvider("EmptyFinalizerCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerEmptyFinalizerCodeFixProvider", LanguageNames.CSharp)]
     public class EmptyFinalizerCodeFixProvider : CodeFixProvider
     {
 
