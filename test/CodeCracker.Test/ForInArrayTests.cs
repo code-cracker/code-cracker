@@ -409,5 +409,57 @@ namespace CodeCracker.Test
     }";
             VerifyCSharpFix(source, fixtest, 0);
         }
+
+        [Fact]
+        public void WhenUsingForWithAnArrayDeclaredOutsideTheScopeThenChangesToForeach()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Bar()
+            {
+                var array = new [] {1};
+                Foo(array);
+            }
+            public int Foo(int[] array)
+            {
+                for (var i = 0; i < array.Length; i++)
+                {
+                    string a;
+                    // whatever comes before
+                    var item = array[i];
+                    // whatever comes after
+                    string b;
+                }
+            }
+        }
+    }";
+
+            var fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Bar()
+            {
+                var array = new [] {1};
+                Foo(array);
+            }
+            public int Foo(int[] array)
+            {
+                foreach (var item in array)
+                {
+                    string a;
+                    // whatever comes before
+                    // whatever comes after
+                    string b;
+                }
+            }
+        }
+    }";
+            VerifyCSharpFix(source, fixtest, 0);
+        }
     }
 }

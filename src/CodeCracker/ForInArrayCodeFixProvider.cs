@@ -50,7 +50,7 @@ namespace CodeCracker
                                      let initSymbol = semanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
                                      where controlVarId.Equals(initSymbol)
                                      let someArrayInit = semanticModel.GetSymbolInfo(init.Expression).Symbol as ILocalSymbol
-                                     where someArrayInit.Equals(arrayId)
+                                     where someArrayInit == null || someArrayInit.Equals(arrayId)
                                      select s).ToList();
             var arrayDeclaration = arrayDeclarations.First();
             var blockForFor = forBlock.RemoveNode(arrayDeclaration, SyntaxRemoveOptions.KeepLeadingTrivia);
