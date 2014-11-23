@@ -94,5 +94,25 @@ namespace CodeCracker.Test
 
             VerifyCSharpHasNoDiagnostics(test);
         }
+
+        [Fact]
+        public void WhenFinalizerIsRemovedFromClass()
+        {
+            var source = @"
+                public class MyClass 
+                { 
+                    ~MyClass() 
+                    { 
+
+                    } 
+                }";
+
+            var fixtest = @"
+                public class MyClass 
+                { 
+                }";
+
+            VerifyCSharpFix(source, fixtest, 0);
+        }
     }
 }

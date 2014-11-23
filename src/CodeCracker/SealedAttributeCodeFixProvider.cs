@@ -43,7 +43,6 @@ namespace CodeCracker
                     type,
                     type
                         .WithModifiers(type.Modifiers.Add(SyntaxFactory.Token(SyntaxKind.SealedKeyword)))
-                        .NormalizeWhitespace()
                         .WithAdditionalAnnotations(Formatter.Annotation)));
         }
     }

@@ -98,5 +98,21 @@ namespace CodeCracker.Test
 
             VerifyCSharpHasNoDiagnostics(test);
         }
+
+        [Fact]
+        public void WhenSealedModifierIsAppliedOnClass()
+        {
+            var source = @"
+                public class MyAttribute : System.Attribute 
+                { 
+                }";
+
+            var fixtest = @"
+                public sealed class MyAttribute : System.Attribute 
+                { 
+                }";
+
+            VerifyCSharpFix(source, fixtest, 0);
+        }
     }
 }

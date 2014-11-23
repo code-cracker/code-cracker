@@ -73,5 +73,28 @@ namespace CodeCracker.Test
 
             VerifyCSharpHasNoDiagnostics(test);
         }
+
+        [Fact]
+        public void WhenThrowIsRemovedFromStaticConstructor()
+        {
+            var source = @"
+                public class MyClass 
+                { 
+                    static MyClass() 
+                    { 
+                        throw new System.Exception(""error message""); 
+                    } 
+                }";
+
+            var fixtest = @"
+                public class MyClass 
+                { 
+                    static MyClass() 
+                    { 
+                    } 
+                }";
+
+            VerifyCSharpFix(source, fixtest, 0);
+        }
     }
 }
