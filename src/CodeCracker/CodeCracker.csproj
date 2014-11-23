@@ -38,6 +38,8 @@
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
     <Compile Include="ExistenceOperatorAnalyzer.cs" />
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
+    <Compile Include="EmptyFinalizerAnalyzer.cs" />
+    <Compile Include="EmptyFinalizerCodeFixProvider.cs" />
     <Compile Include="RegexAnalyzer.cs" />
     <Compile Include="EmptyCatchBlockCodeFixProvider.cs" />
     <Compile Include="EmptyCatchBlockAnalyzer.cs" />
@@ -53,6 +55,10 @@
     <Compile Include="IfReturnTrueAnalyzer.cs" />
     <Compile Include="RemoveWhereWhenItIsPossibleAnalyzer.cs" />
     <Compile Include="RemoveWhereWhenItIsPossibleCodeFixProvider.cs" />
+    <Compile Include="SealedAttributeAnalyzer.cs" />
+    <Compile Include="SealedAttributeCodeFixProvider.cs" />
+    <Compile Include="StaticConstructorExceptionAnalyzer.cs" />
+    <Compile Include="StaticConstructorExceptionCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorAnalyzer.cs" />
     <Compile Include="RethrowExceptionCodeFixProvider.cs" />
