@@ -30,6 +30,8 @@ namespace CodeCracker
 
             if (!ctor.Modifiers.Any(SyntaxKind.StaticKeyword)) return;
 
+            if (ctor.Body == null) return;
+
             var @throw = ctor.Body.ChildNodes().OfType<ThrowStatementSyntax>().FirstOrDefault();
 
             if (@throw == null) return;
