@@ -32,6 +32,68 @@ namespace CodeCracker.Test
         }
 
         [Fact]
+        public void WarningIfCustomEventIsCalledDirectly()
+        {
+            var test = @"
+                public class MyArgs : System.EventArgs
+                {
+                    public string Info { get; set; }
+                }
+
+                public class MyClass 
+                { 
+                    public event System.EventHandler<MyArgs> MyEvent;
+
+                    public void Execute() 
+                    { 
+                        MyEvent(this, new MyArgs() { Info = ""ping"" });
+                    } 
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DirectEventInvocationAnalyzer.DiagnosticId,
+                Message = "Copy the 'MyEvent' event to a variable before invoke it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
+            };
+
+            VerifyCSharpDiagnostic(test, expected);
+        }
+
+        [Fact]
+        public void WarningIfCustomEventWithCustomDelegateIsCalledDirectly()
+        {
+            var test = @"
+                public class MyArgs : System.EventArgs
+                {
+                    public string Info { get; set; }
+                }
+
+                public delegate void Executed (object sender, MyArgs args);
+
+                public class MyClass 
+                { 
+                    public event Executed MyEvent;
+
+                    public void Execute() 
+                    { 
+                        MyEvent(this, new MyArgs() { Info = ""ping"" });
+                    } 
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DirectEventInvocationAnalyzer.DiagnosticId,
+                Message = "Copy the 'MyEvent' event to a variable before invoke it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 25) }
+            };
+
+            VerifyCSharpDiagnostic(test, expected);
+        }
+
+        [Fact]
         public void WarningIfEventIsCalledDirectlyWithNullCheck()
         {
             var test = @"
@@ -71,6 +133,26 @@ namespace CodeCracker.Test
                         if (handler != null)
                             handler(this, System.EventArgs.Empty);
                     } 
+                }";
+
+            VerifyCSharpHasNoDiagnostics(test);
+        }
+
+        [Fact]
+        public void NotWarningIfInvocationIsNotAnEvent()
+        {
+            var test = @"
+                public class MyClass 
+                { 
+                    public void Execute() 
+                    { 
+                        MyClass.Run(null);
+                    } 
+
+                    public static void Run(object obj) 
+                    { 
+
+                    }
                 }";
 
             VerifyCSharpHasNoDiagnostics(test);

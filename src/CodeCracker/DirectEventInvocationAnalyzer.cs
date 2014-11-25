@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using System.Collections.Immutable;
 
 namespace CodeCracker
@@ -27,9 +28,12 @@ namespace CodeCracker
         {
             var invocation = (InvocationExpressionSyntax)context.Node;
             var typeInfo = context.SemanticModel.GetTypeInfo(invocation.Expression, context.CancellationToken);
+
+            if (typeInfo.ConvertedType == null) return;
+
             var symbol = context.SemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
 
-            if ((typeInfo.Type != null && typeInfo.Type.TypeKind != TypeKind.Delegate) || symbol is ILocalSymbol) return;
+            if (typeInfo.ConvertedType.BaseType.Name != typeof(MulticastDelegate).Name || symbol is ILocalSymbol) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), ((IdentifierNameSyntax)invocation.Expression).Identifier.Text));
         }
