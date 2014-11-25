@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -8,7 +9,7 @@ namespace CodeCracker.Test
         CodeFixTest<ConvertToSwitchAnalyzer, ConvertToSwitchCodeFixProvider>
     {
         [Fact]
-        public void CreateDiagnosticsWhenYouHaveThreeNestedIfsAndElse()
+        public async Task CreateDiagnosticsWhenYouHaveThreeNestedIfsAndElse()
         {
             const string test = @"
     using System;
@@ -17,7 +18,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(string s)
+            public async Task Foo(string s)
             {
                 if (s == ""A"")
                 { 
@@ -46,11 +47,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void CreateDiagnosticsWhenYouHaveThreeNestedIfs()
+        public async Task CreateDiagnosticsWhenYouHaveThreeNestedIfs()
         {
             const string test = @"
     using System;
@@ -59,7 +60,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(string s)
+            public async Task Foo(string s)
             {
                 if (s == ""A"")
                 { 
@@ -84,12 +85,12 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
 
         [Fact]
-        public void IgnoresIfWithNoElseIfNorElse()
+        public async Task IgnoresIfWithNoElseIfNorElse()
         {
             const string test = @"
     using System;
@@ -98,7 +99,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(string s)
+            public async Task Foo(string s)
             {
                 if (s == ""A"")
                 { 
@@ -107,11 +108,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void IgnoresIfWithNoElseIf()
+        public async Task IgnoresIfWithNoElseIf()
         {
             const string test = @"
     using System;
@@ -120,7 +121,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(string s)
+            public async Task Foo(string s)
             {
                 if (s == ""A"")
                 { 
@@ -133,11 +134,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void IgnoresLessThanThreeNestedIfs()
+        public async Task IgnoresLessThanThreeNestedIfs()
         {
             const string test = @"
     using System;
@@ -146,7 +147,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(string s)
+            public async Task Foo(string s)
             {
                 if (s == ""A"")
                 { 
@@ -163,11 +164,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void IgnoresWhenNotAllConditionalsAreEqualsExpressions()
+        public async Task IgnoresWhenNotAllConditionalsAreEqualsExpressions()
         {
             const string test = @"
     using System;
@@ -176,7 +177,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(string s)
+            public async Task Foo(string s)
             {
                 if (s == ""A"")
                 { 
@@ -197,11 +198,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void IgnoresWhenNotAllConditionsUseSameIdentifier()
+        public async Task IgnoresWhenNotAllConditionsUseSameIdentifier()
         {
             const string test = @"
     using System;
@@ -210,7 +211,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(string s, string f)
+            public async Task Foo(string s, string f)
             {
                 if (s == ""A"")
                 { 
@@ -231,11 +232,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void IgnoresWhenNotAllConditionsRightSidesAreConstants()
+        public async Task IgnoresWhenNotAllConditionsRightSidesAreConstants()
         {
             const string test = @"
     using System;
@@ -245,7 +246,7 @@ namespace CodeCracker.Test
         class TypeName
         {
             string GetFee() { return null; }
-            public void Foo(string s, string f)
+            public async Task Foo(string s, string f)
             {
                 if (s == GetFee())
                 { 
@@ -266,12 +267,12 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
 
         [Fact]
-        public void FixReplacesNestedIfsWithSwitch()
+        public async Task FixReplacesNestedIfsWithSwitch()
         {
             const string test = @"
 using System;
@@ -280,7 +281,7 @@ namespace ConsoleApplication1
 {
     class TypeName
     {
-        public void Foo(string s)
+        public async Task Foo(string s)
         {
             if (s == ""A"")
             { 
@@ -305,7 +306,7 @@ namespace ConsoleApplication1
 {
     class TypeName
     {
-        public void Foo(string s)
+        public async Task Foo(string s)
         {
             switch (s)
             {
@@ -322,11 +323,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-            VerifyCSharpFix(test, expected);
+            await VerifyCSharpFixAsync(test, expected);
         }
 
         [Fact]
-        public void FixReplacesNestedIfsWithSwitchWithDefaultCaseWhenElseIsUsed()
+        public async Task FixReplacesNestedIfsWithSwitchWithDefaultCaseWhenElseIsUsed()
         {
             const string test = @"
 using System;
@@ -335,7 +336,7 @@ namespace ConsoleApplication1
 {
     class TypeName
     {
-        public void Foo(string s)
+        public async Task Foo(string s)
         {
             if (s == ""A"")
             { 
@@ -365,7 +366,7 @@ namespace ConsoleApplication1
 {
     class TypeName
     {
-        public void Foo(string s)
+        public async Task Foo(string s)
         {
             switch (s)
             {
@@ -386,11 +387,11 @@ namespace ConsoleApplication1
         }
     }
 }";
-            VerifyCSharpFix(test, expected);
+            await VerifyCSharpFixAsync(test, expected);
         }
 
         [Fact]
-        public void FixDoesNotUsesBreakWhenSwitchSectionReturns()
+        public async Task FixDoesNotUsesBreakWhenSwitchSectionReturns()
         {
             const string test = @"
 using System;
@@ -399,7 +400,7 @@ namespace ConsoleApplication1
 {
     class TypeName
     {
-        public void Foo(string s)
+        public async Task Foo(string s)
         {
             if (s == ""A"")
             { 
@@ -431,7 +432,7 @@ namespace ConsoleApplication1
 {
     class TypeName
     {
-        public void Foo(string s)
+        public async Task Foo(string s)
         {
             switch (s)
             {
@@ -452,7 +453,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-            VerifyCSharpFix(test, expected);
+            await VerifyCSharpFixAsync(test, expected);
         }
     }
 }
