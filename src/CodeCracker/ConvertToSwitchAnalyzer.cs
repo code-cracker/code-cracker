@@ -55,7 +55,7 @@ namespace CodeCracker
             {
                 var condition = nestedIfs[i].Condition as BinaryExpressionSyntax;
 
-                // all ifs should have bynary expressions as conditions
+                // all ifs should have binary expressions as conditions
                 if (condition == null)
                 {
                     return;
@@ -80,7 +80,7 @@ namespace CodeCracker
                 }
                 else if (!left.Identifier.IsEquivalentTo(common.Identifier))
                 {
-                    // all conditions should have the same identified in the left
+                    // all conditions should have the same identifier in the left
                     return;
                 }
 
@@ -91,7 +91,6 @@ namespace CodeCracker
                     return;
                 }
 
-                //condition.Right.
             }
 
 

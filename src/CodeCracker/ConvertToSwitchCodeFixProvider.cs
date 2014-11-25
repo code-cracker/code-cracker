@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -40,8 +39,6 @@ namespace CodeCracker
 
         private async Task<Document> ConvertToSwitchAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)
         {
- 
-
             var nestedIfs = ConvertToSwitchAnalyzer.FindNestedIfs(ifStatement).ToArray();
 
             var sections = new List<SwitchSectionSyntax>();
