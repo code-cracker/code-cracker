@@ -64,8 +64,9 @@ namespace CodeCracker
 
             var switchStatement = SyntaxFactory.SwitchStatement(switchExpression)
                 .WithSections(new SyntaxList<SwitchSectionSyntax>().AddRange(sections))
-                .WithAdditionalAnnotations(Formatter.Annotation)
-                ;
+                .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
+                .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
+                .WithAdditionalAnnotations(Formatter.Annotation);
 
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode<SyntaxNode, StatementSyntax>(ifStatement, switchStatement);
