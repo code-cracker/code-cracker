@@ -36,6 +36,8 @@
     <Compile Include="AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="ArgumentExceptionAnalyzer.cs" />
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
+    <Compile Include="ConvertToSwitchAnalyzer.cs" />
+    <Compile Include="ConvertToSwitchCodeFixProvider.cs" />
     <Compile Include="ExistenceOperatorAnalyzer.cs" />
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
     <Compile Include="EmptyFinalizerAnalyzer.cs" />

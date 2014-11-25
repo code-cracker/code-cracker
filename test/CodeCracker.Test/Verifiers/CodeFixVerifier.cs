@@ -137,4 +137,4 @@ namespace TestHelper
             return newDoc.GetSyntaxRootAsync().Result.ToFullString();
         }
     }
-}
+}  
