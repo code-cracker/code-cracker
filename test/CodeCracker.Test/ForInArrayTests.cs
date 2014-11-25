@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -8,7 +9,7 @@ namespace CodeCracker.Test
     {
 
         [Fact]
-        public void ForWithEmptyDeclarationAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithEmptyDeclarationAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -26,11 +27,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithEmptyConditionAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithEmptyConditionAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -47,11 +48,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithEmptyIncrementorsAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithEmptyIncrementorsAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -68,11 +69,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForAsWhileTrueAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForAsWhileTrueAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -90,11 +91,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithMultipleDeclarationsAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithMultipleDeclarationsAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -111,11 +112,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithMultipleIncrementorsAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithMultipleIncrementorsAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -133,11 +134,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithSingleBodyAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithSingleBodyAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -152,11 +153,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithBodyThatDoesNotAssignCurrentIndexToAVariableFromArrayAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithBodyThatDoesNotAssignCurrentIndexToAVariableFromArrayAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -172,11 +173,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithBodyThatDoesNotUseLessThanAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithBodyThatDoesNotUseLessThanAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -193,11 +194,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithBodyThatDoesAssignesAnotherVariableToAVariableFromArrayAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithBodyThatDoesAssignesAnotherVariableToAVariableFromArrayAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -215,11 +216,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithBodyThatAssignesCurrentIndexToAVariableFromAnotherArrayAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithBodyThatAssignesCurrentIndexToAVariableFromAnotherArrayAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -237,11 +238,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithConditionalThatDoesNoIterateFullArrayAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithConditionalThatDoesNoIterateFullArrayAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -258,11 +259,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWithDeclarationNotStartingOnZeroAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWithDeclarationNotStartingOnZeroAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -279,11 +280,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForWhereIndexIsUsedThroughtBodyAnalyzerDoesNotCreateDiagnostic()
+        public async Task ForWhereIndexIsUsedThroughtBodyAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -301,11 +302,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ForInArrayAnalyzerCreatesDiagnostic()
+        public async Task ForInArrayAnalyzerCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -330,11 +331,11 @@ namespace CodeCracker.Test
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public void ForInArrayAnalyzerWhereArrayIsInitializedOutsideTheScopeCreatesDiagnostic()
+        public async Task ForInArrayAnalyzerWhereArrayIsInitializedOutsideTheScopeCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -363,11 +364,11 @@ namespace CodeCracker.Test
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 17) }
             };
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public void WhenUsingForWithAnArrayThenChangesToForeach()
+        public async Task WhenUsingForWithAnArrayThenChangesToForeach()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -407,11 +408,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
         [Fact]
-        public void WhenUsingForWithAnArrayDeclaredOutsideTheScopeThenChangesToForeach()
+        public async Task WhenUsingForWithAnArrayDeclaredOutsideTheScopeThenChangesToForeach()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -459,7 +460,7 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace CodeCracker.Test
     public class RegexTests : CodeFixVerifier
     {
         [Fact]
-        public void IfRegexIdentifierIsNotFoundDoesNotCreateDiagnostic()
+        public async Task IfRegexIdentifierIsNotFoundDoesNotCreateDiagnostic()
         {
             var test = @"
     using System;
@@ -18,17 +19,17 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                  Regex.Match("""", ""["");
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void IfRegexIdentifierFoundButRegexTextIsCorrectDoesNotCreateDiagnostic()
+        public async Task IfRegexIdentifierFoundButRegexTextIsCorrectDoesNotCreateDiagnostic()
         {
             var test = @"
     using System;
@@ -37,17 +38,17 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                  Regex.Match("""", ""[]"");
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void IfRegexIdentifierFoundAndRegexTextIsIncorrectCreatesDiagnostic()
+        public async Task IfRegexIdentifierFoundAndRegexTextIsIncorrectCreatesDiagnostic()
         {
             var source = @"
     using System;
@@ -57,7 +58,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 System.Text.RegularExpressions.Regex.Match("""", ""["");
             }
@@ -82,11 +83,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 64) }
             };
 
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public void IfRegexIdentifierFoundAndAbbreviatedAndRegexTextIsIncorrectCreatesDiagnostic()
+        public async Task IfRegexIdentifierFoundAndAbbreviatedAndRegexTextIsIncorrectCreatesDiagnostic()
         {
             var source = @"
     using System;
@@ -96,7 +97,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 Regex.Match("""", ""["");
             }
@@ -121,7 +122,7 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 33) }
             };
 
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()

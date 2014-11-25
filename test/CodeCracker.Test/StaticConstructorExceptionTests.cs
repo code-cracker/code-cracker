@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -7,7 +8,7 @@ namespace CodeCracker.Test
     public class StaticConstructorExceptionTests : CodeFixTest<StaticConstructorExceptionAnalyzer, StaticConstructorExceptionCodeFixProvider>
     {
         [Fact]
-        public void WarningIfExceptionIsThrowInsideStaticConstructor()
+        public async Task WarningIfExceptionIsThrowInsideStaticConstructor()
         {
             var test = @"
                 public class MyClass 
@@ -26,11 +27,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void NotWarningWhenNoExceptionIsThrowInsideStaticConstructor()
+        public async Task NotWarningWhenNoExceptionIsThrowInsideStaticConstructor()
         {
             var test = @"
                 public class MyClass 
@@ -41,11 +42,11 @@ namespace CodeCracker.Test
                     } 
                 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void StaticConstructorWithoutException()
+        public async Task StaticConstructorWithoutException()
         {
             var test = @"
                 public class MyClass 
@@ -56,11 +57,11 @@ namespace CodeCracker.Test
                     } 
                 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void InstanceConstructorWithoutException()
+        public async Task InstanceConstructorWithoutException()
         {
             var test = @"
                 public class MyClass 
@@ -71,11 +72,11 @@ namespace CodeCracker.Test
                     } 
                 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void WhenThrowIsRemovedFromStaticConstructor()
+        public async Task WhenThrowIsRemovedFromStaticConstructor()
         {
             var source = @"
                 public class MyClass 
@@ -94,7 +95,7 @@ namespace CodeCracker.Test
                     } 
                 }";
 
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
 }

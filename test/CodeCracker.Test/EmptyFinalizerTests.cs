@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -7,7 +8,7 @@ namespace CodeCracker.Test
     public class EmptyFinalizerTests : CodeFixTest<EmptyFinalizerAnalyzer, EmptyFinalizerCodeFixProvider>
     {
         [Fact]
-        public void RemoveEmptyFinalizerWhenIsEmpty()
+        public async Task RemoveEmptyFinalizerWhenIsEmpty()
         {
             var test = @"
                 public class MyClass 
@@ -26,11 +27,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void RemoveEmptyFinalizerWithSingleLineComment()
+        public async Task RemoveEmptyFinalizerWithSingleLineComment()
         {
             var test = @"
                 public class MyClass 
@@ -49,11 +50,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void RemoveEmptyFinalizerWithMultiLineComment()
+        public async Task RemoveEmptyFinalizerWithMultiLineComment()
         {
             var test = @"
                 public class MyClass 
@@ -75,11 +76,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void MaintainFinalizerWhenUsed()
+        public async Task MaintainFinalizerWhenUsed()
         {
             var test = @"
                 public class MyClass
@@ -92,11 +93,11 @@ namespace CodeCracker.Test
                     }
                 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void WhenFinalizerIsRemovedFromClass()
+        public async Task WhenFinalizerIsRemovedFromClass()
         {
             var source = @"
                 public class MyClass 
@@ -112,7 +113,7 @@ namespace CodeCracker.Test
                 { 
                 }";
 
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
 }
