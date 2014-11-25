@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using TestHelper;
 using Xunit;
 
@@ -62,10 +63,21 @@ namespace CodeCracker.Test
             }
         }
     }";
+
+            var message = "";
+            try
+            {
+                System.Text.RegularExpressions.Regex.Match("", "[");
+            }
+            catch (ArgumentException e)
+            {
+                message = e.Message;
+            }
+
             var expected = new DiagnosticResult
             {
                 Id = RegexAnalyzer.DiagnosticId,
-                Message = @"parsing ""["" - Unterminated [] set.",
+                Message = message,
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 64) }
             };
@@ -90,10 +102,21 @@ namespace CodeCracker.Test
             }
         }
     }";
+
+            var message = "";
+            try
+            {
+                System.Text.RegularExpressions.Regex.Match("", "[");
+            }
+            catch (ArgumentException e)
+            {
+                message = e.Message;
+            }
+
             var expected = new DiagnosticResult
             {
                 Id = RegexAnalyzer.DiagnosticId,
-                Message = @"parsing ""["" - Unterminated [] set.",
+                Message = message,
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 33) }
             };
