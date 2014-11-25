@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -46,8 +47,8 @@ namespace TestHelper
         {
             if (formatBeforeCompare)
             {
-                oldSource = await FormatSourceAsync(LanguageNames.CSharp, oldSource);
-                newSource = await FormatSourceAsync(LanguageNames.CSharp, newSource);
+                oldSource = await FormatSourceAsync(LanguageNames.CSharp, Regex.Replace(oldSource, "[^\r]\n", "\r\n"));
+                newSource = await FormatSourceAsync(LanguageNames.CSharp, Regex.Replace(newSource, "[^\r]\n", "\r\n"));
             }
             await VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
         }
