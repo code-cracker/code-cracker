@@ -147,6 +147,31 @@ namespace CodeCracker.Test
         }
 
         [Fact]
+        public async Task TwoIfsInARowAnalyzerDoesNotCreateDiagnostic()
+        {
+            const string sourceWithoutElse = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                string s;
+                if (s == ""A"")
+                {
+                    DoSomething();
+                }
+                else if (s == ""A"")
+                {
+                    DoSomething();
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
+        }
+
+        [Fact]
         public async Task WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic()
         {
             var expected = new DiagnosticResult
