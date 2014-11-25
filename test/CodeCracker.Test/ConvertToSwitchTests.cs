@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class ConvertToSwitchTests : 
+    public class ConvertToSwitchTests :
         CodeFixTest<ConvertToSwitchAnalyzer, ConvertToSwitchCodeFixProvider>
     {
         [Fact]
@@ -21,20 +21,20 @@ namespace CodeCracker.Test
             public async Task Foo(string s)
             {
                 if (s == ""A"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s == ""B"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s == ""C"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else
-                { 
-                    // .. 
+                {
+                    // ..
                 }
             }
         }
@@ -63,16 +63,16 @@ namespace CodeCracker.Test
             public async Task Foo(string s)
             {
                 if (s == ""A"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s == ""B"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s == ""C"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
             }
         }
@@ -102,8 +102,8 @@ namespace CodeCracker.Test
             public async Task Foo(string s)
             {
                 if (s == ""A"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
             }
         }
@@ -124,12 +124,12 @@ namespace CodeCracker.Test
             public async Task Foo(string s)
             {
                 if (s == ""A"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else
-                { 
-                    // .. 
+                {
+                    // ..
                 }
             }
         }
@@ -150,16 +150,16 @@ namespace CodeCracker.Test
             public async Task Foo(string s)
             {
                 if (s == ""A"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s == ""B"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else
-                { 
-                    // .. 
+                {
+                    // ..
                 }
             }
         }
@@ -180,20 +180,20 @@ namespace CodeCracker.Test
             public async Task Foo(string s)
             {
                 if (s == ""A"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s == ""B"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s != ""C"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else
-                { 
-                    // .. 
+                {
+                    // ..
                 }
             }
         }
@@ -214,20 +214,20 @@ namespace CodeCracker.Test
             public async Task Foo(string s, string f)
             {
                 if (s == ""A"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s == ""B"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (f == ""C"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else
-                { 
-                    // .. 
+                {
+                    // ..
                 }
             }
         }
@@ -249,20 +249,20 @@ namespace CodeCracker.Test
             public async Task Foo(string s, string f)
             {
                 if (s == GetFee())
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s == ""B"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else if (s == ""C"")
-                { 
-                    // .. 
+                {
+                    // ..
                 }
                 else
-                { 
-                    // .. 
+                {
+                    // ..
                 }
             }
         }
@@ -284,16 +284,16 @@ namespace ConsoleApplication1
         public async Task Foo(string s)
         {
             if (s == ""A"")
-            { 
-                DoStuff(); 
+            {
+                DoStuff();
             }
             else if (s == ""B"")
-            { 
-                DoStuff(); 
+            {
+                DoStuff();
             }
             else if (s == ""C"")
-            { 
-                DoStuff(); 
+            {
+                DoStuff();
             }
         }
     }
@@ -339,17 +339,17 @@ namespace ConsoleApplication1
         public async Task Foo(string s)
         {
             if (s == ""A"")
-            { 
-                DoStuff(); 
+            {
+                DoStuff();
             }
             else if (s == ""B"")
-            { 
-                DoStuff(); 
+            {
+                DoStuff();
             }
             else if (s == ""C"")
-            { 
-                DoStuff(); 
-                DoExtraStuff(); 
+            {
+                DoStuff();
+                DoExtraStuff();
             }
             else
             {
@@ -403,17 +403,17 @@ namespace ConsoleApplication1
         public async Task Foo(string s)
         {
             if (s == ""A"")
-            { 
-                DoStuff(); 
+            {
+                DoStuff();
             }
             else if (s == ""B"")
-            { 
-                DoStuff(); 
+            {
+                DoStuff();
             }
             else if (s == ""C"")
-            { 
-                DoStuff(); 
-                DoExtraStuff(); 
+            {
+                DoStuff();
+                DoExtraStuff();
                 return;
             }
             else
@@ -457,5 +457,3 @@ namespace ConsoleApplication1
         }
     }
 }
-
-
