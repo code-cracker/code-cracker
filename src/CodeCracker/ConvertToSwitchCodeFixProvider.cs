@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace CodeCracker
 {
 
-    [ExportCodeFixProvider("CodeCrackerAlwaysUseVarCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider("ConvertToSwitchCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ConvertToSwitchCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
