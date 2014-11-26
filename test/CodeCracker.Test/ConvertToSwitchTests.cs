@@ -323,7 +323,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-            await VerifyCSharpFixAsync(test, expected);
+            await VerifyCSharpFixAsync(test, expected, formatBeforeCompare: false);
         }
 
         [Fact]
@@ -387,7 +387,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-            await VerifyCSharpFixAsync(test, expected);
+            await VerifyCSharpFixAsync(test, expected, formatBeforeCompare: false);
         }
 
         [Fact]
@@ -453,7 +453,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-            await VerifyCSharpFixAsync(test, expected);
+            await VerifyCSharpFixAsync(test, expected, formatBeforeCompare: false);
         }
     }
 }
