@@ -68,7 +68,9 @@ namespace CodeCracker.Test
             var message = "";
             try
             {
+#pragma warning disable CC0010
                 System.Text.RegularExpressions.Regex.Match("", "[");
+#pragma warning restore CC0010
             }
             catch (ArgumentException e)
             {
@@ -107,7 +109,9 @@ namespace CodeCracker.Test
             var message = "";
             try
             {
+#pragma warning disable CC0010
                 System.Text.RegularExpressions.Regex.Match("", "[");
+#pragma warning restore CC0010
             }
             catch (ArgumentException e)
             {
