@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace CodeCracker.Test
     }";
 
         [Fact]
-        public void WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic()
         {
             const string sourceWithoutElse = @"
     namespace ConsoleApplication1
@@ -38,11 +39,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(sourceWithoutElse);
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
         }
 
         [Fact]
-        public void WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreateDiagnostic()
         {
             const string sourceWithoutElse = @"
     namespace ConsoleApplication1
@@ -64,11 +65,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(sourceWithoutElse);
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
         }
 
         [Fact]
-        public void WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreateDiagnostic()
         {
             const string sourceWithoutElse = @"
     namespace ConsoleApplication1
@@ -90,11 +91,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(sourceWithoutElse);
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
         }
 
         [Fact]
-        public void WhenUsingIfWithElseButWithoutReturnOnElseAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithElseButWithoutReturnOnElseAnalyzerDoesNotCreateDiagnostic()
         {
             const string sourceWithoutElse = @"
     namespace ConsoleApplication1
@@ -116,11 +117,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(sourceWithoutElse);
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
         }
 
         [Fact]
-        public void WhenUsingIfWithElseButWithoutReturnOnIfAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithElseButWithoutReturnOnIfAnalyzerDoesNotCreateDiagnostic()
         {
             const string sourceWithoutElse = @"
     namespace ConsoleApplication1
@@ -142,11 +143,36 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(sourceWithoutElse);
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
         }
 
         [Fact]
-        public void WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic()
+        public async Task TwoIfsInARowAnalyzerDoesNotCreateDiagnostic()
+        {
+            const string sourceWithoutElse = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                string s;
+                if (s == ""A"")
+                {
+                    DoSomething();
+                }
+                else if (s == ""A"")
+                {
+                    DoSomething();
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
+        }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic()
         {
             var expected = new DiagnosticResult
             {
@@ -156,11 +182,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public void WhenUsingIfAndElseWithAssignmentChangeToTernaryFix()
+        public async Task WhenUsingIfAndElseWithAssignmentChangeToTernaryFix()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -195,12 +221,12 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
 
         [Fact]
-        public void WhenUsingIfAndElseWithComplexAssignmentChangeToTernaryFix()
+        public async Task WhenUsingIfAndElseWithComplexAssignmentChangeToTernaryFix()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -235,14 +261,14 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
 
     public class TernaryOperatorWithReturnTests : CodeFixTest<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
     {
         [Fact]
-        public void WhenUsingIfAndElseWithDirectReturnChangeToTernaryFix()
+        public async Task WhenUsingIfAndElseWithDirectReturnChangeToTernaryFix()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -272,11 +298,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
         [Fact]
-        public void WhenUsingIfAndElseWithAssignmentAnalyzerCreatesDiagnostic()
+        public async Task WhenUsingIfAndElseWithAssignmentAnalyzerCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -306,7 +332,7 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
 
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
     }
 }

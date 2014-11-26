@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -7,7 +8,7 @@ namespace CodeCracker.Test
     public class SealedAttributeTests : CodeFixTest<SealedAttributeAnalyzer, SealedAttributeCodeFixProvider>
     {
         [Fact]
-        public void ApplySealedWhenClassInheritsFromSystemAttributeClass()
+        public async Task ApplySealedWhenClassInheritsFromSystemAttributeClass()
         {
             var test = @"
                 public class MyAttribute : System.Attribute 
@@ -23,11 +24,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 30) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void ApplySealedWhenClassInheritsIndirectlyFromSystemAttributeClass()
+        public async Task ApplySealedWhenClassInheritsIndirectlyFromSystemAttributeClass()
         {
             var test = @"
                 public abstract class MyAttribute : System.Attribute 
@@ -48,11 +49,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 30) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void NotApplySealedWhenClassThatInheritsFromSystemAttributeClassIsAbstract()
+        public async Task NotApplySealedWhenClassThatInheritsFromSystemAttributeClassIsAbstract()
         {
             var test = @"
                 public abstract class MyAttribute : System.Attribute 
@@ -60,11 +61,11 @@ namespace CodeCracker.Test
 
                 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void NotApplySealedWhenClassThatInheritsFromSystemAttributeClassIsSealed()
+        public async Task NotApplySealedWhenClassThatInheritsFromSystemAttributeClassIsSealed()
         {
             var test = @"
                 public sealed class MyAttribute : System.Attribute 
@@ -72,11 +73,11 @@ namespace CodeCracker.Test
 
                 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void NotApplySealedWhenIsStruct()
+        public async Task NotApplySealedWhenIsStruct()
         {
             var test = @"
                 public struct MyStruct 
@@ -84,11 +85,11 @@ namespace CodeCracker.Test
 
                 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void NotApplySealedWhenIsInterface()
+        public async Task NotApplySealedWhenIsInterface()
         {
             var test = @"
                 public interface ITest 
@@ -96,11 +97,11 @@ namespace CodeCracker.Test
 
                     }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void WhenSealedModifierIsAppliedOnClass()
+        public async Task WhenSealedModifierIsAppliedOnClass()
         {
             var source = @"
                 public class MyAttribute : System.Attribute 
@@ -112,7 +113,7 @@ namespace CodeCracker.Test
                 { 
                 }";
 
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
 }

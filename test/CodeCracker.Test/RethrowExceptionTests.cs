@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try { }
                 catch (System.Exception ex)
@@ -24,7 +25,7 @@ namespace CodeCracker.Test
         private const string sourceWithUsingSystem = "\n    using System;" + sourceWithoutUsingSystem;
 
         [Fact]
-        public void WhenThrowingOriginalExceptionAnalyzerCreatesDiagnostic()
+        public async Task WhenThrowingOriginalExceptionAnalyzerCreatesDiagnostic()
         {
             var expected = new DiagnosticResult
             {
@@ -34,11 +35,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 21) }
             };
 
-            VerifyCSharpDiagnostic(sourceWithUsingSystem, expected);
+            await VerifyCSharpDiagnosticAsync(sourceWithUsingSystem, expected);
         }
 
         [Fact]
-        public void WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionFix()
+        public async Task WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionFix()
         {
 
             var fixtest = @"
@@ -47,7 +48,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try { }
                 catch (System.Exception ex)
@@ -57,11 +58,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(sourceWithUsingSystem, fixtest, 0);
+            await VerifyCSharpFixAsync(sourceWithUsingSystem, fixtest, 0);
         }
 
         [Fact]
-        public void WhenThrowingOriginalExceptionAndApplyingRethrowFix()
+        public async Task WhenThrowingOriginalExceptionAndApplyingRethrowFix()
         {
             var fixtest = @"
     using System;
@@ -69,7 +70,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try { }
                 catch (System.Exception ex)
@@ -79,11 +80,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(sourceWithUsingSystem, fixtest, 1);
+            await VerifyCSharpFixAsync(sourceWithUsingSystem, fixtest, 1);
         }
 
         [Fact]
-        public void WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionCompleteExceptionDeclationFix()
+        public async Task WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionCompleteExceptionDeclationFix()
         {
 
             var fixtest = @"
@@ -91,7 +92,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try { }
                 catch (System.Exception ex)
@@ -101,7 +102,7 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(sourceWithoutUsingSystem, fixtest, 0);
+            await VerifyCSharpFixAsync(sourceWithoutUsingSystem, fixtest, 0);
         }
     }
 }

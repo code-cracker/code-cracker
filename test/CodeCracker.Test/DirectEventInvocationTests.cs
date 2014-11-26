@@ -7,7 +7,7 @@ namespace CodeCracker.Test
     public class DirectEventInvocationTests : CodeFixTest<DirectEventInvocationAnalyzer, DirectEventInvocationCodeFixProvider>
     {
         [Fact]
-        public void WarningIfEventIsCalledDirectly()
+        public async void WarningIfEventIsCalledDirectly()
         {
             var test = @"
                 public class MyClass 
@@ -28,11 +28,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void WarningIfCustomEventIsCalledDirectly()
+        public async void WarningIfCustomEventIsCalledDirectly()
         {
             var test = @"
                 public class MyArgs : System.EventArgs
@@ -58,11 +58,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void WarningIfCustomEventWithCustomDelegateIsCalledDirectly()
+        public async void WarningIfCustomEventWithCustomDelegateIsCalledDirectly()
         {
             var test = @"
                 public class MyArgs : System.EventArgs
@@ -90,11 +90,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 25) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void WarningIfEventIsCalledDirectlyWithNullCheck()
+        public async void WarningIfEventIsCalledDirectlyWithNullCheck()
         {
             var test = @"
                 public class MyClass 
@@ -116,11 +116,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 29) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void NotWarningIfEventIsCopiedToLocalVariableBeforeInvocation()
+        public async void NotWarningIfEventIsCopiedToLocalVariableBeforeInvocation()
         {
             var test = @"
                 public class MyClass 
@@ -135,11 +135,11 @@ namespace CodeCracker.Test
                     } 
                 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void NotWarningIfInvocationIsNotAnEvent()
+        public async void NotWarningIfInvocationIsNotAnEvent()
         {
             var test = @"
                 public class MyClass 
@@ -155,11 +155,11 @@ namespace CodeCracker.Test
                     }
                 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void WhenEventIsCalledDirectlyShouldCopyItToVariable()
+        public async void WhenEventIsCalledDirectlyShouldCopyItToVariable()
         {
             var source = @"
                 public class MyClass 
@@ -185,11 +185,11 @@ namespace CodeCracker.Test
                     } 
                 }";
 
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
         [Fact]
-        public void KeepCommentsWhenReplacedWithCodeFix()
+        public async void KeepCommentsWhenReplacedWithCodeFix()
         {
             var source = @"
                 public class MyClass 
@@ -215,11 +215,11 @@ namespace CodeCracker.Test
                     } 
                 }";
 
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
         [Fact]
-        public void WhenEventIsCalledDirectlyWithNullCheckShouldReplacesTheExistentIfStatement()
+        public async void WhenEventIsCalledDirectlyWithNullCheckShouldReplacesTheExistentIfStatement()
         {
             var source = @"
                 public class MyClass 
@@ -250,7 +250,7 @@ namespace CodeCracker.Test
                     } 
                 }";
 
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
-using Xunit.Extensions;
+using Xunit;
 
 namespace CodeCracker.Test
 {
@@ -16,7 +17,7 @@ namespace CodeCracker.Test
         [InlineData("Single")]
         [InlineData("SingleOrDefault")]
         [InlineData("Count")]
-        public void CreateDiagnosticWhenUsingWhereWith(string method)
+        public async Task CreateDiagnosticWhenUsingWhereWith(string method)
         {
             var test = @"
 using System.Linq;
@@ -25,7 +26,7 @@ namespace Sample
 {
     public class Foo
     {
-        public void DoSomething()
+        public async Task DoSomething()
         {
             var a = new int[10];
             var f = a.Where(item => item > 10)." + method + @"();
@@ -41,7 +42,7 @@ namespace Sample
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 23) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
 
         }
 
@@ -54,7 +55,7 @@ namespace Sample
         [InlineData("Single")]
         [InlineData("SingleOrDefault")]
         [InlineData("Count")]
-        public void DoNotCreateDiagnosticWhenUsingWhereAndAnotherMethodWithPredicates(string method)
+        public async Task DoNotCreateDiagnosticWhenUsingWhereAndAnotherMethodWithPredicates(string method)
         {
             var test = @"
 using System.Linq;
@@ -63,7 +64,7 @@ namespace Sample
 {
     public class Foo
     {
-        public void DoSomething()
+        public async Task DoSomething()
         {
             var a = new int[10];
             var f = a.Where(item => item > 10)." + method + @"(item => item < 50);
@@ -71,7 +72,7 @@ namespace Sample
     }
 }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
 
@@ -85,7 +86,7 @@ namespace Sample
         [InlineData("Single")]
         [InlineData("SingleOrDefault")]
         [InlineData("Count")]
-        public void FixRemovesWhereMovingPredicateTo(string method)
+        public async Task FixRemovesWhereMovingPredicateTo(string method)
         {
             var test = @"
 using System.Linq;
@@ -94,7 +95,7 @@ namespace Sample
 {
     public class Foo
     {
-        public void DoSomething()
+        public async Task DoSomething()
         {
             var a = new int[10];
             var f = a.Where(item => item > 10)." + method + @"();
@@ -109,7 +110,7 @@ namespace Sample
 {
     public class Foo
     {
-        public void DoSomething()
+        public async Task DoSomething()
         {
             var a = new int[10];
             var f = a." + method + @"(item => item > 10);
@@ -117,7 +118,7 @@ namespace Sample
     }
 }";
 
-            VerifyCSharpFix(test, expected);
+            await VerifyCSharpFixAsync(test, expected);
 
         }
 
@@ -130,7 +131,7 @@ namespace Sample
         [InlineData("Single")]
         [InlineData("SingleOrDefault")]
         [InlineData("Count")]
-        public void FixRemovesWherePreservingPreviousExpressionsMovingPredicateTo(string method)
+        public async Task FixRemovesWherePreservingPreviousExpressionsMovingPredicateTo(string method)
         {
             var test = @"
 using System.Linq;
@@ -139,7 +140,7 @@ namespace Sample
 {
     public class Foo
     {
-        public void DoSomething()
+        public async Task DoSomething()
         {
             var a = new int[10];
             var f = a.OrderBy(item => item).Where(item => item > 10)." + method + @"();
@@ -154,7 +155,7 @@ namespace Sample
 {
     public class Foo
     {
-        public void DoSomething()
+        public async Task DoSomething()
         {
             var a = new int[10];
             var f = a.OrderBy(item => item)." + method + @"(item => item > 10);
@@ -162,7 +163,7 @@ namespace Sample
     }
 }";
 
-            VerifyCSharpFix(test, expected);
+            await VerifyCSharpFixAsync(test, expected);
 
         }
     }

@@ -34,8 +34,8 @@ namespace CodeCracker
             if (ifStatement.Else == null) return;
             var blockIf = ifStatement.Statement as BlockSyntax;
             var blockElse = ifStatement.Else.Statement as BlockSyntax;
-            if (((blockIf ?? blockElse) == null) ||
-                (blockIf.Statements.Count == 1 && blockElse.Statements.Count == 1))
+            if ((blockIf == null || blockIf.Statements.Count == 1) &&
+                (blockElse == null || blockElse.Statements.Count == 1))
             {
                 var statementInsideIf = ifStatement.Statement is BlockSyntax ? ((BlockSyntax)ifStatement.Statement).Statements.Single() : ifStatement.Statement;
                 var elseStatement = ifStatement.Else;

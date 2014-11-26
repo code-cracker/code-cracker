@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -10,7 +11,7 @@ namespace CodeCracker.Test
     {
 
         [Fact]
-        public void WhenAssigningButNotCreatingAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenAssigningButNotCreatingAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -23,11 +24,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenDeclaringTwoVariablesAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenDeclaringTwoVariablesAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -40,11 +41,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenVariableIsDeclaredAndObjectIsCreatedButNoAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenVariableIsDeclaredAndObjectIsCreatedButNoAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -57,11 +58,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenVariableIsDeclaredAndObjectIsCreatedButOnlyUnrelatedDeclarationsHappenLaterAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenVariableIsDeclaredAndObjectIsCreatedButOnlyUnrelatedDeclarationsHappenLaterAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -76,11 +77,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenVariableIsDeclaredAndObjectIsCreatedButOnlyUnrelatedAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenVariableIsDeclaredAndObjectIsCreatedButOnlyUnrelatedAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -95,11 +96,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenDeclaringAndCreatingObjectAndAssigningPropertiesThenAnalyzerCreatesDiagnostic()
+        public async Task WhenDeclaringAndCreatingObjectAndAssigningPropertiesThenAnalyzerCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -121,11 +122,11 @@ namespace CodeCracker.Test
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 17) }
             };
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public void WhenUsingANewVariableDeclaredAndAssigningToPropertiesOfJustCreatedObjectChangeToObjectInitializersFix()
+        public async Task WhenUsingANewVariableDeclaredAndAssigningToPropertiesOfJustCreatedObjectChangeToObjectInitializersFix()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -164,7 +165,7 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
@@ -182,7 +183,7 @@ namespace CodeCracker.Test
     {
 
         [Fact]
-        public void WhenObjectIsCreatedButNoAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenObjectIsCreatedButNoAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -196,11 +197,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenCreatingObjectAndAssigningPropertiesThenAnalyzerCreatesDiagnostic()
+        public async Task WhenCreatingObjectAndAssigningPropertiesThenAnalyzerCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -223,11 +224,11 @@ namespace CodeCracker.Test
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public void WhenObjectIsCreatedButOnlyUnrelatedDeclarationsHappenLaterAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenObjectIsCreatedButOnlyUnrelatedDeclarationsHappenLaterAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -243,11 +244,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenObjectIsCreatedButOnlyUnrelatedAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenObjectIsCreatedButOnlyUnrelatedAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -263,11 +264,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenUsingAPreviouslyDeclaredVariableAndAssigningToPropertiesOfJustCreatedObjectChangeToObjectInitializersFix()
+        public async Task WhenUsingAPreviouslyDeclaredVariableAndAssigningToPropertiesOfJustCreatedObjectChangeToObjectInitializersFix()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -308,7 +309,7 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
 }

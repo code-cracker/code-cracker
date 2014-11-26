@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -8,7 +9,7 @@ namespace CodeCracker.Test
     {
 
         [Fact]
-        public void WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -23,11 +24,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -49,11 +50,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -75,11 +76,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenUsingIfWithElseButReturningTrueOnlyOnIfDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithElseButReturningTrueOnlyOnIfDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -101,11 +102,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenUsingIfWithElseButReturningTrueOnlyOnElseDoesNotCreateDiagnostic()
+        public async Task WhenUsingIfWithElseButReturningTrueOnlyOnElseDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -127,11 +128,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenUsingIfReturnTrueAndElseReturnFalseCreatesDiagnostic()
+        public async Task WhenUsingIfReturnTrueAndElseReturnFalseCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -160,11 +161,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public void WhenUsingIfReturnFalseAndElseReturnTrueCreatesDiagnostic()
+        public async Task WhenUsingIfReturnFalseAndElseReturnTrueCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -192,11 +193,11 @@ namespace CodeCracker.Test
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public void WhenUsingIfReturnTrueAndElseReturnFalseChangeToReturn()
+        public async Task WhenUsingIfReturnTrueAndElseReturnFalseChangeToReturn()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -235,11 +236,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
         [Fact]
-        public void WhenUsingIfReturnFalseAndElseReturnTrueChangeToReturn()
+        public async Task WhenUsingIfReturnFalseAndElseReturnTrueChangeToReturn()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -278,7 +279,7 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
 }

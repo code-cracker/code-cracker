@@ -1,10 +1,12 @@
-﻿namespace TestHelper
+﻿using System.Threading.Tasks;
+
+namespace TestHelper
 {
     public abstract partial class DiagnosticVerifier
     {
-        protected void VerifyCSharpHasNoDiagnostics(string source)
+        protected async Task VerifyCSharpHasNoDiagnosticsAsync(string source)
         {
-            VerifyCSharpDiagnostic(source);
+            await VerifyCSharpDiagnosticAsync(source);
         }
     }
 }
