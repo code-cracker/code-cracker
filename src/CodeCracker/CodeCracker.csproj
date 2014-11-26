@@ -125,7 +125,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\codecracker.1.0.0-alpha2-38\tools\analyzers\CodeCracker.dll" />
+    <Analyzer Include="..\..\packages\codecracker.1.0.0-alpha2-54\tools\analyzers\CodeCracker.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>
