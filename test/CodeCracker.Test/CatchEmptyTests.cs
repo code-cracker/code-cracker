@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -9,7 +8,7 @@ namespace CodeCracker.Test
     {
 
         [Fact]
-        public void CatchEmptyAnalyserCreateDiagnostic()
+        public async Task CatchEmptyAnalyserCreateDiagnostic()
         {
             var source = @"
     using System;
@@ -18,7 +17,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try
                 {
@@ -32,11 +31,11 @@ namespace CodeCracker.Test
         }
     }";
 
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void WhenFindCatchEmptyThenPutExceptionClass()
+        public async Task WhenFindCatchEmptyThenPutExceptionClass()
         {
             var test = @"
     using System;
@@ -45,7 +44,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try
                 {
@@ -66,7 +65,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try
                 {
@@ -79,7 +78,7 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(test, fixtest, 0);
+            await VerifyCSharpFixAsync(test, fixtest, 0);
         }
     }
 }

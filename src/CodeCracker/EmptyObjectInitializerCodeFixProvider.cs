@@ -18,18 +18,12 @@ namespace CodeCracker
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-
             var oldDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
             var newDeclaration = oldDeclaration.WithInitializer(null).WithoutTrailingTrivia();
-
             if (newDeclaration.ArgumentList == null)
-            {
                 newDeclaration = newDeclaration.WithoutTrailingTrivia().WithArgumentList(SyntaxFactory.ArgumentList());
-            }
-
             root = root.ReplaceNode(oldDeclaration, newDeclaration);
             var newDocument = context.Document.WithSyntaxRoot(root);
-
             context.RegisterFix(CodeAction.Create("Remove empty object initializer", newDocument), diagnostic);
         }
 

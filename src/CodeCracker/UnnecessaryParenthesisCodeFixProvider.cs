@@ -18,11 +18,8 @@ namespace CodeCracker
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ArgumentListSyntax>().First();
-
             root = root.RemoveNode(declaration, SyntaxRemoveOptions.KeepTrailingTrivia);
-
             var newDocument = context.Document.WithSyntaxRoot(root);
-
             context.RegisterFix(CodeAction.Create("Remove unnecessary parenthesis", newDocument), diagnostic);
         }
 

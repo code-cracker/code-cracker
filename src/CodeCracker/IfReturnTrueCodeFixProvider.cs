@@ -42,12 +42,12 @@ namespace CodeCracker
             var statementInsideElse = IfReturnTrueAnalyzer.GetSingleStatementFromPossibleBlock(ifStatement.Else.Statement);
             var returnIf = statementInsideIf as ReturnStatementSyntax;
             var returnElse = statementInsideElse as ReturnStatementSyntax;
-            ExpressionSyntax condition;
-            if (returnIf.Expression is LiteralExpressionSyntax && returnIf.Expression.IsKind(SyntaxKind.TrueLiteralExpression) &&
-                returnElse.Expression is LiteralExpressionSyntax && returnElse.Expression.IsKind(SyntaxKind.FalseLiteralExpression))
-                condition = ifStatement.Condition;
-            else
-                condition = SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, ifStatement.Condition, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression));
+            var condition = returnIf.Expression is LiteralExpressionSyntax
+                && returnIf.Expression.IsKind(SyntaxKind.TrueLiteralExpression)
+                && returnElse.Expression is LiteralExpressionSyntax
+                && returnElse.Expression.IsKind(SyntaxKind.FalseLiteralExpression)
+                ? ifStatement.Condition
+                : SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, ifStatement.Condition, SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression));
             var newReturn = SyntaxFactory.ReturnStatement(condition)
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
@@ -57,6 +57,5 @@ namespace CodeCracker
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
-
     }
 }

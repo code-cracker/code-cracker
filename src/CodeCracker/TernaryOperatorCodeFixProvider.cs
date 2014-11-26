@@ -81,12 +81,10 @@ namespace CodeCracker
             var assignmentExpressionInsideIf = (AssignmentExpressionSyntax)expressionInsideIf.Expression;
             var assignmentExpressionInsideElse = (AssignmentExpressionSyntax)expressionInsideElse.Expression;
             var variableIdentifierInsideIf = assignmentExpressionInsideIf.Left as IdentifierNameSyntax;
-
             var ternary = SyntaxFactory.ParseStatement("\{variableIdentifierInsideIf.Identifier.Text} = \{ifStatement.Condition.ToString()} ? \{assignmentExpressionInsideIf.Right.ToString()} : \{assignmentExpressionInsideElse.Right.ToString()};")
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(ifStatement, ternary);
             var newDocument = document.WithSyntaxRoot(newRoot);

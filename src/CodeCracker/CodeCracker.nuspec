@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>codecracker</id>
-        <version>1.0.0-alpha1</version>
+        <version>1.0.0-alpha2</version>
         <title>CodeCracker</title>
         <authors>giggio,elemarjr,carloscds,viniciushana</authors>
         <owners>giggio,elemarjr,carloscds,viniciushana</owners>
@@ -23,6 +23,6 @@ This is a community project, free and open source. Everyone is invited to contri
     <files>
         <file src="tools\install.ps1" target="tools\install.ps1" />
         <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
-        <file src="CodeCracker.dll" target="tools\analyzers\CodeCracker.dll" />
+        <file src="bin\debug\CodeCracker.dll" target="tools\analyzers\CodeCracker.dll" />
     </files>
 </package>

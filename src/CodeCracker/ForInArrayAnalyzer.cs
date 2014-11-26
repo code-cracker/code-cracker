@@ -10,11 +10,10 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ForInArrayAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.ForInArrayAnalyzer ";
+        public const string DiagnosticId = "CC0006";
         internal const string Title = "Use foreach";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -53,8 +52,8 @@ namespace CodeCracker
                                         let initSymbol = context.SemanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
                                         where controlVarId.Equals(initSymbol)
                                         let someArrayInit = context.SemanticModel.GetSymbolInfo(init.Expression).Symbol as ILocalSymbol
-                                        where someArrayInit.Equals(arrayId)
-                                        select someArrayInit).ToList();
+                                        where someArrayInit == null || someArrayInit.Equals(arrayId)
+                                        select arrayId).ToList();
             if (!arrayAccessorSymbols.Any()) return;
 
             var diagnostic = Diagnostic.Create(Rule, forStatement.ForKeyword.GetLocation(), "You can use foreach instead of for.");

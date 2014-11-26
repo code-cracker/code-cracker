@@ -9,15 +9,13 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyObjectInitializerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.EmptyObjectInitializerAnalyzer";
+        public const string DiagnosticId = "CC0005";
         internal const string Title = "Empty Object Initializer";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
 
         public override void Initialize(AnalysisContext context)
         {

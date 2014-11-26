@@ -114,7 +114,6 @@ namespace CodeCracker
                         .WithAdditionalAnnotations(Formatter.Annotation));
                 }
             }
-
             return newBlockParent;
         }
     }

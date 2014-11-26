@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -9,7 +8,7 @@ namespace CodeCracker.Test
     public class EmptyObjectInitializerTests : CodeFixTest<EmptyObjectInitializerAnalyzer, EmptyObjectInitializerCodeFixProvider>
     {
         [Fact]
-        public void EmptyObjectInitializerTriggersFix()
+        public async Task EmptyObjectInitializerTriggersFix()
         {
             var code = @"var a = new A {};";
             var expected = new DiagnosticResult
@@ -20,39 +19,39 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 15) }
             };
 
-            VerifyCSharpDiagnostic(code, expected);
+            await VerifyCSharpDiagnosticAsync(code, expected);
         }
 
         [Fact]
-        public void EmptyObjectInitializerIsRemoved()
+        public async Task EmptyObjectInitializerIsRemoved()
         {
             var oldCode = @"var a = new A() {};";
             var newCode = @"var a = new A();";
 
-            VerifyCSharpFix(oldCode, newCode);
+            await VerifyCSharpFixAsync(oldCode, newCode);
         }
 
         [Fact]
-        public void EmptyObjectInitializerWithNoArgsIsRemovedAndAddsEmptyArgs()
+        public async Task EmptyObjectInitializerWithNoArgsIsRemovedAndAddsEmptyArgs()
         {
             var oldCode = @"var a = new A {};";
             var newCode = @"var a = new A();";
 
-            VerifyCSharpFix(oldCode, newCode);
+            await VerifyCSharpFixAsync(oldCode, newCode);
         }
 
         [Fact]
-        public void FilledObjectInitializerIsIgnored()
+        public async Task FilledObjectInitializerIsIgnored()
         {
             var code = @"var a = new A { X = 1 };";
-            VerifyCSharpHasNoDiagnostics(code);
+            await VerifyCSharpHasNoDiagnosticsAsync(code);
         }
 
         [Fact]
-        public void AbsenceOfObjectInitializerIsIgnored()
+        public async Task AbsenceOfObjectInitializerIsIgnored()
         {
             var code = @"var a = new A();";
-            VerifyCSharpHasNoDiagnostics(code);
+            await VerifyCSharpHasNoDiagnosticsAsync(code);
         }
     }
 }

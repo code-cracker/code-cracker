@@ -1,14 +1,14 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class AlwaysUseVarTests
-         : CodeFixTest<AlwaysUseVarAnalyzer, AlwaysUseVarCodeFixProvider>
+    public class AlwaysUseVarTests : CodeFixTest<AlwaysUseVarAnalyzer, AlwaysUseVarCodeFixProvider>
     {
         [Fact]
-        public void IgnoresConstantDeclarations()
+        public async Task IgnoresConstantDeclarations()
         {
             const string test = @"
     using System;
@@ -17,19 +17,19 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 const int a = 10;
             }
         }
     }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
 
         [Fact]
-        public void IgnoresVarDeclarations()
+        public async Task IgnoresVarDeclarations()
         {
             const string test = @"
     using System;
@@ -38,19 +38,19 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 var a = 10;
             }
         }
     }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
 
         [Fact]
-        public void IgnoresDeclarationsWithNoInitializers()
+        public async Task IgnoresDeclarationsWithNoInitializers()
         {
             const string test = @"
     using System;
@@ -59,19 +59,19 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 int a = 10, b;
             }
         }
     }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
 
         [Fact]
-        public void IgnoresDeclarationsWithNoIdentityConversions()
+        public async Task IgnoresDeclarationsWithNoIdentityConversions()
         {
             const string test = @"
     using System;
@@ -80,7 +80,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 IFee fee = new Fee();
             }
@@ -89,12 +89,12 @@ namespace CodeCracker.Test
         class Fee: IFee {}
     }";
 
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
 
         [Fact]
-        public void CreateDiagnosticsWhenAssigningValueWithSameDeclaringType()
+        public async Task CreateDiagnosticsWhenAssigningValueWithSameDeclaringType()
         {
             const string test = @"
     using System;
@@ -103,7 +103,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 int a = 10;
             }
@@ -117,11 +117,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void FixReplacesDeclaringTypeWithVarIdentifier()
+        public async Task FixReplacesDeclaringTypeWithVarIdentifier()
         {
             const string test = @"
     using System;
@@ -130,7 +130,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 int a = 10;
             }
@@ -144,13 +144,13 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 var a = 10;
             }
         }
     }";
-            VerifyCSharpFix(test, expected);
+            await VerifyCSharpFixAsync(test, expected);
         }
     }
 }

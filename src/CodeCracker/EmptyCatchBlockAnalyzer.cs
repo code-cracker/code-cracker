@@ -9,11 +9,10 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyCatchBlockAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.EmptyCatchBlockAnalyzer";
+        public const string DiagnosticId = "CC0004";
         internal const string Title = "Catch block cannot be empty";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -26,9 +25,7 @@ namespace CodeCracker
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
             var catchStatement = (CatchClauseSyntax)context.Node;
-
-            if (catchStatement.Block?.Statements.Count != 0) return;
-
+            if (catchStatement?.Block?.Statements.Count != 0) return;
             var diagnostic = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Empty Catch Block.");
             context.ReportDiagnostic(diagnostic);
         }

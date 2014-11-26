@@ -40,7 +40,6 @@ namespace CodeCracker
             var methodName = methodInvoke.Expression as IdentifierNameSyntax;
 
             root = root.ReplaceNode(lambda as ExpressionSyntax, methodName as ExpressionSyntax);
-            // throw new NotImplementedException();
             var newDocument = context.Document.WithSyntaxRoot(root);
 
             context.RegisterFix(CodeAction.Create(

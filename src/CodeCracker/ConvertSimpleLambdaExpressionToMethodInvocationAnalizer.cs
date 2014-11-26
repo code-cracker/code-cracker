@@ -33,18 +33,12 @@ namespace CodeCracker
             var lambda = (SimpleLambdaExpressionSyntax)context.Node;
 
             var methodInvoke = lambda.Body as InvocationExpressionSyntax;
-            if (methodInvoke == null || methodInvoke.ArgumentList.Arguments.Count != 1)
-            {
-                return;
-            }
+            if (methodInvoke == null || methodInvoke.ArgumentList.Arguments.Count != 1) return;
 
             var methodArgument = methodInvoke.ArgumentList.Arguments[0].Expression as IdentifierNameSyntax;
             var lambdaParameter = lambda.Parameter;
 
-            if (lambdaParameter.Identifier.Text != methodArgument.Identifier.Text)
-            {
-                return;
-            }
+            if (lambdaParameter.Identifier.Text != methodArgument.Identifier.Text) return;
 
             var methodName = (methodInvoke.Expression as IdentifierNameSyntax)
                 .Identifier

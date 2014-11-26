@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Simplification;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace TestHelper
 {
@@ -21,9 +22,9 @@ namespace TestHelper
         /// <param name="document">The Document to apply the fix on</param>
         /// <param name="codeAction">A CodeAction that will be applied to the Document.</param>
         /// <returns>A Document with the changes from the CodeAction</returns>
-        private static Document ApplyFix(Document document, CodeAction codeAction)
+        private static async Task<Document> ApplyFixAsync(Document document, CodeAction codeAction)
         {
-            var operations = codeAction.GetOperationsAsync(CancellationToken.None).Result;
+            var operations = await codeAction.GetOperationsAsync(CancellationToken.None);
             var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
             return solution.GetDocument(document.Id);
         }
@@ -41,8 +42,8 @@ namespace TestHelper
             var oldArray = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
             var newArray = newDiagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 
-            int oldIndex = 0;
-            int newIndex = 0;
+            var oldIndex = 0;
+            var newIndex = 0;
 
             while (newIndex < newArray.Length)
             {
@@ -63,9 +64,9 @@ namespace TestHelper
         /// </summary>
         /// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
         /// <returns>The compiler diagnostics that were found in the code</returns>
-        private static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document document)
+        private static async Task<IEnumerable<Diagnostic>> GetCompilerDiagnosticsAsync(Document document)
         {
-            return document.GetSemanticModelAsync().Result.GetDiagnostics();
+            return (await document.GetSemanticModelAsync()).GetDiagnostics();
         }
 
         /// <summary>
@@ -73,10 +74,10 @@ namespace TestHelper
         /// </summary>
         /// <param name="document">The Document to be converted to a string</param>
         /// <returns>A string contianing the syntax of the Document after formatting</returns>
-        private static string GetStringFromDocument(Document document)
+        private static async Task<string> GetStringFromDocumentAsync(Document document)
         {
-            var simplifiedDoc = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
-            var root = simplifiedDoc.GetSyntaxRootAsync().Result;
+            var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation);
+            var root = await simplifiedDoc.GetSyntaxRootAsync();
             root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
             return root.GetText().ToString();
         }

@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -14,7 +13,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try
                 {
@@ -22,22 +21,21 @@ namespace CodeCracker.Test
                 }
                 catch
                 {
-                   
                 }
             }
         }
     }";
         [Fact]
-        public void EmptyCatchBlockAnalyzerCreateDiagnostic()
+        public async Task EmptyCatchBlockAnalyzerCreateDiagnostic()
         {
-            string test = @"
+            var test = @"
     using System;
 
     namespace ConsoleApplication1
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try
                 {
@@ -50,11 +48,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void WhenRemoveTryCatchStatement()
+        public async Task WhenRemoveTryCatchStatement()
         {
 
             var fixtest = @"
@@ -64,7 +62,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 {
                    // do something
@@ -72,11 +70,11 @@ namespace CodeCracker.Test
             }
         }
     }";
-            VerifyCSharpFix(test, fixtest, 0,false,true);
+            await VerifyCSharpFixAsync(test, fixtest, 0,false,true);
         }
 
         [Fact]
-        public void WhenRemoveTryCatchStatementAndPutComment()
+        public async Task WhenRemoveTryCatchStatementAndPutComment()
         {
             var fixtest = @"
     using System;
@@ -85,7 +83,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 {
                    // do something
@@ -95,11 +93,11 @@ namespace CodeCracker.Test
         }
     }";
 
-            VerifyCSharpFix(test, fixtest, 1, false, true);
+            await VerifyCSharpFixAsync(test, fixtest, 1, false, true);
         }
 
         [Fact]
-        public void WhenPutExceptionClassInCatchBlock()
+        public async Task WhenPutExceptionClassInCatchBlock()
         {
             var fixtest = @"
     using System;
@@ -108,7 +106,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo()
+            public async Task Foo()
             {
                 try
                 {
@@ -122,7 +120,7 @@ namespace CodeCracker.Test
         }
     }";
 
-            VerifyCSharpFix(test, fixtest, 2, false, true);
+            await VerifyCSharpFixAsync(test, fixtest, 2, false, true);
         }
     }
 }

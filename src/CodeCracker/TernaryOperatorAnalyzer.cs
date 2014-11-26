@@ -10,14 +10,13 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TernaryOperatorAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticIdForIfWithReturn = "CodeCracker.TernaryOperatorWithReturnAnalyzer";
+        public const string DiagnosticIdForIfWithReturn = "CC0013";
         internal const string TitleForIfWithReturn = "User ternary operator";
         internal const string MessageFormatForIfWithReturn = "{0}";
         internal const string Category = "Syntax";
-        public const string DiagnosticIdForIfWithAssignment = "CodeCracker.TernaryOperatorWithAssignmentAnalyzer";
+        public const string DiagnosticIdForIfWithAssignment = "CC0014";
         internal const string TitleForIfWithAssignment = "User ternary operator";
         internal const string MessageFormatForIfWithAssignment = "{0}";
-
         internal static DiagnosticDescriptor RuleForIfWithReturn = new DiagnosticDescriptor(DiagnosticIdForIfWithReturn, TitleForIfWithReturn, MessageFormatForIfWithReturn, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
         internal static DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(DiagnosticIdForIfWithAssignment, TitleForIfWithAssignment, MessageFormatForIfWithAssignment, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
@@ -35,11 +34,9 @@ namespace CodeCracker
             if (ifStatement.Else == null) return;
             var blockIf = ifStatement.Statement as BlockSyntax;
             var blockElse = ifStatement.Else.Statement as BlockSyntax;
-            if (((blockIf ?? blockElse) == null) ||
-                (blockIf.Statements.Count == 1 && blockElse.Statements.Count == 1))
+            if ((blockIf == null || blockIf.Statements.Count == 1) &&
+                (blockElse == null || blockElse.Statements.Count == 1))
             {
-                //add diagnostic, only 1 statement for if and else
-                //or not one direct statement, but could be one in each block, lets check
                 var statementInsideIf = ifStatement.Statement is BlockSyntax ? ((BlockSyntax)ifStatement.Statement).Statements.Single() : ifStatement.Statement;
                 var elseStatement = ifStatement.Else;
                 var statementInsideElse = elseStatement.Statement is BlockSyntax ? ((BlockSyntax)elseStatement.Statement).Statements.Single() : elseStatement.Statement;

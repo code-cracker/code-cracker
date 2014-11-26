@@ -13,7 +13,7 @@ namespace CodeCracker.Test
         :CodeFixTest<ConvertSimpleLambdaExpressionToMethodInvocationAnalizer, ConvertSimpleLambdaExpressionToMethodInvocationFixProvider>
     {
         [Fact]
-        public void CreateDiagnosticWhenUsingWhereWithLambda()
+        public async void CreateDiagnosticWhenUsingWhereWithLambda()
         {
             string test = @"var f = a.Where(item => filter(item));";
             var expected = new DiagnosticResult
@@ -24,18 +24,18 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 17) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void DoNotCreateDiagnosticWhenUsingWhereWithoutLambda()
+        public async void DoNotCreateDiagnosticWhenUsingWhereWithoutLambda()
         {
             string test = @"var f = a.Where(filter);";
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public void SimpleLambdaExpressionIsReplaceByMethodInDeclarationStatement()
+        public async void SimpleLambdaExpressionIsReplaceByMethodInDeclarationStatement()
         {
             var oldCode = @"
 using System.Linq;
@@ -77,12 +77,12 @@ namespace Sample
     }
 }";
 
-            VerifyCSharpFix(oldCode, newCode);
+            await VerifyCSharpFixAsync(oldCode, newCode);
         }
 
 
         [Fact]
-        public void SimpleLambdaExpressionIsReplaceByMethodInArgumentList()
+        public async void SimpleLambdaExpressionIsReplaceByMethodInArgumentList()
         {
             var oldCode = @"
 using System.Linq;
@@ -124,12 +124,12 @@ namespace Sample
     }
 }";
 
-            VerifyCSharpFix(oldCode, newCode);
+            await VerifyCSharpFixAsync(oldCode, newCode);
         }
 
 
         [Fact]
-        public void FixEndOfPipelineLambdaExpressionAndReplaceByMethod()
+        public async void FixEndOfPipelineLambdaExpressionAndReplaceByMethod()
         {
             var oldCode = @"
 using System.Linq;
@@ -171,12 +171,12 @@ namespace Sample
     }
 }";
 
-            VerifyCSharpFix(oldCode, newCode);
+            await VerifyCSharpFixAsync(oldCode, newCode);
         }
 
 
         [Fact]
-        public void FixMiddleOfPipelineLambdaExpressionAndReplaceByMethod()
+        public async void FixMiddleOfPipelineLambdaExpressionAndReplaceByMethod()
         {
             var oldCode = @"
 using System.Linq;
@@ -218,12 +218,12 @@ namespace Sample
     }
 }";
 
-            VerifyCSharpFix(oldCode, newCode);
+            await VerifyCSharpFixAsync(oldCode, newCode);
         }
 
 
         [Fact]
-        public void FixMiddleOfPipelineLambdaExpressionAndReplaceByMethodMultipleMatches()
+        public async void FixMiddleOfPipelineLambdaExpressionAndReplaceByMethodMultipleMatches()
         {
             var oldCode = @"
 using System.Linq;
@@ -275,7 +275,7 @@ namespace Sample
     }
 }";
 
-            VerifyCSharpFix(oldCode, newCode);
+            await VerifyCSharpFixAsync(oldCode, newCode);
         }
     }
 }

@@ -38,6 +38,12 @@
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
     <Compile Include="ConvertSimpleLambdaExpressionToMethodInvocationAnalizer.cs" />
     <Compile Include="ConvertSimpleLambdaExpressionToMethodInvocationFixProvider.cs" />
+    <Compile Include="ConvertToSwitchAnalyzer.cs" />
+    <Compile Include="ConvertToSwitchCodeFixProvider.cs" />
+    <Compile Include="ExistenceOperatorAnalyzer.cs" />
+    <Compile Include="Extensions\AnalyzerExtensions.cs" />
+    <Compile Include="EmptyFinalizerAnalyzer.cs" />
+    <Compile Include="EmptyFinalizerCodeFixProvider.cs" />
     <Compile Include="RegexAnalyzer.cs" />
     <Compile Include="EmptyCatchBlockCodeFixProvider.cs" />
     <Compile Include="EmptyCatchBlockAnalyzer.cs" />
@@ -53,6 +59,10 @@
     <Compile Include="IfReturnTrueAnalyzer.cs" />
     <Compile Include="RemoveWhereWhenItIsPossibleAnalyzer.cs" />
     <Compile Include="RemoveWhereWhenItIsPossibleCodeFixProvider.cs" />
+    <Compile Include="SealedAttributeAnalyzer.cs" />
+    <Compile Include="SealedAttributeCodeFixProvider.cs" />
+    <Compile Include="StaticConstructorExceptionAnalyzer.cs" />
+    <Compile Include="StaticConstructorExceptionCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorAnalyzer.cs" />
     <Compile Include="RethrowExceptionCodeFixProvider.cs" />
@@ -62,7 +72,7 @@
     <Compile Include="UnnecessaryParenthesisCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Diagnostic.nuspec">
+    <None Include="CodeCracker.nuspec">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -116,9 +126,13 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\codecracker.1.0.0-alpha2-38\tools\analyzers\CodeCracker.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist Diagnostic.nuspec if exist "$(SolutionDir)\packages\NuGet.CommandLine.2.8.2\tools\NuGet.exe" "$(SolutionDir)\packages\NuGet.CommandLine.2.8.2\tools\NuGet.exe" pack Diagnostic.nuspec -OutputDirectory .</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -42,7 +42,6 @@ namespace CodeCracker
             var arrayAccessor = condition.Right as MemberAccessExpressionSyntax;
             var arrayId = semanticModel.GetSymbolInfo(arrayAccessor.Expression).Symbol as ILocalSymbol;
             var controlVarId = semanticModel.GetDeclaredSymbol(forStatement.Declaration.Variables.Single());
-
             var arrayDeclarations = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
                                      where s.Declaration.Variables.Count == 1
                                      let declaration = s.Declaration.Variables.First()
@@ -51,9 +50,8 @@ namespace CodeCracker
                                      let initSymbol = semanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
                                      where controlVarId.Equals(initSymbol)
                                      let someArrayInit = semanticModel.GetSymbolInfo(init.Expression).Symbol as ILocalSymbol
-                                     where someArrayInit.Equals(arrayId)
+                                     where someArrayInit == null || someArrayInit.Equals(arrayId)
                                      select s).ToList();
-
             var arrayDeclaration = arrayDeclarations.First();
             var blockForFor = forBlock.RemoveNode(arrayDeclaration, SyntaxRemoveOptions.KeepLeadingTrivia);
             var forEachStatement = SyntaxFactory.ForEachStatement(SyntaxFactory.ParseTypeName("var"), arrayDeclaration.Declaration.Variables.First().Identifier, arrayAccessor.Expression, blockForFor)

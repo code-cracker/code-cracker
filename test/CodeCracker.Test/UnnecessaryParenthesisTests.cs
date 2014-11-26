@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -9,7 +8,7 @@ namespace CodeCracker.Test
     public class UnnecessaryParenthesisTests : CodeFixTest<UnnecessaryParenthesisAnalyzer, UnnecessaryParenthesisCodeFixProvider>
     {
         [Fact]
-        public void ConstructorWithEmptyParenthesisWithInitializerTriggersFix()
+        public async Task ConstructorWithEmptyParenthesisWithInitializerTriggersFix()
         {
             const string source = @"var a = new B() { X = 1 };";
             var expected = new DiagnosticResult
@@ -20,51 +19,51 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 14) }
             };
 
-            VerifyCSharpDiagnostic(source, expected);
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public void ConstructorWithoutParenthesisWithInitializerIsIgnored()
+        public async Task ConstructorWithoutParenthesisWithInitializerIsIgnored()
         {
             const string source = @"new B { X = 1 };";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ConstructorWithEmptyParenthesisWithoutInitializerIsIgnored()
+        public async Task ConstructorWithEmptyParenthesisWithoutInitializerIsIgnored()
         {
             const string source = @"new B();";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ConstructorWithArgumentsWithInitializerIsIgnored()
+        public async Task ConstructorWithArgumentsWithInitializerIsIgnored()
         {
             const string source = @"new Sample(1) { A = 2 };";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ConstructorWithArgumentsWithoutInitializerIsIgnored()
+        public async Task ConstructorWithArgumentsWithoutInitializerIsIgnored()
         {
             const string source = @"new Sample(1);";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void ConstructorWithoutArgumentsWithEmptyInitializerIsIgnored()
+        public async Task ConstructorWithoutArgumentsWithEmptyInitializerIsIgnored()
         {
             const string source = @"new Sample { };";
-            VerifyCSharpHasNoDiagnostics(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public void RemoveUnnecessaryParenthesisInConstructorCall()
+        public async Task RemoveUnnecessaryParenthesisInConstructorCall()
         {
             const string oldSource = @"var a = new B() { X = 1 };";
             const string newSource = @"var a = new B { X = 1 };";
 
-            VerifyCSharpFix(oldSource, newSource);
+            await VerifyCSharpFixAsync(oldSource, newSource);
         }
     }
 }

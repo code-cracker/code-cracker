@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -15,7 +14,7 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(int a, int b)
+            public async Task Foo(int a, int b)
             {
                 throw new ArgumentException(""message"", ""c"");
             }
@@ -23,7 +22,7 @@ namespace CodeCracker.Test
     }";
 
         [Fact]
-        public void WhenThrowingArgumentExceptionWithInvalidArgumentAnalyzerCreatesDiagnostic()
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentAnalyzerCreatesDiagnostic()
         {
             var expected = new DiagnosticResult
             {
@@ -33,11 +32,11 @@ namespace CodeCracker.Test
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 56) }
             };
 
-            VerifyCSharpDiagnostic(test, expected);
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public void WhenThrowingArgumentExceptionWithInvalidArgumentAndApplyingFirstFixUsesFirstParameter()
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentAndApplyingFirstFixUsesFirstParameter()
         {
             var fixtest = @"
     using System;
@@ -46,17 +45,17 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(int a, int b)
+            public async Task Foo(int a, int b)
             {
                 throw new ArgumentException(""message"", ""a"");
             }
         }
     }";
-            VerifyCSharpFix(test, fixtest, 0);
+            await VerifyCSharpFixAsync(test, fixtest, 0);
         }
 
         [Fact]
-        public void WhenThrowingArgumentExceptionWithInvalidArgumentAndApplyingSecondFixUsesSecondParameter()
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentAndApplyingSecondFixUsesSecondParameter()
         {
             var fixtest = @"
     using System;
@@ -65,13 +64,13 @@ namespace CodeCracker.Test
     {
         class TypeName
         {
-            public void Foo(int a, int b)
+            public async Task Foo(int a, int b)
             {
                 throw new ArgumentException(""message"", ""b"");
             }
         }
     }";
-            VerifyCSharpFix(test, fixtest, 1);
+            await VerifyCSharpFixAsync(test, fixtest, 1);
         }
     }
 }

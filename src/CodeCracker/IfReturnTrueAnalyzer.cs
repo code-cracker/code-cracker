@@ -10,11 +10,10 @@ namespace CodeCracker
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IfReturnTrueAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CodeCracker.IfReturnTrueAnalyzer ";
+        public const string DiagnosticId = "CC0007";
         internal const string Title = "Return Condition directly";
         internal const string Message = "{0}";
         internal const string Category = "Syntax";
-
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, Message, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
