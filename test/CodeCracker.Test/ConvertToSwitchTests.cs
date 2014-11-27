@@ -271,7 +271,7 @@ namespace CodeCracker.Test
         }
 
 
-        [Fact(Skip = "Failing in build server.")]
+        [Fact]
         public async Task FixReplacesNestedIfsWithSwitch()
         {
             const string test = @"
@@ -326,7 +326,7 @@ namespace ConsoleApplication1
             await VerifyCSharpFixAsync(test, expected, formatBeforeCompare: false);
         }
 
-        [Fact(Skip = "Failing in build server.")]
+        [Fact]
         public async Task FixReplacesNestedIfsWithSwitchWithDefaultCaseWhenElseIsUsed()
         {
             const string test = @"
@@ -390,7 +390,7 @@ namespace ConsoleApplication1
             await VerifyCSharpFixAsync(test, expected, formatBeforeCompare: false);
         }
 
-        [Fact(Skip = "Failing in build server.")]
+        [Fact]
         public async Task FixDoesNotUsesBreakWhenSwitchSectionReturns()
         {
             const string test = @"
