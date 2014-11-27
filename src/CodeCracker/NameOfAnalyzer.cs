@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
-using System;
 
 namespace CodeCracker
 {
@@ -12,7 +11,7 @@ namespace CodeCracker
     public class NameOfAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CC0021";
-        internal const string Title = "You should use 'nameof({0})' whenever possible.";
+        internal const string Title = "You nameof instead of the parameter string";
         internal const string MessageFormat = "Use 'nameof({0})' instead of specifying the parameter name.";
         internal const string Category = "Syntax";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
@@ -28,13 +27,22 @@ namespace CodeCracker
         {
             var stringLiteral = context.Node as LiteralExpressionSyntax;
             if (string.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText)) return;
-
             var methodDeclaration = stringLiteral.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-            if (methodDeclaration == null) return;
-
-            var methodParameters = methodDeclaration.ParameterList.Parameters;
-            if (!methodParameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString())) return;
-
+            if (methodDeclaration != null)
+            {
+                var methodParameters = methodDeclaration.ParameterList.Parameters;
+                if (!methodParameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString())) return;
+            }
+            else
+            {
+                var constructorDeclaration = stringLiteral.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
+                if (constructorDeclaration != null)
+                {
+                    var constructorParameters = constructorDeclaration.ParameterList.Parameters;
+                    if (!constructorParameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString())) return;
+                }
+                else return;
+            }
             var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value);
             context.ReportDiagnostic(diagnostic);
         }

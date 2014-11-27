@@ -43,6 +43,7 @@
     <Compile Include="EmptyFinalizerAnalyzer.cs" />
     <Compile Include="EmptyFinalizerCodeFixProvider.cs" />
     <Compile Include="NameOfAnalyzer.cs" />
+    <Compile Include="NameOfCodeFixProvider.cs" />
     <Compile Include="RegexAnalyzer.cs" />
     <Compile Include="EmptyCatchBlockCodeFixProvider.cs" />
     <Compile Include="EmptyCatchBlockAnalyzer.cs" />

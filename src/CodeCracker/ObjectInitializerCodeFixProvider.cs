@@ -18,7 +18,7 @@ namespace CodeCracker
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
         {
-            return ImmutableArray.Create(ObjectInitializerAnalyzer.DiagnosticIdAssignment, ObjectInitializerAnalyzer.DiagnosticIdLocalDeclaration);
+            return ImmutableArray.Create(NameOfAnalyzer.DiagnosticId);
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
