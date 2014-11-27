@@ -36,11 +36,15 @@ namespace CodeCracker
             if (methodInvoke == null || methodInvoke.ArgumentList.Arguments.Count != 1) return;
 
             var methodArgument = methodInvoke.ArgumentList.Arguments[0].Expression as IdentifierNameSyntax;
-            var lambdaParameter = lambda.Parameter;
+            if (methodArgument == null || string.IsNullOrWhiteSpace(methodArgument.Identifier.Text)) return;
 
+            var lambdaParameter = lambda.Parameter;
             if (lambdaParameter.Identifier.Text != methodArgument.Identifier.Text) return;
 
-            var methodName = (methodInvoke.Expression as IdentifierNameSyntax)
+            var methodExpression = methodInvoke.Expression as IdentifierNameSyntax;
+            if (methodExpression == null) return;
+
+            var methodName = methodExpression
                 .Identifier
                 .Text;
 

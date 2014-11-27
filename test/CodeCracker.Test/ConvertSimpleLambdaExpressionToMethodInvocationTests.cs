@@ -13,9 +13,9 @@ namespace CodeCracker.Test
         :CodeFixTest<ConvertSimpleLambdaExpressionToMethodInvocationAnalizer, ConvertSimpleLambdaExpressionToMethodInvocationFixProvider>
     {
         [Fact]
-        public async void CreateDiagnosticWhenUsingWhereWithLambda()
+        public async Task CreateDiagnosticWhenUsingWhereWithLambda()
         {
-            string test = @"var f = a.Where(item => filter(item));";
+            var test = @"var f = a.Where(item => filter(item));";
             var expected = new DiagnosticResult
             {
                 Id = ConvertSimpleLambdaExpressionToMethodInvocationAnalizer.DiagnosticId,
@@ -28,14 +28,41 @@ namespace CodeCracker.Test
         }
 
         [Fact]
-        public async void DoNotCreateDiagnosticWhenUsingWhereWithoutLambda()
+        public async Task DoNotCreateDiagnosticWhenUsingWhereWithoutLambda()
         {
-            string test = @"var f = a.Where(filter);";
+            var test = @"var f = a.Where(filter);";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public async void SimpleLambdaExpressionIsReplaceByMethodInDeclarationStatement()
+        public async Task IncompleteSimpleLambdaExpressionIsReplaceByMethodInDeclarationStatement()
+        {
+            var test = @"
+using System.Linq;
+
+namespace Sample
+{
+    public class Foo
+    {
+        private bool filter(int value)
+        {
+            return true;
+        }
+
+        public Task bar()
+        {
+            var a = new int[10];
+            Func<int, bool> a = x => filter();
+        }
+    }
+}";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+
+        [Fact]
+        public async Task SimpleLambdaExpressionIsReplaceByMethodInDeclarationStatement()
         {
             var oldCode = @"
 using System.Linq;
@@ -49,7 +76,7 @@ namespace Sample
             return true;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             Func<int, bool> a = x => filter(x);
@@ -69,7 +96,7 @@ namespace Sample
             return true;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             Func<int, bool> a = filter;
@@ -82,7 +109,7 @@ namespace Sample
 
 
         [Fact]
-        public async void SimpleLambdaExpressionIsReplaceByMethodInArgumentList()
+        public async Task SimpleLambdaExpressionIsReplaceByMethodInArgumentList()
         {
             var oldCode = @"
 using System.Linq;
@@ -96,7 +123,7 @@ namespace Sample
             return true;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             var f = a.Where(item => filter(item));
@@ -116,7 +143,7 @@ namespace Sample
             return true;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             var f = a.Where(filter);
@@ -129,7 +156,7 @@ namespace Sample
 
 
         [Fact]
-        public async void FixEndOfPipelineLambdaExpressionAndReplaceByMethod()
+        public async Task FixEndOfPipelineLambdaExpressionAndReplaceByMethod()
         {
             var oldCode = @"
 using System.Linq;
@@ -143,7 +170,7 @@ namespace Sample
             return true;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             var f = a.OrderBy(item => item).Where(item => filter(item));
@@ -163,7 +190,7 @@ namespace Sample
             return true;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             var f = a.OrderBy(item => item).Where(filter);
@@ -176,7 +203,7 @@ namespace Sample
 
 
         [Fact]
-        public async void FixMiddleOfPipelineLambdaExpressionAndReplaceByMethod()
+        public async Task FixMiddleOfPipelineLambdaExpressionAndReplaceByMethod()
         {
             var oldCode = @"
 using System.Linq;
@@ -190,7 +217,7 @@ namespace Sample
             return true;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             var f = a.OrderBy(item => item).Where(item => filter(item)).Select(item => item * 2);
@@ -210,7 +237,7 @@ namespace Sample
             return true;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             var f = a.OrderBy(item => item).Where(filter).Select(item => item * 2);
@@ -223,7 +250,7 @@ namespace Sample
 
 
         [Fact]
-        public async void FixMiddleOfPipelineLambdaExpressionAndReplaceByMethodMultipleMatches()
+        public async Task FixMiddleOfPipelineLambdaExpressionAndReplaceByMethodMultipleMatches()
         {
             var oldCode = @"
 using System.Linq;
@@ -242,7 +269,7 @@ namespace Sample
             return item;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             var f = a.OrderBy(item => orderAccessor(item)).Where(item => filter(item)).Select(item => item * 2);
@@ -267,7 +294,7 @@ namespace Sample
             return item;
         }
 
-        public void bar()
+        public Task bar()
         {
             var a = new int[10];
             var f = a.OrderBy(orderAccessor).Where(filter).Select(item => item * 2);
