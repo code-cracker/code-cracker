@@ -40,30 +40,28 @@ namespace CodeCracker
             if (methodDeclaration != null)
             {
                 var methodParameter = methodDeclaration.ParameterList.Parameters.First();
-                var newNameOf = SyntaxFactory.ParseExpression("nameof(\{methodParameter.Identifier.Value})")
-                        .WithLeadingTrivia(stringLiteral.GetLeadingTrivia())
-                        .WithTrailingTrivia(stringLiteral.GetTrailingTrivia())
-                        .WithAdditionalAnnotations(Formatter.Annotation);
 
-                var root = await document.GetSyntaxRootAsync();
-                var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(stringLiteral, newNameOf);
-                var newDocument = document.WithSyntaxRoot(newRoot);
-                return newDocument;
+                return await NewDocument(document, stringLiteral, methodParameter);
             }
             else
             {
                 var constructorDeclaration = stringLiteral.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
                 var constructorParameter = constructorDeclaration.ParameterList.Parameters.First();
-                var newNameOf = SyntaxFactory.ParseExpression("nameof(\{constructorParameter.Identifier.Value})")
-                        .WithLeadingTrivia(stringLiteral.GetLeadingTrivia())
-                        .WithTrailingTrivia(stringLiteral.GetTrailingTrivia())
-                        .WithAdditionalAnnotations(Formatter.Annotation);
 
-                var root = await document.GetSyntaxRootAsync();
-                var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(stringLiteral, newNameOf);
-                var newDocument = document.WithSyntaxRoot(newRoot);
-                return newDocument;
+                return await NewDocument(document, stringLiteral, constructorParameter);
             }
+        }
+
+        private async Task<Document> NewDocument(Document document, LiteralExpressionSyntax stringLiteral, ParameterSyntax methodParameter)
+        {
+            var newNameof = SyntaxFactory.ParseExpression("nameof(\{methodParameter.Identifier.Value})")
+                                    .WithLeadingTrivia(stringLiteral.GetLeadingTrivia())
+                                    .WithTrailingTrivia(stringLiteral.GetTrailingTrivia())
+                                    .WithAdditionalAnnotations(Formatter.Annotation);
+
+            var root = await document.GetSyntaxRootAsync();
+            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(stringLiteral, newNameof);
+            return document.WithSyntaxRoot(newRoot);
         }
     }
 }

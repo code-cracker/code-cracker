@@ -28,10 +28,11 @@ namespace CodeCracker
             var stringLiteral = context.Node as LiteralExpressionSyntax;
             if (string.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText)) return;
             var methodDeclaration = stringLiteral.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+
             if (methodDeclaration != null)
             {
                 var methodParameters = methodDeclaration.ParameterList.Parameters;
-                if (!methodParameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString())) return;
+                if (!AreEqual(stringLiteral, methodParameters)) return;
             }
             else
             {
@@ -39,12 +40,17 @@ namespace CodeCracker
                 if (constructorDeclaration != null)
                 {
                     var constructorParameters = constructorDeclaration.ParameterList.Parameters;
-                    if (!constructorParameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString())) return;
+                    if (!AreEqual(stringLiteral, constructorParameters)) return;
                 }
                 else return;
             }
             var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value);
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private bool AreEqual(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters)
+        {
+            return parameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString());
         }
     }
 }
