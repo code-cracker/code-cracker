@@ -11,7 +11,7 @@ namespace CodeCracker
     public class NameOfAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CC0021";
-        internal const string Title = "You nameof instead of the parameter string";
+        internal const string Title = "You should use nameof instead of the parameter string";
         internal const string MessageFormat = "Use 'nameof({0})' instead of specifying the parameter name.";
         internal const string Category = "Syntax";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
