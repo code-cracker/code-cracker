@@ -71,9 +71,8 @@ namespace CodeCracker
             var switchStatement = SyntaxFactory.SwitchStatement(switchExpression)
                 .WithSections(new SyntaxList<SwitchSectionSyntax>().AddRange(sections))
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
-                //.WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            
+
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode<SyntaxNode, StatementSyntax>(ifStatement, switchStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
@@ -89,8 +88,6 @@ namespace CodeCracker
                 labels, CreateSectionStatements(statement)
                 );
         }
-
-        
 
         static SyntaxList<StatementSyntax> CreateSectionStatements(StatementSyntax source)
         {
