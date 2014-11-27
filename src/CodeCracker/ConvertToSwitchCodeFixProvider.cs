@@ -45,8 +45,13 @@ namespace CodeCracker
             foreach (var nestedIf in nestedIfs)
             {
                 var label = SyntaxFactory.CaseSwitchLabel(
-                    ((BinaryExpressionSyntax)nestedIf.Condition).Right
-                    );
+                    ((BinaryExpressionSyntax)nestedIf.Condition).Right);
+
+                if (nestedIf != ifStatement)
+                {
+                    label = label.WithLeadingTrivia(nestedIf.Parent.GetLeadingTrivia());
+                }
+                    
                 sections.Add(CreateSection(label, nestedIf.Statement));
             }
 
@@ -54,7 +59,8 @@ namespace CodeCracker
             if (@else != null)
             {
                 sections.Add(CreateSection(
-                    SyntaxFactory.DefaultSwitchLabel(),
+                    SyntaxFactory.DefaultSwitchLabel()
+                    .WithLeadingTrivia(@else.GetLeadingTrivia()),
                     @else.Statement
                     ));
             }
@@ -65,7 +71,6 @@ namespace CodeCracker
             var switchStatement = SyntaxFactory.SwitchStatement(switchExpression)
                 .WithSections(new SyntaxList<SwitchSectionSyntax>().AddRange(sections))
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
-                .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
             var root = await document.GetSyntaxRootAsync();
