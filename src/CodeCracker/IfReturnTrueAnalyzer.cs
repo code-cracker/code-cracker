@@ -27,9 +27,9 @@ namespace CodeCracker
         {
             var ifStatement = context.Node as IfStatementSyntax;
             if (ifStatement?.Else == null) return;
-            var statementInsideIf = GetSingleStatementFromPossibleBlock(ifStatement.Statement);
+            var statementInsideIf = ifStatement.Statement.GetSingleStatementFromPossibleBlock();
             if (statementInsideIf == null) return;
-            var statementInsideElse = GetSingleStatementFromPossibleBlock(ifStatement.Else.Statement);
+            var statementInsideElse = ifStatement.Else.Statement.GetSingleStatementFromPossibleBlock();
             if (statementInsideElse == null) return;
             var returnIf = statementInsideIf as ReturnStatementSyntax;
             var returnElse = statementInsideElse as ReturnStatementSyntax;
@@ -41,21 +41,6 @@ namespace CodeCracker
             {
                 var diagnostic = Diagnostic.Create(Rule, ifStatement.IfKeyword.GetLocation(), "You should return directly.");
                 context.ReportDiagnostic(diagnostic);
-            }
-        }
-
-
-        public static StatementSyntax GetSingleStatementFromPossibleBlock(StatementSyntax statement)
-        {
-            var block = statement as BlockSyntax;
-            if (block != null)
-            {
-                if (block.Statements.Count != 1) return null;
-                return block.Statements.Single();
-            }
-            else
-            {
-                return statement;
             }
         }
     }

@@ -113,6 +113,7 @@
     <Compile Include="ConvertToSwitchTests.cs" />
     <Compile Include="CopyEventToVariableBeforeFireTests.cs" />
     <Compile Include="EmptyFinalizerTests.cs" />
+    <Compile Include="ExistenceOperatorTests.cs" />
     <Compile Include="MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
     <Compile Include="NameOfTests.cs" />
     <Compile Include="RegexTests.cs" />

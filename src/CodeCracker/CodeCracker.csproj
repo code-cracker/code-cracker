@@ -41,6 +41,7 @@
     <Compile Include="CopyEventToVariableBeforeFireAnalyzer.cs" />
     <Compile Include="CopyEventToVariableBeforeFireCodeFixProvider.cs" />
     <Compile Include="ExistenceOperatorAnalyzer.cs" />
+    <Compile Include="ExistenceOperatorCodeFixProvider.cs" />
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
     <Compile Include="EmptyFinalizerAnalyzer.cs" />
     <Compile Include="EmptyFinalizerCodeFixProvider.cs" />
