@@ -1,7 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
+using System.Linq;
 
 namespace CodeCracker
 {
@@ -32,6 +34,25 @@ namespace CodeCracker
         private static void RunIfCSharp6OrGreater(this LanguageVersion languageVersion, Action action)
         {
             if (languageVersion >= LanguageVersion.CSharp6) action();
+        }
+
+        public static ConditionalAccessExpressionSyntax ToConditionalAccessExpression(this MemberAccessExpressionSyntax memberAccess)
+        {
+            return SyntaxFactory.ConditionalAccessExpression(memberAccess.Expression, SyntaxFactory.MemberBindingExpression(memberAccess.Name));
+        }
+
+        public static StatementSyntax GetSingleStatementFromPossibleBlock(this StatementSyntax statement)
+        {
+            var block = statement as BlockSyntax;
+            if (block != null)
+            {
+                if (block.Statements.Count != 1) return null;
+                return block.Statements.Single();
+            }
+            else
+            {
+                return statement;
+            }
         }
     }
 }

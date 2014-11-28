@@ -38,8 +38,8 @@ namespace CodeCracker
         private async Task<Document> ReturnConditionDirectlyAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var statementInsideIf = IfReturnTrueAnalyzer.GetSingleStatementFromPossibleBlock(ifStatement.Statement);
-            var statementInsideElse = IfReturnTrueAnalyzer.GetSingleStatementFromPossibleBlock(ifStatement.Else.Statement);
+            var statementInsideIf = ifStatement.Statement.GetSingleStatementFromPossibleBlock();
+            var statementInsideElse = ifStatement.Else.Statement.GetSingleStatementFromPossibleBlock();
             var returnIf = statementInsideIf as ReturnStatementSyntax;
             var returnElse = statementInsideElse as ReturnStatementSyntax;
             var condition = returnIf.Expression is LiteralExpressionSyntax
