@@ -38,6 +38,8 @@
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
     <Compile Include="ConvertToSwitchAnalyzer.cs" />
     <Compile Include="ConvertToSwitchCodeFixProvider.cs" />
+    <Compile Include="CopyEventToVariableBeforeFireAnalyzer.cs" />
+    <Compile Include="CopyEventToVariableBeforeFireCodeFixProvider.cs" />
     <Compile Include="ExistenceOperatorAnalyzer.cs" />
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
     <Compile Include="EmptyFinalizerAnalyzer.cs" />
@@ -72,6 +74,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnnecessaryParenthesisAnalyzer.cs" />
     <Compile Include="UnnecessaryParenthesisCodeFixProvider.cs" />
+    <Compile Include="UseInvokeMethodToFireEventAnalyzer.cs" />
+    <Compile Include="UseInvokeMethodToFireEventCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeCracker.nuspec">
