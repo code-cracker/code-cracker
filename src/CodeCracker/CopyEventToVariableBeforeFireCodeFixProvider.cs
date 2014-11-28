@@ -39,7 +39,7 @@ namespace CodeCracker
 
         private async Task<Document> CreateVariable(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
         {
-            var handlerName = "handler"; //TODO: validate variable name in the scope
+            var handlerName = "handler";
 
             var variable =
                     SyntaxFactory.LocalDeclarationStatement(
