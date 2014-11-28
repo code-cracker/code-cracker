@@ -40,6 +40,8 @@
     <Compile Include="ConvertToSwitchCodeFixProvider.cs" />
     <Compile Include="CopyEventToVariableBeforeFireAnalyzer.cs" />
     <Compile Include="CopyEventToVariableBeforeFireCodeFixProvider.cs" />
+    <Compile Include="DisposablesShouldCallSuppressFinalizeAnalyzer.cs" />
+    <Compile Include="DisposablesShouldCallSuppressFinalizeCodeFixProvider.cs" />
     <Compile Include="ExistenceOperatorAnalyzer.cs" />
     <Compile Include="ExistenceOperatorCodeFixProvider.cs" />
     <Compile Include="Extensions\AnalyzerExtensions.cs" />

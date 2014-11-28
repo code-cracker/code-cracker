@@ -112,6 +112,7 @@
     <Compile Include="ArgumentExceptionTests.cs" />
     <Compile Include="ConvertToSwitchTests.cs" />
     <Compile Include="CopyEventToVariableBeforeFireTests.cs" />
+    <Compile Include="DisposablesShouldCallSuppressFinalizeTests.cs" />
     <Compile Include="EmptyFinalizerTests.cs" />
     <Compile Include="ExistenceOperatorTests.cs" />
     <Compile Include="MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
