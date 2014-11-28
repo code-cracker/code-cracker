@@ -29,9 +29,7 @@ namespace CodeCracker
             var invocation = (InvocationExpressionSyntax)context.Node;
             var typeInfo = context.SemanticModel.GetTypeInfo(invocation.Expression, context.CancellationToken);
 
-            if (typeInfo.ConvertedType == null) return;
-
-            if (typeInfo.ConvertedType.BaseType == null) return;
+            if (typeInfo.ConvertedType?.BaseType == null) return;
 
             var symbol = context.SemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
 
