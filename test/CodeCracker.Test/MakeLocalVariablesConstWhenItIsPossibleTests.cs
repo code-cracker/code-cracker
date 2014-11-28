@@ -5,8 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class MakeLocalVariablesConstWhenItIsPossibleTests : 
-        CodeFixTest<MakeLocalVariableConstWhenItIsPossibleAnalyzer, MakeLocalVariableConstWhenItIsPossibleCodeFixProvider>
+    public class MakeLocalVariablesConstWhenItIsPossibleTests : CodeFixTest<MakeLocalVariableConstWhenItIsPossibleAnalyzer, MakeLocalVariableConstWhenItIsPossibleCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresConstantDeclarations()
@@ -24,7 +23,6 @@ namespace CodeCracker.Test
             }
         }
     }";
-
             await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
@@ -45,7 +43,6 @@ namespace CodeCracker.Test
             }
         }
     }";
-
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -65,7 +62,6 @@ namespace CodeCracker.Test
             }
         }
     }";
-
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -86,7 +82,6 @@ namespace CodeCracker.Test
         }
         class Foo {}
     }";
-
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -111,8 +106,6 @@ namespace CodeCracker.Test
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        
-
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstant()
         {
@@ -136,7 +129,6 @@ namespace CodeCracker.Test
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
-
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -163,7 +155,6 @@ namespace CodeCracker.Test
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
-
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -191,7 +182,6 @@ namespace CodeCracker.Test
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
-
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -211,7 +201,6 @@ namespace CodeCracker.Test
             }
         }
     }";
-
             const string expected = @"
     using System;
 
@@ -244,7 +233,6 @@ namespace CodeCracker.Test
             }
         }
     }";
-
             const string expected = @"
     using System;
 
@@ -255,6 +243,38 @@ namespace CodeCracker.Test
             public async Task Foo()
             {
                 const int a = 10;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task FixMakesAVariableConstWhenDeclarationUsesVarWithString()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public async Task Foo()
+            {
+                var a = """";
+            }
+        }
+    }";
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public async Task Foo()
+            {
+                const string a = """";
             }
         }
     }";
@@ -350,7 +370,9 @@ namespace CodeCracker.Test
         {
             public async Task Foo()
             {
+                //comment a
                 var a = null;
+                //comment b
             }
         }
 
@@ -366,7 +388,9 @@ namespace CodeCracker.Test
         {
             public async Task Foo()
             {
+                //comment a
                 const var a = null;
+                //comment b
             }
         }
 
@@ -374,6 +398,5 @@ namespace CodeCracker.Test
     }";
             await VerifyCSharpFixAsync(test, expected);
         }
-
     }
 }

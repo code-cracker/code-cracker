@@ -50,42 +50,31 @@ namespace CodeCracker
             {
                 var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
-                // using var = ...
                 var aliasInfo = semanticModel.GetAliasInfo(typeName);
                 if (aliasInfo == null)
                 {
                     var type = semanticModel.GetTypeInfo(typeName).ConvertedType;
                     if (type.Name != "var")
                     {
-                        var newtypeName = SyntaxFactory.ParseTypeName(type.ToDisplayString())
-                           .WithLeadingTrivia(typeName.GetLeadingTrivia())
-                           .WithTrailingTrivia(typeName.GetTrailingTrivia())
-                           .WithAdditionalAnnotations(Simplifier.Annotation);
-
+                        var newtypeName = SyntaxFactory.ParseTypeName(type.ToDisplayString());
                         declaration = declaration.WithType(newtypeName);
-
                     }
                 }
             }
 
-            var @const = SyntaxFactory.Token(
-                localDeclaration.GetLeadingTrivia(),
-                SyntaxKind.ConstKeyword,
-                SyntaxFactory.TriviaList(SyntaxFactory.ElasticMarker)
-                );
+            var @const = SyntaxFactory.Token(SyntaxKind.ConstKeyword)
+                .WithLeadingTrivia(localDeclaration.GetLeadingTrivia());
 
             var modifiers = localDeclaration.Modifiers.Insert(0, @const);
 
             var newLocalDeclaration = localDeclaration
-                .WithLeadingTrivia(SyntaxTriviaList.Empty)
                 .WithModifiers(modifiers)
-                .WithDeclaration(declaration)
+                .WithDeclaration(declaration.WithoutLeadingTrivia())
+                .WithTrailingTrivia(localDeclaration.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-
 
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(localDeclaration, newLocalDeclaration);
-
             return document.WithSyntaxRoot(newRoot);
         }
     }

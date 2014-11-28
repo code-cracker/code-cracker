@@ -17,8 +17,7 @@ namespace CodeCracker
         internal const string Category = "Syntax";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true);
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-        { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
         public override void Initialize(AnalysisContext context)
         {
@@ -30,74 +29,46 @@ namespace CodeCracker
             var localDeclaration = (LocalDeclarationStatementSyntax)context.Node;
             var semanticModel = context.SemanticModel;
 
-            // already const?
-            if (
-                !localDeclaration.IsConst &&
-                IsDeclarationConstFriendly(localDeclaration, semanticModel) &&
-                AreVariablesOnlyWrittenInsideDeclaration(localDeclaration, semanticModel)
-                )
+            if (!localDeclaration.IsConst
+                && IsDeclarationConstFriendly(localDeclaration, semanticModel)
+                && AreVariablesOnlyWrittenInsideDeclaration(localDeclaration, semanticModel) )
             {
                 var diagnostic = Diagnostic.Create(Rule, localDeclaration.GetLocation());
                 context.ReportDiagnostic(diagnostic);
             }
         }
 
-        static bool IsDeclarationConstFriendly(
-            LocalDeclarationStatementSyntax declaration,
-            SemanticModel semanticModel
-            )
+        static bool IsDeclarationConstFriendly(LocalDeclarationStatementSyntax declaration, SemanticModel semanticModel)
         {
             // all variables could be const?
             foreach (var variable in declaration.Declaration.Variables)
             {
-                // has initializer
-                if (variable.Initializer == null)
-                {
-                    return false;
-                }
-
+                if (variable.Initializer == null) return false;
 
                 // is constant
-                var constantValue = semanticModel.GetConstantValue(
-                    variable.Initializer.Value
-                    );
+                var constantValue = semanticModel.GetConstantValue(variable.Initializer.Value);
                 var valueIsConstant = constantValue.HasValue;
-                if (!valueIsConstant)
-                {
-                    return false;
-                }
+                if (!valueIsConstant) return false;
 
                 // if reference type, value is null?
                 var variableTypeName = declaration.Declaration.Type;
                 var variableType = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
-                if (variableType.IsReferenceType && constantValue.Value != null)
-                {
-                    return false;
-                }
+                if (variableType.IsReferenceType && variableType.SpecialType != SpecialType.System_String && constantValue.Value != null) return false;
 
                 // value can be converted to variable type?
                 var conversion = semanticModel.ClassifyConversion(variable.Initializer.Value, variableType);
-                if (!conversion.Exists || conversion.IsUserDefined)
-                {
-                    return false;
-                }
+                if (!conversion.Exists || conversion.IsUserDefined) return false;
             }
-
             return true;
         }
 
-        static bool AreVariablesOnlyWrittenInsideDeclaration(
-            LocalDeclarationStatementSyntax declaration,
-            SemanticModel semanticModel
-            )
+        static bool AreVariablesOnlyWrittenInsideDeclaration(LocalDeclarationStatementSyntax declaration, SemanticModel semanticModel)
         {
             var dfa = semanticModel.AnalyzeDataFlow(declaration);
-            var symbols =
-                from variable in declaration.Declaration.Variables
-                select semanticModel.GetDeclaredSymbol(variable);
-
-            var result = !(symbols.Any(s => dfa.WrittenOutside.Contains(s)));
-            return result; 
+            var symbols = from variable in declaration.Declaration.Variables
+                          select semanticModel.GetDeclaredSymbol(variable);
+            var result = !symbols.Any(s => dfa.WrittenOutside.Contains(s));
+            return result;
         }
     }
 }
