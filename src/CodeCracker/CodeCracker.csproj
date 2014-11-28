@@ -42,6 +42,8 @@
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
     <Compile Include="EmptyFinalizerAnalyzer.cs" />
     <Compile Include="EmptyFinalizerCodeFixProvider.cs" />
+    <Compile Include="MakeLocalVariableConstWhenItIsPossibleAnalyzer.cs" />
+    <Compile Include="MakeLocalVariableConstWhenItIsPossibleCodeFixProvider.cs" />
     <Compile Include="NameOfAnalyzer.cs" />
     <Compile Include="NameOfCodeFixProvider.cs" />
     <Compile Include="RegexAnalyzer.cs" />
