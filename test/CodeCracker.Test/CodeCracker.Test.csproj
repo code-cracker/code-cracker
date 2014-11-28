@@ -111,6 +111,7 @@
     <Compile Include="AlwaysUseVarTests.cs" />
     <Compile Include="ArgumentExceptionTests.cs" />
     <Compile Include="ConvertToSwitchTests.cs" />
+    <Compile Include="DirectEventInvocationTests.cs" />
     <Compile Include="EmptyFinalizerTests.cs" />
     <Compile Include="MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
     <Compile Include="NameOfTests.cs" />
