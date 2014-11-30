@@ -57,6 +57,31 @@ class C
         }
 
         [Fact]
+        public Task ConvertStringToVerbatimKeepComments()
+        {
+            const string before = @"
+class C
+{
+    void M()
+    {
+        var s = /*Hi*/""Hello ├┤world"" // Hello message;
+    }
+}";
+
+            const string expected = @"
+class C
+{
+    void M()
+    {
+        var s = /*Hi*/@""Hello world"" // Hello message;
+    }
+}";
+
+            return VerifyCSharpRefactoringAsync(before, expected,
+                StringTypeCodeRefactoringProvider.ToVerbatimId);
+        }
+
+        [Fact]
         public Task ConvertStringToVerbatimSelection()
         {
             const string before = @"
@@ -200,6 +225,31 @@ class C
     void M()
     {
         var s = ""Hello world"";
+    }
+}";
+
+            return VerifyCSharpRefactoringAsync(before, expected,
+                StringTypeCodeRefactoringProvider.ToRegularId);
+        }
+
+        [Fact]
+        public Task ConvertVerbatimToStringKeepComments()
+        {
+            const string before = @"
+class C
+{
+    void M()
+    {
+        var s = /*Hi*/@""Hello ├┤world"" // Hello ;
+    }
+}";
+
+            const string expected = @"
+class C
+{
+    void M()
+    {
+        var s = /*Hi*/""Hello world"" // Hello ;
     }
 }";
 

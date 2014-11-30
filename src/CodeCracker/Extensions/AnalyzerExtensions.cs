@@ -54,5 +54,15 @@ namespace CodeCracker
                 return statement;
             }
         }
+
+        public static SyntaxNode WithSameTriviaAs(this SyntaxNode target, SyntaxNode source)
+        {
+            if (target == null) throw new ArgumentNullException(nameof(target));
+            if (source == null) throw new ArgumentNullException(nameof(target));
+
+            return target
+                .WithLeadingTrivia(source.GetLeadingTrivia())
+                .WithTrailingTrivia(source.GetTrailingTrivia());
+        }
     }
 }

@@ -32,7 +32,11 @@ namespace CodeCracker
                 && literalExpression.Token.Text.StartsWith("@\"");
 
             Func<SyntaxNode,Task<Document>> createChangedDocument =
-                replacement => Task.FromResult(context.Document.WithSyntaxRoot(root.ReplaceNode(node, replacement)));
+                replacement => {
+                    var finalReplacement = replacement.WithSameTriviaAs(node);
+                    var newRoot = root.ReplaceNode(node, finalReplacement);
+                    return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
+                };
 
             CodeAction codeAction;
             if (isVerbatim)
