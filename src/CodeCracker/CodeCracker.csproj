@@ -70,6 +70,7 @@
     <Compile Include="SealedAttributeCodeFixProvider.cs" />
     <Compile Include="StaticConstructorExceptionAnalyzer.cs" />
     <Compile Include="StaticConstructorExceptionCodeFixProvider.cs" />
+    <Compile Include="StringTypeCodeRefactoringProvider.cs" />
     <Compile Include="TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorAnalyzer.cs" />
     <Compile Include="RethrowExceptionCodeFixProvider.cs" />

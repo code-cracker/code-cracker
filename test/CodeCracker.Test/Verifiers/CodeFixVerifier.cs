@@ -46,8 +46,8 @@ namespace TestHelper
         {
             if (formatBeforeCompare)
             {
-                oldSource = await FormatSourceAsync(LanguageNames.CSharp, oldSource);
-                newSource = await FormatSourceAsync(LanguageNames.CSharp, newSource);
+                oldSource = await TestHelpers.FormatSourceAsync(LanguageNames.CSharp, oldSource);
+                newSource = await TestHelpers.FormatSourceAsync(LanguageNames.CSharp, newSource);
             }
             await VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
         }
@@ -79,7 +79,7 @@ namespace TestHelper
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
         private async Task VerifyFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
         {
-            var document = CreateDocument(oldSource, language);
+            var document = TestHelpers.CreateDocument(oldSource, language);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
             var attempts = analyzerDiagnostics.Length;
@@ -127,15 +127,8 @@ namespace TestHelper
             }
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
-            var actual = await GetStringFromDocumentAsync(document);
+            var actual = await TestHelpers.GetStringFromDocumentAsync(document);
             Assert.Equal(newSource, actual);
-        }
-
-        public static async Task<string> FormatSourceAsync(string language, string source)
-        {
-            var document = CreateDocument(source, language);
-            var newDoc = await Formatter.FormatAsync(document);
-            return (await newDoc.GetSyntaxRootAsync()).ToFullString();
         }
     }
 }
