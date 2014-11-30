@@ -14,8 +14,20 @@ namespace CodeCracker
         internal const string Title = "Don't throw exception inside static constructors.";
         internal const string MessageFormat = "Don't throw exception inside static constructors.";
         internal const string Category = "Usage";
+        const string Description = "Static constructor are called before the first time a class is used but the "
+            + "caller doesn't control when exactly.\r\n"
+            + "Exception thrown in this context force callers to use 'try' block around any useage of the class "
+            + "and should be avoided.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

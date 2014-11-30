@@ -14,7 +14,18 @@ namespace CodeCracker
         internal const string Title = "You should use nameof instead of the parameter string";
         internal const string MessageFormat = "Use 'nameof({0})' instead of specifying the parameter name.";
         internal const string Category = "Syntax";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+        const string Description = "In C#6 the nameof() operator should be used to specify the name of a parameter instead of "
+            + "a string literal as it produce code that is easier to refactor.";
+
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

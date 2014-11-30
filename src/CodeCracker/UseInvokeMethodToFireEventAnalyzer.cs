@@ -14,8 +14,18 @@ namespace CodeCracker
         internal const string Title = "Use Invoke Method To Fire Event Analyzer";
         internal const string MessageFormat = "Use ?.Invoke operator and method to fire '{0}' event.";
         internal const string Category = "Warning";
+        const string Description = "In C#6 an event can be invoked using the null-propagating operator (?.) and it's"
+            + "invoke method to avoid throwing a NullReference exception when there is no event handler attached.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

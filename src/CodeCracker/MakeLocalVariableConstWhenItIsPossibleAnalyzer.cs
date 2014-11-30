@@ -15,7 +15,16 @@ namespace CodeCracker
         internal const string Title = "Make Local Variable Constant.";
         internal const string MessageFormat = "This variables can be made const.";
         internal const string Category = "Syntax";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true);
+        const string Description = "This variable is assigned a constant value and never changed it can be made 'const'";
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Info,
+            isEnabledByDefault: true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

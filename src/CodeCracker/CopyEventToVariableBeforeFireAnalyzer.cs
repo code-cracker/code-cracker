@@ -14,8 +14,19 @@ namespace CodeCracker
         internal const string Title = "Copy Event To Variable Before Fire";
         internal const string MessageFormat = "Copy the '{0}' event to a variable before fire it.";
         internal const string Category = "Warning";
-
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true);
+        const string Description = "Events should always be checked for null before being invoked.\r\n"
+            + "As in a multi-threading context it is possible for an event to be unsuscribed between "
+            + "the moment where it is checked to be non-null and the moment it is raised the event must "
+            + "be copied to a temporary variable before the check.";
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

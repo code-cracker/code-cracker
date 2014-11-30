@@ -12,8 +12,18 @@ namespace CodeCracker
         internal const string Title = "Unsealed Attribute";
         internal const string MessageFormat = "Mark '{0}' as sealed.";
         internal const string Category = "Performance";
+        const string Description = "Framework methods that retrieve attributes by default search the whole "
+            + "inheritence hierarchy of the attribute class. "
+            + "Marking the type as sealed eliminate this search and can improve performance";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

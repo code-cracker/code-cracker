@@ -17,8 +17,24 @@ namespace CodeCracker
         public const string DiagnosticIdForIfWithAssignment = "CC0014";
         internal const string TitleForIfWithAssignment = "User ternary operator";
         internal const string MessageFormatForIfWithAssignment = "{0}";
-        internal static DiagnosticDescriptor RuleForIfWithReturn = new DiagnosticDescriptor(DiagnosticIdForIfWithReturn, TitleForIfWithReturn, MessageFormatForIfWithReturn, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
-        internal static DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(DiagnosticIdForIfWithAssignment, TitleForIfWithAssignment, MessageFormatForIfWithAssignment, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+
+        internal static DiagnosticDescriptor RuleForIfWithReturn = new DiagnosticDescriptor(
+            DiagnosticIdForIfWithReturn,
+            TitleForIfWithReturn,
+            MessageFormatForIfWithReturn,
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticIdForIfWithReturn));
+
+        internal static DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(
+            DiagnosticIdForIfWithAssignment,
+            TitleForIfWithAssignment,
+            MessageFormatForIfWithAssignment,
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticIdForIfWithAssignment));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForIfWithReturn, RuleForIfWithAssignment); } }
 

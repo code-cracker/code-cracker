@@ -13,7 +13,17 @@ namespace CodeCracker
         internal const string Title = "Catch block cannot be empty";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
+        const string Description = "An empty catch block suppress all errors and shouldn't be used.\r\n"
+            +"If the error is expected consider logging it or changing the control flow such that it is explicit.";
+
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
