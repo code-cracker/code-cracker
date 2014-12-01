@@ -108,6 +108,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StringRepresentationTests.cs" />
     <Compile Include="AlwaysUseVarTests.cs" />
     <Compile Include="ArgumentExceptionTests.cs" />
     <Compile Include="ConvertToSwitchTests.cs" />

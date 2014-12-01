@@ -42,6 +42,8 @@
     <Compile Include="CopyEventToVariableBeforeFireCodeFixProvider.cs" />
     <Compile Include="DisposablesShouldCallSuppressFinalizeAnalyzer.cs" />
     <Compile Include="DisposablesShouldCallSuppressFinalizeCodeFixProvider.cs" />
+    <Compile Include="StringRepresentationCodeFixProvider.cs" />
+    <Compile Include="StringRepresentationAnalyzer.cs" />
     <Compile Include="ExistenceOperatorAnalyzer.cs" />
     <Compile Include="ExistenceOperatorCodeFixProvider.cs" />
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
