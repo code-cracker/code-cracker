@@ -22,7 +22,8 @@ namespace CodeCracker
             "Regular string",
             "Style",
             DiagnosticSeverity.Hidden,
-            isEnabledByDefault: true);
+            isEnabledByDefault: true,
+            helpLink: HelpLink.ForDiagnostic(RegularStringId));
 
         internal static DiagnosticDescriptor VerbatimStringRule = new DiagnosticDescriptor(
             VerbatimStringId,
@@ -30,7 +31,8 @@ namespace CodeCracker
             "Verbatim string",
             "Style",
             DiagnosticSeverity.Hidden,
-            isEnabledByDefault: true);
+            isEnabledByDefault: true,
+            helpLink: HelpLink.ForDiagnostic(VerbatimStringId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(RegularStringRule, VerbatimStringRule);
