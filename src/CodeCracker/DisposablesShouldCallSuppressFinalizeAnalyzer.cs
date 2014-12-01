@@ -13,8 +13,18 @@ namespace CodeCracker
         internal const string Title = "Disposables Should Call Suppress Finalize";
         internal const string MessageFormat = "'{0}' should call GC.SuppressFinalize inside the Dispose method.";
         internal const string Category = "Warning";
-
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true);
+        const string Description = "Classes implementing IDisposable should call the GC.SuppressFinalize method in their "
+            + "finalize method to avoid any finalizer from being called.\r\n"
+            + "This rule should be followed even if the class doesn't have a finalizer as a derived class could have one.";
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            true,
+            description:Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

@@ -14,7 +14,18 @@ namespace CodeCracker
         internal const string Title = "Invalid argument name";
         internal const string MessageFormat = "Type argument '{0}' is not in the argument list.";
         internal const string Category = "Naming";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+        const string Description = "The string passed as the 'paramName' argument of ArgumentException constructor "
+            + "must be the name of one of the method arguments.\r\n"
+            + "It can be either specified directly or using the nameof() operator (C#6 only)";
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description:Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

@@ -17,8 +17,18 @@ namespace CodeCracker
         internal const string Category = "Syntax";
         public const string DiagnosticIdAssignment = "CC0009";
         internal const string TitleAssignment = "Use object initializer";
+        const string Description = "When possible an object initializer should be used to initialize the properties of an "
+            + "object instead of multiple assignments.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticIdLocalDeclaration, TitleLocalDeclaration, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticIdLocalDeclaration,
+            TitleLocalDeclaration,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticIdLocalDeclaration));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
