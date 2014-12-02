@@ -11,9 +11,12 @@ namespace CodeCracker
     public class RemoveWhereWhenItIsPossibleAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CC0011";
-        internal const string Title = "You should remove the 'Where' invokation when it is possible.";
+        internal const string Title = "You should remove the 'Where' invocation when it is possible.";
         internal const string MessageFormat = "You can remove 'Where' moving the predicate to '{0}'.";
         internal const string Category = "Syntax";
+        const string Description = "When a linq operator support a predicate parameter it should be used instead of "
+            + "using 'Where' followed by the operator";
+
         static readonly string[] supportedMethods = new[] {
             "First",
             "FirstOrDefault",
@@ -24,7 +27,15 @@ namespace CodeCracker
             "SingleOrDefault",
             "Count"
         };
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -45,7 +56,7 @@ namespace CodeCracker
             if (!supportedMethods.Contains(candidate)) return;
 
             if (nextMethodInvoke.ArgumentList.Arguments.Any()) return;
-
+            
             var diagnostic = Diagnostic.Create(Rule, GetNameExpressionOfTheInvokedMethod(whereInvoke).GetLocation(), candidate);
             context.ReportDiagnostic(diagnostic);
         }

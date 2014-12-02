@@ -13,7 +13,19 @@ namespace CodeCracker
         internal const string Title = "Unnecessary Parenthesis";
         internal const string MessageFormat = "{0}";
         internal const string Category = "Syntax";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+        const string Description = "There is no need to specify that the no-parameter constructor is used with "
+            + " an initializer as it is implicit";
+
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            customTags: WellKnownDiagnosticTags.Unnecessary,
+            isEnabledByDefault: true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

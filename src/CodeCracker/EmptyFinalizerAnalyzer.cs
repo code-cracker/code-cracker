@@ -14,8 +14,20 @@ namespace CodeCracker
         internal const string Title = "Remove Empty Finalizers";
         internal const string MessageFormat = "Remove Empty Finalizers";
         internal const string Category = "Performance";
+        const string Description = "An empty finalizer will stop your object from being collected immediately by the "
+            + "Garbage Collector when no longer used."
+            + "It will instead be placed in the finalizer queue needlessly using resources.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            true,
+            customTags: WellKnownDiagnosticTags.Unnecessary,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

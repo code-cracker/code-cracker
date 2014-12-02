@@ -112,7 +112,13 @@
     <Compile Include="ArgumentExceptionTests.cs" />
     <Compile Include="ConvertSimpleLambdaExpressionToMethodInvocationTests.cs" />
     <Compile Include="ConvertToSwitchTests.cs" />
+    <Compile Include="CopyEventToVariableBeforeFireTests.cs" />
+    <Compile Include="DisposablesShouldCallSuppressFinalizeTests.cs" />
     <Compile Include="EmptyFinalizerTests.cs" />
+    <Compile Include="ExistenceOperatorTests.cs" />
+    <Compile Include="MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
+    <Compile Include="NameOfTests.cs" />
+    <Compile Include="Helpers\TestHelpers.cs" />
     <Compile Include="RegexTests.cs" />
     <Compile Include="EmptyCatchBlockTests.cs" />
     <Compile Include="EmptyObjectInitializerTests.cs" />
@@ -123,8 +129,10 @@
     <Compile Include="RemoveWhereWhenItIsPossibleTests.cs" />
     <Compile Include="SealedAttributeTests.cs" />
     <Compile Include="StaticConstructorExceptionTests.cs" />
+    <Compile Include="StringTypeCodeRefactoringProviderTests.cs" />
     <Compile Include="TernaryOperatorTests.cs" />
     <Compile Include="UnnecessaryParenthesisTests.cs" />
+    <Compile Include="UseInvokeMethodToFireEventTests.cs" />
     <Compile Include="Verifiers\CodeFixTest.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticTest.cs" />
@@ -134,6 +142,7 @@
     <Compile Include="Helpers\DiagnosticVerifier.Helper.cs" />
     <Compile Include="RethrowExceptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Verifiers\RefactoringVerifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

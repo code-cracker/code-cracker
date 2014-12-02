@@ -455,5 +455,89 @@ namespace ConsoleApplication1
 }";
             await VerifyCSharpFixAsync(test, expected, formatBeforeCompare: false);
         }
+
+        [Fact]
+        public async Task FixDoesNotRemoveComments()
+        {
+            const string test = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public async Task Foo(string s)
+        {
+
+            //comment 0
+            if (foo == ""foo1"")
+            {
+                //comment 1
+                DoStuff();
+                //comment extra
+                DoStuff();
+            }
+            //comment 2
+            else if (foo == ""foo2"")
+            {
+                //comment 3
+                DoStuff();
+            }
+            else if (foo == ""foo3"")
+            {
+                //comment 3
+                DoStuff();
+            }
+            //comment 4
+            else
+            {
+                //comment 5
+                DoStuff();
+            }
+            //comment 6
+        }
+    }
+}";
+
+            const string expected = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public async Task Foo(string s)
+        {
+
+            //comment 0
+            switch (foo)
+            {
+                case ""foo1"":
+                    //comment 1
+                    DoStuff();
+                    //comment extra
+                    DoStuff();
+                    break;
+                //comment 2
+                case ""foo2"":
+                    //comment 3
+                    DoStuff();
+                    break;
+                case ""foo3"":
+                    //comment 3
+                    DoStuff();
+                    break;
+                //comment 4
+                default:
+                    //comment 5
+                    DoStuff();
+                    break;
+            }
+            //comment 6
+        }
+    }
+}";
+            await VerifyCSharpFixAsync(test, expected, formatBeforeCompare: false);
+        }
     }
 }

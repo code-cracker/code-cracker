@@ -14,7 +14,18 @@ namespace CodeCracker
         internal const string Title = "You should use 'var' whenever possible.";
         internal const string MessageFormat = "Use 'var' instead of specifying the type name.";
         internal const string Category = "Syntax";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+        const string Description = "Usage of an implicit type improve readability of the code.\r\n"
+            + "Code depending on types for their readability should be refactored with better variable "
+            + "names or by introducing well-named methods.";
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description:Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
