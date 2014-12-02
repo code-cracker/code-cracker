@@ -36,6 +36,7 @@
     <Compile Include="AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="ArgumentExceptionAnalyzer.cs" />
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
+    <Compile Include="Style\ConvertToExpressionBodiedMemberAnalyzer.cs" />
     <Compile Include="ConvertToSwitchAnalyzer.cs" />
     <Compile Include="ConvertToSwitchCodeFixProvider.cs" />
     <Compile Include="CopyEventToVariableBeforeFireAnalyzer.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="StaticConstructorExceptionAnalyzer.cs" />
     <Compile Include="StaticConstructorExceptionCodeFixProvider.cs" />
     <Compile Include="StringTypeCodeRefactoringProvider.cs" />
+    <Compile Include="Style\ConvertToExpressionBodiedMemberCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="TernaryOperatorAnalyzer.cs" />
     <Compile Include="RethrowExceptionCodeFixProvider.cs" />
