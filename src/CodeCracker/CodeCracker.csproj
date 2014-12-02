@@ -36,6 +36,8 @@
     <Compile Include="AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="ArgumentExceptionAnalyzer.cs" />
     <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
+    <Compile Include="CallExtensionMethodAsExtensionAnalyzer.cs" />
+    <Compile Include="CallExtensionMethodAsExtensionCodeFixProvider.cs" />
     <Compile Include="ConvertToSwitchAnalyzer.cs" />
     <Compile Include="ConvertToSwitchCodeFixProvider.cs" />
     <Compile Include="CopyEventToVariableBeforeFireAnalyzer.cs" />

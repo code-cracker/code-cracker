@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="AlwaysUseVarTests.cs" />
     <Compile Include="ArgumentExceptionTests.cs" />
+    <Compile Include="CallExtensionMethodAsExtensionTests.cs" />
     <Compile Include="ConvertToSwitchTests.cs" />
     <Compile Include="CopyEventToVariableBeforeFireTests.cs" />
     <Compile Include="DisposablesShouldCallSuppressFinalizeTests.cs" />
