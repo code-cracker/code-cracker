@@ -42,9 +42,34 @@ namespace CodeCracker
             root = root.ReplaceNode(lambda as ExpressionSyntax, methodName as ExpressionSyntax);
             var newDocument = context.Document.WithSyntaxRoot(root);
 
+            // verify that the conversion is correct
+            var newSemanticModel = await newDocument.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+            var newRoot = await newDocument.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+            var identifierToken = newRoot.FindToken(diagnosticSpan.Start);
+            var newDiagnostics = newSemanticModel.Compilation.GetDiagnostics(context.CancellationToken);
+            var diagnosticErrors = newDiagnostics.WhereAsArray(i => i.Severity == DiagnosticSeverity.Error);
+            if (diagnosticErrors.Any(error => LocationOverlapsIdentifierName(identifierToken.Parent, error)))
+                return;
+
             context.RegisterFix(CodeAction.Create(
                 "Use method name instead of lambda expression when signatures match",
                 newDocument), diagnostic);
+        }
+
+        private bool LocationOverlapsIdentifierName(SyntaxNode node, Diagnostic error)
+        {
+            var errorLocation = error.Location;
+            if (errorLocation == null)
+                return false;
+
+            var nodeLocation = node.GetLocation();
+            if (nodeLocation == null)
+                return false;
+
+            if (errorLocation.SourceTree != nodeLocation.SourceTree)
+                return false;
+
+            return nodeLocation.SourceSpan.OverlapsWith(errorLocation.SourceSpan);
         }
     }
 }
