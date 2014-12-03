@@ -55,6 +55,8 @@
     <Compile Include="Performance\MakeLocalVariableConstWhenItIsPossibleCodeFixProvider.cs" />
     <Compile Include="Design\NameOfAnalyzer.cs" />
     <Compile Include="Design\NameOfCodeFixProvider.cs" />
+    <Compile Include="Refactoring\InvertForAnalyzer.cs" />
+    <Compile Include="Refactoring\InvertForCodeFixProvider.cs" />
     <Compile Include="Usage\RegexAnalyzer.cs" />
     <Compile Include="Design\EmptyCatchBlockCodeFixProvider.cs" />
     <Compile Include="Design\EmptyCatchBlockAnalyzer.cs" />
