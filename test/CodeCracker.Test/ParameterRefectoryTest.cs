@@ -8,7 +8,7 @@ namespace CodeCracker.Test
     {
 
         [Fact]
-        public void WhenMethodDoesNotThreeParametersNotSuggestionANewClass()
+        public async void WhenMethodDoesNotThreeParametersNotSuggestionANewClass()
         {
             const string test = @"
     using System;
@@ -23,14 +23,13 @@ namespace CodeCracker.Test
             }
         }
     }";
-
-            VerifyCSharpHasNoDiagnostics(test);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
 
 
         [Fact]
-        public void ShouldUpdateParameterToClass()
+        public async void ShouldUpdateParameterToClass()
         {
             const string oldTest = @"
     using System;
@@ -67,14 +66,14 @@ namespace ConsoleApplication1
          public string D { get; set; }
     }
 }";
-            VerifyCSharpFix(oldTest, newTest, 0);
+            await VerifyCSharpFixAsync(oldTest, newTest, 0);
 
 
 
         }
 
         [Fact]
-        public void WhenHasNotNameSpaceShouldGenerateClassParameter()
+        public async void WhenHasNotNameSpaceShouldGenerateClassParameter()
         {
             const string oldTest = @"
     using System;
@@ -106,14 +105,14 @@ public class NewClassFoo
     public string D { get; set; }
 }";
 
-            VerifyCSharpFix(oldTest, newTest, 0);
+            await VerifyCSharpFixAsync(oldTest, newTest, 0);
 
 
 
         }
 
         [Fact]
-        public void ShouldGenerateNewClassFoo2()
+        public async void ShouldGenerateNewClassFoo2()
         {
             const string oldTest = @"
     using System;
@@ -176,7 +175,7 @@ namespace ConsoleApplication1
          public string D { get; set; }
     }
 }";
-            VerifyCSharpFix(oldTest, newTest, 0);
+            await VerifyCSharpFixAsync(oldTest, newTest, 0);
 
 
         }
