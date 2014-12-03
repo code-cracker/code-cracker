@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -8,7 +9,7 @@ namespace CodeCracker.Test
     {
 
         [Fact]
-        public async void WhenMethodDoesNotThreeParametersNotSuggestionANewClass()
+        public async Task WhenMethodDoesNotThreeParametersNotSuggestionANewClass()
         {
             const string test = @"
     using System;
@@ -27,9 +28,32 @@ namespace CodeCracker.Test
 
         }
 
+        [Fact]
+        public async Task WhenMethodHasElementBodyAndHasMoreThreeParametersShouldNotSuggestionANewClass()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo(string name,string age,int day,int year)
+            {
+                if(true)
+                {
+                   day = 10;
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+
+        }
+
 
         [Fact]
-        public async void ShouldUpdateParameterToClass()
+        public async Task ShouldUpdateParameterToClass()
         {
             const string oldTest = @"
     using System;
@@ -73,7 +97,7 @@ namespace ConsoleApplication1
         }
 
         [Fact]
-        public async void WhenHasNotNameSpaceShouldGenerateClassParameter()
+        public async Task WhenHasNotNameSpaceShouldGenerateClassParameter()
         {
             const string oldTest = @"
     using System;

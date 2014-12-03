@@ -33,7 +33,7 @@ namespace CodeCracker
 
             if (!contentParameter.Parameters.Any() || contentParameter.Parameters.Count <= 3) return;
 
-            if (method.Body.Statements.OfType<BlockSyntax>().Count() > 0) return;
+            if (method.Body.ChildNodes().Count() > 0) return;
 
             var diagnostic = Diagnostic.Create(Rule, contentParameter.GetLocation(), "You can use new Class instead of for.");
 
