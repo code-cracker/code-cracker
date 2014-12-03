@@ -49,7 +49,7 @@ namespace CodeCracker.Style
                 return;
             }
 
-            if (body.Statements.Count > 1)
+            if (body.Statements.Count != 1)
             {
                 return;
             }
@@ -85,7 +85,7 @@ namespace CodeCracker.Style
             }
 
             var body = accessors[0].Body;
-            if (body.Statements.Count > 1)
+            if (body.Statements.Count != 1)
             {
                 return;
             }
