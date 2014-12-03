@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style
+namespace CodeCracker.Style.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertToExpressionBodiedMemberAnalyzer
@@ -14,7 +14,7 @@ namespace CodeCracker.Style
         public const string DiagnosticId = "CC0038";
         internal const string Title = "You should use expression bodied members whenever possible.";
         internal const string MessageFormat = "Use an expression bodied member.";
-        internal const string Category = "Style";
+        internal const string Category = SupportedCategories.Style;
         const string Description = "Usage of an expression bodied members improve readability of the code.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(

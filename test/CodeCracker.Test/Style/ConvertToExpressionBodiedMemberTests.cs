@@ -1,17 +1,12 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.Style.Style;
 using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
 namespace CodeCracker.Test.Style
 {
-    public class ConvertToExpressionBodiedMemberTests : 
-        CodeFixTest<ConvertToExpressionBodiedMemberAnalyzer, ConvertToExpressionBodiedMemberCodeFixProvider>
+    public class ConvertToExpressionBodiedMemberTests : CodeFixTest<ConvertToExpressionBodiedMemberAnalyzer, ConvertToExpressionBodiedMemberCodeFixProvider>
     {
         [Fact]
         public async Task FixReplacesMethodConventionalBodyWithArrowExpression()
@@ -341,5 +336,3 @@ using System;
 
     }
 }
-
-

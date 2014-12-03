@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,57 +33,58 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AlwaysUseVarAnalyzer.cs" />
-    <Compile Include="AlwaysUseVarCodeFixProvider.cs" />
-    <Compile Include="ArgumentExceptionAnalyzer.cs" />
-    <Compile Include="ArgumentExceptionCodeFixProvider.cs" />
+    <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
+    <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
+    <Compile Include="SupportedCategories.cs" />
+    <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
+    <Compile Include="Usage\ArgumentExceptionCodeFixProvider.cs" />
     <Compile Include="Style\ConvertToExpressionBodiedMemberAnalyzer.cs" />
-    <Compile Include="ConvertToSwitchAnalyzer.cs" />
-    <Compile Include="ConvertToSwitchCodeFixProvider.cs" />
-    <Compile Include="CopyEventToVariableBeforeFireAnalyzer.cs" />
-    <Compile Include="CopyEventToVariableBeforeFireCodeFixProvider.cs" />
-    <Compile Include="DisposablesShouldCallSuppressFinalizeAnalyzer.cs" />
-    <Compile Include="DisposablesShouldCallSuppressFinalizeCodeFixProvider.cs" />
-    <Compile Include="ExistenceOperatorAnalyzer.cs" />
-    <Compile Include="ExistenceOperatorCodeFixProvider.cs" />
+    <Compile Include="Style\ConvertToSwitchAnalyzer.cs" />
+    <Compile Include="Style\ConvertToSwitchCodeFixProvider.cs" />
+    <Compile Include="Design\CopyEventToVariableBeforeFireAnalyzer.cs" />
+    <Compile Include="Design\CopyEventToVariableBeforeFireCodeFixProvider.cs" />
+    <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeAnalyzer.cs" />
+    <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.cs" />
+    <Compile Include="Style\ExistenceOperatorAnalyzer.cs" />
+    <Compile Include="Style\ExistenceOperatorCodeFixProvider.cs" />
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
-    <Compile Include="EmptyFinalizerAnalyzer.cs" />
-    <Compile Include="EmptyFinalizerCodeFixProvider.cs" />
+    <Compile Include="Performance\EmptyFinalizerAnalyzer.cs" />
+    <Compile Include="Performance\EmptyFinalizerCodeFixProvider.cs" />
     <Compile Include="HelpLink.cs" />
-    <Compile Include="MakeLocalVariableConstWhenItIsPossibleAnalyzer.cs" />
-    <Compile Include="MakeLocalVariableConstWhenItIsPossibleCodeFixProvider.cs" />
-    <Compile Include="NameOfAnalyzer.cs" />
-    <Compile Include="NameOfCodeFixProvider.cs" />
-    <Compile Include="RegexAnalyzer.cs" />
-    <Compile Include="EmptyCatchBlockCodeFixProvider.cs" />
-    <Compile Include="EmptyCatchBlockAnalyzer.cs" />
-    <Compile Include="EmptyObjectInitializerCodeFixProvider.cs" />
-    <Compile Include="EmptyObjectInitializerAnalyzer.cs" />
-    <Compile Include="ForInArrayAnalyzer.cs" />
-    <Compile Include="ForInArrayCodeFixProvider.cs" />
-    <Compile Include="CatchEmptyAnalyzer.cs" />
-    <Compile Include="CatchEmptyCodeFixProvider.cs" />
-    <Compile Include="ObjectInitializerAnalyzer.cs" />
-    <Compile Include="IfReturnTrueCodeFixProvider.cs" />
-    <Compile Include="ObjectInitializerCodeFixProvider.cs" />
-    <Compile Include="IfReturnTrueAnalyzer.cs" />
-    <Compile Include="RemoveWhereWhenItIsPossibleAnalyzer.cs" />
-    <Compile Include="RemoveWhereWhenItIsPossibleCodeFixProvider.cs" />
-    <Compile Include="SealedAttributeAnalyzer.cs" />
-    <Compile Include="SealedAttributeCodeFixProvider.cs" />
-    <Compile Include="StaticConstructorExceptionAnalyzer.cs" />
-    <Compile Include="StaticConstructorExceptionCodeFixProvider.cs" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenItIsPossibleAnalyzer.cs" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenItIsPossibleCodeFixProvider.cs" />
+    <Compile Include="Design\NameOfAnalyzer.cs" />
+    <Compile Include="Design\NameOfCodeFixProvider.cs" />
+    <Compile Include="Usage\RegexAnalyzer.cs" />
+    <Compile Include="Design\EmptyCatchBlockCodeFixProvider.cs" />
+    <Compile Include="Design\EmptyCatchBlockAnalyzer.cs" />
+    <Compile Include="Style\EmptyObjectInitializerCodeFixProvider.cs" />
+    <Compile Include="Style\EmptyObjectInitializerAnalyzer.cs" />
+    <Compile Include="Style\ForInArrayAnalyzer.cs" />
+    <Compile Include="Style\ForInArrayCodeFixProvider.cs" />
+    <Compile Include="Design\CatchEmptyAnalyzer.cs" />
+    <Compile Include="Design\CatchEmptyCodeFixProvider.cs" />
+    <Compile Include="Style\ObjectInitializerAnalyzer.cs" />
+    <Compile Include="Usage\IfReturnTrueCodeFixProvider.cs" />
+    <Compile Include="Style\ObjectInitializerCodeFixProvider.cs" />
+    <Compile Include="Usage\IfReturnTrueAnalyzer.cs" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleAnalyzer.cs" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleCodeFixProvider.cs" />
+    <Compile Include="Performance\SealedAttributeAnalyzer.cs" />
+    <Compile Include="Performance\SealedAttributeCodeFixProvider.cs" />
+    <Compile Include="Design\StaticConstructorExceptionAnalyzer.cs" />
+    <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.cs" />
     <Compile Include="StringTypeCodeRefactoringProvider.cs" />
     <Compile Include="Style\ConvertToExpressionBodiedMemberCodeFixProvider.cs" />
-    <Compile Include="TernaryOperatorCodeFixProvider.cs" />
-    <Compile Include="TernaryOperatorAnalyzer.cs" />
-    <Compile Include="RethrowExceptionCodeFixProvider.cs" />
-    <Compile Include="RethrowExceptionAnalyzer.cs" />
+    <Compile Include="Style\TernaryOperatorCodeFixProvider.cs" />
+    <Compile Include="Style\TernaryOperatorAnalyzer.cs" />
+    <Compile Include="Usage\RethrowExceptionCodeFixProvider.cs" />
+    <Compile Include="Usage\RethrowExceptionAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnnecessaryParenthesisAnalyzer.cs" />
-    <Compile Include="UnnecessaryParenthesisCodeFixProvider.cs" />
-    <Compile Include="UseInvokeMethodToFireEventAnalyzer.cs" />
-    <Compile Include="UseInvokeMethodToFireEventCodeFixProvider.cs" />
+    <Compile Include="Style\UnnecessaryParenthesisAnalyzer.cs" />
+    <Compile Include="Style\UnnecessaryParenthesisCodeFixProvider.cs" />
+    <Compile Include="Design\UseInvokeMethodToFireEventAnalyzer.cs" />
+    <Compile Include="Design\UseInvokeMethodToFireEventCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeCracker.nuspec">
@@ -141,6 +143,16 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\codecracker.1.0.0-alpha2-54\tools\analyzers\CodeCracker.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Globalization\" />
+    <Folder Include="Interoperability\" />
+    <Folder Include="Maintainability\" />
+    <Folder Include="Mobility\" />
+    <Folder Include="Naming\" />
+    <Folder Include="Portability\" />
+    <Folder Include="Reliability\" />
+    <Folder Include="Security\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>
