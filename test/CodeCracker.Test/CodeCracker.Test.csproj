@@ -118,6 +118,7 @@
     <Compile Include="MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
     <Compile Include="NameOfTests.cs" />
     <Compile Include="Helpers\TestHelpers.cs" />
+    <Compile Include="ParameterRefectoryTest.cs" />
     <Compile Include="RegexTests.cs" />
     <Compile Include="EmptyCatchBlockTests.cs" />
     <Compile Include="EmptyObjectInitializerTests.cs" />
