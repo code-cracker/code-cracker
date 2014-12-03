@@ -122,6 +122,7 @@ namespace CodeCracker.Test
                     using System;
                     using System.Collections;
                     using System.Collections.Generic;
+
                     namespace ConsoleApplication1
                     { 
                         public class Foo
@@ -139,6 +140,7 @@ namespace CodeCracker.Test
                     using System.Collections;
                     using System.Collections.Generic;
                     using System.Linq;
+
                     namespace ConsoleApplication1
                     { 
                         public class Foo
@@ -147,6 +149,42 @@ namespace CodeCracker.Test
                             {
                                 var source = new int[] { 1, 2, 3 };
                                 source.Any();
+                            }
+                        }
+                    }";
+
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenCallExtensionMethodWithChainCallsShouldNotBreakTheChain()
+        {
+            var source = @"
+                    using System.Linq;
+
+                    namespace ConsoleApplication1
+                    {
+                        public class Foo
+                        {
+                            public void Bar()
+                            {
+                                var source = new int[] { 1, 2, 3 };
+                                Enumerable.Select(source, (p) => p.ToString()).FirstOrDefault();
+                            }
+                        }
+                    }";
+
+            var expected = @"
+                    using System.Linq;
+
+                    namespace ConsoleApplication1
+                    { 
+                        public class Foo
+                        {
+                            public void Bar()
+                            {
+                                var source = new int[] { 1, 2, 3 };
+                                source.Select((p) => p.ToString()).FirstOrDefault();
                             }
                         }
                     }";

@@ -31,7 +31,6 @@ namespace CodeCracker
                     "Use extension method as an extension",
                     cancellationToken => CallAsExtensionAsync(context.Document, staticInvocationExpression, cancellationToken)),
                     diagnostic);
-
         }
 
         public override ImmutableArray<string> GetFixableDiagnosticIds()
@@ -52,7 +51,7 @@ namespace CodeCracker
                 childNodes
                     .OfType<ArgumentListSyntax>()
                     .SelectMany(s => s.Arguments)
-                    .Select(s => s.Expression); ;
+                    .Select(s => s.Expression);
 
             var firstArgument = parametersExpression.FirstOrDefault();
             var callerMethod = childNodes.OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
@@ -60,15 +59,16 @@ namespace CodeCracker
             var root = await document.GetSyntaxRootAsync(cancellationToken) as CompilationUnitSyntax;
 
             root = ReplaceStaticCallWithExtionMethodCall(
-                root,
-                staticInvocationExpression,
-                firstArgument,
-                callerMethod.Name,
-                CreateArgumentListSyntaxFrom(parametersExpression.Skip(1)));
+                        root,
+                        staticInvocationExpression,
+                        firstArgument,
+                        callerMethod.Name,
+                        CreateArgumentListSyntaxFrom(parametersExpression.Skip(1))
+                   ).WithAdditionalAnnotations(Formatter.Annotation);
 
             SemanticModel semanticModel;
             if (document.TryGetSemanticModel(out semanticModel))
-                root = ImportNeededNamespace(root, semanticModel, callerMethod);
+                root = ImportNeededNamespace(root, semanticModel, callerMethod).WithAdditionalAnnotations(Formatter.Annotation);
 
             var newDocument = document.WithSyntaxRoot(root);
 
@@ -115,28 +115,15 @@ namespace CodeCracker
 
             if (!hasNamespaceImported)
             {
-                var usingDirective = CreateUsingDirective(namespaceDisplayString.Split('.'));
-                root = root.AddUsings(usingDirective);
-
+                var namespaceQualifiedName = GenerateNamespaceQualifiedName(namespaceDisplayString.Split('.'));
+                root = root.AddUsings(SyntaxFactory.UsingDirective(namespaceQualifiedName));
             }
-            return root.WithAdditionalAnnotations(Formatter.Annotation);
+            return root;
         }
 
         private string TransformIdentifierNameSyntaxIntoNamespace(IEnumerable<IdentifierNameSyntax> usingIdentifierNames)
         {
             return string.Join(".", usingIdentifierNames.Select(s => s.Identifier.ValueText).ToArray());
-        }
-
-        private UsingDirectiveSyntax CreateUsingDirective(IEnumerable<string> namespaceRawList)
-        {
-            var name = GenerateNamespaceQualifiedName(namespaceRawList);
-
-            return SyntaxFactory.UsingDirective(
-                SyntaxFactory.Token(SyntaxKind.UsingKeyword).WithTrailingTrivia(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")),
-                default(NameEqualsSyntax),
-                name,
-                SyntaxFactory.Token(SyntaxKind.SemicolonToken).WithTrailingTrivia(SyntaxFactory.SyntaxTrivia(SyntaxKind.EndOfLineTrivia, "\r\n"))
-            );
         }
 
         private NameSyntax GenerateNamespaceQualifiedName(IEnumerable<string> names)
