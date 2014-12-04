@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -52,11 +53,79 @@ namespace CodeCracker.Usage
             if (!paramNameOpt.HasValue) return;
 
             var paramName = paramNameOpt.Value as string;
-            var ancestorMethod = objectCreationExpression.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-            var parameters = ancestorMethod.ParameterList.Parameters.Select(p => p.Identifier.ToString());
-            if (parameters.All(p => p == paramName)) return;
+
+            if (IsParamNameCompatibleWithCreatingContext(objectCreationExpression, paramName)) return;
+
             var diagnostic = Diagnostic.Create(Rule, paramNameLiteral.GetLocation(), paramName);
             context.ReportDiagnostic(diagnostic);
         }
+
+        private bool IsParamNameCompatibleWithCreatingContext(SyntaxNode node, string paramName)
+        {
+            var parameters = GetParameterNamesFromCreationContext(node);
+            if (parameters == null) return true;
+            return parameters.Contains(paramName);
+        }
+
+        internal static IEnumerable<string> GetParameterNamesFromCreationContext(SyntaxNode node)
+        {
+            var creationContext =
+                node.FirstAncestorOrSelf<SimpleLambdaExpressionSyntax>() ??
+                node.FirstAncestorOrSelf<ParenthesizedLambdaExpressionSyntax>() ??
+                node.FirstAncestorOrSelf<AccessorDeclarationSyntax>() ??
+                (SyntaxNode)node.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>();
+
+            return GetParameterNames(creationContext);
+        }
+
+        internal static IEnumerable<string> GetParameterNames(SyntaxNode node)
+        {
+            var simpleLambda = node as SimpleLambdaExpressionSyntax;
+            if (simpleLambda != null)
+            {
+                return new[] { simpleLambda.Parameter.Identifier.ToString() };
+            }
+
+            var method = node as BaseMethodDeclarationSyntax;
+            if (method != null)
+            {
+                var parameterList = method.ParameterList;
+                return (parameterList == null) 
+                    ? Enumerable.Empty<string>()
+                    : parameterList.Parameters.Select(p => p.Identifier.ToString());
+            }
+
+            var lambda = node as ParenthesizedLambdaExpressionSyntax;
+            if (lambda != null)
+            {
+                var parameterList = lambda.ParameterList;
+                return (parameterList == null)
+                    ? Enumerable.Empty<string>()
+                    : parameterList.Parameters.Select(p => p.Identifier.ToString());
+            }
+
+            var accessor = node as AccessorDeclarationSyntax;
+            if (accessor != null)
+            {
+                var indexer = node.FirstAncestorOrSelf<IndexerDeclarationSyntax>();
+                if (indexer != null)
+                {
+                    var result = indexer.ParameterList.Parameters.Select(p => p.Identifier.ToString());
+                    if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
+                    {
+                        result = result.Concat(new [] { "value" });
+                    }
+                    return result;
+                }
+
+                if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
+                {
+                    return new[] { "value" } ;
+                }
+            }
+
+            return null;
+        }
+
     }
 }
