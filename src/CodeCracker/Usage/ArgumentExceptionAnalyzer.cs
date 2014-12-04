@@ -54,13 +54,12 @@ namespace CodeCracker.Usage
             var paramName = paramNameOpt.Value as string;
 
             var parameterList = objectCreationExpression.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>()?.ParameterList;
+            if (parameterList == null) return;
 
             var parameters = parameterList.Parameters.Select(p => p.Identifier.ToString());
             if (parameters.All(p => p == paramName)) return;
             var diagnostic = Diagnostic.Create(Rule, paramNameLiteral.GetLocation(), paramName);
             context.ReportDiagnostic(diagnostic);
         }
-
-        
     }
 }

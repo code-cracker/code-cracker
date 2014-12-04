@@ -116,6 +116,15 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpFixAsync(test, fixtest, 1);
         }
 
+        [Fact]
+        public async Task IgnoresArgumentExceptionObjectsInFields()
+        {
+            var test = _(@"
+            ArgumentException ex = new ArgumentException(""message"", ""paramName"");
+            ");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
 
         static string _(string code)
         {
