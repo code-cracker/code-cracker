@@ -272,6 +272,17 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
+        public async Task IgnoresArgumentExceptionObjectsInInitializerOfAutoProperties()
+        {
+            var test = _(@"
+            ArgumentException Exception { get; } = new ArgumentException(""message"", ""paramName"");
+            ");
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        
         static string _(string code)
         {
             return @"
