@@ -30,8 +30,8 @@ namespace CodeCracker.Usage
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
-            var ancestorMethod = objectCreation.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-            var parameters = ancestorMethod.ParameterList.Parameters.Select(p => p.Identifier.ToString()).ToArray();
+            var parametersList = ArgumentExceptionAnalyzer.GetParametersList(objectCreation);
+            var parameters = parametersList.Parameters.Select(p => p.Identifier.ToString()).ToArray();
             foreach (var param in parameters)
             {
                 var message = "Use '" + param + "'";
