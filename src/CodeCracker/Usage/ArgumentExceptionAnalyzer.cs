@@ -70,7 +70,9 @@ namespace CodeCracker.Usage
         internal static IEnumerable<string> GetParameterNamesFromCreationContext(SyntaxNode node)
         {
             var creationContext =
-                (SyntaxNode)node.FirstAncestorOrSelf<AccessorDeclarationSyntax>() ??
+                node.FirstAncestorOrSelf<SimpleLambdaExpressionSyntax>() ??
+                node.FirstAncestorOrSelf<ParenthesizedLambdaExpressionSyntax>() ??
+                node.FirstAncestorOrSelf<AccessorDeclarationSyntax>() ??
                 (SyntaxNode)node.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>();
 
             return GetParameterNames(creationContext);
@@ -78,11 +80,26 @@ namespace CodeCracker.Usage
 
         internal static IEnumerable<string> GetParameterNames(SyntaxNode node)
         {
+            var simpleLambda = node as SimpleLambdaExpressionSyntax;
+            if (simpleLambda != null)
+            {
+                return new[] { simpleLambda.Parameter.Identifier.ToString() };
+            }
+
             var method = node as BaseMethodDeclarationSyntax;
             if (method != null)
             {
                 var parameterList = method.ParameterList;
                 return (parameterList == null) 
+                    ? Enumerable.Empty<string>()
+                    : parameterList.Parameters.Select(p => p.Identifier.ToString());
+            }
+
+            var lambda = node as ParenthesizedLambdaExpressionSyntax;
+            if (lambda != null)
+            {
+                var parameterList = lambda.ParameterList;
+                return (parameterList == null)
                     ? Enumerable.Empty<string>()
                     : parameterList.Parameters.Select(p => p.Identifier.ToString());
             }

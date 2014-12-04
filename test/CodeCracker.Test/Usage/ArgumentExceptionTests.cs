@@ -1,5 +1,6 @@
 ﻿using CodeCracker.Usage;
 using Microsoft.CodeAnalysis;
+using System;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
@@ -216,6 +217,62 @@ namespace CodeCracker.Test.Usage
             }
             ");
             await VerifyCSharpFixAsync(test, fixtest, 0);
+        }
+        
+
+        [Fact]
+        public async Task WhenThrowingArgumentExceptionInLambdaArgumentNameShouldBeInParameterList()
+        {
+            var test = _(@"
+            Action<int> action = (p) => { throw new ArgumentException(""message"", ""paramName""); };
+            ");
+
+            var expected = new DiagnosticResult
+            {
+                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Message = "Type argument 'paramName' is not in the argument list.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 82) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInLambdasAndApplyingFixUsesLambdaParameter()
+        {
+            var test = _(@"
+            Action<int> action = (p) => { throw new ArgumentException(""message"", ""paramName""); };
+            ");
+
+            var fixtest = _(@"
+            Action<int> action = (p) => { throw new ArgumentException(""message"", ""p""); };
+            ");
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+
+        [Fact]
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInSimpleLambdasAndApplyingFixUsesLambdaParameter()
+        {
+            var test = _(@"
+            Action<int> action = p => { throw new ArgumentException(""message"", ""paramName""); };
+
+            void Foo(string a)
+            {
+                Action<int> action = param => { throw new ArgumentException(""message"", ""paramName""); };
+            } 
+            ");
+
+            var fixtest = _(@"
+            Action<int> action = p => { throw new ArgumentException(""message"", ""p""); };
+
+            void Foo(string a)
+            {
+                Action<int> action = param => { throw new ArgumentException(""message"", ""param""); };
+            } 
+            ");
+            await VerifyCSharpFixAsync(test, fixtest);
         }
 
         [Fact]
