@@ -54,10 +54,17 @@ namespace CodeCracker.Usage
 
             var paramName = paramNameOpt.Value as string;
 
-            if (GetParameterNamesFromCreationContext(objectCreationExpression).All(p => p == paramName)) return;
+            if (IsParamNameCompatibleWithCreatingContext(objectCreationExpression, paramName)) return;
 
             var diagnostic = Diagnostic.Create(Rule, paramNameLiteral.GetLocation(), paramName);
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private bool IsParamNameCompatibleWithCreatingContext(SyntaxNode node, string paramName)
+        {
+            var parameters = GetParameterNamesFromCreationContext(node);
+            if (parameters == null) return true;
+            return parameters.Contains(paramName);
         }
 
         internal static IEnumerable<string> GetParameterNamesFromCreationContext(SyntaxNode node)
@@ -86,7 +93,12 @@ namespace CodeCracker.Usage
                 var indexer = node.FirstAncestorOrSelf<IndexerDeclarationSyntax>();
                 if (indexer != null)
                 {
-                    return indexer.ParameterList.Parameters.Select(p => p.Identifier.ToString());
+                    var result = indexer.ParameterList.Parameters.Select(p => p.Identifier.ToString());
+                    if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
+                    {
+                        result = result.Concat(new [] { "value" });
+                    }
+                    return result;
                 }
 
                 if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
@@ -95,7 +107,7 @@ namespace CodeCracker.Usage
                 }
             }
 
-            return Enumerable.Empty<string>();
+            return null;
         }
 
     }

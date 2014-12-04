@@ -237,6 +237,41 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpFixAsync(test, fixtest, 1);
         }
 
+        [Fact]
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInIndexerSetAccessorAndApplyingThirdFixUsesValue()
+        {
+            var test = _(@"
+            public string this[int a, int b]
+            {
+                get { return null; }
+                set { throw new ArgumentException(""message"", ""c""); } 
+            }
+            ");
+
+            var fixtest = _(@"
+            public string this[int a, int b]
+            {
+                get { return null; }
+                set { throw new ArgumentException(""message"", ""value""); } 
+            }
+            ");
+            await VerifyCSharpFixAsync(test, fixtest, 2);
+        }
+
+        [Fact]
+        public async Task IgnoresArgumentExceptionObjectsInSetAccessorsOfIndexersThatUsesValue()
+        {
+            var test = _(@"
+            public string this[int a, int b]
+            {
+                get { return null; }
+                set { throw new ArgumentException(""message"", ""value""); } 
+            }
+            ");
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
         static string _(string code)
         {
             return @"
