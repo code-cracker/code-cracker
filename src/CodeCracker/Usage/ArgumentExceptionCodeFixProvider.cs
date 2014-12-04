@@ -31,22 +31,11 @@ namespace CodeCracker.Usage
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
 
-            var accessor = objectCreation.FirstAncestorOrSelf<AccessorDeclarationSyntax>();
-            if (accessor != null)
+            var parameters = ArgumentExceptionAnalyzer.GetParameterNamesFromCreationContext(objectCreation);
+            foreach (var param in parameters)
             {
-                if (!accessor.IsKind(SyntaxKind.SetAccessorDeclaration)) return;
-                var message = "Use 'value'";
-                context.RegisterFix(CodeAction.Create(message, c => FixParamAsync(context.Document, objectCreation, "value", c)), diagnostic);
-            }
-            else
-            {
-                var parametersList = objectCreation.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>()?.ParameterList;
-                var parameters = parametersList.Parameters.Select(p => p.Identifier.ToString()).ToArray();
-                foreach (var param in parameters)
-                {
-                    var message = "Use '" + param + "'";
-                    context.RegisterFix(CodeAction.Create(message, c => FixParamAsync(context.Document, objectCreation, param, c)), diagnostic);
-                }
+                var message = "Use '" + param + "'";
+                context.RegisterFix(CodeAction.Create(message, c => FixParamAsync(context.Document, objectCreation, param, c)), diagnostic);
             }
         }
 

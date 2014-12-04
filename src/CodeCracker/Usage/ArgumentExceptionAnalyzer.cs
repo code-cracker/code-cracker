@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -53,29 +54,49 @@ namespace CodeCracker.Usage
 
             var paramName = paramNameOpt.Value as string;
 
-
-            var accessor = objectCreationExpression.FirstAncestorOrSelf<AccessorDeclarationSyntax>();
-            if (accessor != null)
-            {
-                if (!accessor.IsKind(SyntaxKind.SetAccessorDeclaration)) return;
-                if (paramName == "value") return;
-            }
-            else
-            {
-                var parameterList = objectCreationExpression.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>()?.ParameterList;
-                if (parameterList == null) return;
-                var parameters = parameterList.Parameters.Select(p => p.Identifier.ToString());
-                if (parameters.All(p => p == paramName)) return;
-            }
+            if (GetParameterNamesFromCreationContext(objectCreationExpression).All(p => p == paramName)) return;
 
             var diagnostic = Diagnostic.Create(Rule, paramNameLiteral.GetLocation(), paramName);
             context.ReportDiagnostic(diagnostic);
         }
 
-        public string RejectsEverythingProperty
+        internal static IEnumerable<string> GetParameterNamesFromCreationContext(SyntaxNode node)
         {
-            get { return null; }
-            set { throw new System.ArgumentException("c"); }
+            var creationContext =
+                (SyntaxNode)node.FirstAncestorOrSelf<AccessorDeclarationSyntax>() ??
+                (SyntaxNode)node.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>();
+
+            return GetParameterNames(creationContext);
         }
+
+        internal static IEnumerable<string> GetParameterNames(SyntaxNode node)
+        {
+            var method = node as BaseMethodDeclarationSyntax;
+            if (method != null)
+            {
+                var parameterList = method.ParameterList;
+                return (parameterList == null) 
+                    ? Enumerable.Empty<string>()
+                    : parameterList.Parameters.Select(p => p.Identifier.ToString());
+            }
+
+            var accessor = node as AccessorDeclarationSyntax;
+            if (accessor != null)
+            {
+                var indexer = node.FirstAncestorOrSelf<IndexerDeclarationSyntax>();
+                if (indexer != null)
+                {
+                    return indexer.ParameterList.Parameters.Select(p => p.Identifier.ToString());
+                }
+
+                if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
+                {
+                    return new[] { "value" } ;
+                }
+            }
+
+            return Enumerable.Empty<string>();
+        }
+
     }
 }

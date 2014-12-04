@@ -158,7 +158,7 @@ namespace CodeCracker.Test.Usage
         }
 
         [Fact]
-        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInSetAccessorAndApplyingFirstFixUsesFirstParameter()
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInSetAccessorAndApplyingFixUsesParameter()
         {
             var test = _(@"
             public string RejectsEverythingProperty
@@ -178,8 +178,64 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
+        [Fact]
+        public async Task WhenThrowingArgumentExceptionInGetPropertyWithIndexersArgumentNameShouldBeInParameterList()
+        {
+            var test = _(@"
+            public string this[int a, int b]
+            {
+                get { throw new ArgumentException(""message"", ""c""); } 
+            }
+            ");
 
+            var expected = new DiagnosticResult
+            {
+                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Message = "Type argument 'c' is not in the argument list.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 62) }
+            };
 
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInIndexerGetAccessorAndApplyingFirstFixUsesFirstParameter()
+        {
+            var test = _(@"
+            public string this[int a, int b]
+            {
+                get { throw new ArgumentException(""message"", ""c""); } 
+            }
+            ");
+
+            var fixtest = _(@"
+            public string this[int a, int b]
+            {
+                get { throw new ArgumentException(""message"", ""a""); } 
+            }
+            ");
+            await VerifyCSharpFixAsync(test, fixtest, 0);
+        }
+
+        [Fact]
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInIndexerGetAccessorAndApplyingSecondFixUsesSecondParameter()
+        {
+            var test = _(@"
+            public string this[int a, int b]
+            {
+                get { throw new ArgumentException(""message"", ""c""); } 
+            }
+            ");
+
+            var fixtest = _(@"
+            public string this[int a, int b]
+            {
+                get { throw new ArgumentException(""message"", ""b""); } 
+            }
+            ");
+            await VerifyCSharpFixAsync(test, fixtest, 1);
+        }
 
         static string _(string code)
         {
