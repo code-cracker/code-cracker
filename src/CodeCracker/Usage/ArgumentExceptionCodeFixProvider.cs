@@ -30,7 +30,7 @@ namespace CodeCracker.Usage
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
-            var parametersList = ArgumentExceptionAnalyzer.GetParametersList(objectCreation);
+            var parametersList = objectCreation.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>()?.ParameterList;
             var parameters = parametersList.Parameters.Select(p => p.Identifier.ToString()).ToArray();
             foreach (var param in parameters)
             {

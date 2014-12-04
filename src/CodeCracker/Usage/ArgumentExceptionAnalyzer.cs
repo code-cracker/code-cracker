@@ -52,21 +52,15 @@ namespace CodeCracker.Usage
             if (!paramNameOpt.HasValue) return;
 
             var paramName = paramNameOpt.Value as string;
-            var parameterList = GetParametersList(objectCreationExpression);
+
+            var parameterList = objectCreationExpression.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>()?.ParameterList;
+
             var parameters = parameterList.Parameters.Select(p => p.Identifier.ToString());
             if (parameters.All(p => p == paramName)) return;
             var diagnostic = Diagnostic.Create(Rule, paramNameLiteral.GetLocation(), paramName);
             context.ReportDiagnostic(diagnostic);
         }
 
-        internal static ParameterListSyntax GetParametersList(SyntaxNode node)
-        {
-            var ancestorMethod = node.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-            if (ancestorMethod != null)
-                return ancestorMethod.ParameterList;
-
-            var ctor = node.FirstAncestorOrSelf<ConstructorDeclarationSyntax>();
-            return ctor.ParameterList;
-        }
+        
     }
 }
