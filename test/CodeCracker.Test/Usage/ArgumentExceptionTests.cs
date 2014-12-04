@@ -125,6 +125,61 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
+        public async Task IgnoresArgumentExceptionObjectsInGetAccessors()
+        {
+            var test = _(@"
+            public string StrangePropertyThatThrowsArgumentExceptionInsideGet
+            { get { throw ArgumentException(""message"", ""paramName""); } }
+            ");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task WhenThrowingArgumentExceptionInSetPropertyArgumentNameShouldBeValue()
+        {
+            var test = _(@"
+            public string RejectsEverythingProperty
+            {
+                get { return null; } 
+                set { throw new ArgumentException(""message"", ""c""); } 
+            }
+            ");
+
+            var expected = new DiagnosticResult
+            {
+                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Message = "Type argument 'c' is not in the argument list.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 62) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInSetAccessorAndApplyingFirstFixUsesFirstParameter()
+        {
+            var test = _(@"
+            public string RejectsEverythingProperty
+            {
+                get { return null; } 
+                set { throw new ArgumentException(""message"", ""c""); } 
+            }
+            ");
+
+            var fixtest = _(@"
+            public string RejectsEverythingProperty
+            {
+                get { return null; } 
+                set { throw new ArgumentException(""message"", ""value""); } 
+            }
+            ");
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+
+
 
         static string _(string code)
         {
