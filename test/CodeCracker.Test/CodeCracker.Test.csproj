@@ -118,6 +118,7 @@
     <Compile Include="Performance\MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
     <Compile Include="Design\NameOfTests.cs" />
     <Compile Include="Helpers\TestHelpers.cs" />
+    <Compile Include="Refactoring\InvertForTests.cs" />
     <Compile Include="Usage\RegexTests.cs" />
     <Compile Include="Design\EmptyCatchBlockTests.cs" />
     <Compile Include="Style\EmptyObjectInitializerTests.cs" />

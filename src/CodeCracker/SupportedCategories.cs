@@ -10,9 +10,11 @@
         public const string Naming = "Naming";
         public const string Performance = "Performance";
         public const string Portability = "Portability";
+        public const string Refactoring = "Refactoring";
         public const string Reliability = "Reliability";
         public const string Security = "Security";
         public const string Style = "Style";
         public const string Usage = "Usage";
+        
     }
 }
