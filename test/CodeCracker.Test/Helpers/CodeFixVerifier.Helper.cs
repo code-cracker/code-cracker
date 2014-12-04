@@ -68,19 +68,6 @@ namespace TestHelper
         {
             return (await document.GetSemanticModelAsync()).GetDiagnostics();
         }
-
-        /// <summary>
-        /// Given a document, turn it into a string based on the syntax root
-        /// </summary>
-        /// <param name="document">The Document to be converted to a string</param>
-        /// <returns>A string contianing the syntax of the Document after formatting</returns>
-        private static async Task<string> GetStringFromDocumentAsync(Document document)
-        {
-            var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation);
-            var root = await simplifiedDoc.GetSyntaxRootAsync();
-            root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
-            return root.GetText().ToString();
-        }
     }
 }
 
