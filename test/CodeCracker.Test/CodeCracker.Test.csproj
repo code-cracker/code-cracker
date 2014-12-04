@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Style\AlwaysUseVarTests.cs" />
+    <Compile Include="Style\RemoveCommentedCodeTests.cs" />
     <Compile Include="Usage\ArgumentExceptionTests.cs" />
     <Compile Include="Style\ConvertToSwitchTests.cs" />
     <Compile Include="Design\CopyEventToVariableBeforeFireTests.cs" />
