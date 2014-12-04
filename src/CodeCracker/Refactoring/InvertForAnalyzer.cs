@@ -7,8 +7,7 @@ using System.Collections.Immutable;
 namespace CodeCracker.Refactoring
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class InvertForAnalyzer
-        : DiagnosticAnalyzer
+    public class InvertForAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CC0042";
         internal const string Title = "Invert the for loop counting.";
@@ -34,61 +33,28 @@ namespace CodeCracker.Refactoring
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             var @for = (ForStatementSyntax)context.Node;
+            if (@for.Declaration == null && @for.Initializers.Count == 0) return;
+            if (@for.Declaration != null && @for.Declaration.Variables.Count != 1) return;
+            if (!HasAcceptableIncrementors(@for)) return;
+            if (!HasConditionCompatibleWithTheIncrementor(@for)) return;
+            if (!AreDeclarationConditionAndIncrementorUsingTheSameVariable(@for)) return;
 
-            if (@for.Declaration == null && @for.Initializers.Count == 0)
-            {
-                return;
-            }
-
-            if (@for.Declaration != null && @for.Declaration.Variables.Count != 1)
-            {
-                return;
-            }
-
-            if (!HasAcceptableIncrementors(@for))
-            {
-                return;
-            }
-
-            if (!HasConditionCompatibleWithTheIncrementor(@for))
-            {
-                return;
-            }
-
-            if (!AreDeclarationConditionAndIncrementorUsingTheSameVariable(@for))
-            {
-                return;
-            }
-
-            var diagnostic = Diagnostic.Create(Rule, @for.GetLocation(),
-                IsPostIncrement(@for.Incrementors[0]) ? "decrement" : "increment"
-                );
-
+            var diagnostic = Diagnostic.Create(Rule, @for.GetLocation(), IsPostIncrement(@for.Incrementors[0]) ? "decrement" : "increment");
             context.ReportDiagnostic(diagnostic);
-            
         }
 
         internal static bool IsPostIncrement(ExpressionSyntax expression)
         {
             var unary = expression as PostfixUnaryExpressionSyntax;
             if (unary == null) return false;
-
             return unary.IsKind(SyntaxKind.PostIncrementExpression);
         }
 
         static bool HasAcceptableIncrementors(ForStatementSyntax @for)
         {
-            if (@for.Incrementors.Count != 1)
-            {
-                return false;
-            }
-
+            if (@for.Incrementors.Count != 1) return false;
             var unary = @for.Incrementors[0] as PostfixUnaryExpressionSyntax;
-            if (unary == null)
-            {
-                return false;
-            }
-
+            if (unary == null) return false;
             return unary.IsKind(SyntaxKind.PostIncrementExpression) || unary.IsKind(SyntaxKind.PostDecrementExpression);
         }
 
@@ -96,9 +62,7 @@ namespace CodeCracker.Refactoring
         {
             var condition = @for.Condition as BinaryExpressionSyntax;
             var postIncrement = IsPostIncrement(@for.Incrementors[0]);
-
-            return
-                condition != null &&
+            return condition != null &&
                 (
                     (postIncrement && condition.OperatorToken.IsKind(SyntaxKind.LessThanToken)) ||
                     (!postIncrement && condition.OperatorToken.IsKind(SyntaxKind.GreaterThanEqualsToken))
@@ -117,33 +81,22 @@ namespace CodeCracker.Refactoring
             {
                 var initializer = @for.Initializers[0] as AssignmentExpressionSyntax;
                 if (initializer == null) return false;
-
                 var name = initializer.Left as IdentifierNameSyntax;
                 if (name == null) return false;
-
                 reference = name.Identifier;
             }
 
             var condition = @for.Condition as BinaryExpressionSyntax;
             var incrementor = @for.Incrementors[0] as PostfixUnaryExpressionSyntax;
 
-            if (!(condition.Left is IdentifierNameSyntax))
-            {
-                return false;
-            }
-
-            if (!(incrementor.Operand is IdentifierNameSyntax))
-            {
-                return false;
-            }
+            if (!(condition.Left is IdentifierNameSyntax)) return false;
+            if (!(incrementor.Operand is IdentifierNameSyntax)) return false;
 
             var conditionVariableIdentifier = (condition.Left as IdentifierNameSyntax).Identifier;
             var incrementorVariableIdentifier = (incrementor.Operand as IdentifierNameSyntax).Identifier;
 
-
-            return
-                reference.Text == conditionVariableIdentifier.Text &&
-                reference.Text == incrementorVariableIdentifier.Text;
+            return reference.Text == conditionVariableIdentifier.Text
+                && reference.Text == incrementorVariableIdentifier.Text;
         }
     }
 }
