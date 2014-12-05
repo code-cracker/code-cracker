@@ -112,6 +112,7 @@
     <Compile Include="Usage\ArgumentExceptionTests.cs" />
     <Compile Include="Style\ConvertToSwitchTests.cs" />
     <Compile Include="Design\CopyEventToVariableBeforeFireTests.cs" />
+    <Compile Include="Usage\CallExtensionMethodAsExtensionTests.cs" />
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeTests.cs" />
     <Compile Include="Performance\EmptyFinalizerTests.cs" />
     <Compile Include="Style\ExistenceOperatorTests.cs" />
