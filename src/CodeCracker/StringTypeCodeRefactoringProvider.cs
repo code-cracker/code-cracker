@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using RoslynExts.CS;
 
 namespace CodeCracker
 {
