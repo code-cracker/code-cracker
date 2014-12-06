@@ -68,6 +68,12 @@
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-beta1-20141031-01\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="RoslynExts.CS">
+      <HintPath>..\..\packages\RoslynExts.1.0.7\lib\portable-net45+win8\RoslynExts.CS.dll</HintPath>
+    </Reference>
+    <Reference Include="RoslynExts.VB">
+      <HintPath>..\..\packages\RoslynExts.1.0.7\lib\portable-net45+win8\RoslynExts.VB.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>True</Private>
