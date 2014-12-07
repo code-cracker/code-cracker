@@ -35,6 +35,7 @@
   <ItemGroup>
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
+    <Compile Include="Style\PropertyPrivateSetAnalyzer.cs" />
     <Compile Include="SupportedCategories.cs" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionCodeFixProvider.cs" />
