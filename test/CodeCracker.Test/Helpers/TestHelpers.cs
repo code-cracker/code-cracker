@@ -209,5 +209,22 @@ namespace TestHelper
             root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
             return root.GetText().ToString();
         }
+
+        public static string WrapInMethod(this string code)
+        {
+            return @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                " + code + @"
+            }
+        }
+    }";
+        }
     }
 }
