@@ -47,6 +47,88 @@ namespace CodeCracker.Test.Style
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
+        [Fact]
+        public async Task CreateDiagnosticForMultipleLinesCommentedCode()
+        {
+            var test = _(@"
+            // if (something)
+            // {
+            //   DoStuff();
+            // }");
+            var expected = new DiagnosticResult
+            {
+                Id = RemoveCommentedCodeAnalyzer.DiagnosticId,
+                Message = "If code is commented, it should be removed.",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 13) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task RemovesCommentedMultilineCodePreservingRegularComments()
+        {
+            var test = _(@"
+            // this comment will be preserved
+            // if (something)
+            // {
+            //   DoStuff();
+            // }
+            "
+            );
+
+            var fixtest = _(@"
+            // this comment will be preserved
+            "
+            );
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task RemovesNonPerfectClassCommentedCode()
+        {
+            var test = _(@"
+            // this comment will be preserved
+            // class Fee
+            class Foo
+            {
+            }
+            "
+            );
+
+            var fixtest = _(@"
+            // this comment will be preserved
+            class Foo
+            {
+            }
+            "
+            );
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task RemovesNonPerfectIfCommentedCode()
+        {
+            var test = _(@"
+            // this comment will be preserved
+            // if (a > 2)
+            if (a > 3)
+            {
+            }
+            "
+            );
+
+            var fixtest = _(@"
+            // this comment will be preserved
+            if (a > 3)
+            {
+            }
+            "
+            );
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
         private string _(string code)
         {
             return @"

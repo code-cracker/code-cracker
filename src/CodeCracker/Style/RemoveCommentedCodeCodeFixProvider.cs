@@ -1,12 +1,11 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace CodeCracker.Style
 {
@@ -27,14 +26,41 @@ namespace CodeCracker.Style
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            //var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
-            //var message = "Remove commented code.";
-            //context.RegisterFix(CodeAction.Create(message, c => UseVarAsync(context.Document, localDeclaration, c)), diagnostic);
+            var start = diagnostic.Location.SourceSpan.Start;
+            context.RegisterFix(CodeAction.Create(
+                "Remove commented code.", 
+                c => RemoveCommentedCodeAsync(context.Document, start, c)), 
+                diagnostic);
         }
 
-        //private async Task<Document> RemoveCommentedCodeAsync(Document document, LocalDeclarationStatementSyntax localDeclaration, CancellationToken cancellationToken)
-        //{
-        //}
+        private async Task<Document> RemoveCommentedCodeAsync(
+            Document document, 
+            int start,
+            CancellationToken cancellationToken
+            )
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
+            var firstComment = root.FindTrivia(start);
+
+            var codeToRemove = RemoveCommentedCodeAnalyzer.GetFullCommentedCode(root, firstComment);
+
+            var newRoot = root;
+
+            for (var i = 0; i < codeToRemove.NumberOfComments; i++)
+            {
+                var comment = newRoot.FindTrivia(start);
+                newRoot = newRoot.ReplaceTrivia(comment, SyntaxTriviaList.Empty);
+
+                var eol = newRoot.FindTrivia(start);
+                newRoot = newRoot.ReplaceTrivia(eol, SyntaxTriviaList.Empty);
+
+                var previousSpace = newRoot.FindTrivia(start - 1);
+                newRoot = newRoot.ReplaceTrivia(previousSpace, SyntaxTriviaList.Empty);
+
+            }
+
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            return newDocument;
+        }
     }
 }

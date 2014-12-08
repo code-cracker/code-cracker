@@ -1,12 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 
 namespace CodeCracker.Style
 {
@@ -38,23 +36,97 @@ namespace CodeCracker.Style
             var root = context.Tree.GetRoot();
 
             var comments = root.DescendantTrivia()
-                .Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
+                .Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
+                .ToArray();
 
-            foreach (var comment in comments)
+            for (var i = 0; i < comments.Length; i++)
             {
-                var code = comment.ToString().Substring(2);
-                var options = new CSharpParseOptions(kind: SourceCodeKind.Interactive, documentationMode: DocumentationMode.None);
-                var compilation = SyntaxFactory.ParseSyntaxTree(code, options);
-                
-                var errorsCount = compilation.GetDiagnostics()
-                    .Count(d => d.Severity == DiagnosticSeverity.Error);
+                var comment = comments[i];
 
-                if (errorsCount == 0)
-                {
-                    var diagnostic = Diagnostic.Create(Rule, comment.GetLocation());
-                    context.ReportDiagnostic(diagnostic);
-                }
-            }                
+                var code = GetFullCommentedCode(root, comment);
+                if (!CouldBeSourceCode(code.Code)) continue;
+
+                i += code.NumberOfComments - 1;
+
+                Location.Create(context.Tree, new TextSpan(code.Start, code.End));
+                var diagnostic = Diagnostic.Create(Rule, comment.GetLocation());
+                context.ReportDiagnostic(diagnostic);
+            }
+        }
+
+        readonly CSharpParseOptions _options = new CSharpParseOptions(kind: SourceCodeKind.Interactive, documentationMode: DocumentationMode.None);
+        bool CouldBeSourceCode(string source)
+        {
+            source = source.Trim();
+            var compilation = SyntaxFactory.ParseSyntaxTree(source, _options);
+
+            var diagnostics = compilation.GetDiagnostics()
+                .Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+
+            // class?
+            if (diagnostics.Length == 2)
+            {
+                // missing {
+                if (!diagnostics[0].Id.Equals("CS1514")) return false;
+                // missing }
+                if (!diagnostics[1].Id.Equals("CS1513")) return false;
+                return true;
+            }
+
+            // if / while
+            else if (diagnostics.Length == 1)
+            {
+                // missing statement
+                if (!diagnostics[0].Id.Equals("CS1733")) return false;
+                return true;
+            }
+
+            if (diagnostics.Count() != 0) return false;
+
+            return true;
+        }
+
+        internal static GetFullCommentedCodeResult GetFullCommentedCode(SyntaxNode root, SyntaxTrivia firstComment)
+        {
+            var result = new StringBuilder();
+            var current = firstComment;
+            var numberOfComments = 1;
+            var start = firstComment.GetLocation().SourceSpan.Start;
+            int end;
+            do
+            {
+                end = current.GetLocation().SourceSpan.End;
+
+                result.Append(current.ToString().Substring(2));
+
+                var eol = root.FindTrivia(current.GetLocation().SourceSpan.End + 1);
+                if (!eol.IsKind(SyntaxKind.EndOfLineTrivia)) break;
+
+                var whitespace = root.FindTrivia(eol.GetLocation().SourceSpan.End + 1);
+                if (!whitespace.IsKind(SyntaxKind.WhitespaceTrivia)) break;
+
+                current = root.FindTrivia(whitespace.GetLocation().SourceSpan.End + 1);
+                if (!current.IsKind(SyntaxKind.SingleLineCommentTrivia)) break;
+
+                numberOfComments ++;
+
+            } while (true); 
+
+            return new GetFullCommentedCodeResult(result.ToString(), numberOfComments, start, end);
+        }
+
+        internal class GetFullCommentedCodeResult
+        {
+            public string Code { get; }
+            public int NumberOfComments{ get; }
+            public int Start { get; }
+            public int End { get; }
+
+            public GetFullCommentedCodeResult(string code, int numberOfComments, int start, int end)
+            {
+                Code = code;
+                NumberOfComments = numberOfComments;
+            }
         }
     }
 }
