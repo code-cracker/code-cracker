@@ -106,6 +106,7 @@
     <Compile Include="CatchEmptyTests.cs" />
     <Compile Include="ObjectInitializerTests.cs" />
     <Compile Include="TernaryOperatorTests.cs" />
+    <Compile Include="UnnecessaryDefaultConstructorAnalyzerTests.cs" />
     <Compile Include="UnnecessaryParenthesisTests.cs" />
     <Compile Include="Verifiers\CodeFixTest.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
