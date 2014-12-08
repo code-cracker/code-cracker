@@ -59,7 +59,7 @@ namespace CodeCracker.Performance
                 var constantValue = semanticModel.GetConstantValue(variable.Initializer.Value);
                 var valueIsConstant = constantValue.HasValue;
                 if (!valueIsConstant) return false;
-                
+
                 // if reference type, value is null?
                 var variableTypeName = declaration.Declaration.Type;
                 var variableType = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
