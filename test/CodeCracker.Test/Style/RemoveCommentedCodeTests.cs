@@ -10,6 +10,13 @@ namespace CodeCracker.Test.Style
     {
 
         [Fact]
+        public async Task IgnoresSingleWordComment()
+        {
+            var test = @"//comment".WrapInMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async Task IgnoresRegularComments()
         {
             var test = @"// this is a regular comment".WrapInMethod();
@@ -23,7 +30,7 @@ namespace CodeCracker.Test.Style
             var expected = new DiagnosticResult
             {
                 Id = RemoveCommentedCodeAnalyzer.DiagnosticId,
-                Message = "If code is commented, it should be removed.",
+                Message = RemoveCommentedCodeAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
@@ -55,7 +62,7 @@ namespace CodeCracker.Test.Style
             var expected = new DiagnosticResult
             {
                 Id = RemoveCommentedCodeAnalyzer.DiagnosticId,
-                Message = "If code is commented, it should be removed.",
+                Message = RemoveCommentedCodeAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 13) }
             };

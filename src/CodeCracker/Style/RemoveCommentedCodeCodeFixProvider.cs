@@ -1,11 +1,11 @@
-﻿using System.Collections.Immutable;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace CodeCracker.Style
 {
@@ -28,13 +28,13 @@ namespace CodeCracker.Style
             var diagnostic = context.Diagnostics.First();
             var start = diagnostic.Location.SourceSpan.Start;
             context.RegisterFix(CodeAction.Create(
-                "Remove commented code.", 
-                c => RemoveCommentedCodeAsync(context.Document, start, c)), 
+                "Remove commented code.",
+                c => RemoveCommentedCodeAsync(context.Document, start, c)),
                 diagnostic);
         }
 
         private async Task<Document> RemoveCommentedCodeAsync(
-            Document document, 
+            Document document,
             int start,
             CancellationToken cancellationToken
             )
