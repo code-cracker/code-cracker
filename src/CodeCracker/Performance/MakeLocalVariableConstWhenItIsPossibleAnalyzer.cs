@@ -53,12 +53,13 @@ namespace CodeCracker.Performance
             foreach (var variable in declaration.Declaration.Variables)
             {
                 if (variable.Initializer == null) return false;
+                if (variable.Initializer.Value is InterpolatedStringSyntax) return false;
 
                 // is constant
                 var constantValue = semanticModel.GetConstantValue(variable.Initializer.Value);
                 var valueIsConstant = constantValue.HasValue;
                 if (!valueIsConstant) return false;
-
+                
                 // if reference type, value is null?
                 var variableTypeName = declaration.Declaration.Type;
                 var variableType = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;

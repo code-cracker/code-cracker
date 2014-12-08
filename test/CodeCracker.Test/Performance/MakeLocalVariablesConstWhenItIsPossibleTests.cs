@@ -11,19 +11,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task IgnoresConstantDeclarations()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                const int a = 10;
-            }
-        }
-    }";
+            var test = _(@"const int a = 10;");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
@@ -31,78 +19,37 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task IgnoresDeclarationsWithNoInitializers()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                int a;
-            }
-        }
-    }";
+            var test = _(@"int a;");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresDeclarationsWithNonConstants()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                int a = GetValue();
-            }
-        }
-    }";
+            var test = _(@"int a = GetValue();");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresDeclarationsWithReferenceTypes()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                Foo a = new Foo();
-            }
+            var test = _(@"Foo a = new Foo();");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
-        class Foo {}
-    }";
+
+        [Fact]
+        public async Task IgnoresStringInterpolations()
+        {
+            var test = _(@"
+            int a = 10; 
+            var s = ""a value is \{a}"";");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresVariablesThatChangesValueOutsideDeclaration()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                int a = 10;
-                a = 20;
-            }
-        }
-    }";
+            var test = _(@"int a = 10;a = 20;");
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
@@ -110,19 +57,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstant()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                int a = 10;
-            }
-        }
-    }";
+            var test = _(@"int a = 10;");
             var expected = new DiagnosticResult
             {
                 Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
@@ -136,19 +71,8 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstantInAVarDeclaration()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                var a = 10;
-            }
-        }
-    }";
+            var test = _(@"var a = 10;");
+            
             var expected = new DiagnosticResult
             {
                 Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
@@ -162,20 +86,8 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningNullToAReferenceType()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                Foo a = null;
-            }
-        }
-        class Foo {}
-    }";
+            var test = _(@"Foo a = null;");
+            
             var expected = new DiagnosticResult
             {
                 Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
@@ -189,32 +101,8 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task FixMakesAVariableConstWhenDeclarationSpecifiesTypeName()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                int a = 10;
-            }
-        }
-    }";
-            const string expected = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                const int a = 10;
-            }
-        }
-    }";
+            var test = _(@"int a = 10;");
+            var expected = _(@"const int a = 10;");
             await VerifyCSharpFixAsync(test, expected);
         }
 
@@ -398,6 +286,25 @@ namespace CodeCracker.Test.Performance
         class var {}
     }";
             await VerifyCSharpFixAsync(test, expected);
+        }
+
+        public string _(string code)
+        {
+            return @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public async Task Foo()
+            {
+                " + code + @"
+            }
+        }
+    }";
+
+
         }
     }
 }
