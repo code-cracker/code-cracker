@@ -12,14 +12,14 @@ namespace CodeCracker.Test.Style
         [Fact]
         public async Task IgnoresRegularComments()
         {
-            var test = _(@"// this is a regular comment");
+            var test = @"// this is a regular comment".WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task CreateDiagnosticForSingleLineCommentedCode()
         {
-            var test = _(@"// a = 10;");
+            var test = @"// a = 10;".WrapInMethod();
             var expected = new DiagnosticResult
             {
                 Id = RemoveCommentedCodeAnalyzer.DiagnosticId,
@@ -34,27 +34,24 @@ namespace CodeCracker.Test.Style
         [Fact]
         public async Task RemovesCommentedCodePreservingRegularComments()
         {
-            var test = _(@"
+            var test = @"
             // this comment will be preserved
             // var a = ""this comment will be removed"";
-            "
-            );
-
-            var fixtest = _(@"
+            ".WrapInMethod();
+            var fixtest = @"
             // this comment will be preserved
-            "
-            );
+            ".WrapInMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
         [Fact]
         public async Task CreateDiagnosticForMultipleLinesCommentedCode()
         {
-            var test = _(@"
+            var test = @"
             // if (something)
             // {
             //   DoStuff();
-            // }");
+            // }".WrapInMethod();
             var expected = new DiagnosticResult
             {
                 Id = RemoveCommentedCodeAnalyzer.DiagnosticId,
@@ -69,81 +66,57 @@ namespace CodeCracker.Test.Style
         [Fact]
         public async Task RemovesCommentedMultilineCodePreservingRegularComments()
         {
-            var test = _(@"
+            var test = @"
             // this comment will be preserved
             // if (something)
             // {
             //   DoStuff();
             // }
-            "
-            );
-
-            var fixtest = _(@"
+            ".WrapInMethod();
+            var fixtest = @"
             // this comment will be preserved
-            "
-            );
+            ".WrapInMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
         [Fact]
         public async Task RemovesNonPerfectClassCommentedCode()
         {
-            var test = _(@"
+            var test = @"
             // this comment will be preserved
             // class Fee
             class Foo
             {
             }
-            "
-            );
-
-            var fixtest = _(@"
+            ".WrapInMethod();
+            var fixtest = @"
             // this comment will be preserved
             class Foo
             {
             }
-            "
-            );
+            ".WrapInMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
         [Fact]
         public async Task RemovesNonPerfectIfCommentedCode()
         {
-            var test = _(@"
+            var test = @"
             // this comment will be preserved
             // if (a > 2)
             if (a > 3)
             {
             }
-            "
-            );
+            ".WrapInMethod();
 
-            var fixtest = _(@"
+            var fixtest = @"
             // this comment will be preserved
             if (a > 3)
             {
             }
-            "
-            );
+            ".WrapInMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
-        private string _(string code)
-        {
-            return @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
-                " + code + @"
-            }
-        }
-    }";
-        }
     }
 }
