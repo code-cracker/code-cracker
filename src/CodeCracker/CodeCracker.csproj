@@ -93,6 +93,8 @@
     <Compile Include="Style\UnnecessaryParenthesisCodeFixProvider.cs" />
     <Compile Include="Design\UseInvokeMethodToFireEventAnalyzer.cs" />
     <Compile Include="Design\UseInvokeMethodToFireEventCodeFixProvider.cs" />
+    <Compile Include="Usage\SimplifyRedundantBooleanComparisonsAnalyzer.cs" />
+    <Compile Include="Usage\SimplifyRedundantBooleanComparisonsCodeFixProvider.cs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeCracker.nuspec">
