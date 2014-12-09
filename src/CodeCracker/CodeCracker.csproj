@@ -37,6 +37,9 @@
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="Style\PropertyPrivateSetAnalyzer.cs" />
     <Compile Include="Style\PropertyPrivateSetCodeFixProvider.cs" />
+    <Compile Include="Style\RemoveCommentedCodeAnalyzer.cs" />
+    <Compile Include="Style\RemoveCommentedCodeCodeFixProvider.cs" />
+    <Compile Include="Style\StringFormatCodeFixProvider.cs" />
     <Compile Include="SupportedCategories.cs" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionCodeFixProvider.cs" />
@@ -61,6 +64,7 @@
     <Compile Include="Design\NameOfCodeFixProvider.cs" />
     <Compile Include="Refactoring\InvertForAnalyzer.cs" />
     <Compile Include="Refactoring\InvertForCodeFixProvider.cs" />
+    <Compile Include="Style\StringFormatAnalyzer.cs" />
     <Compile Include="Usage\RegexAnalyzer.cs" />
     <Compile Include="Design\EmptyCatchBlockCodeFixProvider.cs" />
     <Compile Include="Design\EmptyCatchBlockAnalyzer.cs" />
@@ -91,6 +95,8 @@
     <Compile Include="Style\UnnecessaryParenthesisCodeFixProvider.cs" />
     <Compile Include="Design\UseInvokeMethodToFireEventAnalyzer.cs" />
     <Compile Include="Design\UseInvokeMethodToFireEventCodeFixProvider.cs" />
+    <Compile Include="Usage\SimplifyRedundantBooleanComparisonsAnalyzer.cs" />
+    <Compile Include="Usage\SimplifyRedundantBooleanComparisonsCodeFixProvider.cs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeCracker.nuspec">

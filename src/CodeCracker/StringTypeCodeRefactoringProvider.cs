@@ -38,21 +38,9 @@ namespace CodeCracker
                     return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
                 };
 
-            CodeAction codeAction;
-            if (isVerbatim)
-            {
-                codeAction = CodeAction.Create(
-                    "To regular string",
-                    ct => createChangedDocument(ToStringLiteral(literalExpression)),
-                    ToRegularId);
-            }
-            else
-            {
-                codeAction = CodeAction.Create(
-                    "To verbatim string",
-                    ct => createChangedDocument(ToVerbatimStringLiteral(literalExpression)),
-                    ToVerbatimId);
-            }
+            var codeAction = isVerbatim 
+                ? CodeAction.Create("To regular string", ct => createChangedDocument(ToStringLiteral(literalExpression)),ToRegularId) 
+                : CodeAction.Create("To verbatim string",ct => createChangedDocument(ToVerbatimStringLiteral(literalExpression)),ToVerbatimId);
 
             context.RegisterRefactoring(codeAction);
         }
