@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style.Style
+namespace CodeCracker.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertToExpressionBodiedMemberAnalyzer

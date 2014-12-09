@@ -1,4 +1,4 @@
-﻿using CodeCracker.Style.Style;
+﻿using CodeCracker.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
