@@ -38,8 +38,8 @@ namespace CodeCracker.Style
         private async Task<Document> MakeStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression , CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync();
-            var memberExpresion = invocationExpression.Expression as MemberAccessExpressionSyntax;
-            var memberSymbol = semanticModel.GetSymbolInfo(memberExpresion).Symbol;
+            var memberExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
+            var memberSymbol = semanticModel.GetSymbolInfo(memberExpression).Symbol;
             var argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
             var arguments = argumentList.Arguments;
             var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;

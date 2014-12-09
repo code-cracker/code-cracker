@@ -64,6 +64,47 @@ namespace CodeCracker.Test.Style
         }
 
         [Fact]
+        public async Task IgnoresStringFormatWithArrayArgWith1Object()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var args = new object[] { noun };
+                var s = string.Format(""This {0} is nice."", args);
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoresStringFormatWithArrayArgWith2Objects()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var args = new object[] { noun, adjective };
+                var s = string.Format(""This {0} is {1}"", args);
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task IgnoresMethodsWithOnlyOneParameter()
         {
             const string source = @"

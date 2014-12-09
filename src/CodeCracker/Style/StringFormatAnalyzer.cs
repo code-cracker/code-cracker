@@ -44,6 +44,7 @@ namespace CodeCracker.Style
             var argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
             if (argumentList?.Arguments.Count < 2) return;
             if (!argumentList.Arguments[0]?.Expression?.IsKind(SyntaxKind.StringLiteralExpression) ?? false) return;
+            if (memberSymbol.ToString() == "string.Format(string, params object[])" && argumentList.Arguments.Skip(1).Any(a => context.SemanticModel.GetTypeInfo(a.Expression).Type.TypeKind == TypeKind.Array)) return;
             var formatLiteral = (LiteralExpressionSyntax)argumentList.Arguments[0].Expression;
             var format = (string)context.SemanticModel.GetConstantValue(formatLiteral).Value;
             var formatArgs = Enumerable.Range(1, argumentList.Arguments.Count - 1).Select(i => new object()).ToArray();
