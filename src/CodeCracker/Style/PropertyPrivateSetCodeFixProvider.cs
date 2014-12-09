@@ -39,23 +39,17 @@ namespace CodeCracker.Style
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
-            var current = propertyStatement;
-
             var getAcessor = (propertyStatement.AccessorList.Accessors[0].Keyword.Text == "get") ? propertyStatement.AccessorList.Accessors[0] : propertyStatement.AccessorList.Accessors[1];
             var setAcessor = (propertyStatement.AccessorList.Accessors[0].Keyword.Text == "set") ? propertyStatement.AccessorList.Accessors[0] : propertyStatement.AccessorList.Accessors[1];
-
-            //var setAcessor = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithModifiers(new SyntaxTokenList { SyntaxFactory.Token(SyntaxKind.PrivateKeyword) }); //.WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)))});
 
             var privateModifier = SyntaxFactory.Token(SyntaxKind.PrivateKeyword)
                     .WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia(" "));
 
             var modifiers = setAcessor.Modifiers.Add(privateModifier);
-
             setAcessor = setAcessor.WithModifiers(modifiers);
-                //.WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
-            var newProperty = SyntaxFactory.PropertyDeclaration(current.Type, current.Identifier)
-                .WithModifiers(current.Modifiers)
+            var newProperty = SyntaxFactory.PropertyDeclaration(propertyStatement.Type, propertyStatement.Identifier)
+                .WithModifiers(propertyStatement.Modifiers)
                 .WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List<AccessorDeclarationSyntax>(new AccessorDeclarationSyntax[] { getAcessor, setAcessor })))
                 .WithLeadingTrivia(propertyStatement.GetLeadingTrivia()).WithTrailingTrivia(propertyStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
