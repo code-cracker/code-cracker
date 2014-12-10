@@ -33,18 +33,15 @@ namespace CodeCracker.Style
         {
             context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.PropertyDeclaration);
         }
+       
         private static void AnalyzeClass(SyntaxNodeAnalysisContext context)
         {
             var invocationExpression = (PropertyDeclarationSyntax)context.Node;
+            var semanticModel = context.SemanticModel;
 
-            if (invocationExpression.AccessorList.Accessors.Count == 1) return; 
+            if (invocationExpression.AccessorList.Accessors.Count == 1) return;
 
             var setAcessor = (invocationExpression.AccessorList.Accessors[0].Keyword.Text == "set") ? invocationExpression.AccessorList.Accessors[0] : invocationExpression.AccessorList.Accessors[1];
-
-            if (setAcessor.Body != null)
-            {
-                if (setAcessor.Body.Statements.Count != 0) return;
-            }
 
             if (setAcessor.Modifiers.Count != 0) return;
 
