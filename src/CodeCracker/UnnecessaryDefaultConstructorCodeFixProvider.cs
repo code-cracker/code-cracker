@@ -33,7 +33,7 @@ namespace CodeCracker
 
             var newDocument = context.Document.WithSyntaxRoot(root);
 
-            context.RegisterFix(CodeAction.Create("Remove unnecessary default constructor", newDocument), diagnostic);
+            context.RegisterFix(CodeAction.Create("Removes unnecessary default constructor", newDocument), diagnostic);
         }
     }
 }
