@@ -16,7 +16,7 @@ namespace CodeCracker
 
         public static void RegisterCompilationStartAction(this AnalysisContext context, LanguageVersion languageVersion, Action<CompilationStartAnalysisContext> registrationAction)
         {
-            context.RegisterCompilationStartAction(compilationContext => compilationContext.RunIfCSharp6OrGreater(() => registrationAction(compilationContext)));
+            context.RegisterCompilationStartAction(compilationContext => compilationContext.RunIfCSharp6OrGreater(() => registrationAction?.Invoke(compilationContext)));
         }
 
         private static void RunIfCSharp6OrGreater(this CompilationStartAnalysisContext context, Action action)
@@ -33,7 +33,7 @@ namespace CodeCracker
 
         private static void RunIfCSharp6OrGreater(this LanguageVersion languageVersion, Action action)
         {
-            if (languageVersion >= LanguageVersion.CSharp6) action();
+            if (languageVersion >= LanguageVersion.CSharp6) action?.Invoke();
         }
 
         public static ConditionalAccessExpressionSyntax ToConditionalAccessExpression(this MemberAccessExpressionSyntax memberAccess)

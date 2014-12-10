@@ -15,11 +15,7 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerPropertyPrivateSetCodeFixProvider", LanguageNames.CSharp), Shared]
     public class PropertyPrivateSetCodeFixProvider : CodeFixProvider
     {
-        public int MyProperty { get; set; }
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(PropertyPrivateSetAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(PropertyPrivateSetAnalyzer.DiagnosticId);
 
         public sealed override FixAllProvider GetFixAllProvider()
         {
