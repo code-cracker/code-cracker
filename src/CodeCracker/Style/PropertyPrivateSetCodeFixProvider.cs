@@ -15,7 +15,12 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerPropertyPrivateSetCodeFixProvider", LanguageNames.CSharp), Shared]
     public class PropertyPrivateSetCodeFixProvider : CodeFixProvider
     {
-        public int MyProperty { get; set; }
+        private enum FixType
+        {
+            PrivateFix,
+            ProtecFix
+        }
+
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
         {
             return ImmutableArray.Create(PropertyPrivateSetAnalyzer.DiagnosticId);
@@ -32,21 +37,21 @@ namespace CodeCracker.Style
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Consider use a 'private set'", c => ChangePropertySetAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Consider use a 'private set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.PrivateFix)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Consider use a 'protected set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.ProtecFix)), diagnostic);
         }
 
-        private async Task<Document> ChangePropertySetAsync(Document document, PropertyDeclarationSyntax propertyStatement, CancellationToken cancellationToken)
+        private async Task<Document> ChangePropertySetAsync(Document document, PropertyDeclarationSyntax propertyStatement, CancellationToken cancellationToken, FixType fixType)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
             var getAcessor = (propertyStatement.AccessorList.Accessors[0].Keyword.Text == "get") ? propertyStatement.AccessorList.Accessors[0] : propertyStatement.AccessorList.Accessors[1];
             var setAcessor = (propertyStatement.AccessorList.Accessors[0].Keyword.Text == "set") ? propertyStatement.AccessorList.Accessors[0] : propertyStatement.AccessorList.Accessors[1];
 
-            var privateModifier = SyntaxFactory.Token(SyntaxKind.PrivateKeyword)
+            var privateprotectedModifier = SyntaxFactory.Token(fixType == FixType.PrivateFix ? SyntaxKind.PrivateKeyword : SyntaxKind.ProtectedKeyword)
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            //.WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia(" "));
 
-            var modifiers = setAcessor.Modifiers.Add(privateModifier);
+            var modifiers = setAcessor.Modifiers.Add(privateprotectedModifier);
             setAcessor = setAcessor.WithModifiers(modifiers);
 
             var newProperty = SyntaxFactory.PropertyDeclaration(propertyStatement.Type, propertyStatement.Identifier)
