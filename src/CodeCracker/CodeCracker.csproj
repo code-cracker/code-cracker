@@ -35,6 +35,8 @@
   <ItemGroup>
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
+    <Compile Include="Style\PropertyPrivateSetAnalyzer.cs" />
+    <Compile Include="Style\PropertyPrivateSetCodeFixProvider.cs" />
     <Compile Include="Style\RemoveCommentedCodeAnalyzer.cs" />
     <Compile Include="Style\RemoveCommentedCodeCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatCodeFixProvider.cs" />
