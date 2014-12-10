@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
@@ -48,16 +47,14 @@ namespace CodeCracker.Style
         private async Task<Document> ConvertToExpressionBodiedMemberAsync(
             Document document,
             BasePropertyDeclarationSyntax declaration,
-            CancellationToken c
-            )
+            CancellationToken c)
         {
             var accessors = declaration.AccessorList.Accessors;
             var body = accessors[0].Body;
             var returnStatement = body.Statements[0] as ReturnStatementSyntax;
 
             var arrowExpression = SyntaxFactory.ArrowExpressionClause(
-                returnStatement.Expression
-            );
+                returnStatement.Expression);
 
             var newDeclaration = declaration;
 
@@ -66,8 +63,7 @@ namespace CodeCracker.Style
                 .WithExpressionBody(arrowExpression)
                 .WithSemicolon(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
-            newDeclaration = newDeclaration
-                .WithAdditionalAnnotations(Formatter.Annotation);
+            newDeclaration = newDeclaration.WithAdditionalAnnotations(Formatter.Annotation);
 
             return await ReplaceNode(document, declaration, newDeclaration);
         }
@@ -82,16 +78,13 @@ namespace CodeCracker.Style
 
         private async Task<Document> ConvertToExpressionBodiedMemberAsync(
             Document document,
-            BaseMethodDeclarationSyntax declaration, 
-            CancellationToken c
-            )
+            BaseMethodDeclarationSyntax declaration,
+            CancellationToken c)
         {
             var body = declaration.Body;
             var returnStatement = body.Statements[0] as ReturnStatementSyntax;
 
-            var arrowExpression = SyntaxFactory.ArrowExpressionClause(
-                returnStatement.Expression
-                );
+            var arrowExpression = SyntaxFactory.ArrowExpressionClause(returnStatement.Expression);
 
             var newDeclaration = declaration;
 
@@ -100,8 +93,7 @@ namespace CodeCracker.Style
                 .WithExpressionBody(arrowExpression)
                 .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
-            newDeclaration = newDeclaration
-                .WithAdditionalAnnotations(Formatter.Annotation);
+            newDeclaration = newDeclaration.WithAdditionalAnnotations(Formatter.Annotation);
 
             return await ReplaceNode(document, declaration, newDeclaration);
         }

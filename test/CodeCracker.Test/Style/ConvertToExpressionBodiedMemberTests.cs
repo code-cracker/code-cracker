@@ -323,7 +323,7 @@ using System;
     {
         class TypeName
         {
-            public override string ToString() 
+            public override string ToString()
             {
                 string s = ""s"";
                 return s;
@@ -380,10 +380,10 @@ using System;
         {
             public Foo this[int id]
             {
-                get 
-                { 
+                get
+                {
                     var internalId = Process(id)
-                    return _internalList[internalId]; 
+                    return _internalList[internalId];
                 }
             }
         }
@@ -438,8 +438,8 @@ using System;
         {
             public string Foo
             {
-                get 
-                { 
+                get
+                {
                     var foo = Process(bar);
                     return foo;
                 }
