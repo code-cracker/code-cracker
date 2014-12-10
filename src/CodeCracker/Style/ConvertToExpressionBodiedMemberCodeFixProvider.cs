@@ -11,7 +11,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace CodeCracker.Style.Style
+namespace CodeCracker.Style
 {
     [ExportCodeFixProvider("CodeCrackerConvertToExpressionBodiedMemberCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ConvertToExpressionBodiedMemberCodeFixProvider : CodeFixProvider
@@ -40,18 +40,18 @@ namespace CodeCracker.Style.Style
             }
             else
             {
-                var indexerDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IndexerDeclarationSyntax>().First();
-                context.RegisterFix(CodeAction.Create(message, c => ConvertToExpressionBodiedMemberAsync(context.Document, indexerDeclaration, c)), diagnostic);
+                var basePropertyDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<BasePropertyDeclarationSyntax>().First();
+                context.RegisterFix(CodeAction.Create(message, c => ConvertToExpressionBodiedMemberAsync(context.Document, basePropertyDeclaration, c)), diagnostic);
             }
         }
 
         private async Task<Document> ConvertToExpressionBodiedMemberAsync(
             Document document,
-            IndexerDeclarationSyntax indexerDeclaration,
+            BasePropertyDeclarationSyntax declaration,
             CancellationToken c
             )
         {
-            var accessors = indexerDeclaration.AccessorList.Accessors;
+            var accessors = declaration.AccessorList.Accessors;
             var body = accessors[0].Body;
             var returnStatement = body.Statements[0] as ReturnStatementSyntax;
 
@@ -59,13 +59,17 @@ namespace CodeCracker.Style.Style
                 returnStatement.Expression
             );
 
-            var newIndexerDeclaration = indexerDeclaration
+            var newDeclaration = declaration;
+
+            newDeclaration = ((dynamic)declaration)
                 .WithAccessorList(null)
                 .WithExpressionBody(arrowExpression)
-                .WithSemicolon(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                .WithSemicolon(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+
+            newDeclaration = newDeclaration
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
-            return await ReplaceNode(document, indexerDeclaration, newIndexerDeclaration);
+            return await ReplaceNode(document, declaration, newDeclaration);
         }
 
         public async Task<Document> ReplaceNode(Document document, SyntaxNode @old, SyntaxNode @new)

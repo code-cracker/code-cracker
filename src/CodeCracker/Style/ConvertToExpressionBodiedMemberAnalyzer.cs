@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style.Style
+namespace CodeCracker.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertToExpressionBodiedMemberAnalyzer
@@ -34,7 +34,8 @@ namespace CodeCracker.Style.Style
             context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBaseMethodNode, SyntaxKind.MethodDeclaration);
             context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBaseMethodNode, SyntaxKind.OperatorDeclaration);
             context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBaseMethodNode, SyntaxKind.ConversionOperatorDeclaration);
-            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeIndexerNode, SyntaxKind.IndexerDeclaration);
+            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBasePropertyNode, SyntaxKind.IndexerDeclaration);
+            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBasePropertyNode, SyntaxKind.PropertyDeclaration);
         }
 
         
@@ -64,9 +65,9 @@ namespace CodeCracker.Style.Style
             context.ReportDiagnostic(diagnostic);
         }
 
-        private void AnalyzeIndexerNode(SyntaxNodeAnalysisContext context)
+        private void AnalyzeBasePropertyNode(SyntaxNodeAnalysisContext context)
         {
-            var declaration = (IndexerDeclarationSyntax)context.Node;
+            var declaration = (BasePropertyDeclarationSyntax)context.Node;
 
             if (declaration.AccessorList == null)
             {

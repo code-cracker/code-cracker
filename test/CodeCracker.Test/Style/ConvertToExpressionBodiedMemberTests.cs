@@ -1,4 +1,4 @@
-﻿using CodeCracker.Style.Style;
+﻿using CodeCracker.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
@@ -131,6 +131,36 @@ using System;
             await VerifyCSharpFixAsync(test, expected);
         }
 
+        [Fact]
+        public async Task FixReplacesPropertyBodyWithArrowExpression()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Foo
+            {
+                get { return n.Prop1 + "" "" + n.Prop2; }
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Foo => n.Prop1 + "" "" + n.Prop2;
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
+
 
         [Fact]
         public async Task CreateDiagnosticsWhenMethodCouldBeAnExpressionBodiedMember()
@@ -241,6 +271,33 @@ using System;
         }
 
         [Fact]
+        public async Task CreateDiagnosticsWhenPropertyCouldBeAnExpressionBodiedMember()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Foo
+            {
+                get { return n.Prop1 + "" "" + n.Prop2; }
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
         public async Task IgnoresExpressionBodiedMembers()
         {
             const string test = @"
@@ -327,6 +384,64 @@ using System;
                 { 
                     var internalId = Process(id)
                     return _internalList[internalId]; 
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task IgnoresPropertiesWithGetAndSet()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Foo
+            {
+                get { return _foo; }
+                set { _foo = value; }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        public async Task IgnoresPropertiesWithArrows()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Foo => _foo;
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task IgnoresPropertiesWithTwoOrMoreStatements()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Foo
+            {
+                get 
+                { 
+                    var foo = Process(bar);
+                    return foo;
                 }
             }
         }
