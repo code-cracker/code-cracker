@@ -13,7 +13,7 @@ namespace CodeCracker
     {
         public const string DiagnosticId = "CC0020";
         internal const string Title = "You should using 'new class'";
-        internal const string MessageFormat = "When the method has more than three parameters, use new Class.";
+        internal const string MessageFormat = "When the method has more than three parameters, use new class.";
         internal const string Category = "Syntax";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
@@ -35,7 +35,7 @@ namespace CodeCracker
 
             if (method.Body.ChildNodes().Count() > 0) return;
 
-            var diagnostic = Diagnostic.Create(Rule, contentParameter.GetLocation(), "You can use new Class instead of for.");
+            var diagnostic = Diagnostic.Create(Rule, contentParameter.GetLocation());
 
             context.ReportDiagnostic(diagnostic);
         }
