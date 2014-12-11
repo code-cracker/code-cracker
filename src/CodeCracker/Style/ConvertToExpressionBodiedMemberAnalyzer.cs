@@ -2,14 +2,12 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style.Style
+namespace CodeCracker.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class ConvertToExpressionBodiedMemberAnalyzer
-        : DiagnosticAnalyzer
+    public class ConvertToExpressionBodiedMemberAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CC0038";
         internal const string Title = "You should use expression bodied members whenever possible.";
@@ -31,71 +29,33 @@ namespace CodeCracker.Style.Style
 
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBaseMethodNode, SyntaxKind.MethodDeclaration);
-            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBaseMethodNode, SyntaxKind.OperatorDeclaration);
-            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBaseMethodNode, SyntaxKind.ConversionOperatorDeclaration);
-            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeIndexerNode, SyntaxKind.IndexerDeclaration);
+            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBaseMethodNode, SyntaxKind.MethodDeclaration, SyntaxKind.OperatorDeclaration, SyntaxKind.ConversionOperatorDeclaration);
+            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, AnalyzeBasePropertyNode, SyntaxKind.IndexerDeclaration, SyntaxKind.PropertyDeclaration);
         }
-
-        
 
         static void AnalyzeBaseMethodNode(SyntaxNodeAnalysisContext context)
         {
             var methodDeclaration = (BaseMethodDeclarationSyntax)context.Node;
-
             var body = methodDeclaration.Body;
-            if (body == null)
-            {
-                return;
-            }
-
-            if (body.Statements.Count != 1)
-            {
-                return;
-            }
-
+            if (body == null) return;
+            if (body.Statements.Count != 1) return;
             var returnStatement = body.Statements[0] as ReturnStatementSyntax;
-            if (returnStatement == null)
-            {
-                return;
-            }
-
+            if (returnStatement == null) return;
             var diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
             context.ReportDiagnostic(diagnostic);
         }
 
-        private void AnalyzeIndexerNode(SyntaxNodeAnalysisContext context)
+        private void AnalyzeBasePropertyNode(SyntaxNodeAnalysisContext context)
         {
-            var declaration = (IndexerDeclarationSyntax)context.Node;
-
-            if (declaration.AccessorList == null)
-            {
-                return;
-            }
-
+            var declaration = (BasePropertyDeclarationSyntax)context.Node;
+            if (declaration.AccessorList == null) return;
             var accessors = declaration.AccessorList.Accessors;
-            if (accessors.Count != 1)
-            {
-                return;
-            }
-
-            if (!accessors[0].IsKind(SyntaxKind.GetAccessorDeclaration))
-            {
-                return;
-            }
-
+            if (accessors.Count != 1) return;
+            if (!accessors[0].IsKind(SyntaxKind.GetAccessorDeclaration)) return;
             var body = accessors[0].Body;
-            if (body.Statements.Count != 1)
-            {
-                return;
-            }
-
+            if (body.Statements.Count != 1) return;
             var returnStatement = body.Statements[0] as ReturnStatementSyntax;
-            if (returnStatement == null)
-            {
-                return;
-            }
-
+            if (returnStatement == null) return;
             var diagnostic = Diagnostic.Create(Rule, declaration.GetLocation());
             context.ReportDiagnostic(diagnostic);
         }
