@@ -27,6 +27,7 @@ namespace CodeCracker.Style
             return ImmutableArray.Create(PropertyPrivateSetAnalyzer.DiagnosticId);
         }
 
+
         public sealed override FixAllProvider GetFixAllProvider()
         {
             return WellKnownFixAllProviders.BatchFixer;
