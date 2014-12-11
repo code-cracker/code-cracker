@@ -74,6 +74,34 @@ namespace CodeCracker.Test.Style
         }
 
         [Fact]
+        public async Task PropertyProtectedFixAutoProperty()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int MyProperty { get; set; }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int MyProperty { get; protected set; }
+        }
+    }";
+
+            await VerifyCSharpFixAsync(test, expected,1);
+        }
+
+        [Fact]
         public async Task PropertyPrivateFixAutoPropertyBrackets()
         {
             const string test = @"
@@ -102,12 +130,52 @@ namespace CodeCracker.Test.Style
             {
                get { return 0; }
 
-               private set {  }
+               private set 
+               {  }
             }
         }
     }";
 
-            await VerifyCSharpFixAsync(test, expected);
+            await VerifyCSharpFixAsync(test, expected,0);
+        }
+
+
+        [Fact]
+        public async Task PropertyProtectedFixAutoPropertyBrackets()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int MyProperty 
+            {
+               get { return 0; }
+               set {  }
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int MyProperty 
+            {
+               get { return 0; }
+
+               protected set 
+               {  }
+            }
+        }
+    }";
+
+            await VerifyCSharpFixAsync(test, expected, 1);
         }
     }
 }
