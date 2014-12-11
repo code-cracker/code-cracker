@@ -18,7 +18,7 @@ namespace CodeCracker.Style
         private enum FixType
         {
             PrivateFix,
-            ProtecFix
+            ProtectedFix
         }
 
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
@@ -38,7 +38,7 @@ namespace CodeCracker.Style
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
             context.RegisterFix(CodeAction.Create("Consider use a 'private set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.PrivateFix)), diagnostic);
-            context.RegisterFix(CodeAction.Create("Consider use a 'protected set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.ProtecFix)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Consider use a 'protected set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.ProtectedFix)), diagnostic);
         }
 
         private async Task<Document> ChangePropertySetAsync(Document document, PropertyDeclarationSyntax propertyStatement, CancellationToken cancellationToken, FixType fixType)
