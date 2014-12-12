@@ -10,7 +10,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async void WarningIfStructImplmentsIDisposableWithNoSuppressFinalizeCall()
         {
-            var test = @"
+            const string test = @"
                 public struct MyType : System.IDisposable
                 { 
                     public void Dispose() 
@@ -32,7 +32,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async void WarningIfClassImplmentsIDisposableWithNoSuppressFinalizeCall()
         {
-            var test = @"
+            const string test = @"
                 public class MyType : System.IDisposable
                 { 
                     public void Dispose() 
@@ -54,7 +54,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async void NoWarningIfStructDoesNotImplementsIDisposable()
         {
-            var test = @"
+            const string test = @"
                 public struct MyType
                 { 
                 }";
@@ -65,7 +65,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async void NoWarningIfClassDoesNotImplementsIDisposable()
         {
-            var test = @"
+            const string test = @"
                 public class MyType
                 { 
                 }";
@@ -76,7 +76,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async void WhenStructImplementsIDisposableCallSuppressFinalize()
         {
-            var source = @"
+            const string source = @"
                     public struct MyType : System.IDisposable
                     { 
                         public void Dispose() 
@@ -85,7 +85,7 @@ namespace CodeCracker.Test.Usage
                         } 
                     }";
 
-            var fixtest = @"
+            const string fixtest = @"
                     public struct MyType : System.IDisposable
                     { 
                         public void Dispose() 
@@ -101,7 +101,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async void WhenClassImplementsIDisposableCallSuppressFinalize()
         {
-            var source = @"
+            const string source = @"
                     public class MyType : System.IDisposable
                     { 
                         public void Dispose() 
@@ -110,7 +110,7 @@ namespace CodeCracker.Test.Usage
                         } 
                     }";
 
-            var fixtest = @"
+            const string fixtest = @"
                     public class MyType : System.IDisposable
                     { 
                         public void Dispose() 
@@ -126,7 +126,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async void WhenClassHasParametrizedDisposeMethod()
         {
-            var source = @"
+            const string source = @"
                     public class MyType : System.IDisposable
                     { 
                         public void Dispose() 
@@ -140,7 +140,7 @@ namespace CodeCracker.Test.Usage
                         }
                     }";
 
-            var fixtest = @"
+            const string fixtest = @"
                     public class MyType : System.IDisposable
                     { 
                         public void Dispose() 

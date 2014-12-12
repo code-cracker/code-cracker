@@ -230,7 +230,7 @@ namespace CodeCracker.Test.Style
             }
         }
     }";
-            var expected = @"
+            const string expected = @"
     using System;
     namespace ConsoleApplication1
     {
@@ -267,7 +267,7 @@ namespace CodeCracker.Test.Style
             }
         }
     }";
-            var expected = @"
+            const string expected = @"
     using System;
     namespace ConsoleApplication1
     {
@@ -302,7 +302,7 @@ namespace CodeCracker.Test.Style
             }
         }
     }";
-            var expected = @"
+            const string expected = @"
     using System;
     namespace ConsoleApplication1
     {

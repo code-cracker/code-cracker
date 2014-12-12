@@ -222,7 +222,7 @@ namespace CodeCracker.Test.Usage
             }
         }
     }";
-            var fixtest = @"
+            const string fixtest = @"
     namespace ConsoleApplication1
     {
         class TypeName
@@ -265,7 +265,7 @@ namespace CodeCracker.Test.Usage
             }
         }
     }";
-            var fixtest = @"
+            const string fixtest = @"
     namespace ConsoleApplication1
     {
         class TypeName

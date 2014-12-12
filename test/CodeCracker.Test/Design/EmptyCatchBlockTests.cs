@@ -29,7 +29,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task EmptyCatchBlockAnalyzerCreateDiagnostic()
         {
-            var test = @"
+            const string test = @"
     using System;
 
     namespace ConsoleApplication1
@@ -56,7 +56,7 @@ namespace CodeCracker.Test.Design
         public async Task WhenRemoveTryCatchStatement()
         {
 
-            var fixtest = @"
+            const string fixtest = @"
     using System;
 
     namespace ConsoleApplication1
@@ -77,7 +77,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task WhenRemoveTryCatchStatementAndPutComment()
         {
-            var fixtest = @"
+            const string fixtest = @"
     using System;
 
     namespace ConsoleApplication1
@@ -100,7 +100,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task WhenPutExceptionClassInCatchBlock()
         {
-            var fixtest = @"
+            const string fixtest = @"
     using System;
 
     namespace ConsoleApplication1

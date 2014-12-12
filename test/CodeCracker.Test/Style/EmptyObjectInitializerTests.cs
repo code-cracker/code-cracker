@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Style
         [Fact]
         public async Task EmptyObjectInitializerTriggersFix()
         {
-            var code = @"var a = new A {};";
+            const string code = @"var a = new A {};";
             var expected = new DiagnosticResult
             {
                 Id = EmptyObjectInitializerAnalyzer.DiagnosticId,
@@ -26,8 +26,8 @@ namespace CodeCracker.Test.Style
         [Fact]
         public async Task EmptyObjectInitializerIsRemoved()
         {
-            var oldCode = @"var a = new A() {};";
-            var newCode = @"var a = new A();";
+            const string oldCode = @"var a = new A() {};";
+            const string newCode = @"var a = new A();";
 
             await VerifyCSharpFixAsync(oldCode, newCode);
         }
@@ -35,8 +35,8 @@ namespace CodeCracker.Test.Style
         [Fact]
         public async Task EmptyObjectInitializerWithNoArgsIsRemovedAndAddsEmptyArgs()
         {
-            var oldCode = @"var a = new A {};";
-            var newCode = @"var a = new A();";
+            const string oldCode = @"var a = new A {};";
+            const string newCode = @"var a = new A();";
 
             await VerifyCSharpFixAsync(oldCode, newCode);
         }
@@ -44,14 +44,14 @@ namespace CodeCracker.Test.Style
         [Fact]
         public async Task FilledObjectInitializerIsIgnored()
         {
-            var code = @"var a = new A { X = 1 };";
+            const string code = @"var a = new A { X = 1 };";
             await VerifyCSharpHasNoDiagnosticsAsync(code);
         }
 
         [Fact]
         public async Task AbsenceOfObjectInitializerIsIgnored()
         {
-            var code = @"var a = new A();";
+            const string code = @"var a = new A();";
             await VerifyCSharpHasNoDiagnosticsAsync(code);
         }
     }

@@ -10,7 +10,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async void WarningIfEventIsFiredDirectly()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     public event System.EventHandler MyEvent;
@@ -35,7 +35,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async void WarningIfCustomEventIsFiredDirectly()
         {
-            var test = @"
+            const string test = @"
                 public class MyArgs : System.EventArgs
                 {
                     public string Info { get; set; }
@@ -65,7 +65,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async void WarningIfCustomEventWithCustomDelegateIsFiredDirectly()
         {
-            var test = @"
+            const string test = @"
                 public class MyArgs : System.EventArgs
                 {
                     public string Info { get; set; }
@@ -97,7 +97,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async void NotWarningIfEventIsCopiedToLocalVariableBeforeFire()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     public event System.EventHandler MyEvent;
@@ -116,7 +116,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async void NotWarningIfIsNotAnEvent()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     public void Execute() 
@@ -136,7 +136,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async void WhenEventIsFiredDirectlyShouldCopyItToVariable()
         {
-            var source = @"
+            const string source = @"
                 public class MyClass 
                 { 
                     public event System.EventHandler MyEvent;
@@ -147,7 +147,7 @@ namespace CodeCracker.Test.Design
                     } 
                 }";
 
-            var fixtest = @"
+            const string fixtest = @"
                 public class MyClass 
                 { 
                     public event System.EventHandler MyEvent;
@@ -166,7 +166,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async void KeepCommentsWhenReplacedWithCodeFix()
         {
-            var source = @"
+            const string source = @"
                 public class MyClass 
                 { 
                     public event System.EventHandler MyEvent;
@@ -177,7 +177,7 @@ namespace CodeCracker.Test.Design
                     } 
                 }";
 
-            var fixtest = @"
+            const string fixtest = @"
                 public class MyClass 
                 { 
                     public event System.EventHandler MyEvent;

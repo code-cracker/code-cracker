@@ -13,7 +13,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task IfRegexIdentifierIsNotFoundDoesNotCreateDiagnostic()
         {
-            var test = @"
+            const string test = @"
     using System;
 
     namespace ConsoleApplication1
@@ -32,7 +32,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task IfRegexIdentifierFoundButRegexTextIsCorrectDoesNotCreateDiagnostic()
         {
-            var test = @"
+            const string test = @"
     using System;
 
     namespace ConsoleApplication1
@@ -51,7 +51,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task IfRegexIdentifierFoundAndRegexTextIsIncorrectCreatesDiagnostic()
         {
-            var source = @"
+            const string source = @"
     using System;
     using System.Text.RegularExpressions;
 
@@ -92,7 +92,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task IfRegexIdentifierFoundAndAbbreviatedAndRegexTextIsIncorrectCreatesDiagnostic()
         {
-            var source = @"
+            const string source = @"
     using System;
     using System.Text.RegularExpressions;
 

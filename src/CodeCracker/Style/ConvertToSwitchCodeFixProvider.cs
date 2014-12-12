@@ -33,7 +33,7 @@ namespace CodeCracker.Style
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var ifStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().First();
-            var message = "Convert to 'switch'";
+            const string message = "Convert to 'switch'";
             context.RegisterFix(CodeAction.Create(message, c => ConvertToSwitchAsync(context.Document, ifStatement, c)), diagnostic);
         }
 

@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task ApplySealedWhenClassInheritsFromSystemAttributeClass()
         {
-            var test = @"
+            const string test = @"
                 public class MyAttribute : System.Attribute 
                 { 
 
@@ -31,7 +31,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task ApplySealedWhenClassInheritsIndirectlyFromSystemAttributeClass()
         {
-            var test = @"
+            const string test = @"
                 public abstract class MyAttribute : System.Attribute 
                 { 
 
@@ -56,7 +56,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task NotApplySealedWhenClassThatInheritsFromSystemAttributeClassIsAbstract()
         {
-            var test = @"
+            const string test = @"
                 public abstract class MyAttribute : System.Attribute 
                 { 
 
@@ -68,7 +68,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task NotApplySealedWhenClassThatInheritsFromSystemAttributeClassIsSealed()
         {
-            var test = @"
+            const string test = @"
                 public sealed class MyAttribute : System.Attribute 
                 { 
 
@@ -80,7 +80,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task NotApplySealedWhenIsStruct()
         {
-            var test = @"
+            const string test = @"
                 public struct MyStruct 
                 { 
 
@@ -92,7 +92,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task NotApplySealedWhenIsInterface()
         {
-            var test = @"
+            const string test = @"
                 public interface ITest 
                 { 
 
@@ -104,12 +104,12 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task WhenSealedModifierIsAppliedOnClass()
         {
-            var source = @"
+            const string source = @"
                 public class MyAttribute : System.Attribute 
                 { 
                 }";
 
-            var fixtest = @"
+            const string fixtest = @"
                 public sealed class MyAttribute : System.Attribute 
                 { 
                 }";

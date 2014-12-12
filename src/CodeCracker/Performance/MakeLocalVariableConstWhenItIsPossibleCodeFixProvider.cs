@@ -37,7 +37,7 @@ namespace CodeCracker.Performance
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
-            var message = "Make constant";
+            const string message = "Make constant";
             context.RegisterFix(CodeAction.Create(message, c => MakeConstantAsync(context.Document, localDeclaration, c)), diagnostic);
         }
 

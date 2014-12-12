@@ -43,7 +43,7 @@ namespace CodeCracker.Test.Usage
         public async Task WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionFix()
         {
 
-            var fixtest = @"
+            const string fixtest = @"
     using System;
     namespace ConsoleApplication1
     {
@@ -65,7 +65,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingOriginalExceptionAndApplyingRethrowFix()
         {
-            var fixtest = @"
+            const string fixtest = @"
     using System;
     namespace ConsoleApplication1
     {
@@ -88,7 +88,7 @@ namespace CodeCracker.Test.Usage
         public async Task WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionCompleteExceptionDeclationFix()
         {
 
-            var fixtest = @"
+            const string fixtest = @"
     namespace ConsoleApplication1
     {
         class TypeName

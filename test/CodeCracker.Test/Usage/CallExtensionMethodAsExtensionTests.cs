@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenCallExtensionMethodAsExtensionHasNoDiagnostics()
         {
-            var source = @"
+            const string source = @"
                     using System.Linq;
                     namespace ConsoleApplication1
                     { 
@@ -30,7 +30,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenCallExtensionMethodAsStaticMenthodTriggerAFix()
         {
-            var source = @"
+            const string source = @"
                     using System.Linq;
                     namespace ConsoleApplication1
                     { 
@@ -58,7 +58,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenCallExtensionMethodWithFullNamespaceAsStaticMenthodTriggerAFix()
         {
-            var source = @"
+            const string source = @"
                     namespace ConsoleApplication1
                     { 
                         public class Foo
@@ -85,7 +85,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenCallExtensionMethodAsStaticMenthodShouldFix()
         {
-            var source = @"
+            const string source = @"
                     using System.Linq;
                     namespace ConsoleApplication1
                     { 
@@ -99,7 +99,7 @@ namespace CodeCracker.Test.Usage
                         }
                     }";
 
-            var expected = @"
+            const string expected = @"
                     using System.Linq;
                     namespace ConsoleApplication1
                     { 
@@ -119,7 +119,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenCallExtensionMethodWithFullNamespaceAndNotImportedShouldImport()
         {
-            var source = @"
+            const string source = @"
                     using System;
                     using System.Collections;
                     using System.Collections.Generic;
@@ -136,7 +136,7 @@ namespace CodeCracker.Test.Usage
                         }
                     }";
 
-            var expected = @"
+            const string expected = @"
                     using System;
                     using System.Collections;
                     using System.Collections.Generic;
@@ -160,7 +160,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenCallExtensionMethodWithChainCallsShouldNotBreakTheChain()
         {
-            var source = @"
+            const string source = @"
                     using System.Linq;
 
                     namespace ConsoleApplication1
@@ -175,7 +175,7 @@ namespace CodeCracker.Test.Usage
                         }
                     }";
 
-            var expected = @"
+            const string expected = @"
                     using System.Linq;
 
                     namespace ConsoleApplication1

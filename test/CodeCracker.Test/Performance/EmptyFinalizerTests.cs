@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task RemoveEmptyFinalizerWhenIsEmpty()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     ~MyClass() 
@@ -34,7 +34,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task RemoveEmptyFinalizerWithSingleLineComment()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     ~MyClass() 
@@ -57,7 +57,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task RemoveEmptyFinalizerWithMultiLineComment()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     ~MyClass() 
@@ -83,7 +83,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task MaintainFinalizerWhenUsed()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass
                 {
                     private System.IntPtr pointer;
@@ -100,7 +100,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task WhenFinalizerIsRemovedFromClass()
         {
-            var source = @"
+            const string source = @"
                 public class MyClass 
                 { 
                     ~MyClass() 
@@ -109,7 +109,7 @@ namespace CodeCracker.Test.Performance
                     } 
                 }";
 
-            var fixtest = @"
+            const string fixtest = @"
                 public class MyClass 
                 { 
                 }";

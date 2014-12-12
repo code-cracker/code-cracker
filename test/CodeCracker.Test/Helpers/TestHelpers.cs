@@ -166,8 +166,8 @@ namespace TestHelper
                     CSharpSymbolsReference, CodeAnalysisReference));
             
             workspace.AddProject(projectInfo);
-           
-            var count = 0;
+
+            const int count = 0;
             foreach (var source in sources)
             {
                 var newFileName = fileNamePrefix + count + "." + fileExt;

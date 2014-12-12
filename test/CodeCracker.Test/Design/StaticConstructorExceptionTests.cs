@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task WarningIfExceptionIsThrowInsideStaticConstructor()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     static MyClass() 
@@ -34,7 +34,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task NotWarningWhenNoExceptionIsThrowInsideStaticConstructor()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     public MyClass() 
@@ -49,7 +49,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task StaticConstructorWithoutException()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     static MyClass() 
@@ -64,7 +64,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task InstanceConstructorWithoutException()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass 
                 { 
                     public MyClass() 
@@ -79,7 +79,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task WhenThrowIsRemovedFromStaticConstructor()
         {
-            var source = @"
+            const string source = @"
                 public class MyClass 
                 { 
                     static MyClass() 
@@ -88,7 +88,7 @@ namespace CodeCracker.Test.Design
                     } 
                 }";
 
-            var fixtest = @"
+            const string fixtest = @"
                 public class MyClass 
                 { 
                     static MyClass() 

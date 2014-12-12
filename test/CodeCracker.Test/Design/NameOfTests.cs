@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task IgnoreIfStringLiteralIsWhiteSpace()
         {
-            var test = @"
+            const string test = @"
 public class TypeName
 {
     void Foo()
@@ -26,7 +26,7 @@ public class TypeName
         [Fact]
         public async Task IgnoreIfStringLiteralIsNull()
         {
-            var test = @"
+            const string test = @"
 public class TypeName
 {
     void Foo()
@@ -41,7 +41,7 @@ public class TypeName
         [Fact]
         public async Task IgnoreIfConstructorHasNoParameters()
         {
-            var test = @"
+            const string test = @"
 public class TypeName()
 {
     public TypeName()
@@ -56,7 +56,7 @@ public class TypeName()
         [Fact]
         public async Task IgnoreIfMethodHasNoParameters()
         {
-            var test = @"
+            const string test = @"
 public class TypeName
 {
     void Foo()
@@ -71,7 +71,7 @@ public class TypeName
         [Fact]
         public async Task IgnoreIfMethodHasParametersUnlikeOfStringLiteral()
         {
-            var test = @"
+            const string test = @"
 public class TypeName
 {
     void Foo(string a)
@@ -86,7 +86,7 @@ public class TypeName
         [Fact]
         public async Task WhenUsingStringLiteralEqualsParameterNameReturnAnalyzerCreatesDiagnostic()
         {
-            var source = @"
+            const string source = @"
 public class TypeName
 {
     void Foo(string b)
@@ -117,7 +117,7 @@ public class TypeName
     }
 }";
 
-            var fixtest = @"
+            const string fixtest = @"
 public class TypeName
 {
     public TypeName(string b)
@@ -143,7 +143,7 @@ public class TypeName
     }
 }";
 
-            var fixtest = @"
+            const string fixtest = @"
 public class TypeName
 {
     public TypeName(string b)
@@ -169,7 +169,7 @@ public class TypeName
     }
 }";
 
-            var fixtest = @"
+            const string fixtest = @"
 public class TypeName
 {
     void Foo(string b)
@@ -195,7 +195,7 @@ public class TypeName
     }
 }";
 
-            var fixtest = @"
+            const string fixtest = @"
 public class TypeName
 {
     void Foo(string b)

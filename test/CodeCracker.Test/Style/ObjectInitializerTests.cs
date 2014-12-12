@@ -147,7 +147,7 @@ namespace CodeCracker.Test.Style
         }
     }";
 
-            var fixtest = @"
+            const string fixtest = @"
     namespace ConsoleApplication1
     {
         class TypeName
@@ -290,7 +290,7 @@ namespace CodeCracker.Test.Style
         }
     }";
 
-            var fixtest = @"
+            const string fixtest = @"
     namespace ConsoleApplication1
     {
         class TypeName

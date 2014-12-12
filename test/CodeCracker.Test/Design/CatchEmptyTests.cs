@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task CatchEmptyAnalyserCreateDiagnostic()
         {
-            var source = @"
+            const string source = @"
     using System;
 
     namespace ConsoleApplication1
@@ -38,7 +38,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async Task WhenFindCatchEmptyThenPutExceptionClass()
         {
-            var test = @"
+            const string test = @"
     using System;
 
     namespace ConsoleApplication1
@@ -59,7 +59,7 @@ namespace CodeCracker.Test.Design
         }
     }";
 
-            var fixtest = @"
+            const string fixtest = @"
     using System;
 
     namespace ConsoleApplication1

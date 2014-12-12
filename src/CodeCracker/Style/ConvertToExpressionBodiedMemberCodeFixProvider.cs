@@ -30,7 +30,7 @@ namespace CodeCracker.Style
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var message = "Convert to an expression bodied member.";
+            const string message = "Convert to an expression bodied member.";
 
             var methodDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
             if (methodDeclaration != null)
