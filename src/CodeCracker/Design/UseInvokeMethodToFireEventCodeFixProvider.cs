@@ -16,7 +16,7 @@ namespace CodeCracker.Design
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
         {
-            return ImmutableArray.Create(CopyEventToVariableBeforeFireAnalyzer.DiagnosticId);
+            return ImmutableArray.Create(UseInvokeMethodToFireEventAnalyzer.DiagnosticId);
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
