@@ -7,7 +7,7 @@
         <authors>giggio,elemarjr,carloscds,viniciushana</authors>
         <owners>giggio,elemarjr,carloscds,viniciushana</owners>
         <licenseUrl>https://github.com/code-cracker/code-cracker/blob/master/LICENSE.txt</licenseUrl>
-        <projectUrl>https://github.com/code-cracker/code-cracker</projectUrl>
+        <projectUrl>http://code-cracker.github.io/</projectUrl>
         <iconUrl>https://avatars1.githubusercontent.com/u/9695920?v=3&amp;s=200</iconUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <description>A analyzer library for C# that uses Roslyn to produce refactorings, code analysis, and other niceties.
