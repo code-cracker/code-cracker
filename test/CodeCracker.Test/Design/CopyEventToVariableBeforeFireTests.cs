@@ -134,6 +134,21 @@ namespace CodeCracker.Test.Design
         }
 
         [Fact]
+        public async void NotWarningIfIsAParameter()
+        {
+            var test = @"
+                public class MyClass
+                {
+                    public void Execute(Action action)
+                    {
+                        action();
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async void WhenEventIsFiredDirectlyShouldCopyItToVariable()
         {
             const string source = @"
