@@ -66,7 +66,5 @@ namespace CodeCracker.Test.Usage
 
             await VerifyCSharpFixAsync(test, fixtest);
         }
-
     }
 }
-

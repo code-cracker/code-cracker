@@ -1,17 +1,14 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Collections.Generic;
+using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.CSharp;
+using System.Threading.Tasks;
 
 namespace CodeCracker.Usage
 {
@@ -41,16 +38,10 @@ namespace CodeCracker.Usage
         private async Task<Document> RemoveRedundantComparisonAsync(Document document, BinaryExpressionSyntax comparison, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
-            var right = (bool) semanticModel.GetConstantValue(comparison.Right).Value;
-
+            var right = (bool)semanticModel.GetConstantValue(comparison.Right).Value;
             var replacer = comparison.Left;
-
             if ((!right && comparison.IsKind(SyntaxKind.EqualsExpression)) || (right && comparison.IsKind(SyntaxKind.NotEqualsExpression)))
-            {
                 replacer = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, replacer);
-            }
-            
             replacer = replacer.WithAdditionalAnnotations(Formatter.Annotation);
 
             var root = await document.GetSyntaxRootAsync();
