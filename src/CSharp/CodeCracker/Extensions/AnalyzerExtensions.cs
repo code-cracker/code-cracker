@@ -64,5 +64,18 @@ namespace CodeCracker
                 .WithLeadingTrivia(source.GetLeadingTrivia())
                 .WithTrailingTrivia(source.GetTrailingTrivia());
         }
+
+        public static bool IsEmbeddedStatementOwner(this SyntaxNode node)
+        {
+            return node is IfStatementSyntax ||
+                   node is ElseClauseSyntax ||
+                   node is ForStatementSyntax ||
+                   node is ForEachStatementSyntax ||
+                   node is WhileStatementSyntax ||
+                   node is UsingStatementSyntax ||
+                   node is DoStatementSyntax ||
+                   node is LockStatementSyntax ||
+                   node is FixedStatementSyntax;
+        }
     }
 }

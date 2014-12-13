@@ -67,7 +67,15 @@ namespace CodeCracker.Design
 
             var root = await document.GetSyntaxRootAsync(ct);
 
-            var newRoot = root.ReplaceNode(invocation.Parent, invocation.Parent.WithAdditionalAnnotations(new SyntaxAnnotation(SyntaxAnnotatinKind)));
+            var oldNode = invocation.Parent;
+            var newNode = invocation.Parent.WithAdditionalAnnotations(new SyntaxAnnotation(SyntaxAnnotatinKind));
+
+            if (oldNode.Parent.IsEmbeddedStatementOwner())
+            {
+                newNode = SyntaxFactory.Block((StatementSyntax)newNode);
+            }
+
+            var newRoot = root.ReplaceNode(oldNode, newNode);
             newRoot = newRoot.InsertNodesAfter(GetMark(newRoot), new[] { variable as SyntaxNode, newInvocation as SyntaxNode });
             newRoot = newRoot.RemoveNode(GetMark(newRoot), SyntaxRemoveOptions.KeepNoTrivia);
 

@@ -207,5 +207,38 @@ namespace CodeCracker.Test.Design
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
+        [Fact]
+        public async void FixWhenInvocationIsInsideABlockWithoutBraces()
+        {
+            const string source = @"
+                public class MyClass
+                {
+                    public event System.EventHandler MyEvent;
+
+                    public void Execute()
+                    {
+                        if (raiseEvents) MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            const string fixtest = @"
+                public class MyClass 
+                {
+                    public event System.EventHandler MyEvent;
+
+                    public void Execute()
+                    {
+                        if (raiseEvents)
+                        {
+                            var handler = MyEvent;
+                            if (handler != null)
+                                handler(this, System.EventArgs.Empty);
+                        }
+                    }
+                }";
+
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
     }
 }
