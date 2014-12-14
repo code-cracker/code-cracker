@@ -44,12 +44,13 @@ namespace CodeCracker.Style
             var arguments = argumentList.Arguments;
             var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;
             var format = (string)semanticModel.GetConstantValue(formatLiteral).Value;
+            var escapedFormat = format.Replace("\n", @"\n").Replace("\r", @"\r").Replace("\f", @"\f");
             var newParams = new List<object>();
             foreach (var param in arguments.Skip(1))
             {
                 newParams.Add(@"\{" + param.Expression.ToString() + "}");
             }
-            var interpolatedStringText = "\"" + string.Format(format, newParams.ToArray()) + "\"";
+            var interpolatedStringText = "\"" + string.Format(escapedFormat, newParams.ToArray()) + "\"";
             var newStringInterpolation = SyntaxFactory.ParseExpression(interpolatedStringText)
                 .WithSameTriviaAs(invocationExpression)
                 .WithAdditionalAnnotations(Formatter.Annotation);
