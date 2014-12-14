@@ -139,7 +139,7 @@
     <Compile Include="Style\UnnecessaryParenthesisTests.cs" />
     <Compile Include="Design\UseInvokeMethodToFireEventTests.cs" />
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsTests.cs" />
-    <Compile Include="StringRepresentationTests.cs" />
+    <Compile Include="Style\StringRepresentationTests.cs" />
     <Compile Include="Verifiers\CodeFixTest.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticTest.cs" />

@@ -1,9 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeCracker.Style;
+using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test
+namespace CodeCracker.Test.Style
 {
     public class StringRepresentationTests
         : CodeFixTest<StringRepresentationAnalyzer, StringRepresentationCodeFixProvider>
@@ -57,7 +58,7 @@ class C
             var expected = new DiagnosticResult
             {
                 Id = StringRepresentationAnalyzer.RegularStringId,
-                Message = "Regular string",
+                Message = "Change to regular string",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
             };
@@ -79,7 +80,7 @@ class C
             var expected = new DiagnosticResult
             {
                 Id = StringRepresentationAnalyzer.VerbatimStringId,
-                Message = "Verbatim string",
+                Message = "Change to verbatim string",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
             };
