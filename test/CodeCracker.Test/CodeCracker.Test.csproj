@@ -134,12 +134,12 @@
     <Compile Include="Performance\RemoveWhereWhenItIsPossibleTests.cs" />
     <Compile Include="Performance\SealedAttributeTests.cs" />
     <Compile Include="Design\StaticConstructorExceptionTests.cs" />
-    <Compile Include="StringTypeCodeRefactoringProviderTests.cs" />
     <Compile Include="Style\ConvertToExpressionBodiedMemberTests.cs" />
     <Compile Include="Style\TernaryOperatorTests.cs" />
     <Compile Include="Style\UnnecessaryParenthesisTests.cs" />
     <Compile Include="Design\UseInvokeMethodToFireEventTests.cs" />
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsTests.cs" />
+    <Compile Include="Style\StringRepresentationTests.cs" />
     <Compile Include="Verifiers\CodeFixTest.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticTest.cs" />
@@ -149,7 +149,6 @@
     <Compile Include="Helpers\DiagnosticVerifier.Helper.cs" />
     <Compile Include="Usage\RethrowExceptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Verifiers\RefactoringVerifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
