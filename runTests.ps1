@@ -1,6 +1,6 @@
 param([String]$testClass)
 $Global:lastRun = $(date)
-$testDllDirPath = "$PSScriptRoot\test\CodeCracker.Test\bin\Debug\"
+$testDllDirPath = "$PSScriptRoot\test\CSharp\CodeCracker.Test\bin\Debug\"
 $testDllFileName = "CodeCracker.Test.dll"
 $Global:testDllFullFileName = "$testDllDirPath$testDllFileName"
 $Global:xunitConsole = "$PSScriptRoot\packages\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe"
