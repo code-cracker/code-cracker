@@ -44,7 +44,7 @@ namespace CodeCracker.Style
             var arguments = argumentList.Arguments;
             var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;
             var format = (string)semanticModel.GetConstantValue(formatLiteral).Value;
-            var escapedFormat = format.Replace("\n", @"\n").Replace("\r", @"\r").Replace("\f", @"\f");
+            var escapedFormat = format.Replace("\n", @"\n").Replace("\r", @"\r").Replace("\f", @"\f").Replace("\"","\\\"");
             var newParams = new List<object>();
             foreach (var param in arguments.Skip(1))
             {

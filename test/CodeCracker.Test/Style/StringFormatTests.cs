@@ -352,5 +352,39 @@ namespace CodeCracker.Test.Style
     }";
             await VerifyCSharpFixAsync(source, expected);
         }
+
+        [Fact]
+        public async Task WhenFormatStringHasQuotesTheCodeFixKeepsThat()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = string.Format(""This {0} is \""{1}\"""", noun, adjective);
+            }
+        }
+    }";
+            const string expected = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = ""This \{noun} is \""\{adjective}\"""";
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, expected);
+        }
     }
 }
