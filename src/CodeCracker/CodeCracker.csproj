@@ -54,6 +54,8 @@
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.cs" />
     <Compile Include="Style\ExistenceOperatorAnalyzer.cs" />
     <Compile Include="Style\ExistenceOperatorCodeFixProvider.cs" />
+    <Compile Include="StringRepresentationCodeFixProvider.cs" />
+    <Compile Include="StringRepresentationAnalyzer.cs" />
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
     <Compile Include="Performance\EmptyFinalizerAnalyzer.cs" />
     <Compile Include="Performance\EmptyFinalizerCodeFixProvider.cs" />

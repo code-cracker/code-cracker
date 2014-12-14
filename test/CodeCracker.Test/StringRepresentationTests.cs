@@ -1,34 +1,89 @@
-﻿using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeRefactorings;
+﻿using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
 namespace CodeCracker.Test
 {
-    public class StringTypeCodeRefactoringProviderTests : RefactoringVerifier
+    public class StringRepresentationTests
+        : CodeFixTest<StringRepresentationAnalyzer, StringRepresentationCodeFixProvider>
     {
-        protected override CodeRefactoringProvider GetCSharpCodeRefactoringProvider()
-        {
-            return new StringTypeCodeRefactoringProvider();
-        }
 
         [Fact]
         public Task DoesNotTriggerOnEmptySource()
         {
-            return VerifyNoCSharpRefactoringAsync("├┤");
+            return VerifyCSharpHasNoDiagnosticsAsync("");
         }
 
         [Fact]
         public Task DoesNotTriggerNumericLiteral()
         {
-            return VerifyNoCSharpRefactoringAsync(@"
+            return VerifyCSharpHasNoDiagnosticsAsync(@"
 class C
 {
     void M()
     {
-        var i = ├5┤;
+        var i = 5;
     }
 }");
+        }
+
+        [Fact]
+        public Task DoesNotTriggerInInterpolatedString()
+        {
+            return VerifyCSharpHasNoDiagnosticsAsync(@"
+class C
+{
+    void M()
+    {
+        const int i = 5;
+        var s = ""Hello \{i} world"";
+    }
+}");
+        }
+
+        [Fact]
+        public Task RegularStringProduceDiagnostic()
+        {
+            const string source = @"
+class C
+{
+    void M()
+    {
+        var s = ""Hello world"";
+    }
+}";
+
+            var expected = new DiagnosticResult
+            {
+                Id = StringRepresentationAnalyzer.RegularStringId,
+                Message = "Regular string",
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
+            };
+            return VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public Task VerbatimStringProduceDiagnostic()
+        {
+            const string source = @"
+class C
+{
+    void M()
+    {
+        var s = @""Hello world"";
+    }
+}";
+
+            var expected = new DiagnosticResult
+            {
+                Id = StringRepresentationAnalyzer.VerbatimStringId,
+                Message = "Verbatim string",
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
+            };
+            return VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
@@ -39,7 +94,7 @@ class C
 {
     void M()
     {
-        var s = ""Hello ├┤world"";
+        var s = ""Hello world"";
     }
 }";
 
@@ -52,8 +107,33 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToVerbatimId);
+            return VerifyCSharpFixAsync(before, expected);
+        }
+
+        [Fact]
+        public Task ConvertStringToVerbatimInMethod()
+        {
+            const string before = @"
+class C
+{
+    void Foo(string s) => s;
+    void M()
+    {
+        var s = Foo(""Hello world"");
+    }
+}";
+
+            const string expected = @"
+class C
+{
+    void Foo(string s) => s;
+    void M()
+    {
+        var s = Foo(@""Hello world"");
+    }
+}";
+
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -64,7 +144,7 @@ class C
 {
     void M()
     {
-        var s = /*Hi*/""Hello ├┤world"" // Hello message;
+        var s = /*Hi*/""Hello world"" // Hello message;
     }
 }";
 
@@ -77,8 +157,7 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToVerbatimId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -89,7 +168,7 @@ class C
 {
     void M()
     {
-        var s = ├""Hello world""┤;
+        var s = ""Hello world"";
     }
 }";
 
@@ -103,8 +182,7 @@ class C
 }";
 
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToVerbatimId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -115,7 +193,7 @@ class C
 {
     void M()
     {
-        var s = ""Hello ├┤\""world\"""";
+        var s = ""Hello \""world\"""";
     }
 }";
 
@@ -127,8 +205,7 @@ class C
         var s = @""Hello """"world"""""";
     }
 }";
-                    return VerifyCSharpRefactoringAsync(before, expected,
-            StringTypeCodeRefactoringProvider.ToVerbatimId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -139,7 +216,7 @@ class C
 {
     void M()
     {
-        var s = ""Hello ├┤\r\nworld"";
+        var s = ""Hello \r\nworld"";
     }
 }";
 
@@ -153,8 +230,7 @@ world"";
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToVerbatimId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -165,7 +241,7 @@ class C
 {
     void M()
     {
-        var s = ""Hello\t├┤world"";
+        var s = ""Hello\tworld"";
     }
 }";
 
@@ -178,8 +254,7 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToVerbatimId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -190,7 +265,7 @@ class C
 {
     void M()
     {
-        var s = ""Hello \\ ├┤world"";
+        var s = ""Hello \\ world"";
     }
 }";
 
@@ -203,8 +278,7 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToVerbatimId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -215,7 +289,7 @@ class C
 {
     void M()
     {
-        var s = @""Hello ├┤world"";
+        var s = @""Hello world"";
     }
 }";
 
@@ -228,8 +302,7 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToRegularId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -240,7 +313,7 @@ class C
 {
     void M()
     {
-        var s = /*Hi*/@""Hello ├┤world"" // Hello ;
+        var s = /*Hi*/@""Hello world"" // Hello ;
     }
 }";
 
@@ -253,8 +326,7 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToRegularId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -265,7 +337,7 @@ class C
 {
     void M()
     {
-        var s = ├@""Hello world""┤;
+        var s = @""Hello world"";
     }
 }";
 
@@ -278,8 +350,7 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToRegularId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -290,7 +361,7 @@ class C
 {
     void M()
     {
-        var s = @""Hello ├┤" + "\r\n" + @"world"";
+        var s = @""Hello " + "\r\n" + @"world"";
     }
 }";
 
@@ -303,8 +374,7 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToRegularId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -315,7 +385,7 @@ class C
 {
     void M()
     {
-        var s = @""Hello"+"\t" + @"├┤world"";
+        var s = @""Hello"+"\t" + @"world"";
     }
 }";
 
@@ -328,8 +398,7 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToRegularId);
+            return VerifyCSharpFixAsync(before, expected);
         }
 
         [Fact]
@@ -340,7 +409,7 @@ class C
 {
     void M()
     {
-        var s = @""Hello \ ├┤world"";
+        var s = @""Hello \ world"";
     }
 }";
 
@@ -353,8 +422,7 @@ class C
     }
 }";
 
-            return VerifyCSharpRefactoringAsync(before, expected,
-                StringTypeCodeRefactoringProvider.ToRegularId);
+            return VerifyCSharpFixAsync(before, expected);
         }
     }
 }
