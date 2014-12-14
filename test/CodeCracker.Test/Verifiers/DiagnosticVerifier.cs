@@ -111,8 +111,7 @@ namespace TestHelper
             {
                 var diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, actualResults.ToArray()) : "    NONE.";
 
-                Assert.True(false,
-                    string.Format("Mismatch between number of diagnostics returned, expected \"{0}\" acutal \"{1}\"\r\n\r\nDiagnostics:\r\n{2}\r\n", expectedCount, actualCount, diagnosticsOutput));
+                Assert.True(false, string.Format("Mismatch between number of diagnostics returned, expected \"{0}\" acutal \"{1}\"\r\n\r\nDiagnostics:\r\n{2}\r\n", expectedCount, actualCount, diagnosticsOutput));
             }
 
             for (int i = 0; i < expectedResults.Length; i++)
@@ -124,9 +123,7 @@ namespace TestHelper
                 {
                     if (actual.Location != Location.None)
                     {
-                        Assert.True(false,
-                            string.Format("Expected:\nA project diagnostic with No location\nActual:\n{0}",
-                            FormatDiagnostics(analyzer, actual)));
+                        Assert.True(false, "Expected:\nA project diagnostic with No location\nActual:\n\{FormatDiagnostics(analyzer, actual)}");
                     }
                 }
                 else
@@ -136,10 +133,7 @@ namespace TestHelper
 
                     if (additionalLocations.Length != expected.Locations.Length - 1)
                     {
-                        Assert.True(false,
-                            string.Format("Expected {0} additional locations but got {1} for Diagnostic:\r\n    {2}\r\n",
-                                expected.Locations.Length - 1, additionalLocations.Length,
-                                FormatDiagnostics(analyzer, actual)));
+                        Assert.True(false, "Expected \{expected.Locations.Length - 1} additional locations but got \{additionalLocations.Length} for Diagnostic:\r\n    \{FormatDiagnostics(analyzer, actual)}\r\n");
                     }
 
                     for (int j = 0; j < additionalLocations.Length; ++j)
