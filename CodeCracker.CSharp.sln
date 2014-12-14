@@ -8,11 +8,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2F5240
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker", "src\CodeCracker\CodeCracker.csproj", "{FF1097FB-A890-461B-979E-064697891B96}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker", "src\CSharp\CodeCracker\CodeCracker.csproj", "{FF1097FB-A890-461B-979E-064697891B96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Vsix", "src\CodeCracker.Vsix\CodeCracker.Vsix.csproj", "{6BAC4057-7239-485E-A04B-02E687A83BAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Vsix", "src\CSharp\CodeCracker.Vsix\CodeCracker.Vsix.csproj", "{6BAC4057-7239-485E-A04B-02E687A83BAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Test", "test\CodeCracker.Test\CodeCracker.Test.csproj", "{F7843158-046E-4B22-95D7-CAC7BB01283D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Test", "test\CSharp\CodeCracker.Test\CodeCracker.Test.csproj", "{F7843158-046E-4B22-95D7-CAC7BB01283D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7B4F0131-D598-4692-9E2C-111E6C42C6AD}"
 	ProjectSection(SolutionItems) = preProject
