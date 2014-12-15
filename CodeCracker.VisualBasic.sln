@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22310.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeCracker", "src\VisualBasic\CodeCracker\CodeCracker.vbproj", "{41FA4971-D354-4647-A269-4A886DA2EF4C}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeCracker.Vsix", "src\VisualBasic\CodeCracker.Vsix\CodeCracker.Vsix.vbproj", "{0C891C7E-FCA1-4318-A1EE-EF06F0767419}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeCracker.Test", "test\VisualBasic\CodeCracker.Test\CodeCracker.Test.vbproj", "{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3DB077DC-387D-4AAD-9ECE-96D3D24FB3A6}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		buildNuget.cmd = buildNuget.cmd
+		src\VisualBasic\buildNugetVisualBasic.cmd = src\VisualBasic\buildNugetVisualBasic.cmd
+		README.md = README.md
+		runTestsVB.ps1 = runTestsVB.ps1
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{41FA4971-D354-4647-A269-4A886DA2EF4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41FA4971-D354-4647-A269-4A886DA2EF4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41FA4971-D354-4647-A269-4A886DA2EF4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41FA4971-D354-4647-A269-4A886DA2EF4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C891C7E-FCA1-4318-A1EE-EF06F0767419}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C891C7E-FCA1-4318-A1EE-EF06F0767419}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C891C7E-FCA1-4318-A1EE-EF06F0767419}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C891C7E-FCA1-4318-A1EE-EF06F0767419}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

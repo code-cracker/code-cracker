@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
-        <id>codecracker.CSharp</id>
+        <id>codecracker</id>
         <version>1.0.0-alpha2</version>
         <title>CodeCracker</title>
         <authors>giggio,elemarjr,carloscds,viniciushana</authors>
@@ -10,19 +10,21 @@
         <projectUrl>http://code-cracker.github.io/</projectUrl>
         <iconUrl>https://avatars1.githubusercontent.com/u/9695920?v=3&amp;s=200</iconUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
-        <description>A analyzer library for C# that uses Roslyn to produce refactorings, code analysis, and other niceties.
+        <description>A analyzer library for C# and VB that uses Roslyn to produce refactorings, code analysis, and other niceties.
+
+You probably don't want this package directly, search for the C# or Visual Basic specific packages (codecracker.CSharp and codecracker.VisualBasic). This will install both.
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this software, nor it will be. Ever.</description>
-        <releaseNotes>Second alpha release</releaseNotes>
+        <releaseNotes>First alpha release</releaseNotes>
         <copyright>Copyright CodeCracker 2014</copyright>
         <tags>roslyn, analyzers</tags>
+        <dependencies>
+            <dependency id="codecracker.CSharp" version="1.0.0-alpha2" />
+            <dependency id="codecracker.VisualBasic" version="1.0.0-alpha2" />
+        </dependencies>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System" targetFramework="" />
         </frameworkAssemblies>
     </metadata>
-    <files>
-        <file src="tools\install.ps1" target="tools\install.ps1" />
-        <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
-        <file src="bin\debug\CodeCracker.CSharp.dll" target="tools\analyzers\CodeCracker.CSharp.dll" />
-    </files>
+    <files />
 </package>

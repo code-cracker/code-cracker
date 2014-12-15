@@ -11,7 +11,7 @@ namespace CodeCracker
     {
         public static void RegisterSyntaxNodeAction<TLanguageKindEnum>(this AnalysisContext context, LanguageVersion languageVersion, Action<SyntaxNodeAnalysisContext> action, params TLanguageKindEnum[] syntaxKinds) where TLanguageKindEnum : struct
         {
-            context.RegisterCompilationStartAction(LanguageVersion.CSharp6, compilationContext => compilationContext.RegisterSyntaxNodeAction(action, syntaxKinds));
+            context.RegisterCompilationStartAction(languageVersion, compilationContext => compilationContext.RegisterSyntaxNodeAction(action, syntaxKinds));
         }
 
         public static void RegisterCompilationStartAction(this AnalysisContext context, LanguageVersion languageVersion, Action<CompilationStartAnalysisContext> registrationAction)
