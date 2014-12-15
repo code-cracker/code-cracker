@@ -2,10 +2,10 @@
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" >
     <ItemGroup>
         <ProjectToBuild Include="CodeCracker.VisualBasic.sln">
-            <Properties>Configuration=Debug</Properties>
+            <Properties>Configuration=DebugNoVsix</Properties>
         </ProjectToBuild>
         <ProjectToBuild Include="CodeCracker.CSharp.sln">
-            <Properties>Configuration=Debug</Properties>
+            <Properties>Configuration=DebugNoVsix</Properties>
         </ProjectToBuild>
     </ItemGroup>
     <Target Name="Build">
