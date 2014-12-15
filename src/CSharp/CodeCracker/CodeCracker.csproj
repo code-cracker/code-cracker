@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FF1097FB-A890-461B-979E-064697891B96}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CodeCracker</RootNamespace>
+    <AssemblyName>CodeCracker.CSharp</AssemblyName>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\..\..\codecrackerandall.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
+    <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
+    <Compile Include="Style\PropertyPrivateSetAnalyzer.cs" />
+    <Compile Include="Style\PropertyPrivateSetCodeFixProvider.cs" />
+    <Compile Include="Style\RemoveCommentedCodeAnalyzer.cs" />
+    <Compile Include="Style\RemoveCommentedCodeCodeFixProvider.cs" />
+    <Compile Include="Style\StringFormatCodeFixProvider.cs" />
+    <Compile Include="SupportedCategories.cs" />
+    <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
+    <Compile Include="Usage\ArgumentExceptionCodeFixProvider.cs" />
+    <Compile Include="Style\ConvertToExpressionBodiedMemberAnalyzer.cs" />
+    <Compile Include="Style\ConvertToSwitchAnalyzer.cs" />
+    <Compile Include="Style\ConvertToSwitchCodeFixProvider.cs" />
+    <Compile Include="Design\CopyEventToVariableBeforeFireAnalyzer.cs" />
+    <Compile Include="Design\CopyEventToVariableBeforeFireCodeFixProvider.cs" />
+    <Compile Include="Usage\CallExtensionMethodAsExtensionAnalyzer.cs" />
+    <Compile Include="Usage\CallExtensionMethodAsExtensionCodeFixProvider.cs" />
+    <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeAnalyzer.cs" />
+    <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.cs" />
+    <Compile Include="Style\ExistenceOperatorAnalyzer.cs" />
+    <Compile Include="Style\ExistenceOperatorCodeFixProvider.cs" />
+    <Compile Include="Style\StringRepresentationCodeFixProvider.cs" />
+    <Compile Include="Style\StringRepresentationAnalyzer.cs" />
+    <Compile Include="Extensions\AnalyzerExtensions.cs" />
+    <Compile Include="Performance\EmptyFinalizerAnalyzer.cs" />
+    <Compile Include="Performance\EmptyFinalizerCodeFixProvider.cs" />
+    <Compile Include="HelpLink.cs" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenItIsPossibleAnalyzer.cs" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenItIsPossibleCodeFixProvider.cs" />
+    <Compile Include="Design\NameOfAnalyzer.cs" />
+    <Compile Include="Design\NameOfCodeFixProvider.cs" />
+    <Compile Include="Refactoring\InvertForAnalyzer.cs" />
+    <Compile Include="Refactoring\InvertForCodeFixProvider.cs" />
+    <Compile Include="Style\StringFormatAnalyzer.cs" />
+    <Compile Include="Usage\RegexAnalyzer.cs" />
+    <Compile Include="Design\EmptyCatchBlockCodeFixProvider.cs" />
+    <Compile Include="Design\EmptyCatchBlockAnalyzer.cs" />
+    <Compile Include="Style\EmptyObjectInitializerCodeFixProvider.cs" />
+    <Compile Include="Style\EmptyObjectInitializerAnalyzer.cs" />
+    <Compile Include="Style\ForInArrayAnalyzer.cs" />
+    <Compile Include="Style\ForInArrayCodeFixProvider.cs" />
+    <Compile Include="Design\CatchEmptyAnalyzer.cs" />
+    <Compile Include="Design\CatchEmptyCodeFixProvider.cs" />
+    <Compile Include="Style\ObjectInitializerAnalyzer.cs" />
+    <Compile Include="Usage\IfReturnTrueCodeFixProvider.cs" />
+    <Compile Include="Style\ObjectInitializerCodeFixProvider.cs" />
+    <Compile Include="Usage\IfReturnTrueAnalyzer.cs" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleAnalyzer.cs" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleCodeFixProvider.cs" />
+    <Compile Include="Performance\SealedAttributeAnalyzer.cs" />
+    <Compile Include="Performance\SealedAttributeCodeFixProvider.cs" />
+    <Compile Include="Design\StaticConstructorExceptionAnalyzer.cs" />
+    <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.cs" />
+    <Compile Include="StringTypeCodeRefactoringProvider.cs" />
+    <Compile Include="Style\ConvertToExpressionBodiedMemberCodeFixProvider.cs" />
+    <Compile Include="Style\TernaryOperatorCodeFixProvider.cs" />
+    <Compile Include="Style\TernaryOperatorAnalyzer.cs" />
+    <Compile Include="Usage\RethrowExceptionCodeFixProvider.cs" />
+    <Compile Include="Usage\RethrowExceptionAnalyzer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Style\UnnecessaryParenthesisAnalyzer.cs" />
+    <Compile Include="Style\UnnecessaryParenthesisCodeFixProvider.cs" />
+    <Compile Include="Design\UseInvokeMethodToFireEventAnalyzer.cs" />
+    <Compile Include="Design\UseInvokeMethodToFireEventCodeFixProvider.cs" />
+    <Compile Include="Usage\SimplifyRedundantBooleanComparisonsAnalyzer.cs" />
+    <Compile Include="Usage\SimplifyRedundantBooleanComparisonsCodeFixProvider.cs.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeCracker.nuspec">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+    <None Include="tools\install.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="tools\uninstall.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-beta1-20141031-01\lib\portable-net45+win8\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0-beta1-20141031-01\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0-beta1-20141031-01\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-beta1-20141031-01\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Composition.Convention">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Composition.Hosting">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Composition.Runtime">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.17-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Globalization\" />
+    <Folder Include="Interoperability\" />
+    <Folder Include="Maintainability\" />
+    <Folder Include="Mobility\" />
+    <Folder Include="Naming\" />
+    <Folder Include="Portability\" />
+    <Folder Include="Reliability\" />
+    <Folder Include="Security\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha2-172\tools\analyzers\CodeCracker.CSharp.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
