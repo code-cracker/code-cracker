@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test
+namespace CodeCracker.Test.Refactoring
 {
     public class ParameterRefectoryTest : CodeFixTest<ParameterRefactoryAnalyzer, ParameterRefactoryCodeFixProvider>
     {
@@ -56,19 +56,19 @@ namespace CodeCracker.Test
         public async Task ShouldUpdateParameterToClass()
         {
             const string oldTest = @"
-    using System;
+using System;
 
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+    class TypeName
     {
-        class TypeName
+        public void Foo(string a, string b, int year, string d)
         {
-            public void Foo(string a,string b,int year,string d)
-            {
 
-            }
         }
+    }
 
-    }";
+}";
             const string newTest = @"
 using System;
 
@@ -84,10 +84,10 @@ namespace ConsoleApplication1
 
     public class NewClassFoo
     {
-         public string A { get; set; }
-         public string B { get; set; }
-         public int Year { get; set; }
-         public string D { get; set; }
+        public string A { get; set; }
+        public string B { get; set; }
+        public int Year { get; set; }
+        public string D { get; set; }
     }
 }";
             await VerifyCSharpFixAsync(oldTest, newTest, 0);
@@ -100,15 +100,15 @@ namespace ConsoleApplication1
         public async Task WhenHasNotNameSpaceShouldGenerateClassParameter()
         {
             const string oldTest = @"
-    using System;
+using System;
 
-        class TypeName
-        {
-            public void Foo(string a,string b,int year,string d)
-            {
+class TypeName
+{
+    public void Foo(string a, string b, int year, string d)
+    {
 
-            }
-        }
+    }
+}
 ";
             const string newTest = @"
 using System;
@@ -139,32 +139,32 @@ public class NewClassFoo
         public async void ShouldGenerateNewClassFoo2()
         {
             const string oldTest = @"
-    using System;
+using System;
 
-    namespace ConsoleApplication1
+namespace ConsoleApplication1
+{
+    class TypeName
     {
-        class TypeName
+        public void Foo(NewClassFoo newClassFoo)
         {
-            public void Foo(NewClassFoo newClassFoo)
-            {
 
-            }
-
-            public void Foo2(string a,string b,int year,string d)
-            {
-
-            }
         }
 
-        public class NewClassFoo
+        public void Foo2(string a, string b, int year, string d)
         {
-            public string A { get; set; }
-            public string B { get; set; }
-            public int Year { get; set; }
-            public string D { get; set; }
-        }
 
-    }";
+        }
+    }
+
+    public class NewClassFoo
+    {
+        public string A { get; set; }
+        public string B { get; set; }
+        public int Year { get; set; }
+        public string D { get; set; }
+    }
+
+}";
             const string newTest = @"
 using System;
 
@@ -185,18 +185,18 @@ namespace ConsoleApplication1
 
     public class NewClassFoo
     {
-         public string A { get; set; }
-         public string B { get; set; }
-         public int Year { get; set; }
-         public string D { get; set; }
+        public string A { get; set; }
+        public string B { get; set; }
+        public int Year { get; set; }
+        public string D { get; set; }
     }
 
     public class NewClassFoo2
     {
-         public string A { get; set; }
-         public string B { get; set; }
-         public int Year { get; set; }
-         public string D { get; set; }
+        public string A { get; set; }
+        public string B { get; set; }
+        public int Year { get; set; }
+        public string D { get; set; }
     }
 }";
             await VerifyCSharpFixAsync(oldTest, newTest, 0);
