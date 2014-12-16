@@ -31,6 +31,9 @@ Install-Package CodeCracker
 
 Or use the Package Manager in Visual Studio.
 
+If you want the alpha builds that build on each push to the repo, add https://www.myget.org/F/codecrackerbuild/ to your nuget feed.
+We are now only pushing complete alpha releases to Nuget.org, and commit builds go to Myget.org.
+
 If you want global analyzers that will work on every project you open in Visual Studio, then you want the Extension.
 Grab the extension at the [Visual Studio Extensions Gallery](https://visualstudiogallery.msdn.microsoft.com/ab588981-91a5-478c-8e65-74d0ff450862).
 
