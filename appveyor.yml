@@ -172,14 +172,14 @@ deploy:
   on:
     branch: master
 
-#notifications:
-#- provider: Email
-#  to:
-#  - cds@cds-software.com.br
-#  - elemarjr@gmail.com
-#  - viniciushanas@gmail.com
-#  - giggio@giggio.net
-#  subject: CodeCracker Build
-#  on_build_success: false
-#  on_build_failure: true
-#  on_build_status_changed: true
+notifications:
+- provider: Email
+  to:
+  - cds@cds-software.com.br
+  - elemarjr@gmail.com
+  - viniciushanas@gmail.com
+  - giggio@giggio.net
+  subject: CodeCracker Build
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: true
