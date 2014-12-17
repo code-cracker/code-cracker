@@ -1,0 +1,185 @@
+version: 1.0.0.{build}
+
+skip_tags: true
+
+os: Visual Studio 2015 Preview
+
+configuration: DebugNoVsix
+
+init:
+  - git config --global core.autocrlf true
+
+clone_folder: c:\projects\code-cracker
+
+shallow_clone: false
+
+clone_depth: 5
+
+before_build:
+  - ps: >-
+      echo "set path"
+
+      $env:path="C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files (x86)\Microsoft SDKs\F#\4.0\Framework\v4.0\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.1;C:\Program Files (x86)\MSBuild\14.0\bin;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\VCPackages;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Performance Tools;C:\Program Files (x86)\Windows Kits\8.1\bin\x86;C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.1\;$env:path"
+
+      echo "restore nuget"
+
+      nuget restore CodeCracker.CSharp.sln
+
+      nuget restore CodeCracker.VisualBasic.sln
+
+
+      $buildNumber = [Convert]::ToInt32($env:APPVEYOR_BUILD_NUMBER).ToString("0000")
+
+
+      echo "Updating version in nuspec file for C#"
+
+      $root = $env:APPVEYOR_BUILD_FOLDER
+
+      echo "Build folder is $root"
+
+      $nuspecPathCS = "$root\src\CSharp\CodeCracker\CodeCracker.nuspec"
+
+      [xml]$xmlCS = cat $nuspecPathCS
+
+      $xmlCS.package.metadata.version+="-$buildNumber"
+
+      echo "Nuspec version will be $($xmlCS.package.metadata.version)"
+
+      $xmlCS.Save($nuspecPathCS)
+
+      echo "Nuspec saved for C#!"
+
+
+
+      echo "Updating version in nuspec file for VB"
+
+      $nuspecPathVB = "$root\src\VisualBasic\CodeCracker\CodeCracker.nuspec"
+
+      [xml]$xmlVB = cat $nuspecPathVB
+
+      $xmlVB.package.metadata.version+="-$buildNumber"
+
+      echo "Nuspec version will be $($xmlVB.package.metadata.version)"
+
+      $xmlVB.Save($nuspecPathVB)
+
+      echo "Nuspec saved for VB!"
+
+
+
+      echo "Updating version in nuspec file for joint package"
+
+      $nuspecPath = "$root\src\CodeCracker.nuspec"
+
+      [xml]$xml = cat $nuspecPath
+
+      $xml.package.metadata.version+="-$buildNumber"
+
+      echo "Nuspec version will be $($xml.package.metadata.version)"
+
+      $xml.Save($nuspecPath)
+
+      echo "Nuspec saved for joint package!"
+
+build:
+  project: build.proj
+  parallel: true
+  verbosity: minimal
+
+after_build:
+  - ps: >-
+      $root = $env:APPVEYOR_BUILD_FOLDER
+
+
+      echo "Packing nuget for C#..."
+
+      . "$root\src\CSharp\buildNugetCSharp.cmd"
+
+      $nupkgPathCS = "$root\src\CSharp\CodeCracker.CSharp.$($xmlCS.package.metadata.version).nupkg"
+
+      echo "Nupkg path is $nupkgPathCS"
+
+      ls $nupkgPathCS
+
+      echo "Nuget packed for C#!"
+
+      echo "Pushing nuget artifact for C#..."
+
+      appveyor PushArtifact $nupkgPathCS
+
+      echo "Nupkg pushed for C#!"
+
+
+      echo "Packing nuget for VB..."
+
+      . "$root\src\VisualBasic\buildNugetVisualBasic.cmd"
+
+      $nupkgPathVB = "$root\src\VisualBasic\CodeCracker.VisualBasic.$($xmlVB.package.metadata.version).nupkg"
+
+      echo "Nupkg path is $nupkgPathVB"
+
+      ls $nupkgPathVB
+
+      echo "Nuget packed for VB!"
+
+      echo "Pushing nuget artifact for VB..."
+
+      appveyor PushArtifact $nupkgPathVB
+
+      echo "Nupkg pushed for VB!"
+
+
+      echo "Packing nuget for joint package..."
+
+      . "$root\buildNuget.cmd"
+
+      $nupkgPath = "$root\CodeCracker.$($xml.package.metadata.version).nupkg"
+
+      echo "Nupkg path is $nupkgPath"
+
+      ls $nupkgPath
+
+      echo "Nuget packed for joint package!"
+
+      echo "Pushing nuget artifact for joint package"
+
+      appveyor PushArtifact $nupkgPath
+
+      echo "Nupkg pushed for joint package!"
+
+test_script:
+  - C:\projects\code-cracker\packages\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe "C:\projects\code-cracker\test\CSharp\CodeCracker.Test\bin\Debug\CodeCracker.Test.CSharp.dll" -appveyor
+  - C:\projects\code-cracker\packages\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe "C:\projects\code-cracker\test\VisualBasic\CodeCracker.Test\bin\Debug\CodeCracker.Test.VisualBasic.dll" -appveyor
+
+artifacts:
+  - path: src
+    name: src
+  - path: test
+    name: test
+
+deploy:
+- provider: NuGet
+  api_key:
+    secure: s1aIT1sGbIeG5Ccgree7K+k/h7LOSzPfJOrsWcCuzgFGrcuexPZUwX/CfYnU9w4v
+  skip_symbols: true
+  on:
+    branch: release
+- provider: NuGet
+  server: https://www.myget.org/F/codecrackerbuild/api/v2/package
+  api_key:
+    secure: 42eslsnaZIIcMVVaeC9Qu5NI9yjzLzHWYUGl0HLhl0YurivQezpMyJOwgSVjiGmj
+  skip_symbols: true
+  on:
+    branch: master
+
+notifications:
+- provider: Email
+  to:
+  - cds@cds-software.com.br
+  - elemarjr@gmail.com
+  - viniciushanas@gmail.com
+  - giggio@giggio.net
+  subject: CodeCracker Build
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: true
