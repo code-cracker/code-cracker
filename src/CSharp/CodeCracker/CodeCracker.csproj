@@ -69,6 +69,7 @@
     <Compile Include="Refactoring\InvertForAnalyzer.cs" />
     <Compile Include="Refactoring\InvertForCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatAnalyzer.cs" />
+    <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\RegexAnalyzer.cs" />
     <Compile Include="Design\EmptyCatchBlockCodeFixProvider.cs" />
     <Compile Include="Design\EmptyCatchBlockAnalyzer.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Style\ConvertToExpressionBodiedMemberCodeFixProvider.cs" />
     <Compile Include="Style\TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="Style\TernaryOperatorAnalyzer.cs" />
+    <Compile Include="Usage\DisposableFieldNotDisposedCodeFixProvider.cs" />
     <Compile Include="Usage\RethrowExceptionCodeFixProvider.cs" />
     <Compile Include="Usage\RethrowExceptionAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
