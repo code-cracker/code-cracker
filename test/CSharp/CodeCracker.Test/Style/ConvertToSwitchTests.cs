@@ -457,6 +457,70 @@ namespace ConsoleApplication1
         }
 
         [Fact]
+        public async Task FixDoesNotUsesBreakWhenSwitchSectionThrows()
+        {
+            const string test = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public async Task Foo(string s)
+        {
+            if (s == ""A"")
+            {
+                DoStuff();
+            }
+            else if (s == ""B"")
+            {
+                DoStuff();
+            }
+            else if (s == ""C"")
+            {
+                DoStuff();
+                DoExtraStuff();
+                throw new Exception();
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+    }
+}";
+
+            const string expected = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public async Task Foo(string s)
+        {
+            switch (s)
+            {
+                case ""A"":
+                    DoStuff();
+                    break;
+                case ""B"":
+                    DoStuff();
+                    break;
+                case ""C"":
+                    DoStuff();
+                    DoExtraStuff();
+                    throw new Exception();
+                default:
+                    throw new Exception();
+            }
+        }
+    }
+}";
+            await VerifyCSharpFixAsync(test, expected, formatBeforeCompare: false);
+        }
+
+        [Fact]
         public async Task FixDoesNotRemoveComments()
         {
             const string test = @"
