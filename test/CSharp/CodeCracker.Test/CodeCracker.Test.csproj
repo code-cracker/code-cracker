@@ -139,6 +139,7 @@
     <Compile Include="Style\TernaryOperatorTests.cs" />
     <Compile Include="Style\UnnecessaryParenthesisTests.cs" />
     <Compile Include="Design\UseInvokeMethodToFireEventTests.cs" />
+    <Compile Include="Usage\DisposableFieldNotDisposedTests.cs" />
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsTests.cs" />
     <Compile Include="Style\StringRepresentationTests.cs" />
     <Compile Include="Verifiers\CodeFixTest.cs" />
