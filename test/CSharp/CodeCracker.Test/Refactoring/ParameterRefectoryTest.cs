@@ -51,6 +51,103 @@ namespace CodeCracker.Test.Refactoring
 
         }
 
+        [Fact]
+        public async Task WhenMethodHasARefParameterShouldNotSuggestANewClass()
+        {
+            const string test = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public void Foo(string a, string b, int year, ref string d)
+        {
+
+        }
+    }
+
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task WhenMethodHasAnOutParameterShouldNotSuggestANewClass()
+        {
+            const string test = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public void Foo(string a, string b, int year, out string d)
+        {
+
+        }
+    }
+
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task WhenMethodHasAThisParameterShouldNotSuggestANewClass()
+        {
+            const string test = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public void Foo(this string a, string b, int year, string d)
+        {
+
+        }
+    }
+
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task WhenMethodHasAParamsParameterShouldNotSuggestANewClass()
+        {
+            const string test = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public void Foo(string a, string b, int year, params string[] d)
+        {
+
+        }
+    }
+
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task WhenMethodIsMarkedAsExternShouldNotSuggestANewClass()
+        {
+            const string test = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        [System.Runtime.InteropServices.DllImport(""dllName"")]
+        public extern void Foo(string a, string b, int year, string d);
+    }
+
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
 
         [Fact]
         public async Task ShouldUpdateParameterToClass()
