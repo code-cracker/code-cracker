@@ -103,7 +103,8 @@ namespace CodeCracker.Style
                 result = result.Add(source);
             }
 
-            if (!(result.LastOrDefault() is ReturnStatementSyntax))
+            var lastStatement = result.LastOrDefault();
+            if (!(lastStatement is ReturnStatementSyntax || lastStatement is ThrowStatementSyntax))
             {
                 result = result.Add(SyntaxFactory.BreakStatement());
             }
