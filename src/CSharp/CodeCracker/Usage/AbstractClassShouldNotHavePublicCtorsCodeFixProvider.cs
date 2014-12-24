@@ -34,11 +34,6 @@ namespace CodeCracker.Usage
             var ctor = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
 
             context.RegisterFix(CodeAction.Create("Use 'protected' instead of 'public'" , c => ReplacePublicWithProtectedAsync(context.Document, ctor, c)), diagnostic);
-            //foreach (var param in parameters)
-            //{
-            //    var message = "Use '" + param + "'";
-            //    context.RegisterFix(CodeAction.Create(message, c => FixParamAsync(context.Document, objectCreation, param, c)), diagnostic);
-            //}
         }
 
         private async Task<Document> ReplacePublicWithProtectedAsync(Document document, ConstructorDeclarationSyntax ctor, CancellationToken cancellationToken)
