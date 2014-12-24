@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task IgnoresConstantDeclarations()
         {
-            var test = _(@"const int a = 10;");
+            var test = @"const int a = 10;".WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
@@ -19,36 +19,36 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task IgnoresDeclarationsWithNoInitializers()
         {
-            var test = _(@"int a;");
+            var test = @"int a;".WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresDeclarationsWithNonConstants()
         {
-            var test = _(@"int a = GetValue();");
+            var test = @"int a = GetValue();".WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresDeclarationsWithReferenceTypes()
         {
-            var test = _(@"Foo a = new Foo();");
+            var test = @"Foo a = new Foo();".WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresStringInterpolations()
         {
-            var test = _(@"
-            var s = ""a value is \{""a""}"";");
+            var test = @"
+            var s = ""a value is \{""a""}"";".WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresVariablesThatChangesValueOutsideDeclaration()
         {
-            var test = _(@"int a = 10;a = 20;");
+            var test = @"int a = 10;a = 20;".WrapInMethod();
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
@@ -56,7 +56,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstant()
         {
-            var test = _(@"int a = 10;");
+            var test = @"int a = 10;".WrapInMethod();
             var expected = new DiagnosticResult
             {
                 Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
@@ -70,7 +70,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstantInAVarDeclaration()
         {
-            var test = _(@"var a = 10;");
+            var test = @"var a = 10;".WrapInMethod();
             
             var expected = new DiagnosticResult
             {
@@ -85,7 +85,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningNullToAReferenceType()
         {
-            var test = _(@"Foo a = null;");
+            var test = @"Foo a = null;".WrapInMethod();
             
             var expected = new DiagnosticResult
             {
@@ -100,7 +100,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task IgnoresNullableVariables()
         {
-            var test = _("int? a = 1;");
+            var test = "int? a = 1;".WrapInMethod();
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
@@ -108,72 +108,24 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task FixMakesAVariableConstWhenDeclarationSpecifiesTypeName()
         {
-            var test = _(@"int a = 10;");
-            var expected = _(@"const int a = 10;");
+            var test = @"int a = 10;".WrapInMethod();
+            var expected = @"const int a = 10;".WrapInMethod();
             await VerifyCSharpFixAsync(test, expected);
         }
 
         [Fact]
         public async Task FixMakesAVariableConstWhenDeclarationUsesVar()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                var a = 10;
-            }
-        }
-    }";
-            const string expected = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                const int a = 10;
-            }
-        }
-    }";
+            var test = @"var a = 10;".WrapInMethod();
+            var expected = @"const int a = 10;".WrapInMethod();
             await VerifyCSharpFixAsync(test, expected);
         }
 
         [Fact]
         public async Task FixMakesAVariableConstWhenDeclarationUsesVarWithString()
         {
-            const string test = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                var a = """";
-            }
-        }
-    }";
-            const string expected = @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                const string a = """";
-            }
-        }
-    }";
+            var test = @"var a = """"".WrapInMethod();
+            var expected = @"const string a = """"".WrapInMethod();
             await VerifyCSharpFixAsync(test, expected);
         }
 
@@ -231,8 +183,6 @@ namespace CodeCracker.Test.Performance
                 var a = 0;
             }
         }
-
-        class Fee {}
     }";
 
             const string expected = @"
@@ -248,8 +198,6 @@ namespace CodeCracker.Test.Performance
                 const var a = 0;
             }
         }
-
-        class Fee {}
     }";
             await VerifyCSharpFixAsync(test, expected);
         }
@@ -295,23 +243,6 @@ namespace CodeCracker.Test.Performance
             await VerifyCSharpFixAsync(test, expected);
         }
 
-        public string _(string code)
-        {
-            return @"
-    using System;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public async Task Foo()
-            {
-                " + code + @"
-            }
-        }
-    }";
-
-
-        }
+        
     }
 }
