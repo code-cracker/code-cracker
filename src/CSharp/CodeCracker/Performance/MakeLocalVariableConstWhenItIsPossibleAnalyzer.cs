@@ -65,6 +65,9 @@ namespace CodeCracker.Performance
                 var variableType = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
                 if (variableType.IsReferenceType && variableType.SpecialType != SpecialType.System_String && constantValue.Value != null) return false;
 
+                // nullable?
+                if (variableType.OriginalDefinition?.SpecialType == SpecialType.System_Nullable_T) return false;
+
                 // value can be converted to variable type?
                 var conversion = semanticModel.ClassifyConversion(variable.Initializer.Value, variableType);
                 if (!conversion.Exists || conversion.IsUserDefined) return false;

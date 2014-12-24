@@ -98,6 +98,14 @@ namespace CodeCracker.Test.Performance
         }
 
         [Fact]
+        public async Task IgnoresNullableVariables()
+        {
+            var test = _("int? a = 1;");
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async Task FixMakesAVariableConstWhenDeclarationSpecifiesTypeName()
         {
             var test = _(@"int a = 10;");
