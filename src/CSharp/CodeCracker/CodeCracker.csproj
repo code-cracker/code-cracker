@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
