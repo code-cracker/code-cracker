@@ -43,6 +43,8 @@
     <Compile Include="Style\RemoveCommentedCodeCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatCodeFixProvider.cs" />
     <Compile Include="SupportedCategories.cs" />
+    <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsCodeFixProvider.cs" />
+    <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionCodeFixProvider.cs" />
     <Compile Include="Style\ConvertToExpressionBodiedMemberAnalyzer.cs" />
