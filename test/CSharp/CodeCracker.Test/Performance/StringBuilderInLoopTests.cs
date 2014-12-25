@@ -19,7 +19,7 @@ namespace CodeCracker.Test.Performance
         {
             public void Foo()
             {
-                while (false)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     Method();
                 }
@@ -34,48 +34,30 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task WhileWithoutStringConcatDoesNotCreateDiagnostic()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var a = 0;
                 while (a < 10)
                 {
                     a += 1;
-                }
-            }
-        }
-    }";
+                }".WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
         public async Task WhileWithtStringConcatOnLocalVariableCreatesDiagnostic()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += """";
-                }
-            }
-        }
-    }";
+                }".WrapInMethod();
             var expected = new DiagnosticResult
             {
                 Id = StringBuilderInLoopAnalyzer.DiagnosticId,
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -91,7 +73,7 @@ namespace CodeCracker.Test.Performance
             private string myString = """";
             public void Foo()
             {
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += """";
                 }
@@ -120,7 +102,7 @@ namespace CodeCracker.Test.Performance
             public string MyString { get; set; } = """";
             public void Foo()
             {
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     MyString += """";
                 }
@@ -140,36 +122,27 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task WhileWithtStringConcatWithSeveralConcatsOnDifferentVarsCreatesSeveralDiagnostics()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString1 = """";
                 var myString2 = """";
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString1 += """";
                     myString2 += """";
-                }
-            }
-        }
-    }";
+                }".WrapInMethod();
             var expected1 = new DiagnosticResult
             {
                 Id = StringBuilderInLoopAnalyzer.DiagnosticId,
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString1"),
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 21) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 21) }
             };
             var expected2 = new DiagnosticResult
             {
                 Id = StringBuilderInLoopAnalyzer.DiagnosticId,
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString2"),
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 21) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected1, expected2);
         }
@@ -177,27 +150,18 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task WhileWithtStringConcatWithSimpleAssignmentCreatesDiagnostic()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString = myString + """";
-                }
-            }
-        }
-    }";
+                }".WrapInMethod();
             var expected = new DiagnosticResult
             {
                 Id = StringBuilderInLoopAnalyzer.DiagnosticId,
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -205,97 +169,52 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task WhileWithtStringConcatWithSimpleAssignmentOnDifferentVarDoesNotCreateDiagnostic()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
                 var otherString = """";
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString = otherString + """";
-                }
-            }
-        }
-    }";
+                }".WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
         public async Task FixesAddAssignmentInWhile()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += ""a"";
-                }
-            }
-        }
-    }";
-            const string fixtest = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+                }".WrapInMethod();
+            var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
                 builder.Append(myString);
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     builder.Append(""a"");
                 }
-                myString = builder.ToString();
-            }
-        }
-    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+                myString = builder.ToString();".WrapInMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
         public async Task FixesAddAssignmentInWhileWithoutBlock()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
-                while (true)
-                    myString += ""a"";
-            }
-        }
-    }";
-            const string fixtest = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+                while (DateTime.Now.Second % 2 == 0)
+                    myString += ""a"";".WrapInMethod();
+            var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
                 builder.Append(myString);
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                     builder.Append(""a"");
-                myString = builder.ToString();
-            }
-        }
-    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+                myString = builder.ToString();".WrapInMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -310,7 +229,7 @@ namespace CodeCracker.Test.Performance
             public void Foo()
             {
                 var myString = """";
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += ""a"";
                 }
@@ -328,7 +247,7 @@ namespace CodeCracker.Test.Performance
                 var myString = """";
                 var builder = new StringBuilder();
                 builder.Append(myString);
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     builder.Append(""a"");
                 }
@@ -342,132 +261,78 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task FixesSimpleAssignmentInWhile()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
                 //comment 3
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     //comment 1
                     myString = myString + ""a"";//comment 2
-                }//comment 4
-            }
-        }
-    }";
-            const string fixtest = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+                }//comment 4".WrapInMethod();
+            var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
                 builder.Append(myString);
                 //comment 3
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     //comment 1
                     builder.Append(""a"");//comment 2
                 }//comment 4
-                myString = builder.ToString();
-            }
-        }
-    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+                myString = builder.ToString();".WrapInMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
         public async Task FixesAddAssignmentWhenThereAre2WhilesOnBlock()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
-                while (false)
+                while (DateTime.Now.Second % 2 == 1)
                 {
                     var a = 1;
                 }
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += ""a"";
-                }
-            }
-        }
-    }";
-            const string fixtest = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+                }".WrapInMethod();
+            var fixtest = @"
                 var myString = """";
-                while (false)
+                while (DateTime.Now.Second % 2 == 1)
                 {
                     var a = 1;
                 }
                 var builder = new System.Text.StringBuilder();
                 builder.Append(myString);
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     builder.Append(""a"");
                 }
-                myString = builder.ToString();
-            }
-        }
-    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+                myString = builder.ToString();".WrapInMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
         public async Task FixesAddAssignmentWithoutClashingTheBuilderName()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var builder = 1;
                 var myString = """";
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += ""a"";
-                }
-            }
-        }
-    }";
-            const string fixtest = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+                }".WrapInMethod();
+            var fixtest = @"
                 var builder = 1;
                 var myString = """";
                 var builder1 = new System.Text.StringBuilder();
                 builder1.Append(myString);
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     builder1.Append(""a"");
                 }
-                myString = builder1.ToString();
-            }
-        }
-    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+                myString = builder1.ToString();".WrapInMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -483,7 +348,7 @@ namespace CodeCracker.Test.Performance
             {
                 var builder = 1;
                 var myString = """";
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += ""a"";
                 }
@@ -502,7 +367,7 @@ namespace CodeCracker.Test.Performance
                 var myString = """";
                 var builder2 = new System.Text.StringBuilder();
                 builder2.Append(myString);
-                while (true)
+                while (DateTime.Now.Second % 2 == 0)
                 {
                     builder2.Append(""a"");
                 }
@@ -510,33 +375,24 @@ namespace CodeCracker.Test.Performance
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
         public async Task ForWithtStringConcatOnLocalVariableCreatesDiagnostic()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
                 for (;;)
                 {
                     myString += """";
-                }
-            }
-        }
-    }";
+                }".WrapInMethod();
             var expected = new DiagnosticResult
             {
                 Id = StringBuilderInLoopAnalyzer.DiagnosticId,
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -544,66 +400,41 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task FixesAddAssignmentInFor()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
                 for (;;)
                 {
                     myString += ""a"";
-                }
-            }
-        }
-    }";
-            const string fixtest = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+                    break;
+                }".WrapInMethod();
+            var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
                 builder.Append(myString);
                 for (;;)
                 {
                     builder.Append(""a"");
+                    break;
                 }
-                myString = builder.ToString();
-            }
-        }
-    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+                myString = builder.ToString();".WrapInMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
         public async Task ForeachWithtStringConcatOnLocalVariableCreatesDiagnostic()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
                 foreach (var i in new [] {1,2,3})
                 {
                     myString += """";
-                }
-            }
-        }
-    }";
+                }".WrapInMethod();
             var expected = new DiagnosticResult
             {
                 Id = StringBuilderInLoopAnalyzer.DiagnosticId,
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -611,28 +442,13 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task FixesAddAssignmentInForeach()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
                 foreach (var i in new [] {1,2,3})
                 {
                     myString += ""a"";
-                }
-            }
-        }
-    }";
-            const string fixtest = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+                }".WrapInMethod();
+            var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
                 builder.Append(myString);
@@ -640,37 +456,25 @@ namespace CodeCracker.Test.Performance
                 {
                     builder.Append(""a"");
                 }
-                myString = builder.ToString();
-            }
-        }
-    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+                myString = builder.ToString();".WrapInMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
         public async Task DoWithtStringConcatOnLocalVariableCreatesDiagnostic()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
                 do
                 {
                     myString += """";
-                } while (true);
-            }
-        }
-    }";
+                } while (DateTime.Now.Second % 2 == 0);".WrapInMethod();
             var expected = new DiagnosticResult
             {
                 Id = StringBuilderInLoopAnalyzer.DiagnosticId,
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -678,40 +482,22 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task FixesAddAssignmentInDo()
         {
-            const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+            var source = @"
                 var myString = """";
                 do
                 {
                     myString += ""a"";
-                } while (true);
-            }
-        }
-    }";
-            const string fixtest = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public void Foo()
-            {
+                } while (DateTime.Now.Second % 2 == 0);".WrapInMethod();
+            var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
                 builder.Append(myString);
                 do
                 {
                     builder.Append(""a"");
-                } while (true);
-                myString = builder.ToString();
-            }
-        }
-    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+                } while (DateTime.Now.Second % 2 == 0);
+                myString = builder.ToString();".WrapInMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
         }
     }
 }
