@@ -93,7 +93,7 @@
     <Compile Include="Performance\SealedAttributeCodeFixProvider.cs" />
     <Compile Include="Design\StaticConstructorExceptionAnalyzer.cs" />
     <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.cs" />
-    <Compile Include="StringTypeCodeRefactoringProvider.cs" />
+    <Compile Include="Refactoring\StringTypeCodeRefactoringProvider.cs" />
     <Compile Include="Style\ConvertToExpressionBodiedMemberCodeFixProvider.cs" />
     <Compile Include="Style\TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="Style\TernaryOperatorAnalyzer.cs" />
