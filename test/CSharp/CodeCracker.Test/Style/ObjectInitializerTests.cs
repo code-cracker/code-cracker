@@ -1,7 +1,5 @@
 ﻿using CodeCracker.Style;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
@@ -168,16 +166,6 @@ namespace CodeCracker.Test.Style
     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new ObjectInitializerCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new ObjectInitializerAnalyzer();
-        }
     }
 
     public class ObjectInitializerWithAssingmentTests : CodeFixTest<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
@@ -220,7 +208,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ObjectInitializerAnalyzer.DiagnosticIdLocalDeclaration,
+                Id = ObjectInitializerAnalyzer.DiagnosticIdAssignment,
                 Message = "You can use initializers in here.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }

@@ -20,7 +20,17 @@ namespace CodeCracker.Style
         const string Description = "When possible an object initializer should be used to initialize the properties of an "
             + "object instead of multiple assignments.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static DiagnosticDescriptor RuleAssignment = new DiagnosticDescriptor(
+            DiagnosticIdAssignment,
+            TitleLocalDeclaration,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: Description,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticIdAssignment));
+
+        internal static DiagnosticDescriptor RuleLocalDeclaration = new DiagnosticDescriptor(
             DiagnosticIdLocalDeclaration,
             TitleLocalDeclaration,
             MessageFormat,
@@ -30,7 +40,8 @@ namespace CodeCracker.Style
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticIdLocalDeclaration));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+            ImmutableArray.Create(RuleLocalDeclaration, RuleAssignment);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -48,7 +59,7 @@ namespace CodeCracker.Style
             var assignmentExpressions = FindAssingmentExpressions(semanticModel, expressionStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
 
-            var diagnostic = Diagnostic.Create(Rule, expressionStatement.GetLocation(), "You can use initializers in here.");
+            var diagnostic = Diagnostic.Create(RuleAssignment, expressionStatement.GetLocation(), "You can use initializers in here.");
             context.ReportDiagnostic(diagnostic);
         }
 
@@ -65,7 +76,7 @@ namespace CodeCracker.Style
             var assignmentExpressions = FindAssingmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
 
-            var diagnostic = Diagnostic.Create(Rule, localDeclarationStatement.GetLocation(), "You can use initializers in here.");
+            var diagnostic = Diagnostic.Create(RuleLocalDeclaration, localDeclarationStatement.GetLocation(), "You can use initializers in here.");
             context.ReportDiagnostic(diagnostic);
         }
 
@@ -96,7 +107,6 @@ namespace CodeCracker.Style
                     assignmentExpressions.Add(expressionStatement);
                 }
             }
-
             return assignmentExpressions;
         }
     }
