@@ -77,5 +77,36 @@ namespace CodeCracker
                    node is LockStatementSyntax ||
                    node is FixedStatementSyntax;
         }
+
+        public static SyntaxNode FirstAncestorOrSelfOfType(this SyntaxNode node, params Type[] types)
+        {
+            var currentNode = node;
+            while (true)
+            {
+                if (currentNode == null) break;
+                foreach (var type in types)
+                {
+                    if (currentNode.GetType() == type) return currentNode;
+                }
+                currentNode = currentNode.Parent;
+            }
+            return null;
+        }
+
+        public static SyntaxNode FirstAncestorOfType(this SyntaxNode node, params Type[] types)
+        {
+            var currentNode = node;
+            while (true)
+            {
+                var parent = currentNode.Parent;
+                if (parent == null) break;
+                foreach (var type in types)
+                {
+                    if (parent.GetType() == type) return parent;
+                }
+                currentNode = parent;
+            }
+            return null;
+        }
     }
 }

@@ -33,6 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Performance\StringBuiderInLoopCodeFixProvider.cs" />
+    <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
