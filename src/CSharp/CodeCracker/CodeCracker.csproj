@@ -35,6 +35,7 @@
   <ItemGroup>
     <Compile Include="Performance\StringBuiderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
+    <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
