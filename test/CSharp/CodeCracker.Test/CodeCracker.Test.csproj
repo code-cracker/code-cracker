@@ -109,12 +109,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Performance\StringBuilderInLoopTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.cs" />
     <Compile Include="Refactoring\ParameterRefectoryTest.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
     <Compile Include="Style\StringFormatTests.cs" />
     <Compile Include="Style\AlwaysUseVarTests.cs" />
     <Compile Include="Style\RemoveCommentedCodeTests.cs" />
+    <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorTests.cs" />
     <Compile Include="Usage\ArgumentExceptionTests.cs" />
     <Compile Include="Style\ConvertToSwitchTests.cs" />
     <Compile Include="Design\CopyEventToVariableBeforeFireTests.cs" />

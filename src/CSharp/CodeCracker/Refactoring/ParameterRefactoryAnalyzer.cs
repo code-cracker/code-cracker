@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System;
 
-namespace CodeCracker
+namespace CodeCracker.Refactoring
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ParameterRefactoryAnalyzer : DiagnosticAnalyzer
@@ -16,7 +16,7 @@ namespace CodeCracker
         internal const string MessageFormat = "When the method has more than three parameters, use new class.";
         internal const string Category = "Syntax";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

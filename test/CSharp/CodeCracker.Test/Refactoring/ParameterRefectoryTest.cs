@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeCracker.Refactoring;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;

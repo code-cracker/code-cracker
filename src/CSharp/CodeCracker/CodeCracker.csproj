@@ -33,6 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Performance\StringBuiderInLoopCodeFixProvider.cs" />
+    <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
@@ -44,6 +46,8 @@
     <Compile Include="Style\RemoveCommentedCodeCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatCodeFixProvider.cs" />
     <Compile Include="SupportedCategories.cs" />
+    <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsCodeFixProvider.cs" />
+    <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionCodeFixProvider.cs" />
     <Compile Include="Style\ConvertToExpressionBodiedMemberAnalyzer.cs" />
@@ -90,7 +94,7 @@
     <Compile Include="Performance\SealedAttributeCodeFixProvider.cs" />
     <Compile Include="Design\StaticConstructorExceptionAnalyzer.cs" />
     <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.cs" />
-    <Compile Include="StringTypeCodeRefactoringProvider.cs" />
+    <Compile Include="Refactoring\StringTypeCodeRefactoringProvider.cs" />
     <Compile Include="Style\ConvertToExpressionBodiedMemberCodeFixProvider.cs" />
     <Compile Include="Style\TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="Style\TernaryOperatorAnalyzer.cs" />

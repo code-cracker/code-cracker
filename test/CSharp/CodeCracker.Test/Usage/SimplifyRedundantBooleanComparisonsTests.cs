@@ -37,10 +37,6 @@ namespace CodeCracker.Test.Usage
         [Theory]
         [InlineData("if (foo == 0) {}")]
         [InlineData("var fee = (foo == 0);")]
-        [InlineData("if (foo == 0) {}")]
-        [InlineData("var fee = (foo == 0);")]
-        [InlineData("if (foo != 0) {}")]
-        [InlineData("var fee = (foo != 0);")]
         [InlineData("if (foo != 0) {}")]
         [InlineData("var fee = (foo != 0);")]
         public async Task IgnoresWhenComparingWithNotBool(string sample)
