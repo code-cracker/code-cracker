@@ -6,13 +6,14 @@ using System.Collections.Immutable;
 using System.Linq;
 namespace CodeCracker.Refactoring
 {
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AllowMembersOrderingAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CC0035";
 
-        internal const string Title = "Ordening member inside this type.";
-        internal const string MessageFormat = "Ordening member inside this type.";
-        internal const string Category = SupportedCategories.Style;
+        internal const string Title = "Ordering member inside this type.";
+        internal const string MessageFormat = "Ordering member inside this type.";
+        internal const string Category = SupportedCategories.Refactoring;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId,
@@ -43,7 +44,7 @@ namespace CodeCracker.Refactoring
             var currentChildNodesOrder = typeDeclarationSyntax.ChildNodes();
 
             if (currentChildNodesOrder.Count() > 1)
-                context.ReportDiagnostic(Diagnostic.Create(Rule, typeDeclarationSyntax.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, typeDeclarationSyntax.Identifier.GetLocation()));
         }
     }
 }
