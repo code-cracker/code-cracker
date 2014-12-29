@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace TestHelper
 {
@@ -19,6 +20,7 @@ namespace TestHelper
         private static readonly MetadataReference RegexReference = MetadataReference.CreateFromAssembly(typeof(System.Text.RegularExpressions.Regex).Assembly);
         private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromAssembly(typeof(CSharpCompilation).Assembly);
         private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromAssembly(typeof(Compilation).Assembly);
+        private static readonly MetadataReference JsonNetReference = MetadataReference.CreateFromAssembly(typeof(JsonConvert).Assembly);
 
         internal static string DefaultFilePathPrefix = "Test";
         internal static string CSharpDefaultFileExt = "cs";
@@ -163,7 +165,7 @@ namespace TestHelper
                 TestProjectName, language,
                 metadataReferences: ImmutableList.Create(
                     CorlibReference, SystemCoreReference, RegexReference,
-                    CSharpSymbolsReference, CodeAnalysisReference));
+                    CSharpSymbolsReference, CodeAnalysisReference, JsonNetReference));
             
             workspace.AddProject(projectInfo);
 
