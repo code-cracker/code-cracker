@@ -28,70 +28,70 @@ namespace ConsoleApplication1
         [Fact]
         public async Task IfDeserializeObjectIdentifierFoundAndJsonTextIsIncorrectCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"Newtonsoft.Json.JsonConvert.DeserializeObject<Person>(""foo"")");
+            var test = string.Format(TestCode, @"Newtonsoft.Json.JsonConvert.DeserializeObject<Person>(""foo"")");
             await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(11, 67));
         }
 
         [Fact]
         public async Task IfAbbreviatedDeserializeObjectIdentifierFoundAndJsonTextIsIncorrectCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"JsonConvert.DeserializeObject<Person>(""foo"")");
+            var test = string.Format(TestCode, @"JsonConvert.DeserializeObject<Person>(""foo"")");
             await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(11,51));
         }
 
         [Fact]
         public async Task IfDeserializeObjectIdentifierFoundAndJsonTextIsCorrectDoesNotCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"Newtonsoft.Json.JsonConvert.DeserializeObject<Person>(""{""name"":""foo""}"")");
+            var test = string.Format(TestCode, @"Newtonsoft.Json.JsonConvert.DeserializeObject<Person>(""{""name"":""foo""}"")");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IfAbbreviateDeserializeObjectIdentifierFoundAndJsonTextIsCorrectDoesNotCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"JsonConvert.DeserializeObject<Person>(""{""name"":""foo""}"")");
+            var test = string.Format(TestCode, @"JsonConvert.DeserializeObject<Person>(""{""name"":""foo""}"")");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IfJObjectParseIdentifierFoundAndJsonTextIsIncorrectCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"Newtonsoft.Json.Linq.JObject.Parse(""foo"")");
+            var test = string.Format(TestCode, @"Newtonsoft.Json.Linq.JObject.Parse(""foo"")");
             await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(11, 48));
         }
 
         [Fact]
         public async Task IfAbbreviatedJObjectParseIdentifierFoundAndJsonTextIsIncorrectCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"JObject.Parse(""foo"")");
+            var test = string.Format(TestCode, @"JObject.Parse(""foo"")");
             await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(11, 27));
         }
 
         [Fact]
         public async Task IfJObjectParseIdentifierFoundAndJsonTextIsCorrectDoesNotCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"JObject.Parse(""{""name"":""foo""}"")");
+            var test = string.Format(TestCode, @"JObject.Parse(""{""name"":""foo""}"")");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         //
         [Fact]
         public async Task IfJArrayParseIdentifierFoundAndJsonTextIsIncorrectCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"Newtonsoft.Json.Linq.JArray.Parse(""foo"")");
+            var test = string.Format(TestCode, @"Newtonsoft.Json.Linq.JArray.Parse(""foo"")");
             await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(11, 47));
         }
 
         [Fact]
         public async Task IfAbbreviatedJArrayParseIdentifierFoundAndJsonTextIsIncorrectCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"JArray.Parse(""foo"")");
+            var test = string.Format(TestCode, @"JArray.Parse(""foo"")");
             await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(11, 26));
         }
 
         [Fact]
         public async Task IfJArrayParseIdentifierFoundAndJsonTextIsCorrectDoesNotCreatesDiagnostic()
         {
-            var test = String.Format(TestCode, @"JArray.Parse(""{""name"":""foo""}"")");
+            var test = string.Format(TestCode, @"JArray.Parse(""{""name"":""foo""}"")");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 

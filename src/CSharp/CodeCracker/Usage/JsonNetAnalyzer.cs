@@ -41,10 +41,10 @@ namespace CodeCracker.Usage
         {
             var invocationExpression = (InvocationExpressionSyntax)context.Node;
 
-            var memberExpresion = invocationExpression.Expression as MemberAccessExpressionSyntax;
-            if (memberExpresion?.Name?.Identifier.ValueText != methodName) return;
+            var memberExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
+            if (memberExpression?.Name?.Identifier.ValueText != methodName) return;
 
-            var memberSymbol = context.SemanticModel.GetSymbolInfo(memberExpresion).Symbol;
+            var memberSymbol = context.SemanticModel.GetSymbolInfo(memberExpression).Symbol;
             if (memberSymbol?.OriginalDefinition?.ToString() != methodFullDefinition) return;
 
             var argumentList = invocationExpression.ArgumentList;
@@ -64,7 +64,7 @@ namespace CodeCracker.Usage
         {
             try
             {
-                _parseMethodInfo.Value.Invoke(null, new[] { json });
+                parseMethodInfo.Value.Invoke(null, new[] { json });
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace CodeCracker.Usage
             }
         }
 
-        private static Lazy<Type> _jObjectType = new Lazy<Type>(() => Type.GetType("Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"));
-        private static Lazy<MethodInfo> _parseMethodInfo = new Lazy<MethodInfo>(() => _jObjectType.Value.GetRuntimeMethod("Parse", new[] { typeof(string) }));
+        private static Lazy<Type> jObjectType = new Lazy<Type>(() => Type.GetType("Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"));
+        private static Lazy<MethodInfo> parseMethodInfo = new Lazy<MethodInfo>(() => jObjectType.Value.GetRuntimeMethod("Parse", new[] { typeof(string) }));
     }
 }
