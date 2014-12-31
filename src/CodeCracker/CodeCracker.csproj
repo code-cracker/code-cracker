@@ -33,10 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Style\ConvertSimpleLambdaExpressionToMethodInvocationAnalizer.cs" />
-    <Compile Include="Style\ConvertSimpleLambdaExpressionToMethodInvocationFixProvider.cs" />
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
+    <Compile Include="Style\ConvertLambdaExpressionToMethodGroupAnalizer.cs" />
+    <Compile Include="Style\ConvertLambdaExpressionToMethodGroupFixProvider.cs" />
     <Compile Include="SupportedCategories.cs" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionCodeFixProvider.cs" />

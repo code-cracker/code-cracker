@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace CodeCracker
+namespace CodeCracker.Style
 {
     [ExportCodeFixProvider("ConvertSimpleLambdaExpressionToMethodInvocationFixProvider", LanguageNames.CSharp), Shared]
-    public class ConvertSimpleLambdaExpressionToMethodInvocationFixProvider
+    public class ConvertLambdaExpressionToMethodGroupFixProvider
         :CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
         {
-            return ImmutableArray.Create(ConvertSimpleLambdaExpressionToMethodInvocationAnalizer.DiagnosticId);
+            return ImmutableArray.Create(ConvertLambdaExpressionToMethodGroupAnalizer.DiagnosticId);
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
@@ -33,13 +34,13 @@ namespace CodeCracker
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-            var lambda = root.FindToken(diagnosticSpan.Start).Parent
-                .AncestorsAndSelf().OfType<SimpleLambdaExpressionSyntax>().First();
+            dynamic lambda = root.FindToken(diagnosticSpan.Start).Parent
+                .AncestorsAndSelf().First(x => x.CSharpKind() == SyntaxKind.SimpleLambdaExpression ||
+                                               x.CSharpKind() == SyntaxKind.ParenthesizedLambdaExpression);
 
-            var methodInvoke = lambda.Body as InvocationExpressionSyntax;
-            var methodName = methodInvoke.Expression as IdentifierNameSyntax;
+            var methodInvoke = ConvertLambdaExpressionToMethodGroupAnalizer.GetInvocationIfAny(lambda);
 
-            root = root.ReplaceNode(lambda as ExpressionSyntax, methodName as ExpressionSyntax);
+            root = root.ReplaceNode(lambda as ExpressionSyntax, methodInvoke.Expression as ExpressionSyntax);
             var newDocument = context.Document.WithSyntaxRoot(root);
 
             // verify that the conversion is correct

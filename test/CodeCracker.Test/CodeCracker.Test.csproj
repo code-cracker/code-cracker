@@ -108,8 +108,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Style\ConvertSimpleLambdaExpressionToMethodInvocationTests.cs" />
     <Compile Include="Style\AlwaysUseVarTests.cs" />
+    <Compile Include="Style\ConvertLambdaExpressionToMethodGroupTests.cs" />
     <Compile Include="Usage\ArgumentExceptionTests.cs" />
     <Compile Include="Style\ConvertToSwitchTests.cs" />
     <Compile Include="Design\CopyEventToVariableBeforeFireTests.cs" />
