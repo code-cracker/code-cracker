@@ -76,9 +76,9 @@ namespace CodeCracker.Usage
         private static ISymbol FindDisposeMethod(INamedTypeSymbol symbol)
         {
             var methods = symbol.GetMembers("Dispose").Cast<IMethodSymbol>();
-            var disposeWithDisposedParameter = methods.SingleOrDefault(m => m.Parameters.SingleOrDefault()?.Type.SpecialType == SpecialType.System_Boolean);
+            var disposeWithDisposedParameter = methods.FirstOrDefault(m => m.Parameters.FirstOrDefault()?.Type.SpecialType == SpecialType.System_Boolean);
 
-            return disposeWithDisposedParameter != null ? disposeWithDisposedParameter : methods.SingleOrDefault(m => !m.Parameters.Any());
+            return disposeWithDisposedParameter != null ? disposeWithDisposedParameter : methods.FirstOrDefault(m => !m.Parameters.Any());
         }
     }
 }
