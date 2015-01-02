@@ -65,6 +65,20 @@ namespace CodeCracker.Test.Usage
         }
 
         [Fact]
+        public async Task ConstantFieldDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private const int i = 1;
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task FieldWithAssignmentOnDeclarationCreatesDiagnostic()
         {
             const string source = @"
