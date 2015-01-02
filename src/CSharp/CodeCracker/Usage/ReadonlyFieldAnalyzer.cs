@@ -46,7 +46,17 @@ namespace CodeCracker.Usage
             SyntaxNode root;
             if (!context.Tree.TryGetRoot(out root)) return;
             var types = GetTypesInRoot(root);
-            var semanticModel = compilation.GetSemanticModel(context.Tree);
+            SemanticModel semanticModel;
+            try
+            {
+                semanticModel = compilation.GetSemanticModel(context.Tree);
+            }
+#pragma warning disable CC0003
+            catch
+#pragma warning restore CC0003
+            {
+                return;
+            }
             foreach (var type in types)
             {
                 var fieldDeclarations = type.ChildNodes().OfType<FieldDeclarationSyntax>();
