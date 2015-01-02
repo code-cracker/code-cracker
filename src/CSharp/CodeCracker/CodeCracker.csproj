@@ -77,6 +77,9 @@
     <Compile Include="Refactoring\InvertForCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatAnalyzer.cs" />
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
+    <Compile Include="Usage\JsonNetAnalyzer.cs" />
+    <Compile Include="Usage\ReadonlyFieldCodeFixProvider.cs" />
+    <Compile Include="Usage\ReadonlyFieldAnalyzer.cs" />
     <Compile Include="Usage\RegexAnalyzer.cs" />
     <Compile Include="Design\EmptyCatchBlockCodeFixProvider.cs" />
     <Compile Include="Design\EmptyCatchBlockAnalyzer.cs" />

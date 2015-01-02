@@ -12,7 +12,7 @@ namespace CodeCracker.Usage
         public const string DiagnosticId = "CC0007";
         internal const string Title = "Return Condition directly";
         internal const string Message = "{0}";
-        internal const string Category = SupportedCategories.Naming;
+        internal const string Category = SupportedCategories.Usage;
         const string Description = "Using an if/else to return true/false depending on the condition isn't useful.\r\n"
             + "As the condition is already a boolean it can be returned directly";
 
