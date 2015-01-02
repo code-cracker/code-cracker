@@ -57,6 +57,7 @@
     <Compile Include="Design\CopyEventToVariableBeforeFireCodeFixProvider.cs" />
     <Compile Include="Usage\CallExtensionMethodAsExtensionAnalyzer.cs" />
     <Compile Include="Usage\CallExtensionMethodAsExtensionCodeFixProvider.cs" />
+    <Compile Include="Usage\DisposableVariableNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeAnalyzer.cs" />
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.cs" />
     <Compile Include="Style\ExistenceOperatorAnalyzer.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Refactoring\InvertForCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatAnalyzer.cs" />
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
+    <Compile Include="Usage\DisposableVariableNotDisposedCodeFixProvider.cs" />
     <Compile Include="Usage\JsonNetAnalyzer.cs" />
     <Compile Include="Usage\ReadonlyFieldCodeFixProvider.cs" />
     <Compile Include="Usage\ReadonlyFieldAnalyzer.cs" />
