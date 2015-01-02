@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace CodeCracker.Usage
 {
@@ -33,30 +34,21 @@ namespace CodeCracker.Usage
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterCompilationStartAction(AnalyzeCompilation);
-            context.RegisterSyntaxTreeAction(AnalyzeTree);
         }
 
         private void AnalyzeCompilation(CompilationStartAnalysisContext context)
         {
             compilation = context.Compilation;
+            context.RegisterSyntaxTreeAction(AnalyzeTree);
         }
 
         private void AnalyzeTree(SyntaxTreeAnalysisContext context)
         {
+            if (!compilation.SyntaxTrees.Contains(context.Tree)) return;
             SyntaxNode root;
             if (!context.Tree.TryGetRoot(out root)) return;
             var types = GetTypesInRoot(root);
-            SemanticModel semanticModel;
-            try
-            {
-                semanticModel = compilation.GetSemanticModel(context.Tree);
-            }
-#pragma warning disable CC0003
-            catch
-#pragma warning restore CC0003
-            {
-                return;
-            }
+            var semanticModel = compilation.GetSemanticModel(context.Tree);
             foreach (var type in types)
             {
                 var fieldDeclarations = type.ChildNodes().OfType<FieldDeclarationSyntax>();
