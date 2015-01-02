@@ -120,7 +120,8 @@ namespace CodeCracker.Usage
                 || !fieldDeclaration.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)
                     || m.IsKind(SyntaxKind.ProtectedKeyword)
                     || m.IsKind(SyntaxKind.InternalKeyword)
-                    || m.IsKind(SyntaxKind.ReadOnlyKeyword));
+                    || m.IsKind(SyntaxKind.ReadOnlyKeyword)
+                    || m.IsKind(SyntaxKind.ConstKeyword));
         }
 
         private static List<TypeDeclarationSyntax> GetTypesInRoot(SyntaxNode root)
