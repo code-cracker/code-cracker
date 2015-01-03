@@ -32,11 +32,9 @@ namespace CodeCracker.Refactoring
                         .FindToken(diagnosticSpan.Start)
                         .Parent as TypeDeclarationSyntax;
 
-            context.RegisterFix(
-                CodeAction.Create(
-                    codeActionDescription,
-                    cancellationToken => AllowMembersOrderingAsync(context.Document, typeDeclarationSyntax, cancellationToken)),
-                    diagnostic);
+            var newDocument = await AllowMembersOrderingAsync(context.Document, typeDeclarationSyntax, context.CancellationToken);
+            if (newDocument != null)
+                context.RegisterFix(CodeAction.Create(codeActionDescription, newDocument), diagnostic);
         }
 
         private async Task<Document> AllowMembersOrderingAsync(Document document, TypeDeclarationSyntax typeDeclarationSyntax, CancellationToken cancellationToken)
@@ -48,10 +46,14 @@ namespace CodeCracker.Refactoring
 
             var root = await document.GetSyntaxRootAsync(cancellationToken) as CompilationUnitSyntax;
 
-            var newTypeDeclarationSyntax = ReplaceTypeMembers(
+            TypeDeclarationSyntax newTypeDeclarationSyntax;
+            var orderChanged = TryReplaceTypeMembers(
                 typeDeclarationSyntax,
                 membersDeclaration,
-                membersDeclaration.OrderBy(member => member, GetMemberDeclarationComparer(document, cancellationToken)));
+                membersDeclaration.OrderBy(member => member, GetMemberDeclarationComparer(document, cancellationToken)),
+                out newTypeDeclarationSyntax);
+
+            if (!orderChanged) return null;
 
             var newDocument = document.WithSyntaxRoot(root
                  .ReplaceNode(typeDeclarationSyntax, newTypeDeclarationSyntax)
@@ -63,13 +65,20 @@ namespace CodeCracker.Refactoring
 
         protected abstract IComparer<MemberDeclarationSyntax> GetMemberDeclarationComparer(Document document, CancellationToken cancellationToken);
 
-        private TypeDeclarationSyntax ReplaceTypeMembers(TypeDeclarationSyntax typeDeclarationSyntax, IEnumerable<MemberDeclarationSyntax> membersDeclaration, IEnumerable<MemberDeclarationSyntax> sortedMembers)
+        private bool TryReplaceTypeMembers(TypeDeclarationSyntax typeDeclarationSyntax, IEnumerable<MemberDeclarationSyntax> membersDeclaration, IEnumerable<MemberDeclarationSyntax> sortedMembers, out TypeDeclarationSyntax orderedType)
         {
             var sortedMembersQueue = new Queue<MemberDeclarationSyntax>(sortedMembers);
+            var orderChanged = false;
 
-            return typeDeclarationSyntax.ReplaceNodes(
+            orderedType = typeDeclarationSyntax.ReplaceNodes(
                 membersDeclaration,
-                (original, rewritten) => sortedMembersQueue.Dequeue());
+                (original, rewritten) =>
+                {
+                    var newMember = sortedMembersQueue.Dequeue();
+                    if (!orderChanged && !original.Equals(newMember)) orderChanged = true;
+                    return newMember;
+                });
+            return orderChanged;
         }
 
         public override ImmutableArray<string> GetFixableDiagnosticIds()
