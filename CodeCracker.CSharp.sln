@@ -5,6 +5,7 @@ VisualStudioVersion = 14.0.22310.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2F5240AD-2B4E-48A4-B9FC-7D19DACEF2CD}"
 	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
