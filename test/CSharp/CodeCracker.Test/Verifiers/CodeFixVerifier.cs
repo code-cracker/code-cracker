@@ -128,5 +128,43 @@ namespace TestHelper
             var actual = await TestHelpers.GetStringFromDocumentAsync(document);
             Assert.Equal(newSource, actual);
         }
+
+        /// <summary>
+        /// Called to test a C# codefix when it should not had been registered
+        /// </summary>
+        /// <param name="source">A class in the form of a string before the CodeFix was applied to it</param>
+        /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
+        protected async Task VerifyCSharpHasNoFixAsync(string source, CodeFixProvider codeFixProvider = null)
+        {   
+            await VerifyHasNoFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), codeFixProvider ?? GetCSharpCodeFixProvider(), source);
+        }
+
+        /// <summary>
+        /// General verifier for a diagnostics that should not have fix registred.
+        /// Creates a Document from the source string, then gets diagnostics on it and verify if it has no fix registred.
+        /// It will fail the test if it has any fix registred to it
+        /// </summary>
+        /// <param name="language">The language the source code is in</param>
+        /// <param name="analyzer">The analyzer to be applied to the source code</param>
+        /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
+        /// <param name="source">A class in the form of a string before the CodeFix was applied to it</param>
+        private async Task VerifyHasNoFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string source)
+        {
+            var document = TestHelpers.CreateDocument(source, language);
+            var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
+
+            foreach (var analyzerDiagnostic in analyzerDiagnostics)
+            {
+                var actions = new List<CodeAction>();
+                var context = new CodeFixContext(document, analyzerDiagnostic, (a, d) => actions.Add(a), CancellationToken.None);
+                await codeFixProvider.ComputeFixesAsync(context);
+
+                Assert.False(actions.Any(),
+                    string.Format(
+                        "Should not have a code fix registered for diagnostic '{0}'",
+                        analyzerDiagnostic.Id));
+            }
+        }
+
     }
 }

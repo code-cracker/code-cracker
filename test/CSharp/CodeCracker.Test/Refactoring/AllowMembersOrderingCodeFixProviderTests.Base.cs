@@ -37,6 +37,19 @@ namespace CodeCracker.Test.Refactoring
             Assert.True(codeFixProvider.HasIComparerBeenCalled, "The IComparer must be used to sort the members of that type");
         }
 
+        [Fact]
+        public async Task BaseAllowMembersOrderingShouldNotRegisterFixIfIsAlreadySorted()
+        {
+            var source = @"
+            public class Foo
+            {
+                int a;
+                void B() { }
+            }";
+
+            await VerifyCSharpHasNoFixAsync(source);
+        }
+
         [Theory]
         [InlineData("class")]
         [InlineData("struct")]
