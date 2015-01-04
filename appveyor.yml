@@ -150,7 +150,9 @@ after_build:
 test_script:
   - C:\projects\code-cracker\packages\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe "C:\projects\code-cracker\test\CSharp\CodeCracker.Test\bin\Debug\CodeCracker.Test.CSharp.dll" -appveyor
   - C:\projects\code-cracker\packages\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe "C:\projects\code-cracker\test\VisualBasic\CodeCracker.Test\bin\Debug\CodeCracker.Test.VisualBasic.dll" -appveyor
-  - powershell -NoProfile -ExecutionPolicy unrestricted -Command ". C:\projects\code-cracker\test\CSharp\AnalyzeCoreFx.ps1"
+
+after_test:
+  - ps: . C:\projects\code-cracker\test\CSharp\AnalyzeCoreFx.ps1
 
 artifacts:
   - path: src
