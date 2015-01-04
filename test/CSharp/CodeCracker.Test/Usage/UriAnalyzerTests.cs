@@ -20,7 +20,7 @@ namespace ConsoleApplication1
             {0}
         }}
     }}
-}}";  
+}}";
 
         [Fact]
         public async Task IfAbbreviatedUriConstructorFoundAndUriIsIncorrectCreatesDiagnostic()
