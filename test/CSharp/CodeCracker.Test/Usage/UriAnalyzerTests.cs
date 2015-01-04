@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CodeCracker.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -27,25 +23,46 @@ namespace ConsoleApplication1
 }}";  
 
         [Fact]
-        public async Task IfUriConstructorFoundAndUriIsIncorrectCreatesDiagnostic()
+        public async Task IfAbbreviatedUriConstructorFoundAndUriIsIncorrectCreatesDiagnostic()
         {
             var test = string.Format(TestCode, @"var uri = new Uri(""foo"")");
             await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(9, 31));
         }
 
         [Fact]
-        public async Task IfUriConstructorWithUriKindFoundAndUriIsCorrectDoNotCreatesDiagnostic()
+        public async Task IfUriConstructorFoundAndUriIsIncorrectCreatesDiagnostic()
+        {
+            var test = string.Format(TestCode, @"var uri = new System.Uri(""foo"")");
+            await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(9, 38));
+        }
+
+        [Fact]
+        public async Task IfUriConstructorWithUriKindFoundAndUriIsIncorrectCreatesDiagnostic()
+        {
+            var test = string.Format(TestCode, @"var uri = new Uri(""http://wrong"", UriKind.Relative)");
+            await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(9, 31, "'A relative URI cannot be created because the 'uriString' parameter represents an absolute URI.'"));
+        }
+
+        [Fact]
+        public async Task IfAbbreviatedUriConstructorWithUriKindFoundAndUriIsCorrectDoNotCreatesDiagnostic()
         {
             var test = string.Format(TestCode, @"var uri = new Uri(""foo"", UriKind.Relative)");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        private static DiagnosticResult CreateDiagnosticResult(int line, int column)
+        [Fact]
+        public async Task IfUriConstructorWithUriKindFoundAndUriIsCorrectDoNotCreatesDiagnostic()
+        {
+            var test = string.Format(TestCode, @"var uri = new System.Uri(""foo"", UriKind.Relative)");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        private static DiagnosticResult CreateDiagnosticResult(int line, int column, string message = "'Invalid URI: The format of the URI could not be determined.'")
         {
             return new DiagnosticResult
             {
                 Id = UriAnalyzer.DiagnosticId,
-                Message = "'Invalid URI: The format of the URI could not be determined.'",
+                Message = message,
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
             };
