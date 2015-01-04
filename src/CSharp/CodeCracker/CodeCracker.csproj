@@ -78,6 +78,8 @@
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedCodeFixProvider.cs" />
     <Compile Include="Usage\JsonNetAnalyzer.cs" />
+    <Compile Include="Usage\InterfaceNameAnalyzer.cs" />
+    <Compile Include="Usage\InterfaceNameCodeFixProvider.cs" />
     <Compile Include="Usage\ReadonlyFieldCodeFixProvider.cs" />
     <Compile Include="Usage\ReadonlyFieldAnalyzer.cs" />
     <Compile Include="Usage\RegexAnalyzer.cs" />
