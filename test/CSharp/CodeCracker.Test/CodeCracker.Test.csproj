@@ -150,6 +150,7 @@
     <Compile Include="Usage\DisposableFieldNotDisposedTests.cs" />
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsTests.cs" />
     <Compile Include="Style\StringRepresentationTests.cs" />
+    <Compile Include="Usage\UriAnalyzerTests.cs" />
     <Compile Include="Verifiers\CodeFixTest.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticTest.cs" />
