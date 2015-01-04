@@ -59,6 +59,7 @@
     <Compile Include="Design\CopyEventToVariableBeforeFireCodeFixProvider.cs" />
     <Compile Include="Usage\CallExtensionMethodAsExtensionAnalyzer.cs" />
     <Compile Include="Usage\CallExtensionMethodAsExtensionCodeFixProvider.cs" />
+    <Compile Include="Usage\DisposableVariableNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeAnalyzer.cs" />
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.cs" />
     <Compile Include="Style\ExistenceOperatorAnalyzer.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Refactoring\InvertForCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatAnalyzer.cs" />
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
+    <Compile Include="Usage\DisposableVariableNotDisposedCodeFixProvider.cs" />
     <Compile Include="Usage\JsonNetAnalyzer.cs" />
     <Compile Include="Usage\ReadonlyFieldCodeFixProvider.cs" />
     <Compile Include="Usage\ReadonlyFieldAnalyzer.cs" />
@@ -180,7 +182,7 @@
     <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha2-172\tools\analyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0226\tools\analyzers\CodeCracker.CSharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>

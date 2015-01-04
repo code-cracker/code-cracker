@@ -9,7 +9,7 @@ namespace CodeCracker.Test.Usage
     public class ReadonlyFieldTests : CodeFixTest<ReadonlyFieldAnalyzer, ReadonlyFieldCodeFixProvider>
     {
         [Fact]
-        public async Task FieldWithoutAssignmentCreatesDiagnostic()
+        public async Task FieldWithoutAssignmentDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -23,7 +23,7 @@ namespace CodeCracker.Test.Usage
         }
 
         [Fact]
-        public async Task FieldWithoutAssignmentInAStructCreatesDiagnostic()
+        public async Task FieldWithoutAssignmentInAStructDoesNotCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -59,6 +59,20 @@ namespace CodeCracker.Test.Usage
         class TypeName
         {
             private readonly int i = 1;
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task ConstantFieldDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private const int i = 1;
         }
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
@@ -676,6 +690,36 @@ namespace CodeCracker.Test.Usage
         }
    }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task FieldsWithoutAssignmentOnPartialClassOn2FilesDoesNotCreateDiagnostic()
+        {
+            const string source1 = @"
+    namespace ConsoleApplication1
+    {
+        partial class TypeName
+        {
+            private int i;
+            public void Foo2()
+            {
+                j = 0;
+            }
+        }
+    }";
+            const string source2 = @"
+    namespace ConsoleApplication1
+    {
+        partial class TypeName
+        {
+            private int j;
+            public void Foo()
+            {
+                i = 0;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source1, source2);
         }
     }
 }

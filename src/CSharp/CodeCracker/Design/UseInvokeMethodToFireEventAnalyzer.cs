@@ -37,15 +37,17 @@ namespace CodeCracker.Design
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
             var invocation = (InvocationExpressionSyntax)context.Node;
-            var typeInfo = context.SemanticModel.GetTypeInfo(invocation.Expression, context.CancellationToken);
+            var identifier = invocation.Expression as IdentifierNameSyntax;
+            if (identifier == null) return;
+            var typeInfo = context.SemanticModel.GetTypeInfo(identifier, context.CancellationToken);
 
             if (typeInfo.ConvertedType?.BaseType == null) return;
 
-            var symbol = context.SemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
+            var symbol = context.SemanticModel.GetSymbolInfo(identifier).Symbol;
 
             if (typeInfo.ConvertedType.BaseType.Name != typeof(MulticastDelegate).Name || symbol is ILocalSymbol) return;
 
-            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), ((IdentifierNameSyntax)invocation.Expression).Identifier.Text));
+            context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), identifier.Identifier.Text));
         }
     }
 }
