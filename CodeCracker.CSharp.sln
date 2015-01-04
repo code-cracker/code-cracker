@@ -5,6 +5,7 @@ VisualStudioVersion = 14.0.22310.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2F5240AD-2B4E-48A4-B9FC-7D19DACEF2CD}"
 	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
@@ -18,9 +19,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
 		buildNuget.cmd = buildNuget.cmd
 		src\CSharp\buildNugetCSharp.cmd = src\CSharp\buildNugetCSharp.cmd
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{051F1BE2-9A44-4B84-9DF8-6537852B7BBC}"
+	ProjectSection(SolutionItems) = preProject
+		test\CSharp\AnalyzeCoreFx.ps1 = test\CSharp\AnalyzeCoreFx.ps1
 		runTestsCS.ps1 = runTestsCS.ps1
 	EndProjectSection
 EndProject

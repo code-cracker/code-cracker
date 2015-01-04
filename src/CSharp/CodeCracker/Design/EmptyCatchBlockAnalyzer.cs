@@ -20,7 +20,7 @@ namespace CodeCracker.Design
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Error,
+            DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId));

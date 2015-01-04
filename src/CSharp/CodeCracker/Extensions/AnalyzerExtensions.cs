@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CodeCracker
@@ -93,6 +94,11 @@ namespace CodeCracker
             return null;
         }
 
+        public static T FirstAncestorOfType<T>(this SyntaxNode node) where T : SyntaxNode
+        {
+            return (T)node.FirstAncestorOfType(typeof(T));
+        }
+
         public static SyntaxNode FirstAncestorOfType(this SyntaxNode node, params Type[] types)
         {
             var currentNode = node;
@@ -107,6 +113,40 @@ namespace CodeCracker
                 currentNode = parent;
             }
             return null;
+        }
+
+        public static IEnumerable<TypeDeclarationSyntax> DescendantTypes(this SyntaxNode root)
+        {
+            return root
+                .DescendantNodes(n => !(n.IsKind(SyntaxKind.MethodDeclaration)
+                || n.IsKind(SyntaxKind.ConstructorDeclaration)
+                || n.IsKind(SyntaxKind.DelegateDeclaration)
+                || n.IsKind(SyntaxKind.DestructorDeclaration)
+                || n.IsKind(SyntaxKind.EnumDeclaration)
+                || n.IsKind(SyntaxKind.PropertyDeclaration)
+                || n.IsKind(SyntaxKind.FieldDeclaration)
+                || n.IsKind(SyntaxKind.InterfaceDeclaration)
+                || n.IsKind(SyntaxKind.PropertyDeclaration)
+                || n.IsKind(SyntaxKind.EventDeclaration)))
+                .OfType<TypeDeclarationSyntax>();
+        }
+
+        public static IDictionary<K, V> AddRange<K, V>(this IDictionary<K,V> dictionary, IDictionary<K,V> newValues)
+        {
+            if (dictionary == null || newValues == null) return dictionary;
+            foreach (var kv in newValues) dictionary.Add(kv);
+            return dictionary;
+        }
+
+        public static IList<IMethodSymbol> GetAllMethodsIncludingFromInnerTypes(this INamedTypeSymbol typeSymbol)
+        {
+            var methods = typeSymbol.GetMembers().OfType<IMethodSymbol>().ToList();
+            var innerTypes = typeSymbol.GetMembers().OfType<INamedTypeSymbol>();
+            foreach (var innerType in innerTypes)
+            {
+                methods.AddRange(innerType.GetAllMethodsIncludingFromInnerTypes());
+            }
+            return methods;
         }
     }
 }
