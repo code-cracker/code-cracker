@@ -40,11 +40,8 @@ namespace CodeCracker.Style
             var semanticModel = context.SemanticModel;
 
             var name = invocationExpression.Identifier.ToString().ToUpper();
-
             if (name.StartsWith("I")) return;
-
             var error = string.Format(MessageFormat, MessageFormat);
-
             var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(), error);
             context.ReportDiagnostic(diag);
         }

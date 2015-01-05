@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Rename;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -37,24 +38,19 @@ namespace CodeCracker.Style
             context.RegisterFix(CodeAction.Create("Consider start Interface name with letter 'I'", c => ChangeInterfaceNameAsync(context.Document, declaration, c, FixType.PrivateFix)), diagnostic);
         }
 
-        private async Task<Document> ChangeInterfaceNameAsync(Document document, InterfaceDeclarationSyntax interfaceStatement, CancellationToken cancellationToken, FixType fixType)
+        private async Task<Solution> ChangeInterfaceNameAsync(Document document, InterfaceDeclarationSyntax interfaceStatement, CancellationToken cancellationToken, FixType fixType)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
-            var name = "I"+interfaceStatement.Identifier.ToString();
-
-            var newInterface = SyntaxFactory.InterfaceDeclaration(interfaceStatement.AttributeLists,
-                interfaceStatement.Modifiers,SyntaxFactory.Identifier(name),
-                interfaceStatement.TypeParameterList,interfaceStatement.BaseList,
-                interfaceStatement.ConstraintClauses,interfaceStatement.Members)
-                .WithLeadingTrivia(interfaceStatement.GetLeadingTrivia())
-                .WithTrailingTrivia(interfaceStatement.GetTrailingTrivia())
-                .WithAdditionalAnnotations(Formatter.Annotation);
-
-            var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode(interfaceStatement, newInterface);
-            var newDocument = document.WithSyntaxRoot(newRoot);
-            return newDocument;
+            var newName = "I"+interfaceStatement.Identifier.ToString();
+        
+            var solution = document.Project.Solution;
+            if (solution == null) return null;
+            var symbol = semanticModel.GetDeclaredSymbol(interfaceStatement, cancellationToken);
+            if (symbol == null) return null;
+            var options = solution.Workspace.Options;
+            var newSolution = await Renamer.RenameSymbolAsync(solution, symbol, newName,
+                options, cancellationToken).ConfigureAwait(false);
+            return newSolution;
         }
     }
 }

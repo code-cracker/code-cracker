@@ -44,7 +44,7 @@ namespace CodeCracker.Test.Usage
         }
 
         [Fact]
-        public async Task ChangeFieldAssignedOnDeclarationToReadonly()
+        public async Task ChangeInterfaceNameWithoutI()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -63,6 +63,45 @@ namespace CodeCracker.Test.Usage
         }
     }";
             await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+
+        [Fact]
+        public async Task ChangeInterfaceNameWithoutIAndClassImplementation()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        public interface Foo
+        {
+            void Test();
+        }
+
+        public class Test : Foo
+        {
+            public void Test()
+            {
+
+            }
+        }
+    }";
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        public interface IFoo
+        {
+            void Test();
+        }
+
+        public class Test : IFoo
+        {
+            public void Test()
+            {
+
+            }
+        }
+    }";
+        await VerifyCSharpFixAsync(source, fixtest);
         }
     }
 }
