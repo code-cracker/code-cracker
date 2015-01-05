@@ -307,6 +307,27 @@ namespace CodeCracker.Test.Style
         }
 
         [Fact]
+        public async Task ForWithoutABinaryConditionDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                var array = new int[] { 0 };
+                for (var i = 0; Bar; i++)
+                {
+                    var item = array[i];
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task ForInArrayAnalyzerCreatesDiagnostic()
         {
             const string source = @"

@@ -40,7 +40,7 @@ namespace CodeCracker.Style
             var forBlock = forStatement.Statement as BlockSyntax;
             if (forBlock == null) return;
             var condition = forStatement.Condition as BinaryExpressionSyntax;
-            if (!condition?.IsKind(SyntaxKind.LessThanExpression) ?? false) return;
+            if (condition == null || !condition.IsKind(SyntaxKind.LessThanExpression)) return;
             var arrayAccessor = condition.Right as MemberAccessExpressionSyntax;
             if (arrayAccessor == null) return;
             if (!arrayAccessor.IsKind(SyntaxKind.SimpleMemberAccessExpression)) return;
