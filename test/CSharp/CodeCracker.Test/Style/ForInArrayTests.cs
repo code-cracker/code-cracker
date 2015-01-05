@@ -328,6 +328,28 @@ namespace CodeCracker.Test.Style
         }
 
         [Fact]
+        public async Task ForWithDeclarationInitializedWithAnotherVariableDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                var array = new int[] { 0 };
+                var start = 0;
+                for (int i = start; i < array.Length; i++)
+                {
+                    var item = array[i];
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task ForInArrayAnalyzerCreatesDiagnostic()
         {
             const string source = @"
