@@ -182,6 +182,30 @@ public class TypeName
         }
 
         [Fact]
+        public async Task WhenUsingStringLiteralEqualsSecondParameterNameInMethodFixItToNameof()
+        {
+            const string source = @"
+public class TypeName
+{
+    void Foo(string a, string b)
+    {
+        string whatever = ""b"";
+    }
+}";
+
+            const string fixtest = @"
+public class TypeName
+{
+    void Foo(string a, string b)
+    {
+        string whatever = nameof(b);
+    }
+}";
+
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
         public async Task WhenUsingStringLiteralEqualsParameterNameInMethodMustKeepComments()
         {
             const string source = @"
