@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
-using CodeCracker.Usage.PreRunMethodAnalyzers;
+using CodeCracker.Usage.MethodAnalyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -40,16 +40,18 @@ namespace CodeCracker.Usage
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
-            var mainConstrutor = new PreRunMethodInfo(
+            var mainConstrutor = new MethodInformation(
+                "Uri",
                 "System.Uri.Uri(string)",
                 args => { new Uri(args[0].ToString()); }
             );
-            var constructorWithUriKind = new PreRunMethodInfo(
+            var constructorWithUriKind = new MethodInformation(
+                "Uri",
                 "System.Uri.Uri(string, System.UriKind)",
                 args => { new Uri(args[0].ToString(), (UriKind)args[1]); }
             );
 
-            var checker = new PreRunMethodChecker(context, Rule);
+            var checker = new MethodChecker(context, Rule);
             checker.AnalyzeConstrutor(mainConstrutor);
             checker.AnalyzeConstrutor(constructorWithUriKind);
         }
