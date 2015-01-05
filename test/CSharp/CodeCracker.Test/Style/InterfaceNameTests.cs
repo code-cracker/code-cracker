@@ -16,7 +16,7 @@ namespace CodeCracker.Test.Usage
     {
         public interface IFoo
         {
-            public void Test();
+            void Test();
         }
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
@@ -30,7 +30,7 @@ namespace CodeCracker.Test.Usage
     {
         public interface Foo
         {
-            public void Test();
+            void Test();
         }
     }";
             var expected = new DiagnosticResult
@@ -51,7 +51,7 @@ namespace CodeCracker.Test.Usage
     {
         public interface Foo
         {
-            public void Test();
+            void Test();
         }
     }";
             const string fixtest = @"
@@ -59,7 +59,7 @@ namespace CodeCracker.Test.Usage
     {
         public interface IFoo
         {
-            public void Test();
+            void Test();
         }
     }";
             await VerifyCSharpFixAsync(source, fixtest);
