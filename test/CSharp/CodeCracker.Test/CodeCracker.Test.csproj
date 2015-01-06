@@ -133,6 +133,7 @@
     <Compile Include="Design\NameOfTests.cs" />
     <Compile Include="Helpers\TestHelpers.cs" />
     <Compile Include="Refactoring\InvertForTests.cs" />
+    <Compile Include="Usage\IPAddressAnalyzerTests.cs" />
     <Compile Include="Usage\JsonNetAnalyzerTests.cs" />
     <Compile Include="Usage\ReadonlyFieldTests.cs" />
     <Compile Include="Style\InterfaceNameTests.cs" />
