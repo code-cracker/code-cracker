@@ -80,6 +80,8 @@
     <Compile Include="Usage\JsonNetAnalyzer.cs" />
     <Compile Include="Usage\MethodAnalyzers\MethodInformation.cs" />
     <Compile Include="Usage\MethodAnalyzers\MethodChecker.cs" />
+    <Compile Include="Style\InterfaceNameAnalyzer.cs" />
+    <Compile Include="Style\InterfaceNameCodeFixProvider.cs" />
     <Compile Include="Usage\ReadonlyFieldCodeFixProvider.cs" />
     <Compile Include="Usage\ReadonlyFieldAnalyzer.cs" />
     <Compile Include="Usage\RegexAnalyzer.cs" />

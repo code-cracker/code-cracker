@@ -135,6 +135,7 @@
     <Compile Include="Refactoring\InvertForTests.cs" />
     <Compile Include="Usage\JsonNetAnalyzerTests.cs" />
     <Compile Include="Usage\ReadonlyFieldTests.cs" />
+    <Compile Include="Style\InterfaceNameTests.cs" />
     <Compile Include="Usage\RegexTests.cs" />
     <Compile Include="Design\EmptyCatchBlockTests.cs" />
     <Compile Include="Style\EmptyObjectInitializerTests.cs" />
