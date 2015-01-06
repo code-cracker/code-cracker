@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.Style
 {
     public class InterfaceNameTests : CodeFixTest<InterfaceNameAnalyzer, InterfaceNameCodeFixProvider>
     {
@@ -101,7 +101,7 @@ namespace CodeCracker.Test.Usage
             }
         }
     }";
-        await VerifyCSharpFixAsync(source, fixtest);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
     }
 }

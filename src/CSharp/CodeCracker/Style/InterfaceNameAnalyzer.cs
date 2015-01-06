@@ -2,19 +2,17 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using System.Collections.Immutable;
 
 namespace CodeCracker.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class InterfaceNameAnalyzer
-        : DiagnosticAnalyzer
+    public class InterfaceNameAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CC0062";
         internal const string Title = "You should add letter 'I' before interface name.";
         internal const string MessageFormat = "Consider naming interfaces starting with 'I'.";
-        internal const string Category = "Style";
+        internal const string Category = SupportedCategories.Style;
         const string Description = "Consider naming interfaces starting with 'I'.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -33,7 +31,7 @@ namespace CodeCracker.Style
         {
             context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.InterfaceDeclaration);
         }
-       
+
         private static void AnalyzeClass(SyntaxNodeAnalysisContext context)
         {
             var invocationExpression = (InterfaceDeclarationSyntax)context.Node;
@@ -45,6 +43,5 @@ namespace CodeCracker.Style
             var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(), error);
             context.ReportDiagnostic(diag);
         }
-
     }
 }
