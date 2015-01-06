@@ -12,7 +12,7 @@ namespace CodeCracker.Usage
     {
         public const string DiagnosticId = "CC0063";
         internal const string Title = "Your Uri syntax is wrong.";
-        internal const string MessageFormat = "'{0}'";
+        internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Usage;
 
         private const string Description = "This diagnostic checks the Uri string and triggers if the parsing fail "
