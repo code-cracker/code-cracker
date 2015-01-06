@@ -39,7 +39,7 @@ namespace CodeCracker.Style
             var invocationExpression = (PropertyDeclarationSyntax)context.Node;
             var semanticModel = context.SemanticModel;
 
-            if (invocationExpression.AccessorList.Accessors.Count == 1) return;
+            if (invocationExpression.AccessorList == null || invocationExpression.AccessorList.Accessors.Count == 1) return;
 
             var setAcessor = (invocationExpression.AccessorList.Accessors[0].Keyword.Text == "set") ? invocationExpression.AccessorList.Accessors[0] : invocationExpression.AccessorList.Accessors[1];
 
