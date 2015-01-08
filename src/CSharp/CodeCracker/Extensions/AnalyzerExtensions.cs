@@ -148,5 +148,20 @@ namespace CodeCracker
             }
             return methods;
         }
+
+        public static IEnumerable<INamedTypeSymbol> AllBaseTypesAndSelf(this INamedTypeSymbol typeSymbol)
+        {
+            yield return typeSymbol;
+            foreach (var b in AllBaseTypes(typeSymbol))
+                yield return b;
+        }
+        public static IEnumerable<INamedTypeSymbol> AllBaseTypes(this INamedTypeSymbol typeSymbol)
+        {
+            while (typeSymbol.BaseType != null)
+            {
+                yield return typeSymbol.BaseType;
+                typeSymbol = typeSymbol.BaseType;
+            }
+        }
     }
 }
