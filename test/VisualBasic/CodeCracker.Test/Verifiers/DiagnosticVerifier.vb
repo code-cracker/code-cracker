@@ -2,6 +2,8 @@
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports System.Text
 Imports Xunit
+Imports System.Threading
+Imports System.Collections.Immutable
 
 Namespace TestHelper
     ''' <summary> Superclass of all Unit Tests for DiagnosticAnalyzers. </summary>
@@ -22,7 +24,53 @@ Namespace TestHelper
         End Function
 #End Region
 
+#Region " Get Diagnostics "
+        Private Shared Async Function GetSortedDiagnosticsAsync(sources() As String, language As String, analyzer As DiagnosticAnalyzer) As Task(Of Diagnostic())
+            Return Await GetSortedDiagnosticsFromDocumentsAsync(analyzer, TestHelpers.GetDocuments(sources, language))
+        End Function
+
+        Private Shared Async Function GetSortedDiagnosticsFromDocumentsAsync(analyzer As DiagnosticAnalyzer, documents() As Document) As Task(Of Diagnostic())
+            Dim projects = New HashSet(Of Project)
+            For Each document In documents
+                projects.Add(document.Project)
+            Next
+
+            Dim diagnostics = New List(Of Diagnostic)()
+            For Each project In projects
+                Dim compilation = Await project.GetCompilationAsync()
+                Dim driver = AnalyzerDriver.Create(compilation, ImmutableArray.Create(analyzer), Nothing, compilation, CancellationToken.None)
+                Dim discarded = compilation.GetDiagnostics
+                Dim diags = Await driver.GetDiagnosticsAsync
+                For Each diag In diags
+                    If diag.Location = Location.None OrElse diag.Location.IsInMetadata Then
+                        diagnostics.Add(diag)
+                    Else
+                        For Each document In documents
+                            Dim tree = Await document.GetSyntaxTreeAsync
+                            If tree.Equals(diag.Location.SourceTree) Then
+                                diagnostics.Add(diag)
+                            End If
+                        Next
+                    End If
+
+                Next
+            Next
+            Dim results = SortDiagnostics(diagnostics)
+            diagnostics.Clear()
+            Return results
+        End Function
+#End Region
 #Region " Verifier wrappers "
+        Protected Async Function VerifyBasicDiagnosticsAsync(source As String, ParamArray expected() As DiagnosticResult) As Task
+            Dim sources = {source}
+            Await VerifyBasicDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected)
+        End Function
+
+        Private Async Function VerifyBasicDiagnosticsAsync(sources() As String, language As String, analyzer As DiagnosticAnalyzer, ParamArray expected() As DiagnosticResult) As Task
+            Dim diagnostics = Await GetSortedDiagnosticsAsync(sources, language, analyzer)
+            VerifyDiagnosticResults(diagnostics, analyzer, expected)
+        End Function
+
 
         ''' <summary>
         ''' Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source

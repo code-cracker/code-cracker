@@ -76,6 +76,9 @@
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-beta1-20141031-01\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -124,9 +127,15 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Design\CatchEmptyTests.vb" />
+    <Compile Include="Design\EmptyCatchBlockTests.vb" />
+    <Compile Include="Design\NameOfTests.vb" />
+    <Compile Include="Design\StaticConstructorExceptionTests.vb" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.vb" />
     <Compile Include="Helpers\DiagnosticResult.vb" />
     <Compile Include="Helpers\DiagnosticVerifier.Helper.vb" />
+    <Compile Include="Helpers\TestCustomWorkspace.vb" />
+    <Compile Include="Helpers\TestHelpers.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -142,8 +151,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="PlaceholderTest.vb" />
+    <Compile Include="Verifiers\CodeFixTest.vb" />
     <Compile Include="Verifiers\CodeFixVerifier.vb" />
+    <Compile Include="Verifiers\DiagnosticVerifier.Extras.vb" />
     <Compile Include="Verifiers\DiagnosticVerifier.vb" />
   </ItemGroup>
   <ItemGroup>
