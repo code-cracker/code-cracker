@@ -29,10 +29,10 @@ namespace CodeCracker.Style
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Change method name including 'Async'.", c => ChangeMethodNameAsync(context.Document, declaration, c, FixType.PrivateFix)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Change method name including 'Async'.", c => ChangeMethodNameAsync(context.Document, declaration, c)), diagnostic);
         }
 
-        private async Task<Solution> ChangeMethodNameAsync(Document document, MethodDeclarationSyntax methodStatement, CancellationToken cancellationToken, FixType fixType)
+        private async Task<Solution> ChangeMethodNameAsync(Document document, MethodDeclarationSyntax methodStatement, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var newName = methodStatement.Identifier.ToString()+"Async";
