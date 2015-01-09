@@ -116,6 +116,7 @@
     <Compile Include="Performance\StringBuilderInLoopTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.cs" />
     <Compile Include="Refactoring\ParameterRefectoryTest.cs" />
+    <Compile Include="Style\TaskNameASyncTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
     <Compile Include="Style\StringFormatTests.cs" />
     <Compile Include="Style\AlwaysUseVarTests.cs" />
