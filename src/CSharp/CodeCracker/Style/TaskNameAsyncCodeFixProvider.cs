@@ -16,12 +16,6 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerTaskNameAsyncCodeFixProvider", LanguageNames.CSharp), Shared]
     public class TaskNameAsyncCodeFixProvider : CodeFixProvider
     {
-        private enum FixType
-        {
-            PrivateFix,
-            ProtectedFix
-        }
-
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(TaskNameAsyncAnalyzer.DiagnosticId);
 
         public sealed override FixAllProvider GetFixAllProvider()
