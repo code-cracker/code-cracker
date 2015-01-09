@@ -22,7 +22,7 @@ namespace CodeCracker.Style
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId));
