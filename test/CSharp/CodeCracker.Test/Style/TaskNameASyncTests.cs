@@ -16,7 +16,7 @@ namespace CodeCracker.Test.Style
     {
         public class Foo
         {
-            Task TestASync() {};
+            Task TestAsync() {};
         }
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
