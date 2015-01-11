@@ -11,7 +11,7 @@ namespace CodeCracker.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IPAddressAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0063";
+        public const string DiagnosticId = "CC0064";
         internal const string Title = "Your IP Address syntax is wrong.";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Usage;
