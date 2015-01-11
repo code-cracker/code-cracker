@@ -40,13 +40,13 @@ namespace CodeCracker.Style
             var forBlock = forStatement.Statement as BlockSyntax;
             if (forBlock == null) return;
             var condition = forStatement.Condition as BinaryExpressionSyntax;
-            if (!condition?.IsKind(SyntaxKind.LessThanExpression) ?? false) return;
+            if (condition == null || !condition.IsKind(SyntaxKind.LessThanExpression)) return;
             var arrayAccessor = condition.Right as MemberAccessExpressionSyntax;
             if (arrayAccessor == null) return;
             if (!arrayAccessor.IsKind(SyntaxKind.SimpleMemberAccessExpression)) return;
             var arrayId = context.SemanticModel.GetSymbolInfo(arrayAccessor.Expression).Symbol as ILocalSymbol;
             var literalExpression = forStatement.Declaration.Variables.Single().Initializer.Value as LiteralExpressionSyntax;
-            if (!literalExpression?.IsKind(SyntaxKind.NumericLiteralExpression) ?? false) return;
+            if (literalExpression == null || !literalExpression.IsKind(SyntaxKind.NumericLiteralExpression)) return;
             if (literalExpression.Token.ValueText != "0") return;
             var controlVarId = context.SemanticModel.GetDeclaredSymbol(forStatement.Declaration.Variables.Single());
             var otherUsesOfIndexToken = forBlock.DescendantTokens().Count(t => t.Text == forStatement.Declaration.Variables.Single().Identifier.Text);
