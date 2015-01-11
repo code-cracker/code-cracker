@@ -59,6 +59,20 @@ namespace ConsoleApplication1
         }
 
         [Fact]
+        public async Task IfUriConstructorUsingNullFoundDoNotCreatesDiagnostic()
+        {
+            var test = string.Format(TestCode, @"var uri = new System.Uri(null)");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task IfUriConstructorNotUsingLiteralFoundDoNotCreatesDiagnostic()
+        {
+            var test = string.Format(TestCode, @"var uri = new System.Uri(new object().ToString())");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async Task IfAbbreviatedUriConstructorFoundAndUriIsIncorrectAndItsNotSystemUriDoNotCreatesDiagnostic()
         {
             const string code = @"
