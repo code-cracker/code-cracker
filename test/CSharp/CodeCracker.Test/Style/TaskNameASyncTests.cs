@@ -36,7 +36,7 @@ namespace CodeCracker.Test.Style
             var expected = new DiagnosticResult
             {
                 Id = TaskNameAsyncAnalyzer.DiagnosticId,
-                Message = TaskNameAsyncAnalyzer.MessageFormat,
+                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat,"TestAsync"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 13) }
             };
@@ -100,6 +100,30 @@ namespace CodeCracker.Test.Style
             {
                 return true;
             }
+        }
+
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task ChangeTaskNameWhithoutAsyncAndInterfaceImplementation()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        public interface IFoo
+        {
+            public Task Test()
+        }
+
+    }";
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        public interface IFoo
+        {
+            public Task TestAsync()
         }
 
     }";

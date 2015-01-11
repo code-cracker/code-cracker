@@ -36,11 +36,8 @@ namespace CodeCracker.Style
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var newName = methodStatement.Identifier.ToString()+"Async";
-        
             var solution = document.Project.Solution;
-            if (solution == null) return null;
             var symbol = semanticModel.GetDeclaredSymbol(methodStatement, cancellationToken);
-            if (symbol == null) return null;
             var options = solution.Workspace.Options;
             var newSolution = await Renamer.RenameSymbolAsync(solution, symbol, newName,
                 options, cancellationToken).ConfigureAwait(false);

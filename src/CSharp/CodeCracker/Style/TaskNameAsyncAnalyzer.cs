@@ -12,7 +12,7 @@ namespace CodeCracker.Style
     {
         public const string DiagnosticId = "CC0061";
         internal const string Title = "Async method can be terminating with 'Async' name.";
-        internal const string MessageFormat = "Change method name including 'Async'.";
+        internal const string MessageFormat = "Change method name to {0}";
         internal const string Category = SupportedCategories.Style;
         const string Description = "Async method can be terminating with 'Async' name.";
 
@@ -30,24 +30,19 @@ namespace CodeCracker.Style
 
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.MethodDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
         }
 
-        public Task<bool> xpto()
-        {
-            return null;
-        }
-
-        private static void AnalyzeClass(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
             var invocationExpression = (MethodDeclarationSyntax)context.Node;
 
             var nameSyntax = invocationExpression.ReturnType?.ToString();
             if (nameSyntax == null || !nameSyntax.Contains("Task")) return;
-            if(invocationExpression.Identifier.ToString().ToUpper().EndsWith("ASYNC")) return;
+            if(invocationExpression.Identifier.ToString().EndsWith("Async")) return;
 
-            var error = string.Format(MessageFormat, MessageFormat);
-            var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(), error);
+            var errorMessage = invocationExpression.Identifier.ToString()+"Async";
+            var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(),errorMessage);
             context.ReportDiagnostic(diag);
         }
     }
