@@ -23,6 +23,7 @@ namespace ConsoleApplication1
     }}
 }}";
 
+#pragma warning disable CC0063
         [Fact]
         public async Task IfAbbreviatedUriConstructorFoundAndUriIsIncorrectCreatesDiagnostic()
         {
@@ -43,6 +44,7 @@ namespace ConsoleApplication1
             var test = string.Format(TestCode, @"var uri = new Uri(""http://wrong"", UriKind.Relative)");
             await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(9, 31, () => new Uri("http://wrong", UriKind.Relative)));
         }
+#pragma warning restore CC0063
 
         [Fact]
         public async Task IfAbbreviatedUriConstructorWithUriKindFoundAndUriIsCorrectDoNotCreatesDiagnostic()
