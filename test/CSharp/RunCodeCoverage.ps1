@@ -1,11 +1,16 @@
-$openCoverExe = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\packages\OpenCover.4.5.3607-rc27\OpenCover.Console.exe")
-$xunitConsoleExe = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\packages\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.exe")
+$rootDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..")
+$packagesDir = "$rootDir\packages"
+$openCoverExe = "$packagesDir\OpenCover.4.5.3607-rc27\OpenCover.Console.exe"
+$xunitConsoleExe = "$packagesDir\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe"
 $testDll = "CodeCracker.Test.CSharp.dll"
-$testDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\CodeCracker.Test\bin\Debug")
-$logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
+$testDir = "$PSScriptRoot\CodeCracker.Test\bin\Debug"
+$logDir = "$rootDir\log"
 $outputXml = "$logDir\CodeCoverageResults.xml"
+$reportGeneratorExe = "$packagesDir\ReportGenerator.2.0.4.0\ReportGenerator.exe"
+$coverageReportDir = "$logDir\codecoverage\"
+$converallsNetExe = "$packagesDir\coveralls.io.1.1.73-beta\tools\coveralls.net.exe"
 
-$allPaths = $openCoverExe, $xunitConsoleExe, $testDir, $logDir
+$allPaths = $openCoverExe, $xunitConsoleExe, $testDir, $logDir, $reportGeneratorExe
 
 function testPath($paths) {
     $notFound = @()
@@ -20,7 +25,7 @@ function testPath($paths) {
 
 if ((Test-Path $logDir) -eq $false)
 {
-    Write-Host -ForegroundColor Blue "Creating log directory $logDir"
+    Write-Host -ForegroundColor DarkBlue "Creating log directory $logDir"
     mkdir $logDir | Out-Null
 }
 
@@ -33,4 +38,11 @@ if ($notFoundPaths.length -ne 0) {
     return
 }
 
-. $openCoverExe -register:user -target:$xunitConsoleExe -targetargs:"$testDll -noshadow" -filter:"+[CodeCracker*]* -[CodeCracker.Test*]*" -output:$outputXml -coverbytest:*.Test.*.dll -targetdir:$testDir -log:All
+Write-Host -ForegroundColor DarkBlue "Running Code Coverage"
+. $openCoverExe -register:user "-target:$xunitConsoleExe" "-targetargs:$testDll -noshadow" "-filter:+[CodeCracker*]* -[CodeCracker.Test*]*" "-output:$outputXml" -coverbytest:*.Test.*.dll "-targetdir:$testDir" -log:All
+Write-Host -ForegroundColor DarkBlue "Exporting code coverage report"
+. $reportGeneratorExe -verbosity:Info -reports:$outputXml -targetdir:$coverageReportDir
+if ($env:COVERALLS_REPO_TOKEN -ne $null) {
+    Write-Host -ForegroundColor DarkBlue "Uploading coverage report to Coveralls.io"
+    . $converallsNetExe --opencover $outputXml
+}
