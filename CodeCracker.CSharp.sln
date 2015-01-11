@@ -28,6 +28,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{051F1BE2-9A44-4B84-9DF8-6537852B7BBC}"
 	ProjectSection(SolutionItems) = preProject
 		test\CSharp\AnalyzeCoreFx.ps1 = test\CSharp\AnalyzeCoreFx.ps1
+		test\CSharp\RunCodeCoverage.ps1 = test\CSharp\RunCodeCoverage.ps1
 		runTestsCS.ps1 = runTestsCS.ps1
 	EndProjectSection
 EndProject
