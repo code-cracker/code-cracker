@@ -36,14 +36,15 @@ namespace CodeCracker.Style
         private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
             var invocationExpression = (MethodDeclarationSyntax)context.Node;
+            if (invocationExpression.Identifier.ToString().EndsWith("Async")) return;
 
-            var nameSyntax = invocationExpression.ReturnType?.ToString();
-            if (nameSyntax == null || !nameSyntax.Contains("Task")) return;
-            if(invocationExpression.Identifier.ToString().EndsWith("Async")) return;
-
-            var errorMessage = invocationExpression.Identifier.ToString()+"Async";
-            var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(),errorMessage);
-            context.ReportDiagnostic(diag);
+            var returnTask = invocationExpression.ReturnType?.ToString().Contains("Task") ?? false;
+            if (invocationExpression.Modifiers.Any(SyntaxKind.AsyncKeyword) || returnTask)
+            {
+                var errorMessage = invocationExpression.Identifier.ToString() + "Async";
+                var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(), errorMessage);
+                context.ReportDiagnostic(diag);
+            }
         }
     }
 }
