@@ -46,6 +46,22 @@ namespace CodeCracker.Test.Style
         }
 
         [Fact]
+        public async Task ExpressionBodiedPropertyDoesNotCreateDiagnostic()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int MyProperty => 0;
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async Task PropertyPrivateFixAutoProperty()
         {
             const string test = @"

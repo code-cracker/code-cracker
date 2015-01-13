@@ -9,6 +9,7 @@ our task board, definition of done, definition of ready, etc.
 [![Nuget count](http://img.shields.io/nuget/v/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
 [![Nuget downloads](http://img.shields.io/nuget/dt/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
 [![Issues open](http://img.shields.io/github/issues/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker)
+[![Coverage Status](https://coveralls.io/repos/code-cracker/code-cracker/badge.png?branch=master)](https://coveralls.io/r/code-cracker/code-cracker?branch=master)
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this
 software, nor it will be. Ever.

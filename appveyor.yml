@@ -15,6 +15,10 @@ shallow_clone: false
 
 clone_depth: 5
 
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: 9qsI9p9EPYyYoEetOcoQ76A7zfQRdstXY81MQFnX1Zpddtc0CrQThKAFPUba12m4
+
 before_build:
   - ps: >-
       echo "set path"
@@ -154,6 +158,8 @@ test_script:
 after_test:
   - ps: >-
       $root = $env:APPVEYOR_BUILD_FOLDER
+
+      . "$root\test\CSharp\RunCodeCoverage.ps1"
 
       . "$root\test\CSharp\AnalyzeCoreFx.ps1"
 
