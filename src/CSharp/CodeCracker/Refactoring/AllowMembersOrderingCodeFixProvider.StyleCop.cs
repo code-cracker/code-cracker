@@ -27,11 +27,11 @@ namespace CodeCracker.Refactoring
         {
             Dictionary<Type, int> typeRank = new Dictionary<Type, int>
             {
-                { typeof(FieldDeclarationSyntax),       1 },
-                { typeof(EventFieldDeclarationSyntax),  2 },
-                { typeof(ConstructorDeclarationSyntax), 3 },
-                { typeof(DestructorDeclarationSyntax),  4 },
-                { typeof(DelegateDeclarationSyntax),    5 },
+                { typeof(FieldDeclarationSyntax),       1 },                
+                { typeof(ConstructorDeclarationSyntax), 2 },
+                { typeof(DestructorDeclarationSyntax),  3 },
+                { typeof(DelegateDeclarationSyntax),    4 },
+                { typeof(EventFieldDeclarationSyntax),  5 },
                 { typeof(EventDeclarationSyntax),       6 },
                 { typeof(EnumDeclarationSyntax),        7 },
                 { typeof(InterfaceDeclarationSyntax),   8 },
@@ -70,11 +70,11 @@ namespace CodeCracker.Refactoring
                 var xModifiers = GetModifiers(x);
                 var yModifiers = GetModifiers(y);
 
-                comparedPoints = GetSpecialModifierPoints(xModifiers).CompareTo(GetSpecialModifierPoints(yModifiers));
+                comparedPoints = GetAccessLevelPoints(xModifiers).CompareTo(GetAccessLevelPoints(yModifiers));
                 if (comparedPoints != 0)
                     return comparedPoints;
 
-                comparedPoints = GetAccessLevelPoints(xModifiers).CompareTo(GetAccessLevelPoints(yModifiers));
+                comparedPoints = GetSpecialModifierPoints(xModifiers).CompareTo(GetSpecialModifierPoints(yModifiers));
                 if (comparedPoints != 0)
                     return comparedPoints;
 

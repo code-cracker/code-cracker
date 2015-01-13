@@ -30,11 +30,11 @@ namespace CodeCracker.Test.Refactoring
             const string expected = @"
             class Foo
             {
-                public int b = 0;
-                public event System.Action EventField;
+                public int b = 0;                
                 Foo() { }
                 ~Foo() { }
                 public delegate double Delegate();
+                public event System.Action EventField;
                 public event System.Action Event { add { } remove { } }
                 enum Enum { Enum1 }
                 public interface Interface { }
@@ -69,13 +69,13 @@ namespace CodeCracker.Test.Refactoring
             public class Foo
             {
                 public const int z = 0;
-                const int x = 0;
                 public static int v = 0;
-                static int u = 0;
                 public int t = 0;
                 internal int s = 0;
                 protected internal int r = 0;
                 protected int q = 0;
+                const int x = 0;
+                static int u = 0;
                 private int p = 0;
             }";
 
@@ -116,11 +116,11 @@ namespace CodeCracker.Test.Refactoring
             class Foo
             {
                 int a = 0, b = 1;
-                int c = 2, d = 3;
-                event System.Action EventField;
-                event System.Action EventField1;
+                int c = 2, d = 3;        
                 delegate double Delegate();
                 delegate double Delegate2();
+                event System.Action EventField;
+                event System.Action EventField1;
                 event System.Action Event { add { } remove { } }
                 event System.Action Event1 { add { } remove { } }
                 enum Enum { Enum1 }
@@ -191,14 +191,14 @@ namespace CodeCracker.Test.Refactoring
                 {
                     public static string Field1;
                     public string Field;
-                    public event Action EventField;
-                    public event Action EventField1;
                     public Foo()
                     {
                         Property = Field1 = Field = "";
                         EventField = EventField1 = () => { };
                     }
                     public delegate double Delegate(double num);
+                    public event Action EventField;
+                    public event Action EventField1;
                     public event Action Event
                     {
                         add { EventField += value; }
