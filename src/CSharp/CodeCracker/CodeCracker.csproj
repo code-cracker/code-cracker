@@ -33,6 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Analyzer.cs" />
+    <Compile Include="CodeFix.cs" />
+    <Compile Include="CSharpAnalyzer.cs" />
+    <Compile Include="DiagnosticDescriptorInfo.cs" />
+    <Compile Include="DiagnosticId.cs" />
+    <Compile Include="Extensions\HelperExtensions.cs" />
     <Compile Include="Performance\StringBuiderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />

@@ -1,10 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CodeCracker
 {
@@ -162,6 +165,14 @@ namespace CodeCracker
                 yield return typeSymbol.BaseType;
                 typeSymbol = typeSymbol.BaseType;
             }
+        }
+
+        public static async Task<T> GetNodeInPositionAsync<T>(this CodeFixContext context, TextSpan span) where T : SyntaxNode
+        {
+            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+            var sourceSpan = span;
+            var type = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<T>().First();
+            return type;
         }
     }
 }

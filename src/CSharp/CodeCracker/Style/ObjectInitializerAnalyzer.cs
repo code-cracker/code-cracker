@@ -8,40 +8,27 @@ using System.Linq;
 
 namespace CodeCracker.Style
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class ObjectInitializerAnalyzer : DiagnosticAnalyzer
+    public class ObjectInitializerAnalyzer : CSharpAnalyzer
     {
-        public const string DiagnosticIdLocalDeclaration = "CC0008";
-        internal const string TitleLocalDeclaration = "Use object initializer";
-        internal const string MessageFormat = "{0}";
-        internal const string Category = SupportedCategories.Style;
-        public const string DiagnosticIdAssignment = "CC0009";
-        internal const string TitleAssignment = "Use object initializer";
-        const string Description = "When possible an object initializer should be used to initialize the properties of an "
-            + "object instead of multiple assignments.";
-
-        internal static DiagnosticDescriptor RuleAssignment = new DiagnosticDescriptor(
-            DiagnosticIdAssignment,
-            TitleLocalDeclaration,
-            MessageFormat,
-            Category,
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticIdAssignment));
-
-        internal static DiagnosticDescriptor RuleLocalDeclaration = new DiagnosticDescriptor(
-            DiagnosticIdLocalDeclaration,
-            TitleLocalDeclaration,
-            MessageFormat,
-            Category,
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticIdLocalDeclaration));
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(RuleLocalDeclaration, RuleAssignment);
+        private const string description = "When possible an object initializer should be used to " +
+            "initialize the properties of an object instead of multiple assignments.";
+        public ObjectInitializerAnalyzer() : base(new DiagnosticDescriptorInfo
+        {
+            Id = DiagnosticId.ObjectInitializer_LocalDeclaration,
+            Title = "Use object initializer",
+            Message = "You can use initializers in here.",
+            Category = SupportedCategories.Style,
+            Description = description,
+            Severity = DiagnosticSeverity.Warning
+        }, new DiagnosticDescriptorInfo
+        {
+            Id = DiagnosticId.ObjectInitializer_Assignment,
+            Title = "Use object initializer",
+            Message = "You can use initializers in here.",
+            Category = SupportedCategories.Style,
+            Description = description,
+            Severity = DiagnosticSeverity.Warning
+        }) { }
 
         public override void Initialize(AnalysisContext context)
         {
@@ -58,9 +45,7 @@ namespace CodeCracker.Style
             var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
             var assignmentExpressions = FindAssingmentExpressions(semanticModel, expressionStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
-
-            var diagnostic = Diagnostic.Create(RuleAssignment, expressionStatement.GetLocation(), "You can use initializers in here.");
-            context.ReportDiagnostic(diagnostic);
+            ReportDiagnostic(context, expressionStatement.GetLocation(), 1);
         }
 
         private void AnalyzerLocalDeclaration(SyntaxNodeAnalysisContext context)
@@ -75,9 +60,7 @@ namespace CodeCracker.Style
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
             var assignmentExpressions = FindAssingmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
-
-            var diagnostic = Diagnostic.Create(RuleLocalDeclaration, localDeclarationStatement.GetLocation(), "You can use initializers in here.");
-            context.ReportDiagnostic(diagnostic);
+            ReportDiagnostic(context, localDeclarationStatement.GetLocation(), 0);
         }
 
         public static List<ExpressionStatementSyntax> FindAssingmentExpressions(SemanticModel semanticModel, StatementSyntax statement, ISymbol variableSymbol)

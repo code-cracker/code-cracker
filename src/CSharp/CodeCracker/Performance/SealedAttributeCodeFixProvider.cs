@@ -12,25 +12,15 @@ using System.Threading.Tasks;
 namespace CodeCracker.Performance
 {
     [ExportCodeFixProvider("CodeCrackerSealedAttributeCodeFixProvider", LanguageNames.CSharp)]
-    public class SealedAttributeCodeFixProvider : CodeFixProvider
+    public class SealedAttributeCodeFixProvider : CodeFix
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(SealedAttributeAnalyzer.DiagnosticId);
-        }
-
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.SealedAttributeAnalyzer.ToDiagnosticId());
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var sourceSpan = diagnostic.Location.SourceSpan;
-            var type = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
-
+            var type = await context.GetNodeInPositionAsync<ClassDeclarationSyntax>(diagnostic.Location.SourceSpan);
             context.RegisterFix(
                 CodeAction.Create("Mark as sealed", ct => MarkClassAsSealed(context.Document, type, ct)), diagnostic);
         }
