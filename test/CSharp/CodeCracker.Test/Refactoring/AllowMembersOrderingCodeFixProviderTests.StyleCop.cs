@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
+
 namespace CodeCracker.Test.Refactoring
 {
     public class StyleCopAllowMembersOrderingCodeFixProviderTests : CodeFixTest<AllowMembersOrderingAnalyzer, StyleCopAllowMembersOrderingCodeFixProvider>
@@ -30,7 +31,7 @@ namespace CodeCracker.Test.Refactoring
             const string expected = @"
             class Foo
             {
-                public int b = 0;                
+                public int b = 0;
                 Foo() { }
                 ~Foo() { }
                 public delegate double Delegate();
@@ -116,7 +117,7 @@ namespace CodeCracker.Test.Refactoring
             class Foo
             {
                 int a = 0, b = 1;
-                int c = 2, d = 3;        
+                int c = 2, d = 3;
                 delegate double Delegate();
                 delegate double Delegate2();
                 event System.Action EventField;

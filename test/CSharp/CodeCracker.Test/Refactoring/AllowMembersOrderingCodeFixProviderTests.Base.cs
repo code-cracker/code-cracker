@@ -23,14 +23,14 @@ namespace CodeCracker.Test.Refactoring
             public " + typeDeclaration + @" Foo
             {
                 " + memberA + @"
-                " + memberB + @" 
+                " + memberB + @"
             }";
 
             var expected = @"
             public " + typeDeclaration + @" Foo
             {
                 " + memberB + @"
-                " + memberA + @" 
+                " + memberA + @"
             }";
 
             await VerifyCSharpFixAsync(source, expected, codeFixProvider: codeFixProvider);
@@ -57,7 +57,7 @@ namespace CodeCracker.Test.Refactoring
         {
             var source = @"
             using System;
-            
+
             namespace ConsoleApplication1
             {
                 " + typeDeclaration + @" Foo
@@ -88,11 +88,11 @@ namespace CodeCracker.Test.Refactoring
 
             var expected = @"
             using System;
-            
+
             namespace ConsoleApplication1
             {
                 " + typeDeclaration + @" Foo
-                {                    
+                {
                     private interface Interface { }
                     public class Foo2 { }
                     public delegate double Delegate(double num);
@@ -122,10 +122,7 @@ namespace CodeCracker.Test.Refactoring
 
         public class MockCodeFixProvider : BaseAllowMembersOrderingCodeFixProvider
         {
-            public MockCodeFixProvider() :
-                base("Fake codefix")
-            {
-            }
+            public MockCodeFixProvider() : base("Fake codefix") { }
 
             public bool HasIComparerBeenCalled { get; private set; }
 

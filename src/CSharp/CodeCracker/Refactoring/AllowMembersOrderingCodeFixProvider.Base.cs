@@ -16,8 +16,7 @@ namespace CodeCracker.Refactoring
     {
         protected readonly string codeActionDescription;
 
-        protected BaseAllowMembersOrderingCodeFixProvider(string codeActionDescription) :
-            base()
+        protected BaseAllowMembersOrderingCodeFixProvider(string codeActionDescription) : base()
         {
             this.codeActionDescription = codeActionDescription;
         }
@@ -34,7 +33,7 @@ namespace CodeCracker.Refactoring
 
             var newDocument = await AllowMembersOrderingAsync(context.Document, typeDeclarationSyntax, context.CancellationToken);
             if (newDocument != null)
-                context.RegisterFix(CodeAction.Create(codeActionDescription, newDocument), diagnostic);
+                context.RegisterFix(CodeAction.Create(string.Format(codeActionDescription, typeDeclarationSyntax.Identifier.ValueText), newDocument), diagnostic);
         }
 
         private async Task<Document> AllowMembersOrderingAsync(Document document, TypeDeclarationSyntax typeDeclarationSyntax, CancellationToken cancellationToken)
@@ -81,14 +80,9 @@ namespace CodeCracker.Refactoring
             return orderChanged;
         }
 
-        public override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(AllowMembersOrderingAnalyzer.DiagnosticId);
-        }
+        public override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(AllowMembersOrderingAnalyzer.DiagnosticId);
 
-        public override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
     }
 }

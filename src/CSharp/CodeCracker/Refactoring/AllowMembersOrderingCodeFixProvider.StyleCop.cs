@@ -8,26 +8,23 @@ using System.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading;
+
 namespace CodeCracker.Refactoring
 {
     [ExportCodeFixProvider("StyleCopAllowMembersOrderingCodeFixProvider", LanguageNames.CSharp), Shared]
     public class StyleCopAllowMembersOrderingCodeFixProvider : BaseAllowMembersOrderingCodeFixProvider
     {
         public StyleCopAllowMembersOrderingCodeFixProvider() :
-            base("Ordering the type's members following the StyleCop patterns")
-        {
-        }
+            base("Order {0}'s members following StyleCop patterns") { }
 
-        protected override IComparer<MemberDeclarationSyntax> GetMemberDeclarationComparer(Document document, CancellationToken cancellationToken)
-        {
-            return new StyleCopMembersComparer();
-        }
+        protected override IComparer<MemberDeclarationSyntax> GetMemberDeclarationComparer(Document d, CancellationToken c) =>
+            new StyleCopMembersComparer();
 
         public class StyleCopMembersComparer : IComparer<MemberDeclarationSyntax>
         {
             Dictionary<Type, int> typeRank = new Dictionary<Type, int>
             {
-                { typeof(FieldDeclarationSyntax),       1 },                
+                { typeof(FieldDeclarationSyntax),       1 },
                 { typeof(ConstructorDeclarationSyntax), 2 },
                 { typeof(DestructorDeclarationSyntax),  3 },
                 { typeof(DelegateDeclarationSyntax),    4 },
@@ -38,7 +35,7 @@ namespace CodeCracker.Refactoring
                 { typeof(PropertyDeclarationSyntax),    9 },
                 { typeof(IndexerDeclarationSyntax),     10 },
                 { typeof(OperatorDeclarationSyntax),    11 },
-                { typeof(MethodDeclarationSyntax),      12 },                
+                { typeof(MethodDeclarationSyntax),      12 },
                 { typeof(StructDeclarationSyntax),      13 },
                 { typeof(ClassDeclarationSyntax),       14 },
             };
@@ -86,7 +83,6 @@ namespace CodeCracker.Refactoring
                 int points;
                 if (!typeRank.TryGetValue(node.GetType(), out points))
                     return 0;
-
                 return points;
             }
 
@@ -122,13 +118,13 @@ namespace CodeCracker.Refactoring
             }
 
             private string GetName(SyntaxNode node)
-            {   
-                if(node is FieldDeclarationSyntax)
+            {
+                if (node is FieldDeclarationSyntax)
                     return GetName((node as FieldDeclarationSyntax).Declaration);
 
-                if(node is EventFieldDeclarationSyntax)
+                if (node is EventFieldDeclarationSyntax)
                     return GetName((node as EventFieldDeclarationSyntax).Declaration);
-                
+
                 if (node is OperatorDeclarationSyntax)
                     return (node as OperatorDeclarationSyntax).OperatorToken.Text;
 
@@ -153,7 +149,7 @@ namespace CodeCracker.Refactoring
                 if (node is EventDeclarationSyntax)
                     return (node as EventDeclarationSyntax).Identifier.Text;
 
-                if(node is BaseTypeDeclarationSyntax)
+                if (node is BaseTypeDeclarationSyntax)
                     return (node as BaseTypeDeclarationSyntax).Identifier.Text;
 
                 return "";
