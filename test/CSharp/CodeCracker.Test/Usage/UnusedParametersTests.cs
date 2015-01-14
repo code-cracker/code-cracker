@@ -282,5 +282,143 @@ namespace CodeCracker.Test.Usage
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
             };
         }
+
+        [Fact]
+        public async Task FixWhenTheParametersHasReferenceOnSameClass()
+        {
+            const string source = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Foo(1, 2);
+    }
+    public int Foo(int a, int b)
+    {
+        return a;
+    }
+}";
+            const string fixtest = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Foo(1);
+    }
+    public int Foo(int a)
+    {
+        return a;
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenTheParametersHasReferenceOnDifferentClass()
+        {
+            const string source = @"
+class HasRef
+{
+    public void IsReferencing()
+    {
+        new TypeName().Foo(1, 2);
+    }
+}
+class TypeName
+{
+    public int Foo(int a, int b)
+    {
+        return a;
+    }
+}";
+            const string fixtest = @"
+class HasRef
+{
+    public void IsReferencing()
+    {
+        new TypeName().Foo(1);
+    }
+}
+class TypeName
+{
+    public int Foo(int a)
+    {
+        return a;
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenTheParametersHasReferenceOnDifferentClassOnStaticMethod()
+        {
+            const string source = @"
+class HasRef
+{
+    public void IsReferencing()
+    {
+        TypeName.Foo(1, 2);
+    }
+}
+class TypeName
+{
+    public static int Foo(int a, int b)
+    {
+        return a;
+    }
+}";
+            const string fixtest = @"
+class HasRef
+{
+    public void IsReferencing()
+    {
+        TypeName.Foo(1);
+    }
+}
+class TypeName
+{
+    public static int Foo(int a)
+    {
+        return a;
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenTheParametersHasReferenceOnConstructor()
+        {
+            const string source = @"
+class HasRef
+{
+    public void IsReferencing()
+    {
+        new TypeName(1, 2);
+    }
+}
+class TypeName
+{
+    public TypeName(int a, int b)
+    {
+        a = 1;
+    }
+}";
+            const string fixtest = @"
+class HasRef
+{
+    public void IsReferencing()
+    {
+        new TypeName(1);
+    }
+}
+class TypeName
+{
+    public TypeName(int a)
+    {
+        a = 1;
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }
