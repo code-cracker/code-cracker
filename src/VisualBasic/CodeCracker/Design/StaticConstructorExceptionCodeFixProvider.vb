@@ -22,7 +22,7 @@ Public Class StaticConstructorExceptionCodeFixProvider
     End Function
 
     Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-        Return ImmutableArray.Create(StaticConstructorExceptionAnalyzer.DiagnosticId)
+        Return ImmutableArray.Create(DesignDiagnostics.StaticConstructorExceptionAnalyzer)
     End Function
 
     Public Overrides Function GetFixAllProvider() As FixAllProvider

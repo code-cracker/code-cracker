@@ -46,7 +46,7 @@ Public Class NameOfCodeFixProvider
     End Function
 
     Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-        Return ImmutableArray.Create(NameOfAnalyzer.DiagnosticId)
+        Return ImmutableArray.Create(DesignDiagnostics.NameOfAnalyzerId)
     End Function
 
     Public Overrides Function GetFixAllProvider() As FixAllProvider

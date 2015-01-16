@@ -89,8 +89,10 @@
     <Import Include="Windows.UI.Xaml.Media.Imaging" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeCrackerAnalyzerBase.vb" />
     <Compile Include="Design\CatchEmptyAnalyzer.vb" />
     <Compile Include="Design\CatchEmptyCodeFixProvider.vb" />
+    <Compile Include="Design\DesignDiagnostics.vb" />
     <Compile Include="Design\EmptyCatchBlockAnalyzer.vb" />
     <Compile Include="Design\EmptyCatchBlockCodeFixProvider.vb" />
     <Compile Include="Design\NameOfAnalyzer.vb" />
@@ -100,6 +102,17 @@
     <Compile Include="Extensions\AnalyzerExtensions.vb" />
     <Compile Include="HelpLink.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Performance\EmptyFinalizerAnalyzer.vb" />
+    <Compile Include="Performance\EmptyFinalizerCodeFixProvider.vb" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenPossibleAnalyzer.vb" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenPossibleCodeFixProvider.vb" />
+    <Compile Include="Performance\PerformanceDiagnostics.vb" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleAnalyzer.vb" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleCodeFixProvider.vb" />
+    <Compile Include="Performance\SealedAttributeAnalyzer.vb" />
+    <Compile Include="Performance\SealedAttributeCodeFixProvider.vb" />
+    <Compile Include="Performance\StringBuilderInLoopAnalyzer.vb" />
+    <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.vb" />
     <Compile Include="SupportedCategories.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +121,6 @@
     <Folder Include="Maintainability\" />
     <Folder Include="Mobility\" />
     <Folder Include="Naming\" />
-    <Folder Include="Performance\" />
     <Folder Include="Portability\" />
     <Folder Include="Refactoring\" />
     <Folder Include="Reliability\" />

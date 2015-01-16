@@ -1,5 +1,10 @@
-﻿Imports CodeCracker.Test.TestHelper
+﻿Imports System.IO
+Imports CodeCracker.Test.TestHelper
+Imports Microsoft.CodeAnalysis
+Imports Microsoft.CodeAnalysis.VisualBasic
+Imports System.Linq
 Imports Xunit
+Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Public Class StaticConstructorExceptionTests
     Inherits CodeFixTest(Of StaticConstructorExceptionAnalyzer, StaticConstructorExceptionCodeFixProvider)
@@ -14,7 +19,7 @@ Public Class TestClass
 End Class"
 
         Dim expected = New DiagnosticResult With {
-            .Id = StaticConstructorExceptionAnalyzer.DiagnosticId,
+            .Id = DesignDiagnostics.StaticConstructorExceptionAnalyzer,
             .Message = "Don't throw exceptions inside static constructors.",
             .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
             .Locations = {New DiagnosticResultLocation("Test0.vb", 4, 9)}
@@ -76,6 +81,46 @@ Public Class TestClass
 End Class"
         VerifyBasicFix(test, fix, 0)
 
+    End Sub
+
+    <Fact>
+    Sub CanGetTypeSymbolForInferedString()
+        Dim code = "
+    Class C
+        Shared Sub Main()
+            Dim b As String = """"
+            Dim a = """"
+        End Sub
+    End Class"
+
+        Dim tree = SyntaxFactory.ParseSyntaxTree(code)
+        Dim compilation = VisualBasicCompilation.Create("test", {tree}, {MetadataReference.CreateFromAssembly(GetType(Object).Assembly)})
+
+        Dim result = compilation.Emit(New MemoryStream)
+
+        Dim semanticModel = compilation.GetSemanticModel(tree)
+
+        Dim localNodes = tree.GetRoot().DescendantNodes.OfType(Of LocalDeclarationStatementSyntax)
+        For Each node In localNodes
+            Dim localSym = semanticModel.GetDeclaredSymbol(node.Declarators.Single.Names.Single)
+            Trace.WriteLine(localSym.ToDisplayString())
+
+            ' TODO: Figure how to get the typeinfo from inferred type
+            Dim symbol = semanticModel.GetTypeInfo(node) ' Is Nothing
+            Dim variableType = node.Declarators.First.AsClause?.Type ' This is null for inferred types
+            If variableType IsNot Nothing Then
+                Dim typeSymbol = SemanticModel.GetTypeInfo(variableType).ConvertedType
+                If typeSymbol.IsReferenceType AndAlso typeSymbol.SpecialType <> SpecialType.System_String Then
+                    '
+                    'Then
+                    'If node.Declarators.First.AsClause() IsNot Nothing Then
+                    'Assert.True(node.Declarators.First.AsClause.Type.r)
+                    'Assert.Equal(node.Declarators.First.AsClause.VBKind, vbString)
+                End If
+            End If
+
+
+        Next
     End Sub
 
     Public Class TestClass

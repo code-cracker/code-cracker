@@ -343,7 +343,7 @@ namespace CodeCracker.Test.Performance
     {
         class TypeName
         {
-            private int builder1;
+            private int builder;
             public void Foo()
             {
                 var builder = 1;

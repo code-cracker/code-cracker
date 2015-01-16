@@ -5,27 +5,18 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 
 <DiagnosticAnalyzer(LanguageNames.VisualBasic)>
 Public Class StaticConstructorExceptionAnalyzer
-    Inherits DiagnosticAnalyzer
+    Inherits CodeCrackerAnalyzerBase
 
-    Public Const DiagnosticId = "CC0024"
-    Friend Const Title = "Don't throw exception inside static constructors."
-    Friend Const MessageFormat = "Don't throw exceptions inside static constructors."
-    Friend Const Category = SupportedCategories.Design
-    Private Const Description = "Static constructor are called before the first time a class is used but the
-caller doesn't control when exactly.
-Exception thrown in this context forces callers to use 'try' block around any useage of the class and
-should be avoided."
+    Public Sub New()
+        MyBase.New(ID:="CC0024",
+            Title:="Don't throw exception inside static constructors.",
+            MsgFormat:="Don't throw exceptions inside static constructors.",
+            Category:=SupportedCategories.Design,
+            Description:="Static constructor are called before the first time a class is used but the caller doesn't control when exactly.
+Exception thrown in this context forces callers to use 'try' block around any useage of the class and should be avoided.")
+    End Sub
 
-    Friend Shared Rule As New DiagnosticDescriptor(
-        DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, True, Description, HelpLink.ForDiagnostic(DiagnosticId))
-
-    Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
-        Get
-            Return ImmutableArray.Create(Rule)
-        End Get
-    End Property
-
-    Public Overrides Sub Initialize(context As AnalysisContext)
+    Public Overrides Sub OnInitialize(context As AnalysisContext)
         context.RegisterSyntaxNodeAction(AddressOf Analyzer, SyntaxKind.SubNewStatement)
     End Sub
 
@@ -39,6 +30,6 @@ should be avoided."
         Dim throwBlock = constructorBlock.ChildNodes.OfType(Of Syntax.ThrowStatementSyntax).FirstOrDefault()
         If throwBlock Is Nothing Then Exit Sub
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, throwBlock.GetLocation, Title))
+        context.ReportDiagnostic(Diagnostic.Create(GetDescriptor(), throwBlock.GetLocation, Title))
     End Sub
 End Class

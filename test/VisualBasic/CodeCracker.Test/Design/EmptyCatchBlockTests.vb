@@ -3,16 +3,16 @@ Imports Xunit
 
 Public Class EmptyCatchBlockTests
     Inherits CodeFixTest(Of EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider)
-    Public Async Function Foo() As Task
-        Dim b = 1
-        Dim c = 2
-        Try
-            ' Do something
-            Dim a = "A"
-        Catch ex As Exception
-            Dim x = 1
-        End Try
-    End Function
+    'Public Async Function Foo() As Task
+    '    Dim b = 1
+    '    Dim c = 2
+    '    Try
+    '        ' Do something
+    '        Dim a = "A"
+    '    Catch ex As Exception
+    '        Dim x = 1
+    '    End Try
+    'End Function
 
     Private test = "
 Imports System

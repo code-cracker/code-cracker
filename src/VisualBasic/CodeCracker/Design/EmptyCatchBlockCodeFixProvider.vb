@@ -22,7 +22,7 @@ Public Class EmptyCatchBlockCodeFixProvider
     End Function
 
     Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-        Return ImmutableArray.Create(EmptyCatchBlockAnalyzer.DiagnosticId)
+        Return ImmutableArray.Create(DesignDiagnostics.EmptyCatchBlockAnalyzerId)
     End Function
 
     Public Overrides Function GetFixAllProvider() As FixAllProvider

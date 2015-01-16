@@ -6,31 +6,16 @@ Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 <DiagnosticAnalyzer(LanguageNames.VisualBasic)>
 Public Class NameOfAnalyzer
-    Inherits DiagnosticAnalyzer
+    Inherits CodeCrackerAnalyzerBase
 
-    Public Const DiagnosticId = "CC0021"
-    Friend Const Title = "You should use nameof instead of the parameter string"
-    Friend Const MessageFormat = "Use 'nameof({0})' instead of specifying the parameter name."
-    Friend Const Category = SupportedCategories.Design
-    Private Const Description = "The nameof() operator should be used to specify the name of a parameter instead of a string literal as it produces code that is easier to refactor."
-
-    Friend Shared Rule As New DiagnosticDescriptor(
-        DiagnosticId,
-        Title,
-        MessageFormat,
-        Category,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault:=True,
-        description:=Description,
-        helpLink:=HelpLink.ForDiagnostic(DiagnosticId))
-
-    Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
-        Get
-            Return ImmutableArray.Create(Rule)
-        End Get
-    End Property
-
-    Public Overrides Sub Initialize(context As AnalysisContext)
+    Public Sub New()
+        MyBase.New(ID:="CC0021",
+                   Title:="You should use nameof instead of the parameter string",
+                   MsgFormat:="Use 'nameof({0})' instead of specifying the parameter name.",
+                   Category:=SupportedCategories.Design,
+                   Description:="The nameof() operator should be used to specify the name of a parameter instead of a string literal as it produces code that is easier to refactor.")
+    End Sub
+    Public Overrides Sub OnInitialize(context As AnalysisContext)
         context.RegisterSyntaxNodeAction(LanguageVersion.VisualBasic14, AddressOf Analyzer, SyntaxKind.StringLiteralExpression)
     End Sub
 
@@ -52,7 +37,7 @@ Public Class NameOfAnalyzer
                     Exit Sub
                 End If
             End If
-            Dim diag = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value)
+            Dim diag = Diagnostic.Create(MyBase.GetDescriptor(), stringLiteral.GetLocation(), stringLiteral.Token.Value)
             context.ReportDiagnostic(diag)
         End If
 

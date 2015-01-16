@@ -151,6 +151,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Performance\MakeLocalVariablesConstWhenItIsPossibleTests.vb" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleTests.vb" />
+    <Compile Include="Performance\SealedAttributeTests.vb" />
+    <Compile Include="Performance\StringBuilderLoopTests.vb" />
     <Compile Include="Verifiers\CodeFixTest.vb" />
     <Compile Include="Verifiers\CodeFixVerifier.vb" />
     <Compile Include="Verifiers\DiagnosticVerifier.Extras.vb" />
