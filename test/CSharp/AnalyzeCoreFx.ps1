@@ -1,3 +1,4 @@
+$ErrorActionPreference = "Stop"
 $baseDir =  "$([System.IO.Path]::GetTempPath())$([System.Guid]::NewGuid().ToString().Substring(0,8))"
 $projectDir =  "$baseDir\corefx"
 $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
