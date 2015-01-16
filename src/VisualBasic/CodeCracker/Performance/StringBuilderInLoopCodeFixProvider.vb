@@ -31,18 +31,6 @@ Public Class StringBuilderInLoopCodeFixProvider
         Return Nothing
     End Function
 
-    Public Sub foo()
-        Dim myString = ""
-        Dim builder As New System.Text.StringBuilder
-        builder.Append(myString)
-        For i As Integer = 1 To 10
-            builder.Append("a")
-            Exit For
-        Next
-        myString = builder.ToString()
-        ' VB Requires value to be used or another analyzer is added which breaks the tests
-    End Sub
-
     Private Async Function UseStringBuilder(document As Document, assignmentStatement As AssignmentStatementSyntax, cancellationToken As CancellationToken) As Task(Of Document)
         Dim expressionStatement = assignmentStatement
         Dim expressionStatementParent = expressionStatement.Parent
