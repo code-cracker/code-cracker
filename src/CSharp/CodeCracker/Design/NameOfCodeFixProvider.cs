@@ -36,13 +36,13 @@ namespace CodeCracker.Design
 
         private async Task<Document> MakeNameOfAsync(Document document, LiteralExpressionSyntax stringLiteral, CancellationToken cancelationToken)
         {
-            var newNameof = SyntaxFactory.ParseExpression("nameof(\{stringLiteral.Token.ValueText})")
+            var newNameof = SyntaxFactory.ParseExpression($"nameof({stringLiteral.Token.ValueText})")
                                     .WithLeadingTrivia(stringLiteral.GetLeadingTrivia())
                                     .WithTrailingTrivia(stringLiteral.GetTrailingTrivia())
                                     .WithAdditionalAnnotations(Formatter.Annotation);
 
             var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(stringLiteral, newNameof);
+            var newRoot = root.ReplaceNode(stringLiteral, newNameof);
             return document.WithSyntaxRoot(newRoot);
         }
     }

@@ -35,7 +35,7 @@ namespace CodeCracker.Usage
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
             if (objectCreation != null)
-                context.RegisterFix(CodeAction.Create("Dispose object: '\{objectCreation.Type.ToString()}'", c => CreateUsing(context.Document, objectCreation, c)), diagnostic);
+                context.RegisterFix(CodeAction.Create($"Dispose object: '{objectCreation.Type.ToString()}'", c => CreateUsing(context.Document, objectCreation, c)), diagnostic);
         }
 
         private static async Task<Document> CreateUsing(Document document, ObjectCreationExpressionSyntax objectCreation, CancellationToken cancellationToken)
@@ -74,7 +74,7 @@ namespace CodeCracker.Usage
                     SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
                     SyntaxFactory.ParenthesizedExpression(SyntaxFactory.CastExpression(SyntaxFactory.ParseName("System.IDisposable").WithAdditionalAnnotations(Simplifier.Annotation), SyntaxFactory.IdentifierName(identitySymbol.Name))),
                     SyntaxFactory.IdentifierName("Dispose"))))
-                : SyntaxFactory.ParseStatement("\{identitySymbol.Name}.Dispose();");
+                : SyntaxFactory.ParseStatement($"{identitySymbol.Name}.Dispose();");
             newDispose = newDispose.WithAdditionalAnnotations(Formatter.Annotation);
             var last = method.Body.Statements.Last();
             var newRoot = root.InsertNodesAfter(method.Body.Statements.Last(), new[] { newDispose });

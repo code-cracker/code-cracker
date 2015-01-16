@@ -41,7 +41,7 @@ namespace CodeCracker.Test.Performance
         public async Task IgnoresStringInterpolations()
         {
             var test = @"
-            var s = ""a value is \{""a""}"";".WrapInMethod();
+            var s = $""a value is {""a""}"";".WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 

@@ -70,79 +70,79 @@ namespace TestHelper
             return CreateProject(new[] { source }, language).Documents.First();
         }
 
-        /// <summary>
-        /// This class won't be necessary in the future, the current Roslyn master contains approximately the same
-        /// code as here in the base class <see cref="Workspace"/> but VS2015 Preview is throwing exceptions instead
-        /// so we must override the throwing methods.
-        /// </summary>
-        class TestCustomWorkspace : CustomWorkspace
-        {
-            protected override void AddProjectReference(ProjectId projectId, ProjectReference projectReference)
-            {
-                OnProjectReferenceAdded(projectId, projectReference);
-            }
+        ///// <summary>
+        ///// This class won't be necessary in the future, the current Roslyn master contains approximately the same
+        ///// code as here in the base class <see cref="Workspace"/> but VS2015 Preview is throwing exceptions instead
+        ///// so we must override the throwing methods.
+        ///// </summary>
+        //class TestCustomWorkspace : CustomWorkspace
+        //{
+        //    protected override void AddProjectReference(ProjectId projectId, ProjectReference projectReference)
+        //    {
+        //        OnProjectReferenceAdded(projectId, projectReference);
+        //    }
  
-            protected override void RemoveProjectReference(ProjectId projectId, ProjectReference projectReference)
-            {
-                OnProjectReferenceRemoved(projectId, projectReference);
-            }
+        //    protected override void RemoveProjectReference(ProjectId projectId, ProjectReference projectReference)
+        //    {
+        //        OnProjectReferenceRemoved(projectId, projectReference);
+        //    }
  
-            protected override void AddMetadataReference(ProjectId projectId, MetadataReference metadataReference)
-            {
-                OnMetadataReferenceAdded(projectId, metadataReference);
-            }
+        //    protected override void AddMetadataReference(ProjectId projectId, MetadataReference metadataReference)
+        //    {
+        //        OnMetadataReferenceAdded(projectId, metadataReference);
+        //    }
  
-            protected override void RemoveMetadataReference(ProjectId projectId, MetadataReference metadataReference)
-            {
-                OnMetadataReferenceRemoved(projectId, metadataReference);
-            }
+        //    protected override void RemoveMetadataReference(ProjectId projectId, MetadataReference metadataReference)
+        //    {
+        //        OnMetadataReferenceRemoved(projectId, metadataReference);
+        //    }
  
-            protected override void AddAnalyzerReference(ProjectId projectId, AnalyzerReference analyzerReference)
-            {
-                OnAnalyzerReferenceAdded(projectId, analyzerReference);
-            }
+        //    protected override void AddAnalyzerReference(ProjectId projectId, AnalyzerReference analyzerReference)
+        //    {
+        //        OnAnalyzerReferenceAdded(projectId, analyzerReference);
+        //    }
  
-            protected override void RemoveAnalyzerReference(ProjectId projectId, AnalyzerReference analyzerReference)
-            {
-                OnAnalyzerReferenceRemoved(projectId, analyzerReference);
-            }
+        //    protected override void RemoveAnalyzerReference(ProjectId projectId, AnalyzerReference analyzerReference)
+        //    {
+        //        OnAnalyzerReferenceRemoved(projectId, analyzerReference);
+        //    }
 
-            protected override void AddDocument(DocumentId documentId, IEnumerable<string> folders, string name,
-                SourceText text = null, SourceCodeKind sourceCodeKind = SourceCodeKind.Regular)
-            {
-                var documentInfo = DocumentInfo.Create(documentId, name, folders, sourceCodeKind,
-                    TextLoader.From(TextAndVersion.Create(text, VersionStamp.Create())));
-                OnDocumentAdded(documentInfo);
-            }
+        //    protected override void AddDocument(DocumentId documentId, IEnumerable<string> folders, string name,
+        //        SourceText text = null, SourceCodeKind sourceCodeKind = SourceCodeKind.Regular)
+        //    {
+        //        var documentInfo = DocumentInfo.Create(documentId, name, folders, sourceCodeKind,
+        //            TextLoader.From(TextAndVersion.Create(text, VersionStamp.Create())));
+        //        OnDocumentAdded(documentInfo);
+        //    }
 
-            protected override void RemoveDocument(DocumentId documentId)
-            {
-                OnDocumentRemoved(documentId);
-            }
+        //    protected override void RemoveDocument(DocumentId documentId)
+        //    {
+        //        OnDocumentRemoved(documentId);
+        //    }
  
-            protected override void ChangedDocumentText(DocumentId id, SourceText text)
-            {
-                OnDocumentTextChanged(id, text, PreservationMode.PreserveValue);
-            }
+        //    protected override void ChangedDocumentText(DocumentId id, SourceText text)
+        //    {
+        //        OnDocumentTextChanged(id, text, PreservationMode.PreserveValue);
+        //    }
 
-            protected override void AddAdditionalDocument(DocumentId documentId, IEnumerable<string> folders, string name, SourceText text = null)
-            {
-                var documentInfo = DocumentInfo.Create(documentId, name, folders,
-                    loader: TextLoader.From(TextAndVersion.Create(text, VersionStamp.Create())));
-                OnAdditionalDocumentAdded(documentInfo);
-            }
+        //    protected override void AddAdditionalDocument(DocumentId documentId, IEnumerable<string> folders, string name, SourceText text = null)
+        //    {
+        //        var documentInfo = DocumentInfo.Create(documentId, name, folders,
+        //            loader: TextLoader.From(TextAndVersion.Create(text, VersionStamp.Create())));
+        //        OnAdditionalDocumentAdded(documentInfo);
+        //    }
 
-            protected override void RemoveAdditionalDocument(DocumentId documentId)
-            {
-                OnAdditionalDocumentRemoved(documentId);
-            }
+        //    protected override void RemoveAdditionalDocument(DocumentId documentId)
+        //    {
+        //        OnAdditionalDocumentRemoved(documentId);
+        //    }
  
-            protected override void ChangedAdditionalDocumentText(DocumentId id, SourceText text)
-            {
-                OnAdditionalDocumentTextChanged(id, text, PreservationMode.PreserveValue);
-            }
+        //    protected override void ChangedAdditionalDocumentText(DocumentId id, SourceText text)
+        //    {
+        //        OnAdditionalDocumentTextChanged(id, text, PreservationMode.PreserveValue);
+        //    }
  
-        }
+        //}
 
         /// <summary>
         /// Create a project using the inputted strings as sources.
@@ -159,7 +159,7 @@ namespace TestHelper
 
             var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
-            workspace = new TestCustomWorkspace();
+            workspace = new CustomWorkspace();
             
             var projectInfo = ProjectInfo.Create(projectId, VersionStamp.Create(), TestProjectName,
                 TestProjectName, language,

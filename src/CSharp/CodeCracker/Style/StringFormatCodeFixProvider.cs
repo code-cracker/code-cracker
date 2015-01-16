@@ -48,9 +48,9 @@ namespace CodeCracker.Style
             var newParams = new List<object>();
             foreach (var param in arguments.Skip(1))
             {
-                newParams.Add(@"\{" + param.Expression.ToString() + "}");
+                newParams.Add("{" + param.Expression.ToString() + "}");
             }
-            var interpolatedStringText = "\"" + string.Format(escapedFormat, newParams.ToArray()) + "\"";
+            var interpolatedStringText = "$\"" + string.Format(escapedFormat, newParams.ToArray()) + "\"";
             var newStringInterpolation = SyntaxFactory.ParseExpression(interpolatedStringText)
                 .WithSameTriviaAs(invocationExpression)
                 .WithAdditionalAnnotations(Formatter.Annotation);

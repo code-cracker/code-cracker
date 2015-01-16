@@ -32,7 +32,7 @@ namespace CodeCracker.Usage
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Remove unused parameter: '\{parameter.Identifier.ValueText}'", c => RemoveParameter(root, context.Document, parameter, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create($"Remove unused parameter: '{parameter.Identifier.ValueText}'", c => RemoveParameter(root, context.Document, parameter, c)), diagnostic);
         }
 
         private async Task<Solution> RemoveParameter(SyntaxNode root, Document document, ParameterSyntax parameter, CancellationToken cancellationToken)

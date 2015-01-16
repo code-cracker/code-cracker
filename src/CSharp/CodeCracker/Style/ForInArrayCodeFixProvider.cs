@@ -59,7 +59,7 @@ namespace CodeCracker.Style
                 .WithTrailingTrivia(forStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
             var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(forStatement, forEachStatement);
+            var newRoot = root.ReplaceNode(forStatement, forEachStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }

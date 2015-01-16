@@ -50,7 +50,7 @@ namespace CodeCracker.Design
 
             return document
                         .WithSyntaxRoot((await document.GetSyntaxRootAsync(ct))
-                        .ReplaceNode<SyntaxNode, SyntaxNode>(invocation, newInvocation).WithTrailingTrivia(invocation.GetTrailingTrivia()));
+                        .ReplaceNode(invocation, newInvocation).WithTrailingTrivia(invocation.GetTrailingTrivia()));
         }
     }
 }
