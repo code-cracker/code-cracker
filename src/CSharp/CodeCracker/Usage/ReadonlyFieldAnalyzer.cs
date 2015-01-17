@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace CodeCracker.Usage
 {
@@ -33,20 +34,21 @@ namespace CodeCracker.Usage
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterCompilationStartAction(AnalyzeCompilation);
-            context.RegisterSyntaxTreeAction(AnalyzeTree);
         }
 
         private void AnalyzeCompilation(CompilationStartAnalysisContext context)
         {
             compilation = context.Compilation;
+            context.RegisterSyntaxTreeAction(AnalyzeTree);
         }
 
         private void AnalyzeTree(SyntaxTreeAnalysisContext context)
         {
+            if (!compilation.SyntaxTrees.Contains(context.Tree)) return;
+            var semanticModel = compilation.GetSemanticModel(context.Tree);
             SyntaxNode root;
             if (!context.Tree.TryGetRoot(out root)) return;
             var types = GetTypesInRoot(root);
-            var semanticModel = compilation.GetSemanticModel(context.Tree);
             foreach (var type in types)
             {
                 var fieldDeclarations = type.ChildNodes().OfType<FieldDeclarationSyntax>();
@@ -56,16 +58,23 @@ namespace CodeCracker.Usage
                 var methods = typeSymbol.GetAllMethodsIncludingFromInnerTypes();
                 foreach (var method in methods)
                 {
-                    foreach (var assignment in method.DeclaringSyntaxReferences.SelectMany(r => r.GetSyntax().DescendantNodes().OfType<AssignmentExpressionSyntax>()))
+                    foreach (var syntaxReference in method.DeclaringSyntaxReferences)
                     {
-                        var fieldSymbol = semanticModel.GetSymbolInfo(assignment.Left).Symbol as IFieldSymbol;
-                        if (fieldSymbol == null) continue;
-                        if (method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
-                            AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol);
-                        else if (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic)
-                            AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol);
-                        else
-                            RemoveVariableThatHasAssignment(variablesToMakeReadonly, fieldSymbol);
+                        var syntaxRefSemanticModel = syntaxReference.SyntaxTree.Equals(context.Tree)
+                                ? semanticModel
+                                : compilation.GetSemanticModel(syntaxReference.SyntaxTree);
+                        var assignments = syntaxReference.GetSyntax().DescendantNodes().OfType<AssignmentExpressionSyntax>();
+                        foreach (var assignment in assignments)
+                        {
+                            var fieldSymbol = syntaxRefSemanticModel.GetSymbolInfo(assignment.Left).Symbol as IFieldSymbol;
+                            if (fieldSymbol == null) continue;
+                            if (method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
+                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol);
+                            else if (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic)
+                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol);
+                            else
+                                RemoveVariableThatHasAssignment(variablesToMakeReadonly, fieldSymbol);
+                        }
                     }
                 }
                 foreach (var readonlyVariable in variablesToMakeReadonly.Values)
@@ -118,7 +127,8 @@ namespace CodeCracker.Usage
                 || !fieldDeclaration.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)
                     || m.IsKind(SyntaxKind.ProtectedKeyword)
                     || m.IsKind(SyntaxKind.InternalKeyword)
-                    || m.IsKind(SyntaxKind.ReadOnlyKeyword));
+                    || m.IsKind(SyntaxKind.ReadOnlyKeyword)
+                    || m.IsKind(SyntaxKind.ConstKeyword));
         }
 
         private static List<TypeDeclarationSyntax> GetTypesInRoot(SyntaxNode root)

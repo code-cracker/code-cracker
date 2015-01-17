@@ -5,6 +5,11 @@ $testDllFileName = "CodeCracker.Test.VisualBasic.dll"
 $Global:testDllFullFileName = "$testDllDirPath$testDllFileName"
 $Global:xunitConsole = "$PSScriptRoot\packages\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe"
 
+if ($testClass -eq "now"){
+    . $Global:xunitConsole "$Global:testDllFullFileName"
+    return
+}
+
 function global:DebounceXunit {
     try {
         if (($(date) - $script:lastRun).TotalMilliseconds -lt 2000) {

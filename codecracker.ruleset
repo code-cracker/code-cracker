@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="CodeCracker Rules" Description="Our own rules applied to our own code. :)" ToolsVersion="14.0">
-  <Rules AnalyzerId="CodeCracker" RuleNamespace="CodeCracker">
-    <Rule Id="CC0047 " Action="None" />
+  <Rules AnalyzerId="CodeCracker.CSharp" RuleNamespace="CodeCracker.CSharp">
   </Rules>
 </RuleSet>

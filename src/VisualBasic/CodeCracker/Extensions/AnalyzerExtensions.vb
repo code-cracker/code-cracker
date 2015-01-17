@@ -8,22 +8,22 @@ Public Module AnalyzerExtensions
     End Sub
 
     <Extension> Public Sub RegisterCompilationStartAction(context As AnalysisContext, languageVersion As LanguageVersion, registrationAction As Action(Of CompilationStartAnalysisContext))
-        context.RegisterCompilationStartAction(Sub(compilationContext) compilationContext.RunIfCSharp6OrGreater(Sub() registrationAction?.Invoke(compilationContext)))
+        context.RegisterCompilationStartAction(Sub(compilationContext) compilationContext.RunIfVB14OrGreater(Sub() registrationAction?.Invoke(compilationContext)))
     End Sub
 
-    <Extension> Private Sub RunIfCSharp6OrGreater(context As CompilationStartAnalysisContext, action As Action)
-        context.Compilation.RunIfCSharp6OrGreater(action)
+    <Extension> Private Sub RunIfVB14OrGreater(context As CompilationStartAnalysisContext, action As Action)
+        context.Compilation.RunIfVB14OrGreater(action)
     End Sub
 
-    <Extension> Private Sub RunIfCSharp6OrGreater(compilation As Compilation, action As Action)
+    <Extension> Private Sub RunIfVB14OrGreater(compilation As Compilation, action As Action)
         Dim vbCompilation = TryCast(compilation, VisualBasicCompilation)
         If vbCompilation Is Nothing Then
             Return
         End If
-        vbCompilation.LanguageVersion.RunIfCSharp6OrGreater(action)
+        vbCompilation.LanguageVersion.RunWithVB14OrGreater(action)
     End Sub
 
-    <Extension> Private Sub RunIfCSharp6OrGreater(languageVersion As LanguageVersion, action As Action)
+    <Extension> Public Sub RunWithVB14OrGreater(languageVersion As LanguageVersion, action As Action)
         If languageVersion >= LanguageVersion.VisualBasic14 Then action?.Invoke()
     End Sub
 

@@ -240,5 +240,13 @@ namespace CodeCracker.Test.Design
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
+        [Fact]
+        public async void IgnoreMemberAccess()
+        {
+            var test = @"var tuple = new Tuple<int, Action>(1, null);
+tuple.Item2();".WrapInMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
     }
 }

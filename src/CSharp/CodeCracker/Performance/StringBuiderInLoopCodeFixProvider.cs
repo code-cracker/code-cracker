@@ -32,7 +32,7 @@ namespace CodeCracker.Usage
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var assignmentExpression = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<AssignmentExpressionSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Use StringBuilder to create a value for '\{assignmentExpression.Left.ToString()}'", c => UseStringBuilder(context.Document, assignmentExpression, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create($"Use StringBuilder to create a value for '{assignmentExpression.Left.ToString()}'", c => UseStringBuilder(context.Document, assignmentExpression, c)), diagnostic);
         }
 
         private async Task<Document> UseStringBuilder(Document document, AssignmentExpressionSyntax assignmentExpression, CancellationToken cancellationToken)
@@ -60,8 +60,8 @@ namespace CodeCracker.Usage
                                     SyntaxFactory.ObjectCreationExpression(stringBuilderType)
                                     .WithArgumentList(SyntaxFactory.ArgumentList()))
                         )})));
-            var appendExpressionOnInitialization = SyntaxFactory.ParseStatement("\{builderName}.Append(\{assignmentExpression.Left.ToString()});\r\n");
-            var stringBuilderToString = SyntaxFactory.ParseStatement("\{assignmentExpression.Left.ToString()} = \{builderName}.ToString();\r\n");
+            var appendExpressionOnInitialization = SyntaxFactory.ParseStatement($"{builderName}.Append({assignmentExpression.Left.ToString()});\r\n");
+            var stringBuilderToString = SyntaxFactory.ParseStatement($"{assignmentExpression.Left.ToString()} = {builderName}.ToString();\r\n");
             var loopParent = loopStatement.Parent;
             var newLoopParent = loopParent.ReplaceNode(loopStatement,
                 new[] {
@@ -79,8 +79,8 @@ namespace CodeCracker.Usage
         private static SyntaxNode ReplaceAddExpressionByStringBuilderAppendExpression(AssignmentExpressionSyntax assignmentExpression, SyntaxNode expressionStatement, SyntaxNode expressionStatementParent, string builderName)
         {
             var appendExpressionOnLoop = assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression)
-                ? SyntaxFactory.ParseStatement("\{builderName}.Append(\{((BinaryExpressionSyntax)assignmentExpression.Right).Right.ToString()});\r\n")
-                : SyntaxFactory.ParseStatement("\{builderName}.Append(\{assignmentExpression.Right.ToString()});\r\n");
+                ? SyntaxFactory.ParseStatement($"{builderName}.Append({((BinaryExpressionSyntax)assignmentExpression.Right).Right.ToString()});\r\n")
+                : SyntaxFactory.ParseStatement($"{builderName}.Append({assignmentExpression.Right.ToString()});\r\n");
             appendExpressionOnLoop = appendExpressionOnLoop
                 .WithLeadingTrivia(expressionStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(expressionStatement.GetTrailingTrivia());

@@ -94,6 +94,11 @@ namespace CodeCracker
             return null;
         }
 
+        public static T FirstAncestorOfType<T>(this SyntaxNode node) where T : SyntaxNode
+        {
+            return (T)node.FirstAncestorOfType(typeof(T));
+        }
+
         public static SyntaxNode FirstAncestorOfType(this SyntaxNode node, params Type[] types)
         {
             var currentNode = node;
@@ -142,6 +147,21 @@ namespace CodeCracker
                 methods.AddRange(innerType.GetAllMethodsIncludingFromInnerTypes());
             }
             return methods;
+        }
+
+        public static IEnumerable<INamedTypeSymbol> AllBaseTypesAndSelf(this INamedTypeSymbol typeSymbol)
+        {
+            yield return typeSymbol;
+            foreach (var b in AllBaseTypes(typeSymbol))
+                yield return b;
+        }
+        public static IEnumerable<INamedTypeSymbol> AllBaseTypes(this INamedTypeSymbol typeSymbol)
+        {
+            while (typeSymbol.BaseType != null)
+            {
+                yield return typeSymbol.BaseType;
+                typeSymbol = typeSymbol.BaseType;
+            }
         }
     }
 }

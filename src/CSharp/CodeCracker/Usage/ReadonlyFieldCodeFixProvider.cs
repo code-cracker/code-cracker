@@ -32,7 +32,7 @@ namespace CodeCracker.Usage
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var variableDeclarator = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<VariableDeclaratorSyntax>().FirstOrDefault();
             if (variableDeclarator != null)
-                context.RegisterFix(CodeAction.Create("Make readonly: '\{variableDeclarator.Identifier.Text}'", c => MakeFieldReadonly(context.Document, variableDeclarator, c)), diagnostic);
+                context.RegisterFix(CodeAction.Create($"Make readonly: '{variableDeclarator.Identifier.Text}'", c => MakeFieldReadonly(context.Document, variableDeclarator, c)), diagnostic);
         }
 
         private async Task<Document> MakeFieldReadonly(Document document, VariableDeclaratorSyntax variable, CancellationToken cancellationToken)

@@ -38,7 +38,7 @@ class C
     void M()
     {
         const int i = 5;
-        var s = ""Hello \{i} world"";
+        var s = $""Hello {i} world"";
     }
 }");
         }
