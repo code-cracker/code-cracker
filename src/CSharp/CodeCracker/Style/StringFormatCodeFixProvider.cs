@@ -35,26 +35,22 @@ namespace CodeCracker.Style
             context.RegisterFix(CodeAction.Create("Change to string interpolation", c => MakeStringInterpolationAsync(context.Document, invocation, c)), diagnostic);
         }
 
-        private async Task<Document> MakeStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression , CancellationToken cancellationToken)
+        private async Task<Document> MakeStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync();
-            var memberExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
-            var memberSymbol = semanticModel.GetSymbolInfo(memberExpression).Symbol;
-            var argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
+            var memberSymbol = semanticModel.GetSymbolInfo(invocationExpression.Expression).Symbol;
+            var argumentList = invocationExpression.ArgumentList;
             var arguments = argumentList.Arguments;
             var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;
-            var isVerbatim = formatLiteral.Token.Text.StartsWith("@\"");
-            var verbatimString = isVerbatim ? "@" : "";
-            var format = (string)semanticModel.GetConstantValue(formatLiteral).Value;
-            var escapedFormat = isVerbatim
-                ? format.Replace(@"""",@"""""")
-                : format.Replace("\n", @"\n").Replace("\r", @"\r").Replace("\f", @"\f").Replace("\"","\\\"");
-            var newParams = arguments.Skip(1).Select(a => "{" + a.Expression.ToString() + "}").ToArray();
-            var substitudedString = string.Format(escapedFormat, newParams);
-            var interpolatedStringText = $@"${verbatimString}""{substitudedString}""";
-            var newStringInterpolation = SyntaxFactory.ParseExpression(interpolatedStringText)
-                .WithSameTriviaAs(invocationExpression)
-                .WithAdditionalAnnotations(Formatter.Annotation);
+            var analyzingInterpolation = (InterpolatedStringSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
+            var interpolationArgs = arguments.Skip(1).ToArray();
+            var expressionsToReplace = new Dictionary<ExpressionSyntax, ExpressionSyntax>();
+            for (int i = 0; i < analyzingInterpolation.InterpolatedInserts.Count; i++)
+            {
+                var insert = analyzingInterpolation.InterpolatedInserts[i];
+                expressionsToReplace.Add(insert.Expression,interpolationArgs[i].Expression);
+            }
+            var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(invocationExpression, newStringInterpolation);
             var newDocument = document.WithSyntaxRoot(newRoot);
