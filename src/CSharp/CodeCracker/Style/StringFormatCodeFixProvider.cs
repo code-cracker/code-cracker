@@ -43,14 +43,15 @@ namespace CodeCracker.Style
             var argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
             var arguments = argumentList.Arguments;
             var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;
+            var isVerbatim = formatLiteral.Token.Text.StartsWith("@\"");
+            var verbatimString = isVerbatim ? "@" : "";
             var format = (string)semanticModel.GetConstantValue(formatLiteral).Value;
-            var escapedFormat = format.Replace("\n", @"\n").Replace("\r", @"\r").Replace("\f", @"\f").Replace("\"","\\\"");
-            var newParams = new List<object>();
-            foreach (var param in arguments.Skip(1))
-            {
-                newParams.Add("{" + param.Expression.ToString() + "}");
-            }
-            var interpolatedStringText = "$\"" + string.Format(escapedFormat, newParams.ToArray()) + "\"";
+            var escapedFormat = isVerbatim
+                ? format.Replace(@"""",@"""""")
+                : format.Replace("\n", @"\n").Replace("\r", @"\r").Replace("\f", @"\f").Replace("\"","\\\"");
+            var newParams = arguments.Skip(1).Select(a => "{" + a.Expression.ToString() + "}").ToArray();
+            var substitudedString = string.Format(escapedFormat, newParams);
+            var interpolatedStringText = $@"${verbatimString}""{substitudedString}""";
             var newStringInterpolation = SyntaxFactory.ParseExpression(interpolatedStringText)
                 .WithSameTriviaAs(invocationExpression)
                 .WithAdditionalAnnotations(Formatter.Annotation);

@@ -386,5 +386,69 @@ namespace CodeCracker.Test.Style
     }";
             await VerifyCSharpFixAsync(source, expected);
         }
+
+        [Fact]
+        public async Task VerbatimStringWithStringFormatCreatesDiagnostic()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = string.Format(@""This {0} is
+""""{1}""""."", noun, adjective);
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = StringFormatAnalyzer.DiagnosticId,
+                Message = StringFormatAnalyzer.MessageFormat,
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task VerbatimStringBecomesInterpolatedVerbatimString()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = string.Format(@""This {0} is
+""""{1}""""."", noun, adjective);
+            }
+        }
+    }";
+            const string expected = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = $@""This {noun} is
+""""{adjective}""""."";
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, expected);
+        }
     }
 }
