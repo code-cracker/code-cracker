@@ -5,7 +5,7 @@ $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\cecil.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
 $gitPath = "https://github.com/jbevain/cecil.git"
-$gitPath = "c:\proj\cecil"
+#$gitPath = "c:\proj\cecil"
 
 echo "Saving to log file $logFile"
 echo "Analyzer dll is $analyzerDll"

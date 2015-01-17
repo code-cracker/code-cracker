@@ -42,11 +42,21 @@ namespace CodeCracker.Usage
                 typeof(DoStatementSyntax));
             if (whileStatement == null) return;
             var semanticModel = context.SemanticModel;
-            var symbolForAssignment = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
-            if (symbolForAssignment is IPropertySymbol && ((IPropertySymbol)symbolForAssignment).Type.Name != "String") return;
-            if (symbolForAssignment is ILocalSymbol && ((ILocalSymbol)symbolForAssignment).Type.Name != "String") return;
-            if (symbolForAssignment is IFieldSymbol && ((IFieldSymbol)symbolForAssignment).Type.Name != "String") return;
-
+            var arrayAccess = assignmentExpression.Left as ElementAccessExpressionSyntax;
+            var symbolForAssignment = arrayAccess != null
+                ? semanticModel.GetSymbolInfo(arrayAccess.Expression).Symbol
+                : semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
+            ITypeSymbol type;
+            if (symbolForAssignment is IPropertySymbol) type = ((IPropertySymbol)symbolForAssignment).Type;
+            else if (symbolForAssignment is ILocalSymbol) type = ((ILocalSymbol)symbolForAssignment).Type;
+            else if (symbolForAssignment is IFieldSymbol) type = ((IFieldSymbol)symbolForAssignment).Type;
+            else return;
+            if (type == null) return;
+            if (type.TypeKind == TypeKind.Array)
+            {
+                if ((type as IArrayTypeSymbol)?.ElementType?.SpecialType != SpecialType.System_String) return;
+            }
+            else if (type.Name != "String") return;
             if (assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression))
             {
                 if (!(assignmentExpression.Right?.IsKind(SyntaxKind.AddExpression) ?? false)) return;
