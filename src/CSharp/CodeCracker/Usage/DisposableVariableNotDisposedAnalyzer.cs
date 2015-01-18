@@ -148,10 +148,9 @@ namespace CodeCracker.Usage
             var methodSymbol = semanticModel.GetSymbolInfo(memberAccessed).Symbol as IMethodSymbol;
             if (methodSymbol == null) return false;
             if (methodSymbol.ToString() == "System.IDisposable.Dispose()") return true;
-            var typeSymbol = methodSymbol.ContainingType;
-            var explicitDispose = typeSymbol.GetMembers().SingleOrDefault(m => m.Name == "System.IDisposable.Dispose");
-            if (explicitDispose != null && !methodSymbol.Equals(explicitDispose)) return false;
-            return true;
+            var disposeMethod = (IMethodSymbol)semanticModel.Compilation.GetSpecialType(SpecialType.System_IDisposable).GetMembers("Dispose").Single();
+            var isDispose = methodSymbol.Equals(methodSymbol.ContainingType.FindImplementationForInterfaceMember(disposeMethod));
+            return isDispose;
         }
     }
 }

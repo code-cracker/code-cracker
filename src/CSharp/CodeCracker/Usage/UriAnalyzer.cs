@@ -43,12 +43,26 @@ namespace CodeCracker.Usage
             var mainConstrutor = new MethodInformation(
                 "Uri",
                 "System.Uri.Uri(string)",
-                args => { new Uri(args[0].ToString()); }
+                args => {
+                    {
+                        if (args[0] == null)
+                        {
+                            return;
+                        }
+                        new Uri(args[0].ToString());
+                    } }
             );
             var constructorWithUriKind = new MethodInformation(
                 "Uri",
                 "System.Uri.Uri(string, System.UriKind)",
-                args => { new Uri(args[0].ToString(), (UriKind)args[1]); }
+                args =>
+                {
+                    if (args[0] == null)
+                    {
+                        return;
+                    }
+                    new Uri(args[0].ToString(), (UriKind)args[1]);
+                }
             );
 
             var checker = new MethodChecker(context, Rule);

@@ -74,7 +74,7 @@ namespace CodeCracker.Style
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
             var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode<SyntaxNode, StatementSyntax>(ifStatement, switchStatement);
+            var newRoot = root.ReplaceNode(ifStatement, switchStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }

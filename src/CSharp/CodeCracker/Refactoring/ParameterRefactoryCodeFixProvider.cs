@@ -122,7 +122,7 @@ namespace CodeCracker.Refactoring
 
             var newNameSpace = OldNameSpace;
 
-            var className = "NewClass\{OldMethod.Identifier.Text}";
+            var className = $"NewClass{OldMethod.Identifier.Text}";
 
             var memberNameSpaceOld = (from member in OldNameSpace.Members
                                       where member == OldClass
@@ -143,7 +143,7 @@ namespace CodeCracker.Refactoring
         private static ClassDeclarationSyntax NewClassFactory(string className, ClassDeclarationSyntax classOld, MethodDeclarationSyntax methodOld)
         {
 
-            var newParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("\{className} \{FirstLetteToLower(className)}"));
+            var newParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier($"{className} {FirstLetteToLower(className)}"));
 
             var paremeters = SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList<ParameterSyntax>().Add(newParameter))
                 .WithAdditionalAnnotations(Formatter.Annotation);
@@ -165,7 +165,7 @@ namespace CodeCracker.Refactoring
             var newNameSpace = OldCompilation;
 
 
-            var className = "NewClass\{OldMethod.Identifier.Text}";
+            var className = $"NewClass{OldMethod.Identifier.Text}";
 
             var OldMemberNameSpace = (from member in OldCompilation.Members
                                       where member == OldClass

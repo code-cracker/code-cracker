@@ -1,11 +1,11 @@
 $ErrorActionPreference = "Stop"
 $baseDir =  "$([System.IO.Path]::GetTempPath())$([System.Guid]::NewGuid().ToString().Substring(0,8))"
-$projectDir =  "$baseDir\corefx"
+$projectDir =  "$baseDir\cecil"
 $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
-$logFile = "$logDir\corefx.log"
+$logFile = "$logDir\cecil.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
-$gitPath = "https://github.com/dotnet/corefx.git"
-#$gitPath = "C:\proj\corefx"
+$gitPath = "https://github.com/jbevain/cecil.git"
+#$gitPath = "c:\proj\cecil"
 
 echo "Saving to log file $logFile"
 echo "Analyzer dll is $analyzerDll"
@@ -29,14 +29,15 @@ if ((Test-Path $projectDir) -eq $false)
     mkdir $projectDir | Out-Null
 }
 
-echo "Cloning corefx"
-git clone --depth 5 -q $gitPath $projectDir
-$itemsInCoreFx = ls $projectDir
-if ($itemsInCoreFx -eq $null -or $itemsInCoreFx.Length -eq 0)
+echo "Cloning cecil"
+git clone -q $gitPath $projectDir
+$itemsInProj = ls $projectDir
+if ($itemsInProj -eq $null -or $itemsInProj.Length -eq 0)
 {
-    echo "Unable to clone corefx, exiting."
+    echo "Unable to clone, exiting."
     exit 2
 }
+git checkout d3cd20772c4f2cc3c7997357dfdf43417c063005
 
 echo "Adding Code Cracker to projects..."
 $csprojs = ls "$projectDir\*.csproj" -Recurse
@@ -58,20 +59,12 @@ foreach($csproj in $csprojs)
     $xmlProj.Save($csproj.FullName)
 }
 
-echo "Restoring dependencies"
-msbuild "$projectDir\build.proj" /nologo /maxcpucount /verbosity:minimal /nodeReuse:false /t:_RestoreBuildTools /p:Configuration=""
-if ($LASTEXITCODE -ne 0)
-{
-    echo "Not possible to restore build tools, stopping."
-    return
-}
-
 $slns = ls "$projectDir\*.sln" -Recurse
 echo "Building..."
 foreach($sln in $slns)
 {
     echo "Building $($sln.FullName)..."
-    msbuild $sln.FullName /t:rebuild /v:detailed /p:Configuration="Debug" >> $logFile
+    msbuild $sln.FullName /m /t:rebuild /v:detailed /p:Configuration="net_4_0_Debug" >> $logFile
 }
 $ccBuildErrors = cat $logFile | Select-String "info AnalyzerDriver: The Compiler Analyzer 'CodeCracker"
 if ($ccBuildErrors -ne $null)

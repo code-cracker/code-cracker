@@ -241,7 +241,7 @@ namespace CodeCracker.Test.Style
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
                 //comment before
-                var s = ""This \{noun} is \{adjective}"";//comment right after
+                var s = $""This {noun} is {adjective}"";//comment right after
                 //comment after
             }
         }
@@ -278,7 +278,7 @@ namespace CodeCracker.Test.Style
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
                 var otherAdjective = ""loves c#"";
-                var s = ""This \{noun} is \{adjective}"";
+                var s = $""This {noun} is {adjective}"";
             }
         }
     }";
@@ -312,7 +312,7 @@ namespace CodeCracker.Test.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = ""This {0} \{noun} is \{adjective}"";
+                var s = $""This {{0}} {noun} is {adjective}"";
             }
         }
     }";
@@ -346,7 +346,7 @@ namespace CodeCracker.Test.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = ""This \{noun} is\n \r\f \f \r \{adjective}"";
+                var s = $""This {noun} is\n \r\f \f \r {adjective}"";
             }
         }
     }";
@@ -380,7 +380,101 @@ namespace CodeCracker.Test.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = ""This \{noun} is \""\{adjective}\"""";
+                var s = $""This {noun} is \""{adjective}\"""";
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task VerbatimStringWithStringFormatCreatesDiagnostic()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = string.Format(@""This {0} is
+""""{1}""""."", noun, adjective);
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = StringFormatAnalyzer.DiagnosticId,
+                Message = StringFormatAnalyzer.MessageFormat,
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task VerbatimStringBecomesInterpolatedVerbatimString()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = string.Format(@""This {0} is
+""""{1}""""."", noun, adjective);
+            }
+        }
+    }";
+            const string expected = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = $@""This {noun} is
+""""{adjective}""""."";
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FormatStringMaintainsFormat()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var s = string.Format("" |{0, -15 :N5}| "", System.Math.PI);
+            }
+        }
+    }";
+            const string expected = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var s = $"" |{System.Math.PI, -15 :N5}| "";
             }
         }
     }";

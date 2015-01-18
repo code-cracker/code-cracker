@@ -54,7 +54,7 @@ namespace CodeCracker.Style
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
             var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode<SyntaxNode, StatementSyntax>(ifStatement, newReturn);
+            var newRoot = root.ReplaceNode(ifStatement, newReturn);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
@@ -68,7 +68,7 @@ namespace CodeCracker.Style
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
             var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode<SyntaxNode, StatementSyntax>(ifStatement, newExpressionStatement);
+            var newRoot = root.ReplaceNode(ifStatement, newExpressionStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }

@@ -25,6 +25,7 @@ namespace ConsoleApplication1
     }}
 }}";
 
+#pragma warning disable CC0064
         [Fact]
         public async Task IfParseIdentifierFoundAndIPAddressTextIsIncorrectCreatesDiagnostic()
         {
@@ -38,6 +39,7 @@ namespace ConsoleApplication1
             var test = string.Format(TestCode, @"IPAddress.Parse(""foo"")");
             await VerifyCSharpDiagnosticAsync(test, CreateDiagnosticResult(10, 29, () => IPAddress.Parse("foo")));
         }
+#pragma warning restore CC0064
 
         [Fact]
         public async Task IfParseIdentifierFoundAndIPAddressTextIsCorrectDoesNotCreatesDiagnostic()

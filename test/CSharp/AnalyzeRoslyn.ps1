@@ -1,11 +1,11 @@
 $ErrorActionPreference = "Stop"
 $baseDir =  "$([System.IO.Path]::GetTempPath())$([System.Guid]::NewGuid().ToString().Substring(0,8))"
-$projectDir =  "$baseDir\corefx"
+$projectDir =  "$baseDir\roslyn"
 $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
-$logFile = "$logDir\corefx.log"
+$logFile = "$logDir\roslyn.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
-$gitPath = "https://github.com/dotnet/corefx.git"
-#$gitPath = "C:\proj\corefx"
+$gitPath = "https://github.com/dotnet/roslyn.git"
+$gitPath = "d:\proj\roslyn"
 
 echo "Saving to log file $logFile"
 echo "Analyzer dll is $analyzerDll"
@@ -29,14 +29,15 @@ if ((Test-Path $projectDir) -eq $false)
     mkdir $projectDir | Out-Null
 }
 
-echo "Cloning corefx"
-git clone --depth 5 -q $gitPath $projectDir
-$itemsInCoreFx = ls $projectDir
-if ($itemsInCoreFx -eq $null -or $itemsInCoreFx.Length -eq 0)
+echo "Cloning roslyn"
+git clone -q $gitPath $projectDir
+$itemsInProj = ls $projectDir
+if ($itemsInProj -eq $null -or $itemsInProj.Length -eq 0)
 {
-    echo "Unable to clone corefx, exiting."
+    echo "Unable to clone, exiting."
     exit 2
 }
+git checkout 0dca10d517b4c43972ef124e2dc1a82ef0021da1
 
 echo "Adding Code Cracker to projects..."
 $csprojs = ls "$projectDir\*.csproj" -Recurse
@@ -59,7 +60,7 @@ foreach($csproj in $csprojs)
 }
 
 echo "Restoring dependencies"
-msbuild "$projectDir\build.proj" /nologo /maxcpucount /verbosity:minimal /nodeReuse:false /t:_RestoreBuildTools /p:Configuration=""
+msbuild "$projectDir\BuildAndTest.proj" /nologo /maxcpucount /verbosity:minimal /nodeReuse:false /t:RestorePackages /p:Configuration=""
 if ($LASTEXITCODE -ne 0)
 {
     echo "Not possible to restore build tools, stopping."

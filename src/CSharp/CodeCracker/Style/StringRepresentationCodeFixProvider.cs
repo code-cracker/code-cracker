@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using System;
 using System.Collections.Immutable;
 using System.Linq;
@@ -53,11 +53,11 @@ namespace CodeCracker.Style
 
                 var codeAction = isVerbatim
                     ? CodeAction.Create(
-                        "Convert \"\{truncatedString}\" to regular string",
+                        $"Convert \"{truncatedString}\" to regular string",
                         ct => createChangedDocument(ToStringLiteral(literalExpression)),
                         ToRegularId)
                     : CodeAction.Create(
-                        "Convert \"\{truncatedString}\" to verbatim string",
+                        $"Convert \"{truncatedString}\" to verbatim string",
                         ct => createChangedDocument(ToVerbatimStringLiteral(literalExpression)),
                         ToVerbatimId);
 
