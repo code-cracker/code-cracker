@@ -38,8 +38,10 @@ namespace CodeCracker.Style
             var invocationExpression = (MethodDeclarationSyntax)context.Node;
             if (invocationExpression.Identifier.ToString().EndsWith("Async")) return;
 
-            var returnTask = invocationExpression.ReturnType?.ToString().Contains("Task") ?? false;
-            if (invocationExpression.Modifiers.Any(SyntaxKind.AsyncKeyword) || returnTask)
+            //var taskType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
+            var returnType = context.SemanticModel.GetSymbolInfo(invocationExpression.ReturnType).Symbol?.ToString();
+
+            if (invocationExpression.Modifiers.Any(SyntaxKind.AsyncKeyword) || returnType.StartsWith("System.Threading.Tasks."))
             {
                 var errorMessage = invocationExpression.Identifier.ToString() + "Async";
                 var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(), errorMessage);
