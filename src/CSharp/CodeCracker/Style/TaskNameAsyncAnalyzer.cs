@@ -38,7 +38,6 @@ namespace CodeCracker.Style
             var invocationExpression = (MethodDeclarationSyntax)context.Node;
             if (invocationExpression.Identifier.ToString().EndsWith("Async")) return;
 
-            //var taskType = context.SemanticModel.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
             var returnType = context.SemanticModel.GetSymbolInfo(invocationExpression.ReturnType).Symbol?.ToString();
 
             if (invocationExpression.Modifiers.Any(SyntaxKind.AsyncKeyword) || returnType.StartsWith("System.Threading.Tasks."))
