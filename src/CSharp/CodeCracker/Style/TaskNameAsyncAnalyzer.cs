@@ -37,10 +37,11 @@ namespace CodeCracker.Style
         {
             var invocationExpression = (MethodDeclarationSyntax)context.Node;
             if (invocationExpression.Identifier.ToString().EndsWith("Async")) return;
-
+            
             var returnType = context.SemanticModel.GetSymbolInfo(invocationExpression.ReturnType).Symbol?.ToString();
+            if (returnType == null) return;
 
-            if (invocationExpression.Modifiers.Any(SyntaxKind.AsyncKeyword) || returnType.StartsWith("System.Threading.Tasks."))
+            if (invocationExpression.Modifiers.Any(SyntaxKind.AsyncKeyword) || returnType.StartsWith("System.Threading.Tasks.Task"))
             {
                 var errorMessage = invocationExpression.Identifier.ToString() + "Async";
                 var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(), errorMessage);
