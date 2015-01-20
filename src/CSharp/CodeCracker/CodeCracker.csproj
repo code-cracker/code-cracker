@@ -46,6 +46,8 @@
     <Compile Include="Style\PropertyPrivateSetCodeFixProvider.cs" />
     <Compile Include="Style\RemoveCommentedCodeAnalyzer.cs" />
     <Compile Include="Style\RemoveCommentedCodeCodeFixProvider.cs" />
+    <Compile Include="Style\RemoveTrailingWhitespaceAnalyzer.cs" />
+    <Compile Include="Style\RemoveTrailingWhitespaceCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatCodeFixProvider.cs" />
     <Compile Include="SupportedCategories.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsCodeFixProvider.cs" />
