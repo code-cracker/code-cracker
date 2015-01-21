@@ -43,6 +43,8 @@
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
+    <Compile Include="Style\ConvertLambdaExpressionToMethodGroupAnalyzer.cs" />
+    <Compile Include="Style\ConvertLambdaExpressionToMethodGroupFixProvider.cs" />
     <Compile Include="Style\PropertyPrivateSetAnalyzer.cs" />
     <Compile Include="Style\PropertyPrivateSetCodeFixProvider.cs" />
     <Compile Include="Style\RemoveCommentedCodeAnalyzer.cs" />
