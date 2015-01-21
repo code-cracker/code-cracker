@@ -12,6 +12,8 @@ namespace CodeCracker.Test.Style
         public async Task TaskNameAsyncMethodCorrect()
         {
             const string source = @"
+    using System.Threading.Tasks;
+
     namespace ConsoleApplication1
     {
         public class Foo
@@ -26,6 +28,8 @@ namespace CodeCracker.Test.Style
         public async Task TaskNameAsyncMethodWhithoutAsyncName()
         {
             const string source = @"
+    using System.Threading.Tasks;
+
     namespace ConsoleApplication1
     {
         public class Foo
@@ -38,7 +42,7 @@ namespace CodeCracker.Test.Style
                 Id = TaskNameAsyncAnalyzer.DiagnosticId,
                 Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat,"TestAsync"),
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 13) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -47,6 +51,8 @@ namespace CodeCracker.Test.Style
         public async Task ChangeTaskNameWhithoutAsync()
         {
             const string source = @"
+    using System.Threading.Tasks;
+
     namespace ConsoleApplication1
     {
         public class Foo
@@ -55,6 +61,8 @@ namespace CodeCracker.Test.Style
         }
     }";
             const string fixtest = @"
+    using System.Threading.Tasks;
+
     namespace ConsoleApplication1
     {
         public class Foo
@@ -70,6 +78,8 @@ namespace CodeCracker.Test.Style
         public async Task ChangeTaskNameWhithoutAsyncAndClassImplementation()
         {
             const string source = @"
+    using System.Threading.Tasks;
+
     namespace ConsoleApplication1
     {
         public class Foo
@@ -87,6 +97,8 @@ namespace CodeCracker.Test.Style
 
     }";
             const string fixtest = @"
+    using System.Threading.Tasks;
+
     namespace ConsoleApplication1
     {
         public class Foo
@@ -110,6 +122,8 @@ namespace CodeCracker.Test.Style
         public async Task ChangeTaskNameWhithoutAsyncAndInterfaceImplementation()
         {
             const string source = @"
+    using System.Threading.Tasks;
+
     namespace ConsoleApplication1
     {
         public interface IFoo
@@ -119,6 +133,8 @@ namespace CodeCracker.Test.Style
 
     }";
             const string fixtest = @"
+    using System.Threading.Tasks;
+
     namespace ConsoleApplication1
     {
         public interface IFoo

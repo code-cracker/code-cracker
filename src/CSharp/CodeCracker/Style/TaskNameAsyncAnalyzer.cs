@@ -39,9 +39,8 @@ namespace CodeCracker.Style
             if (invocationExpression.Identifier.ToString().EndsWith("Async")) return;
 
             var returnType = context.SemanticModel.GetSymbolInfo(invocationExpression.ReturnType).Symbol as INamedTypeSymbol;
-            if (returnType == null) return;
 
-            if (invocationExpression.Modifiers.Any(SyntaxKind.AsyncKeyword) || returnType.ConstructedFrom.ToString() == "System.Threading.Tasks.Task<TResult>")
+            if (invocationExpression.Modifiers.Any(SyntaxKind.AsyncKeyword) || (returnType?.ConstructedFrom.ToString().StartsWith("System.Threading.Tasks.Task") ?? false))
             {
                 var errorMessage = invocationExpression.Identifier.ToString() + "Async";
                 var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(), errorMessage);
