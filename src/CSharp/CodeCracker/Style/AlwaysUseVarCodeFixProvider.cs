@@ -40,7 +40,7 @@ namespace CodeCracker.Style
             var variableDeclaration = localDeclaration.ChildNodes()
                 .OfType<VariableDeclarationSyntax>()
                 .FirstOrDefault();
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var @var = SyntaxFactory.IdentifierName("var")
                 .WithLeadingTrivia(variableDeclaration.Type.GetLeadingTrivia())
                 .WithTrailingTrivia(variableDeclaration.Type.GetTrailingTrivia());

@@ -41,7 +41,7 @@ namespace CodeCracker.Design
                                     .WithTrailingTrivia(stringLiteral.GetTrailingTrivia())
                                     .WithAdditionalAnnotations(Formatter.Annotation);
 
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancelationToken);
             var newRoot = root.ReplaceNode(stringLiteral, newNameof);
             return document.WithSyntaxRoot(newRoot);
         }

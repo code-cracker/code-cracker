@@ -10,31 +10,34 @@ namespace CodeCracker
 {
     public static class AnalyzerExtensions
     {
-        public static void RegisterSyntaxNodeAction<TLanguageKindEnum>(this AnalysisContext context, LanguageVersion languageVersion, Action<SyntaxNodeAnalysisContext> action, params TLanguageKindEnum[] syntaxKinds) where TLanguageKindEnum : struct
-        {
+        public static void RegisterSyntaxNodeAction<TLanguageKindEnum>(this AnalysisContext context, LanguageVersion languageVersion,
+        Action<SyntaxNodeAnalysisContext> action, params TLanguageKindEnum[] syntaxKinds) where TLanguageKindEnum : struct =>
             context.RegisterCompilationStartAction(languageVersion, compilationContext => compilationContext.RegisterSyntaxNodeAction(action, syntaxKinds));
-        }
 
-        public static void RegisterCompilationStartAction(this AnalysisContext context, LanguageVersion languageVersion, Action<CompilationStartAnalysisContext> registrationAction)
-        {
-            context.RegisterCompilationStartAction(compilationContext => compilationContext.RunIfCSharp6OrGreater(() => registrationAction?.Invoke(compilationContext)));
-        }
+        public static void RegisterCompilationStartAction(this AnalysisContext context, LanguageVersion languageVersion, Action<CompilationStartAnalysisContext> registrationAction) =>
+            context.RegisterCompilationStartAction(compilationContext => compilationContext.RunIfCSharpVersionOrGreater(languageVersion, () => registrationAction?.Invoke(compilationContext)));
 
-        private static void RunIfCSharp6OrGreater(this CompilationStartAnalysisContext context, Action action)
-        {
+        private static void RunIfCSharpVersionOrGreater(this CompilationStartAnalysisContext context, LanguageVersion languageVersion, Action action) =>
+            context.Compilation.RunIfCSharpVersionOrGreater(action, languageVersion);
+
+        private static void RunIfCSharpVersionOrGreater(this CompilationStartAnalysisContext context, Action action, LanguageVersion languageVersion) =>
+            context.Compilation.RunIfCSharpVersionOrGreater(action, languageVersion);
+
+        private static void RunIfCSharp6OrGreater(this CompilationStartAnalysisContext context, Action action) =>
             context.Compilation.RunIfCSharp6OrGreater(action);
-        }
 
-        private static void RunIfCSharp6OrGreater(this Compilation compilation, Action action)
-        {
-            var cSharpCompilation = compilation as CSharpCompilation;
-            if (cSharpCompilation == null) return;
-            cSharpCompilation.LanguageVersion.RunIfCSharp6OrGreater(action);
-        }
+        private static void RunIfCSharp6OrGreater(this Compilation compilation, Action action) =>
+            compilation.RunIfCSharpVersionOrGreater(action, LanguageVersion.CSharp6);
 
-        private static void RunIfCSharp6OrGreater(this LanguageVersion languageVersion, Action action)
+        private static void RunIfCSharpVersionOrGreater(this Compilation compilation, Action action, LanguageVersion languageVersion) =>
+            (compilation as CSharpCompilation)?.LanguageVersion.RunIfCSharpVersionGreater(action, languageVersion);
+
+        private static void RunIfCSharp6Greater(this LanguageVersion languageVersion, Action action) =>
+            languageVersion.RunIfCSharpVersionGreater(action, LanguageVersion.CSharp6);
+
+        private static void RunIfCSharpVersionGreater(this LanguageVersion languageVersion, Action action, LanguageVersion greaterOrEqualThanLanguageVersion)
         {
-            if (languageVersion >= LanguageVersion.CSharp6) action?.Invoke();
+            if (languageVersion >= greaterOrEqualThanLanguageVersion) action?.Invoke();
         }
 
         public static ConditionalAccessExpressionSyntax ToConditionalAccessExpression(this MemberAccessExpressionSyntax memberAccess)
@@ -131,7 +134,7 @@ namespace CodeCracker
                 .OfType<TypeDeclarationSyntax>();
         }
 
-        public static IDictionary<K, V> AddRange<K, V>(this IDictionary<K,V> dictionary, IDictionary<K,V> newValues)
+        public static IDictionary<K, V> AddRange<K, V>(this IDictionary<K, V> dictionary, IDictionary<K, V> newValues)
         {
             if (dictionary == null || newValues == null) return dictionary;
             foreach (var kv in newValues) dictionary.Add(kv);

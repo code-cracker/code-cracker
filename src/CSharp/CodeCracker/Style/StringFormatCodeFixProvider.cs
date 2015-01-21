@@ -37,7 +37,7 @@ namespace CodeCracker.Style
 
         private async Task<Document> MakeStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
         {
-            var semanticModel = await document.GetSemanticModelAsync();
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var memberSymbol = semanticModel.GetSymbolInfo(invocationExpression.Expression).Symbol;
             var argumentList = invocationExpression.ArgumentList;
             var arguments = argumentList.Arguments;
@@ -51,7 +51,7 @@ namespace CodeCracker.Style
                 expressionsToReplace.Add(insert.Expression,interpolationArgs[i].Expression);
             }
             var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(invocationExpression, newStringInterpolation);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

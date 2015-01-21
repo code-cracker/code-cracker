@@ -37,7 +37,7 @@ namespace CodeCracker.Usage
 
         private async Task<Document> MakeFieldReadonly(Document document, VariableDeclaratorSyntax variable, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var fieldDeclaration = (FieldDeclarationSyntax)variable.Parent.Parent;
             var newRoot = fieldDeclaration.Declaration.Variables.Count == 1
                 ? MakeSingleFieldReadonly(root, fieldDeclaration)

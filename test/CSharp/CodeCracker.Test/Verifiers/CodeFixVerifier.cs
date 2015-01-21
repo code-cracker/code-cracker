@@ -135,7 +135,7 @@ namespace TestHelper
         /// <param name="source">A class in the form of a string before the CodeFix was applied to it</param>
         /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
         protected async Task VerifyCSharpHasNoFixAsync(string source, CodeFixProvider codeFixProvider = null)
-        {   
+        {
             await VerifyHasNoFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), codeFixProvider ?? GetCSharpCodeFixProvider(), source);
         }
 
@@ -158,11 +158,7 @@ namespace TestHelper
                 var actions = new List<CodeAction>();
                 var context = new CodeFixContext(document, analyzerDiagnostic, (a, d) => actions.Add(a), CancellationToken.None);
                 await codeFixProvider.ComputeFixesAsync(context);
-
-                Assert.False(actions.Any(),
-                    string.Format(
-                        "Should not have a code fix registered for diagnostic '{0}'",
-                        analyzerDiagnostic.Id));
+                Assert.False(actions.Any(), $"Should not have a code fix registered for diagnostic '{analyzerDiagnostic.Id}'");
             }
         }
 

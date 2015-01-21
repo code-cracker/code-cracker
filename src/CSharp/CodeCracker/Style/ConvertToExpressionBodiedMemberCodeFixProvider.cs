@@ -47,7 +47,7 @@ namespace CodeCracker.Style
         private async Task<Document> ConvertToExpressionBodiedMemberAsync(
             Document document,
             BasePropertyDeclarationSyntax declaration,
-            CancellationToken c)
+            CancellationToken cancellationToken)
         {
             var accessors = declaration.AccessorList.Accessors;
             var body = accessors[0].Body;
@@ -65,12 +65,12 @@ namespace CodeCracker.Style
 
             newDeclaration = newDeclaration.WithAdditionalAnnotations(Formatter.Annotation);
 
-            return await ReplaceNode(document, declaration, newDeclaration);
+            return await ReplaceNode(document, declaration, newDeclaration, cancellationToken);
         }
 
-        public async Task<Document> ReplaceNode(Document document, SyntaxNode @old, SyntaxNode @new)
+        public async Task<Document> ReplaceNode(Document document, SyntaxNode @old, SyntaxNode @new, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(@old, @new);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
@@ -79,7 +79,7 @@ namespace CodeCracker.Style
         private async Task<Document> ConvertToExpressionBodiedMemberAsync(
             Document document,
             BaseMethodDeclarationSyntax declaration,
-            CancellationToken c)
+            CancellationToken cancellationToken )
         {
             var body = declaration.Body;
             var returnStatement = body.Statements[0] as ReturnStatementSyntax;
@@ -95,7 +95,7 @@ namespace CodeCracker.Style
 
             newDeclaration = newDeclaration.WithAdditionalAnnotations(Formatter.Annotation);
 
-            return await ReplaceNode(document, declaration, newDeclaration);
+            return await ReplaceNode(document, declaration, newDeclaration, cancellationToken);
         }
     }
 }

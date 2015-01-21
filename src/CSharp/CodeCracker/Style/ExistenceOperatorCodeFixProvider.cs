@@ -42,24 +42,24 @@ namespace CodeCracker.Style
             var returnIf = statementInsideIf as ReturnStatementSyntax;
             var returnElse = statementInsideElse as ReturnStatementSyntax;
             if (returnIf != null && returnElse != null)
-                return await UseExistenceOperatorAsyncWithReturn(document, ifStatement, cancellationToken, returnIf, returnElse);
-            return await UseExistenceOperatorAsyncWithAssignment(document, ifStatement, cancellationToken, (ExpressionStatementSyntax)statementInsideIf, (ExpressionStatementSyntax)statementInsideElse);
+                return await UseExistenceOperatorAsyncWithReturn(document, ifStatement, cancellationToken, returnIf);
+            return await UseExistenceOperatorAsyncWithAssignment(document, ifStatement, cancellationToken, (ExpressionStatementSyntax)statementInsideIf);
         }
 
-        private async Task<Document> UseExistenceOperatorAsyncWithReturn(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ReturnStatementSyntax returnIf, ReturnStatementSyntax returnElse)
+        private async Task<Document> UseExistenceOperatorAsyncWithReturn(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ReturnStatementSyntax returnIf)
         {
             var newMemberAccess = ((MemberAccessExpressionSyntax)returnIf.Expression).ToConditionalAccessExpression();
             var newReturn = SyntaxFactory.ReturnStatement(newMemberAccess)
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ifStatement, newReturn);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
 
-        private async Task<Document> UseExistenceOperatorAsyncWithAssignment(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ExpressionStatementSyntax expressionIf, ExpressionStatementSyntax expressionElse)
+        private async Task<Document> UseExistenceOperatorAsyncWithAssignment(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ExpressionStatementSyntax expressionIf)
         {
             var memberAccessAssignment = (AssignmentExpressionSyntax)expressionIf.Expression;
             var newMemberAccess = ((MemberAccessExpressionSyntax)memberAccessAssignment.Right).ToConditionalAccessExpression();
@@ -67,7 +67,7 @@ namespace CodeCracker.Style
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ifStatement, newExpressionStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

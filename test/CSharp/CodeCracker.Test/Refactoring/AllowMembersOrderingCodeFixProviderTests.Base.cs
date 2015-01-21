@@ -40,13 +40,12 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task BaseAllowMembersOrderingShouldNotRegisterFixIfIsAlreadySorted()
         {
-            var source = @"
+            const string source = @"
             public class Foo
             {
                 int a;
                 void B() { }
             }";
-
             await VerifyCSharpHasNoFixAsync(source);
         }
 

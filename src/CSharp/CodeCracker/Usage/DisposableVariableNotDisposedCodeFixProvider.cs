@@ -87,7 +87,7 @@ namespace CodeCracker.Usage
             var statementsToReplace = new List<StatementSyntax> { statement };
             statementsToReplace.AddRange(statementsForUsing);
             var block = SyntaxFactory.Block(statementsForUsing);
-            var usingStatement = updateUsing(CreateUsingStatement(statement, block));
+            var usingStatement = updateUsing?.Invoke(CreateUsingStatement(statement, block));
             var newRoot = root.ReplaceNodes(statementsToReplace, (node, _) => node.Equals(statement) ? usingStatement : null);
             return newRoot;
         }

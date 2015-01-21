@@ -51,7 +51,7 @@ namespace CodeCracker.Refactoring
 
         private async Task<Document> NewClassAsync(Document document, NamespaceDeclarationSyntax OldNameSpace, ClassDeclarationSyntax oldClass, MethodDeclarationSyntax oldMethod, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode newRootParameter = null;
 
 

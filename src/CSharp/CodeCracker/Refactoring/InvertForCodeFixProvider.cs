@@ -34,11 +34,11 @@ namespace CodeCracker.Refactoring
             context.RegisterFix(CodeAction.Create("Invert For Loop.", c => InvertForAsync(context.Document, @for, c)), diagnostic);
         }
 
-        private async Task<Document> InvertForAsync(Document document, ForStatementSyntax @for, CancellationToken c)
+        private async Task<Document> InvertForAsync(Document document, ForStatementSyntax @for, CancellationToken cancellationToken)
         {
             if (InvertForAnalyzer.IsPostIncrement(@for.Incrementors[0]))
-                return await ConvertToDecrementingCounterForLoop(document, @for);
-            return await ConvertToIncrementingCounterForLoop(document, @for);
+                return await ConvertToDecrementingCounterForLoop(document, @for, cancellationToken);
+            return await ConvertToIncrementingCounterForLoop(document, @for, cancellationToken);
         }
 
         static readonly LiteralExpressionSyntax One = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(
@@ -46,7 +46,7 @@ namespace CodeCracker.Refactoring
                             @"1", 1,
                             SyntaxFactory.TriviaList()));
 
-        private static async Task<Document> ConvertToIncrementingCounterForLoop(Document document, ForStatementSyntax @for)
+        private static async Task<Document> ConvertToIncrementingCounterForLoop(Document document, ForStatementSyntax @for, CancellationToken cancellationToken)
         {
             var condition = (BinaryExpressionSyntax)@for.Condition;
             var newEndValue = @for.Declaration != null
@@ -62,10 +62,11 @@ namespace CodeCracker.Refactoring
             return await ReplaceFor(document, @for,
                 newDeclaration,
                 newInitializers,
-                newCondition);
+                newCondition,
+                cancellationToken);
         }
 
-        private static async Task<Document> ConvertToDecrementingCounterForLoop(Document document, ForStatementSyntax @for)
+        private static async Task<Document> ConvertToDecrementingCounterForLoop(Document document, ForStatementSyntax @for, CancellationToken cancellationToken)
         {
             var condition = (BinaryExpressionSyntax)@for.Condition;
             var newEndValue = @for.Declaration != null
@@ -80,7 +81,8 @@ namespace CodeCracker.Refactoring
             return await ReplaceFor(document, @for,
                 newDeclaration,
                 newInitializers,
-                newCondition);
+                newCondition,
+                cancellationToken);
         }
 
         static SeparatedSyntaxList<ExpressionSyntax> ReplaceStartValue(SeparatedSyntaxList<ExpressionSyntax> initializers, ExpressionSyntax newStartValue)
@@ -100,7 +102,8 @@ namespace CodeCracker.Refactoring
         static async Task<Document> ReplaceFor(Document document, ForStatementSyntax oldFor,
             VariableDeclarationSyntax newDeclaration,
             SeparatedSyntaxList<ExpressionSyntax> newInitializers,
-            BinaryExpressionSyntax newCondition)
+            BinaryExpressionSyntax newCondition,
+            CancellationToken cancellationToken)
         {
             var newFor = oldFor
                 .WithDeclaration(newDeclaration)
@@ -108,7 +111,7 @@ namespace CodeCracker.Refactoring
                 .WithCondition(newCondition)
                 .WithIncrementors(ToggleIncrement(oldFor))
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            return await ReplaceFor(document, oldFor, newFor);
+            return await ReplaceFor(document, oldFor, newFor, cancellationToken);
         }
 
         static SeparatedSyntaxList<ExpressionSyntax> ToggleIncrement(ForStatementSyntax @for)
@@ -121,9 +124,9 @@ namespace CodeCracker.Refactoring
             return new SeparatedSyntaxList<ExpressionSyntax>().Add(newIncrementor);
         }
 
-        static async Task<Document> ReplaceFor(Document document, ForStatementSyntax oldFor, ForStatementSyntax newFor)
+        static async Task<Document> ReplaceFor(Document document, ForStatementSyntax oldFor, ForStatementSyntax newFor, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(oldFor, newFor);
             return document.WithSyntaxRoot(newRoot);
         }
