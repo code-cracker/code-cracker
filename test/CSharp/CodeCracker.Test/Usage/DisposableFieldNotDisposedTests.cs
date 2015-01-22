@@ -719,5 +719,26 @@ namespace CodeCracker.Test.Usage
     }";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task DisposableFieldOnAbstractClassWithAbstractDisposableDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        abstract class TypeName : IDisposable
+        {
+            private D field = D.Create();
+            public abstract void Dispose();
+        }
+        class D : IDisposable
+        {
+            public static D Create() => new D();
+            public void Dispose() { }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }

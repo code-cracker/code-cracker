@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
-using System;
+
 namespace CodeCracker.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -23,7 +23,7 @@ namespace CodeCracker.Usage
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
-            isEnabledByDefault: false,
+            isEnabledByDefault: true,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticIdReturned));
         internal static DiagnosticDescriptor RuleForCreated = new DiagnosticDescriptor(
@@ -32,16 +32,13 @@ namespace CodeCracker.Usage
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: false,
+            isEnabledByDefault: true,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticIdCreated));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForCreated, RuleForReturned); } }
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSymbolAction(AnalyzeField, SymbolKind.Field);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSymbolAction(AnalyzeField, SymbolKind.Field);
 
         private void AnalyzeField(SymbolAnalysisContext context)
         {
@@ -69,6 +66,7 @@ namespace CodeCracker.Usage
                 {
                     var disposeMethod = (MethodDeclarationSyntax)disposeMethodSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
                     if (disposeMethod == null) return false;
+                    if (disposeMethod.Modifiers.Any(SyntaxKind.AbstractKeyword)) return true;
                     var typeDeclaration = (TypeDeclarationSyntax)typeSymbol.DeclaringSyntaxReferences.FirstOrDefault().GetSyntax();
                     var semanticModel = context.Compilation.GetSemanticModel(typeDeclaration.SyntaxTree);
                     if (CallsDisposeOnField(fieldSymbol, disposeMethod, semanticModel)) return true;
