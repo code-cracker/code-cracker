@@ -37,7 +37,7 @@ if ($itemsInProj -eq $null -or $itemsInProj.Length -eq 0)
     echo "Unable to clone, exiting."
     exit 2
 }
-git --git-dir=$projectDir\.git --work-tree=$projectDir checkout d3cd20772c4f2cc3c7997357dfdf43417c063005
+#git --git-dir=$projectDir\.git --work-tree=$projectDir checkout d3cd20772c4f2cc3c7997357dfdf43417c063005
 
 echo "Adding Code Cracker to projects..."
 $csprojs = ls "$projectDir\*.csproj" -Recurse
