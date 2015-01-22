@@ -69,9 +69,10 @@ foreach($sln in $slns)
 $ccBuildErrors = cat $logFile | Select-String "info AnalyzerDriver: The Compiler Analyzer 'CodeCracker"
 if ($ccBuildErrors -ne $null)
 {
-    echo "Errors found (see $logFile):"
+    write-host "Errors found (see $logFile):"
     foreach($ccBuildError in $ccBuildErrors)
     {
         Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)" 
     }
+    throw "Errors found on the cecil analysis"
 }

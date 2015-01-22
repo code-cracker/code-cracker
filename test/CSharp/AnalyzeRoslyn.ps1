@@ -5,7 +5,7 @@ $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\roslyn.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
 $gitPath = "https://github.com/dotnet/roslyn.git"
-$gitPath = "d:\proj\roslyn"
+#$gitPath = "c:\proj\roslyn"
 
 echo "Saving to log file $logFile"
 echo "Analyzer dll is $analyzerDll"
@@ -77,9 +77,10 @@ foreach($sln in $slns)
 $ccBuildErrors = cat $logFile | Select-String "info AnalyzerDriver: The Compiler Analyzer 'CodeCracker"
 if ($ccBuildErrors -ne $null)
 {
-    echo "Errors found (see $logFile):"
+    Write-Host "Errors found (see $logFile):"
     foreach($ccBuildError in $ccBuildErrors)
     {
         Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)" 
     }
+    throw "Errors found on the roslyn analysis"
 }

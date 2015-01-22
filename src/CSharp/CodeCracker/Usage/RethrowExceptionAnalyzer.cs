@@ -24,7 +24,7 @@ namespace CodeCracker.Usage
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 

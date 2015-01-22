@@ -22,8 +22,8 @@ namespace CodeCracker.Usage
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
-            true,
-            description:Description,
+            isEnabledByDefault: false,
+            description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }

@@ -23,7 +23,7 @@ namespace CodeCracker.Usage
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticIdReturned));
         internal static DiagnosticDescriptor RuleForCreated = new DiagnosticDescriptor(
@@ -32,7 +32,7 @@ namespace CodeCracker.Usage
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticIdCreated));
 
