@@ -22,7 +22,7 @@ namespace CodeCracker.Refactoring
 
         public class StyleCopMembersComparer : IComparer<MemberDeclarationSyntax>
         {
-            Dictionary<Type, int> typeRank = new Dictionary<Type, int>
+            readonly Dictionary<Type, int> typeRank = new Dictionary<Type, int>
             {
                 { typeof(FieldDeclarationSyntax),       1 },
                 { typeof(ConstructorDeclarationSyntax), 2 },
@@ -40,13 +40,13 @@ namespace CodeCracker.Refactoring
                 { typeof(ClassDeclarationSyntax),       14 },
             };
 
-            Dictionary<SyntaxKind, int> specialModifierRank = new Dictionary<SyntaxKind, int>
+            private readonly Dictionary<SyntaxKind, int> specialModifierRank = new Dictionary<SyntaxKind, int>
             {
                 { SyntaxKind.ConstKeyword,   1 },
                 { SyntaxKind.StaticKeyword,  2 },
             };
 
-            Dictionary<SyntaxKind, int> accessLevelRank = new Dictionary<SyntaxKind, int>
+            private readonly Dictionary<SyntaxKind, int> accessLevelRank = new Dictionary<SyntaxKind, int>
             {
                 { SyntaxKind.PublicKeyword,     -4 },
                 { SyntaxKind.InternalKeyword,   -2 },

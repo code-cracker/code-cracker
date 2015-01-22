@@ -7,7 +7,7 @@ namespace CodeCracker.Test.Design
 {
     public class EmptyCatchBlockTests : CodeFixTest<EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider>
     {
-        string test = @"
+        readonly string test = @"
     using System;
 
     namespace ConsoleApplication1

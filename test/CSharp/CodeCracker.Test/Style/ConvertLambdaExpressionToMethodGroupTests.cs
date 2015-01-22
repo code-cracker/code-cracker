@@ -12,7 +12,7 @@ namespace CodeCracker.Test
         [Fact]
         public async Task CreateDiagnosticForSimpleLambdaExpression()
         {
-            var test = @"var f = a.Where(item => filter(item));";
+            const string test = @"var f = a.Where(item => filter(item));";
             var expected = new DiagnosticResult
             {
                 Id = ConvertLambdaExpressionToMethodGroupAnalyzer.DiagnosticId,
@@ -27,7 +27,7 @@ namespace CodeCracker.Test
         [Fact]
         public async Task CreateDiagnosticForSimpleLambdaExpressionWithBlockInBody()
         {
-            var test = @"var f = a.Where(item => { return filter(item); });";
+            const string test = @"var f = a.Where(item => { return filter(item); });";
             var expected = new DiagnosticResult
             {
                 Id = ConvertLambdaExpressionToMethodGroupAnalyzer.DiagnosticId,
@@ -42,7 +42,7 @@ namespace CodeCracker.Test
         [Fact]
         public async Task CreateDiagnosticForParenthesizedLambdaExpressionWithBlockInBody()
         {
-            var test = @"var f = a.Foo((param1, param2) => { return filter(param1, param2); });";
+            const string test = @"var f = a.Foo((param1, param2) => { return filter(param1, param2); });";
             var expected = new DiagnosticResult
             {
                 Id = ConvertLambdaExpressionToMethodGroupAnalyzer.DiagnosticId,
@@ -57,21 +57,21 @@ namespace CodeCracker.Test
         [Fact]
         public async Task DoNotCreateDiagnosticForMethodGoupd()
         {
-            var test = @"var f = a.Where(filter);";
+            const string test = @"var f = a.Where(filter);";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task DoNotCreateDiagnosticWhenParametersDoNotMatch()
         {
-            var test = @"var f = a.Foo((param1, param2) => { return filter(param2, param1); });";
+            const string test = @"var f = a.Foo((param1, param2) => { return filter(param2, param1); });";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task DoNotCreateDiagnosticWhenIncompleteLambdaExpression()
         {
-            var test = @"
+            const string test = @"
 using System.Linq;
 
 namespace Sample
@@ -97,7 +97,7 @@ namespace Sample
         [Fact]
         public async Task SimpleLambdaExpressionIsReplaceByMethodInDeclarationStatement()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -117,7 +117,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -143,7 +143,7 @@ namespace Sample
         [Fact]
         public async Task ParenthesizedLambdaExpressionIsReplaceByMethodInDeclarationStatement()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -163,7 +163,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -189,7 +189,7 @@ namespace Sample
         [Fact]
         public async Task SimpleLambdaExpressionIsReplaceByMethodInArgumentList()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -209,7 +209,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -235,7 +235,7 @@ namespace Sample
         [Fact]
         public async Task ParenthesizedLambdaExpressionIsReplaceByMethodInArgumentList()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -255,7 +255,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -281,7 +281,7 @@ namespace Sample
         [Fact]
         public async Task SimpleLambdaExpressionWithBlockInBodyIsReplaceByMethodInArgumentList()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -301,7 +301,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -327,7 +327,7 @@ namespace Sample
         [Fact]
         public async Task ParenthesizedLambdaExpressionWihtBlockInBodyIsReplaceByMethodInArgumentList()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -347,7 +347,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -373,7 +373,7 @@ namespace Sample
         [Fact]
         public async Task FixEndOfPipelineLambdaExpressionAndReplaceByMethod()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -393,7 +393,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -420,7 +420,7 @@ namespace Sample
         [Fact]
         public async Task FixMiddleOfPipelineLambdaExpressionAndReplaceByMethod()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -440,7 +440,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -467,7 +467,7 @@ namespace Sample
         [Fact]
         public async Task FixMiddleOfPipelineLambdaExpressionAndReplaceByMethodMultipleMatches()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -492,7 +492,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -523,7 +523,7 @@ namespace Sample
         [Fact]
         public async Task FixMiddleOfPipelineLambdaExpressionAndReplaceByMethodMultipleMatchesWithThis()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System.Linq;
 
 namespace Sample
@@ -542,7 +542,7 @@ namespace Sample
     }
 }";
 
-            var newCode = @"
+            const string newCode = @"
 using System.Linq;
 
 namespace Sample
@@ -566,7 +566,7 @@ namespace Sample
         [Fact]
         public async Task DoNotCreateDiagnosticWhenSubstitutionMayBreakInvocationResolution()
         {
-            var oldCode = @"
+            const string oldCode = @"
 using System;
 using System.Threading;
 using System.Threading.Tasks;

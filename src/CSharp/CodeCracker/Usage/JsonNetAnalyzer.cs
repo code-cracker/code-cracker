@@ -73,7 +73,7 @@ namespace CodeCracker.Usage
             }
         }
 
-        private static Lazy<Type> jObjectType = new Lazy<Type>(() => Type.GetType("Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"));
-        private static Lazy<MethodInfo> parseMethodInfo = new Lazy<MethodInfo>(() => jObjectType.Value.GetRuntimeMethod("Parse", new[] { typeof(string) }));
+        private static readonly Lazy<Type> jObjectType = new Lazy<Type>(() => Type.GetType("Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"));
+        private static readonly Lazy<MethodInfo> parseMethodInfo = new Lazy<MethodInfo>(() => jObjectType.Value.GetRuntimeMethod("Parse", new[] { typeof(string) }));
     }
 }
