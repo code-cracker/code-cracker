@@ -35,17 +35,26 @@ namespace CodeCracker.Style
 
         private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
-            var invocationExpression = (MethodDeclarationSyntax)context.Node;
-            if (invocationExpression.Identifier.ToString().EndsWith("Async")) return;
+            var method = (MethodDeclarationSyntax)context.Node;
+            if (method.Identifier.ToString().EndsWith("Async")) return;
+            
+            var errorMessage = method.Identifier.ToString() + "Async";
+            var diag = Diagnostic.Create(Rule, method.GetLocation(), errorMessage);
 
-            var returnType = context.SemanticModel.GetSymbolInfo(invocationExpression.ReturnType).Symbol as INamedTypeSymbol;
-
-            if (invocationExpression.Modifiers.Any(SyntaxKind.AsyncKeyword) || (returnType?.ConstructedFrom.ToString().StartsWith("System.Threading.Tasks.Task") ?? false))
+            if (method.Modifiers.Any(SyntaxKind.AsyncKeyword))
             {
-                var errorMessage = invocationExpression.Identifier.ToString() + "Async";
-                var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation(), errorMessage);
+                context.ReportDiagnostic(diag);
+                return;
+            }
+            var returnType = context.SemanticModel.GetSymbolInfo(method.ReturnType).Symbol as INamedTypeSymbol;
+            if (returnType == null) return;
+
+            if (returnType.ToString() == "System.Threading.Tasks.Task" ||
+                (returnType.IsGenericType && returnType.ConstructedFrom.ToString() == "System.Threading.Tasks.Task<TResult>"))
+            {
                 context.ReportDiagnostic(diag);
             }
+
         }
     }
 }
