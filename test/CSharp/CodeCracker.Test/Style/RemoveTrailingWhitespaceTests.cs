@@ -16,6 +16,20 @@ namespace CodeCracker.Test.Style
         }
 
         [Fact]
+        public async Task NoTrailingWhitespaceDoesNotCreateDiagnostic()
+        {
+            const string source = "using System;\r\n";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task LineWithSpaceDoesNotCreateDiagnostic()
+        {
+            const string source = "\r\n";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task SingleStatementWithTrailingSpaceAndNewLineCreatesOnlyOneDiagnostic()
         {
             const string source = "using System; \r\n";

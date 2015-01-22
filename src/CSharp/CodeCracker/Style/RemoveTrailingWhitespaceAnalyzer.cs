@@ -37,6 +37,7 @@ namespace CodeCracker.Style
             if (!context.Tree.TryGetText(out text)) return;
             foreach (var line in text.Lines)
             {
+                if (line.End == 0) continue;
                 var candidateWhiteSpace = line.Text.GetSubText(TextSpan.FromBounds(line.End - 1, line.End)).ToString();
                 if (string.Compare(candidateWhiteSpace, "\n", StringComparison.Ordinal) == 0
                     || !Regex.IsMatch(candidateWhiteSpace, @"\s")) continue;
