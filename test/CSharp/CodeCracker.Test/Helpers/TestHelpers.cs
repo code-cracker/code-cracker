@@ -102,8 +102,14 @@ namespace TestHelper
                 workspace.AddDocument(projectId, newFileName, SourceText.From(source));
             }
 
-            return workspace.CurrentSolution.GetProject(projectId);
+            var project = workspace.CurrentSolution.GetProject(projectId);
+            var newCompilationOptions = project.CompilationOptions.WithSpecificDiagnosticOptions(diagOptions);
+            var solution = workspace.CurrentSolution.WithProjectCompilationOptions(projectId, newCompilationOptions);
+            var newProject = solution.GetProject(projectId);
+            return newProject;
         }
+
+        private static readonly Dictionary<string, ReportDiagnostic> diagOptions = Enumerable.Range(1, 1000).Select(i => $"CC{i :D4}").ToDictionary(id => id, id => ReportDiagnostic.Default);
 
         /// <summary>
         /// Create a project using the inputted strings as sources.

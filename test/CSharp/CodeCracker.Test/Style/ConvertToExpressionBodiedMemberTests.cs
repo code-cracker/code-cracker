@@ -8,7 +8,7 @@ namespace CodeCracker.Test.Style
 {
     public class ConvertToExpressionBodiedMemberTests : CodeFixTest<ConvertToExpressionBodiedMemberAnalyzer, ConvertToExpressionBodiedMemberCodeFixProvider>
     {
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task FixReplacesMethodConventionalBodyWithArrowExpression()
         {
             const string test = @"
@@ -39,7 +39,7 @@ namespace CodeCracker.Test.Style
         }
 
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task FixReplacesOperatorConventionalBodyWithArrowExpression()
         {
             const string test = @"
@@ -70,7 +70,7 @@ using System;
         }
 
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task FixReplacesConversionOperatorConventionalBodyWithArrowExpression()
         {
             const string test = @"
@@ -101,7 +101,7 @@ using System;
         }
 
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task FixReplacesIndexerBodyWithArrowExpression()
         {
             const string test = @"
@@ -131,7 +131,7 @@ using System;
             await VerifyCSharpFixAsync(test, expected);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task FixReplacesPropertyBodyWithArrowExpression()
         {
             const string test = @"
@@ -162,7 +162,7 @@ using System;
         }
 
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task CreateDiagnosticsWhenMethodCouldBeAnExpressionBodiedMember()
         {
             const string test = @"
@@ -189,7 +189,7 @@ using System;
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task CreateDiagnosticsWhenOperatorCouldBeAnExpressionBodiedMember()
         {
             const string test = @"
@@ -216,7 +216,7 @@ using System;
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task CreateDiagnosticsWhenUserDefinedConversionCouldBeAnExpressionBodiedMember()
         {
             const string test = @"
@@ -243,7 +243,7 @@ using System;
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task CreateDiagnosticsWhenIndexerCouldBeAnExpressionBodiedMember()
         {
             const string test = @"
@@ -270,7 +270,7 @@ using System;
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task CreateDiagnosticsWhenPropertyCouldBeAnExpressionBodiedMember()
         {
             const string test = @"
@@ -297,7 +297,7 @@ using System;
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task IgnoresExpressionBodiedMembers()
         {
             const string test = @"
@@ -313,7 +313,7 @@ using System;
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task IgnoresMethodsWithTwoLinesOrMore()
         {
             const string test = @"
@@ -333,7 +333,7 @@ using System;
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task IgnoresIndexersWithGetAndSet()
         {
             const string test = @"
@@ -368,7 +368,7 @@ using System;
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task IgnoresIndexersWithTwoOrMoreStatements()
         {
             const string test = @"
@@ -391,7 +391,7 @@ using System;
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task IgnoresPropertiesWithGetAndSet()
         {
             const string test = @"
@@ -426,7 +426,7 @@ using System;
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact(Skip = "Diagnostic disabled because of a bug")]
+        [Fact]
         public async Task IgnoresPropertiesWithTwoOrMoreStatements()
         {
             const string test = @"
