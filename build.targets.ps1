@@ -81,10 +81,10 @@ Task Test-Acceptance -depends Test {
 }
 
 Task Test -depends Set-Log {
-    RunTestWithCoverage  "$testDirCS\$testDllCS", "$testDirVB\$testDllVB"
+    RunTestWithCoverage "$testDirCS\$testDllCS", "$testDirVB\$testDllVB"
 }
 Task Test-VB -depends Set-Log {
-    RunTestWithCoverage  "$testDirVB\$testDllVB"
+    RunTestWithCoverage "$testDirVB\$testDllVB"
 }
 Task Test-CSharp -depends Set-Log {
     RunTestWithCoverage "$testDirCS\$testDllCS"
