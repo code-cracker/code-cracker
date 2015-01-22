@@ -42,6 +42,7 @@ test_script:
 after_test:
   - ps: >-
       . ".\test\CSharp\AnalyzeCoreFx.ps1"
+
       . ".\test\CSharp\AnalyzeCecil.ps1"
 
 artifacts:
