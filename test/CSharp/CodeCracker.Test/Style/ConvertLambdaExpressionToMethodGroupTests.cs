@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CodeCracker.Style;
+﻿using CodeCracker.Style;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 

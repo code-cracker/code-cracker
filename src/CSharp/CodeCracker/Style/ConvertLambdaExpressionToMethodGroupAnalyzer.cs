@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -18,11 +17,11 @@ namespace CodeCracker.Style
         const string Description = "The extra unnecessary layer of indirection induced by the lambda expression may be avoided by passing the method group instead.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId, 
-            Title, 
-            MessageFormat, 
-            Category, 
-            DiagnosticSeverity.Hidden, 
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId));
@@ -47,7 +46,7 @@ namespace CodeCracker.Style
             var root = lambda.SyntaxTree.GetRoot();
             var newRoot = root.ReplaceNode(lambda, invocation.Expression as ExpressionSyntax);
 
-            var semanticNode = GetNodeRootForAnalysis(lambda);            
+            var semanticNode = GetNodeRootForAnalysis(lambda);
             var newSemanticNode = newRoot.DescendantNodesAndSelf()
                 .Where(x => x.SpanStart == semanticNode.SpanStart && x.Span.OverlapsWith(context.Node.Span))
                 .LastOrDefault(x => x.CSharpKind() == semanticNode.CSharpKind());
@@ -81,16 +80,9 @@ namespace CodeCracker.Style
         private ParameterListSyntax BuildParameters(SyntaxNode node)
         {
             if (node is SimpleLambdaExpressionSyntax)
-            {
-                return SyntaxFactory.ParameterList(
-                SyntaxFactory.SeparatedList<ParameterSyntax>(new ParameterSyntax[] { (node as SimpleLambdaExpressionSyntax).Parameter }));
-            }
-
+                return SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(new ParameterSyntax[] { ((SimpleLambdaExpressionSyntax)node).Parameter }));
             if (node is ParenthesizedLambdaExpressionSyntax)
-            {
-                return (node as ParenthesizedLambdaExpressionSyntax).ParameterList;
-            }
-
+                return ((ParenthesizedLambdaExpressionSyntax)node).ParameterList;
             return null;
         }
 
@@ -106,34 +98,27 @@ namespace CodeCracker.Style
             return paramNameList.SequenceEqual(argNameList);
         }
 
-        private dynamic GetSemanticRootForSpeculation(SyntaxNode expression)
+        private SyntaxNode GetSemanticRootForSpeculation(SyntaxNode expression)
         {
-            Debug.Assert(expression != null);
-
             var parentNodeToSpeculate = expression
                 .AncestorsAndSelf(ascendOutOfTrivia: false)
                 .LastOrDefault(node => CanSpeculateOnNode(node));
-
             return parentNodeToSpeculate ?? expression;
         }
 
         private SyntaxNode GetNodeRootForAnalysis(ExpressionSyntax expression)
         {
-            Debug.Assert(expression != null);
-
             var parentNodeToSpeculate = expression
                 .Ancestors(ascendOutOfTrivia: false)
-                .FirstOrDefault(node => 
-                node.CSharpKind() != SyntaxKind.Argument && 
+                .FirstOrDefault(node =>
+                node.CSharpKind() != SyntaxKind.Argument &&
                 node.CSharpKind() != SyntaxKind.ArgumentList);
-
             return parentNodeToSpeculate ?? expression;
         }
 
         public static bool CanSpeculateOnNode(SyntaxNode node)
         {
             return (node is StatementSyntax && node.CSharpKind() != SyntaxKind.Block) ||
-                //node is TypeSyntax ||
                 node is CrefSyntax ||
                 node.CSharpKind() == SyntaxKind.Attribute ||
                 node.CSharpKind() == SyntaxKind.ThisConstructorInitializer ||
@@ -142,13 +127,13 @@ namespace CodeCracker.Style
                 node.CSharpKind() == SyntaxKind.ArrowExpressionClause;
         }
 
-        private bool ReplacementChangesSemantics(dynamic originalExpression, dynamic replacedExpression, SemanticModel semanticModel)
+        private bool ReplacementChangesSemantics(SyntaxNode originalExpression, SyntaxNode replacedExpression, SemanticModel semanticModel)
         {
             SemanticModel speculativeModel;
-            Microsoft.CodeAnalysis.CSharp.CSharpExtensions.TryGetSpeculativeSemanticModel(semanticModel, originalExpression.SpanStart, GetSemanticRootForSpeculation(replacedExpression), out speculativeModel);
-            
-            var originalInfo = ModelExtensions.GetSymbolInfo(semanticModel, originalExpression);
-            var replacementInfo = ModelExtensions.GetSymbolInfo(speculativeModel, replacedExpression);
+            if (!Microsoft.CodeAnalysis.CSharp.CSharpExtensions.TryGetSpeculativeSemanticModel(semanticModel, originalExpression.SpanStart, (dynamic)GetSemanticRootForSpeculation(replacedExpression), out speculativeModel))
+                return true;
+            var originalInfo = semanticModel.GetSymbolInfo(originalExpression);
+            var replacementInfo = speculativeModel.GetSymbolInfo(replacedExpression);
             return !originalInfo.Equals(replacementInfo);
         }
     }
