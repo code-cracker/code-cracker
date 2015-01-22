@@ -26,7 +26,7 @@ Properties {
     $outputXml = "$logDir\CodeCoverageResults.xml"
     $reportGeneratorExe = "$packagesDir\ReportGenerator.2.0.4.0\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
-    $converallsNetExe = "$packagesDir\coveralls.io.1.1.73-beta\tools\coveralls.net.exe"
+    $converallsNetExe = "$packagesDir\coveralls.io.1.1.86\tools\coveralls.net.exe"
 }
 
 FormatTaskName (("-"*25) + "[{0}]" + ("-"*25))
