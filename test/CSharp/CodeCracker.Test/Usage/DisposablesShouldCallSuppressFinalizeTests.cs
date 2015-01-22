@@ -7,7 +7,7 @@ namespace CodeCracker.Test.Usage
 {
     public class DisposablesShouldCallSuppressFinalizeTests : CodeFixTest<DisposablesShouldCallSuppressFinalizeAnalyzer, DisposablesShouldCallSuppressFinalizeCodeFixProvider>
     {
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async void WarningIfStructImplmentsIDisposableWithNoSuppressFinalizeCall()
         {
             const string test = @"
@@ -29,7 +29,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async void WarningIfClassImplmentsIDisposableWithNoSuppressFinalizeCall()
         {
             const string test = @"
@@ -51,7 +51,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async void NoWarningIfStructDoesNotImplementsIDisposable()
         {
             const string test = @"
@@ -62,7 +62,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async void NoWarningIfClassDoesNotImplementsIDisposable()
         {
             const string test = @"
@@ -73,7 +73,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async void WhenStructImplementsIDisposableCallSuppressFinalize()
         {
             const string source = @"
@@ -98,7 +98,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async void WhenClassImplementsIDisposableCallSuppressFinalize()
         {
             const string source = @"
@@ -123,7 +123,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async void WhenClassHasParametrizedDisposeMethod()
         {
             const string source = @"

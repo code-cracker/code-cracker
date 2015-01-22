@@ -25,7 +25,7 @@ namespace CodeCracker.Test.Usage
     }";
         private const string sourceWithUsingSystem = "\n    using System;" + sourceWithoutUsingSystem;
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenThrowingOriginalExceptionAnalyzerCreatesDiagnostic()
         {
             var expected = new DiagnosticResult
@@ -39,7 +39,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpDiagnosticAsync(sourceWithUsingSystem, expected);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionFix()
         {
 
@@ -62,7 +62,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpFixAsync(sourceWithUsingSystem, fixtest, 0);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenThrowingOriginalExceptionAndApplyingRethrowFix()
         {
             const string fixtest = @"
@@ -84,7 +84,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpFixAsync(sourceWithUsingSystem, fixtest, 1);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenThrowingOriginalExceptionAndApplyingThrowNewExceptionCompleteExceptionDeclationFix()
         {
 

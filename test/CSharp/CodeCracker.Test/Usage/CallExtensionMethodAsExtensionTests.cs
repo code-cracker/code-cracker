@@ -8,7 +8,7 @@ namespace CodeCracker.Test.Usage
     public class CallExtensionMethodAsExtensionTests :
         CodeFixTest<CallExtensionMethodAsExtensionAnalyzer, CallExtensionMethodAsExtensionCodeFixProvider>
     {
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenCallExtensionMethodAsExtensionHasNoDiagnostics()
         {
             const string source = @"
@@ -27,7 +27,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenCallExtensionMethodAsStaticMenthodTriggerAFix()
         {
             const string source = @"
@@ -55,7 +55,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenCallExtensionMethodWithFullNamespaceAsStaticMenthodTriggerAFix()
         {
             const string source = @"
@@ -82,7 +82,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenCallExtensionMethodAsStaticMenthodShouldFix()
         {
             const string source = @"
@@ -116,7 +116,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpFixAsync(source, expected);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenCallExtensionMethodWithFullNamespaceAndNotImportedShouldImport()
         {
             const string source = @"
@@ -157,7 +157,7 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpFixAsync(source, expected);
         }
 
-        [Fact]
+        [Fact(Skip = "Diagnostic disabled because of a bug")]
         public async Task WhenCallExtensionMethodWithChainCallsShouldNotBreakTheChain()
         {
             const string source = @"
