@@ -55,6 +55,7 @@ namespace CodeCracker.Style
             var newRoot = root.ReplaceNode(invocationExpression, newStringInterpolation);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
+            var a = $"{1 :D4}";
         }
     }
 }
