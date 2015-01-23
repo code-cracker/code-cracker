@@ -40,7 +40,8 @@ namespace CodeCracker.Style
             var memberExpresion = invocationExpression.Expression as MemberAccessExpressionSyntax;
             if (memberExpresion?.Name?.ToString() != "Format") return;
             var memberSymbol = context.SemanticModel.GetSymbolInfo(memberExpresion).Symbol;
-            if (!memberSymbol?.ToString()?.StartsWith("string.Format(string, ") ?? false) return;
+            if (memberSymbol == null) return;
+            if (!memberSymbol.ToString().StartsWith("string.Format(string, ")) return;
             var argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
             if (argumentList?.Arguments.Count < 2) return;
             if (!argumentList.Arguments[0]?.Expression?.IsKind(SyntaxKind.StringLiteralExpression) ?? false) return;

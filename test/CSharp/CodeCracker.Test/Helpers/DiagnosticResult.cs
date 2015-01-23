@@ -24,9 +24,9 @@ namespace TestHelper
             this.Column = column;
         }
 
-        public string Path;
-        public int Line;
-        public int Column;
+        public readonly string Path;
+        public readonly int Line;
+        public readonly int Column;
     }
 
     /// <summary>

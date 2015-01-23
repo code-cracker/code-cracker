@@ -100,7 +100,7 @@ m.Dispose(true);".WrapInMethod();
         [Fact]
         public async Task DisposableVariableCallsIncorrectDisposeSymbolCreatesDiagnostic()
         {
-            var source = @"
+            const string source = @"
                 class A
                 {
                     void Foo()
@@ -128,7 +128,7 @@ m.Dispose(true);".WrapInMethod();
         [Fact]
         public async Task DisposableVariableCallsIDisposableDisposeDirectlyDoesNotCreateDiagnostic()
         {
-            var source = @"
+            const string source = @"
                 class A
                 {
                     void Foo()
@@ -148,7 +148,7 @@ m.Dispose(true);".WrapInMethod();
         [Fact]
         public async Task DisposableVariableCallsOtherDisposableDisposeDirectlyCreatesDiagnostic()
         {
-            var source = @"
+            const string source = @"
                 class A
                 {
                     void Foo()
@@ -180,7 +180,7 @@ m.Dispose(true);".WrapInMethod();
         [Fact]
         public async Task DisposableAssignedToFieldDoesNotCreateDiagnostic()
         {
-            var source = @"
+            const string source = @"
                 class A
                 {
                     System.IO.MemoryStream field;
@@ -197,7 +197,7 @@ m.Dispose(true);".WrapInMethod();
         [Fact]
         public async Task DisposableDeclaredOnFieldDoesNotCreateDiagnostic()
         {
-            var source = @"
+            const string source = @"
                 class A
                 {
                     System.IO.MemoryStream field;
@@ -405,7 +405,7 @@ m.Dispose();".WrapInMethod();
         [Fact]
         public async Task FixAssignmentInsideBlockWithDifferentScopeInDeclarationAndAssignmentAndUseOnOutsideScopeAndWithImplicitDispose()
         {
-            var source = @"
+            const string source = @"
                 using System;
                 class A
                 {
@@ -427,7 +427,7 @@ m.Dispose();".WrapInMethod();
                     public void Flush() { }
                 }
 ";
-            var fixtest = @"
+            const string fixtest = @"
                 using System;
                 class A
                 {
@@ -456,7 +456,7 @@ m.Dispose();".WrapInMethod();
         [Fact]
         public async Task FixAssignmentInsideBlockWithDifferentScopeInDeclarationWithImplicitDisposeAndNoExtraStatements()
         {
-            var source = @"
+            const string source = @"
                 using System;
                 class A
                 {
@@ -474,7 +474,7 @@ m.Dispose();".WrapInMethod();
                     void IDisposable.Dispose() { }
                 }
 ";
-            var fixtest = @"
+            const string fixtest = @"
                 using System;
                 class A
                 {
@@ -501,7 +501,7 @@ m.Dispose();".WrapInMethod();
         [Fact]
         public async Task ExplicitlyDisposedObjectDoesNotCreateDiagnostic()
         {
-            var source = @"
+            const string source = @"
                 using System;
                 class A
                 {
@@ -528,7 +528,7 @@ m.Dispose();".WrapInMethod();
         [Fact]
         public async Task FixAssignmentInsideBlockWithDifferentScopeInDeclarationAndAssignmentAndUseOnOutsideScopeAndWithImplicitDisposeAndDisjointFirstAndLastStatements()
         {
-            var source = @"
+            const string source = @"
                 using System;
                 class A
                 {
@@ -553,7 +553,7 @@ m.Dispose();".WrapInMethod();
                     public void Flush() { }
                 }
 ";
-            var fixtest = @"
+            const string fixtest = @"
                 using System;
                 class A
                 {
@@ -584,7 +584,7 @@ m.Dispose();".WrapInMethod();
         [Fact]
         public async Task FixConflictingScopesDescendingInTree()
         {
-            var source = @"
+            const string source = @"
                 using System;
                 class A
                 {
@@ -612,7 +612,7 @@ m.Dispose();".WrapInMethod();
                     public void Flush() { }
                 }
 ";
-            var fixtest = @"
+            const string fixtest = @"
                 using System;
                 class A
                 {
@@ -646,7 +646,7 @@ m.Dispose();".WrapInMethod();
         [Fact]
         public async Task WhenVariableIsReturnedDoesNotCreateDiagnostic()
         {
-            var source = @"
+            const string source = @"
                 using System.IO;
                 class A
                 {

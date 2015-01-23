@@ -16,14 +16,14 @@ namespace CodeCracker.Usage
         internal const string MessageFormat = "Do not call '{0}' method of class '{1}' as a static method";
         internal const string Category = SupportedCategories.Usage;
 
-        internal static DiagnosticDescriptor Rule =
-            new DiagnosticDescriptor(
-                DiagnosticId,
-                Title,
-                MessageFormat,
-                Category,
-                DiagnosticSeverity.Info,
-                isEnabledByDefault: true);
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Info,
+            isEnabledByDefault: false,
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {

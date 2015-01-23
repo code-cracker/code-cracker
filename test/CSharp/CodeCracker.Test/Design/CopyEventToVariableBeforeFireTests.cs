@@ -136,7 +136,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async void NotWarningIfIsAParameter()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass
                 {
                     public void Execute(Action action)

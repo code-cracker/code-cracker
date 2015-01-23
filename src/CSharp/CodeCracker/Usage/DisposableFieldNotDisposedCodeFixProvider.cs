@@ -34,7 +34,7 @@ namespace CodeCracker.Usage
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var variableDeclarators = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<VariableDeclaratorSyntax>();
             foreach (var variableDeclarator in variableDeclarators)
-                context.RegisterFix(CodeAction.Create("Dispose field '\{variableDeclarator.Identifier.Value}'", c => MakeThrowAsInnerAsync(context.Document, variableDeclarator, c)), diagnostic);
+                context.RegisterFix(CodeAction.Create($"Dispose field '{variableDeclarator.Identifier.Value}'", c => MakeThrowAsInnerAsync(context.Document, variableDeclarator, c)), diagnostic);
         }
 
         private async Task<Document> MakeThrowAsInnerAsync(Document document, VariableDeclaratorSyntax variableDeclarator, CancellationToken cancellationToken)
@@ -68,7 +68,7 @@ namespace CodeCracker.Usage
         private static TypeDeclarationSyntax AddDisposeDeclarationToDisposeMethod(VariableDeclaratorSyntax variableDeclarator, TypeDeclarationSyntax type, INamedTypeSymbol typeSymbol)
         {
             var disposableMethod = typeSymbol.GetMembers("Dispose").OfType<IMethodSymbol>().FirstOrDefault(d => d.Arity == 0);
-            var disposeStatement = SyntaxFactory.ParseStatement("\{variableDeclarator.Identifier.ToString()}.Dispose();");
+            var disposeStatement = SyntaxFactory.ParseStatement($"{variableDeclarator.Identifier.ToString()}.Dispose();");
             TypeDeclarationSyntax newType;
             if (disposableMethod == null)
             {
@@ -92,7 +92,7 @@ namespace CodeCracker.Usage
                     //we will simply anotate the code for now, but ideally we would change another document
                     //for this to work we have to be able to fix more than one doc
                     var fieldDeclaration = variableDeclarator.Parent.Parent;
-                    var newFieldDeclaration = fieldDeclaration.WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia("//add \{disposeStatement.ToString()} to the Dispose method on another file.").AddRange(fieldDeclaration.GetTrailingTrivia()))
+                    var newFieldDeclaration = fieldDeclaration.WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia($"//add {disposeStatement.ToString()} to the Dispose method on another file.").AddRange(fieldDeclaration.GetTrailingTrivia()))
                         .WithLeadingTrivia(fieldDeclaration.GetLeadingTrivia());
                     newType = type.ReplaceNode(fieldDeclaration, newFieldDeclaration);
                 }

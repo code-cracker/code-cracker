@@ -51,7 +51,7 @@ namespace CodeCracker.Style
                 {
                     label = label.WithLeadingTrivia(nestedIf.Parent.GetLeadingTrivia());
                 }
-                    
+
                 sections.Add(CreateSection(label, nestedIf.Statement));
             }
 
@@ -73,8 +73,8 @@ namespace CodeCracker.Style
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
-            var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode<SyntaxNode, StatementSyntax>(ifStatement, switchStatement);
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
+            var newRoot = root.ReplaceNode(ifStatement, switchStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }

@@ -35,26 +35,23 @@ namespace CodeCracker.Style
             context.RegisterFix(CodeAction.Create("Change to string interpolation", c => MakeStringInterpolationAsync(context.Document, invocation, c)), diagnostic);
         }
 
-        private async Task<Document> MakeStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression , CancellationToken cancellationToken)
+        private async Task<Document> MakeStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
         {
-            var semanticModel = await document.GetSemanticModelAsync();
-            var memberExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
-            var memberSymbol = semanticModel.GetSymbolInfo(memberExpression).Symbol;
-            var argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            var memberSymbol = semanticModel.GetSymbolInfo(invocationExpression.Expression).Symbol;
+            var argumentList = invocationExpression.ArgumentList;
             var arguments = argumentList.Arguments;
             var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;
-            var format = (string)semanticModel.GetConstantValue(formatLiteral).Value;
-            var escapedFormat = format.Replace("\n", @"\n").Replace("\r", @"\r").Replace("\f", @"\f").Replace("\"","\\\"");
-            var newParams = new List<object>();
-            foreach (var param in arguments.Skip(1))
+            var analyzingInterpolation = (InterpolatedStringSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
+            var interpolationArgs = arguments.Skip(1).ToArray();
+            var expressionsToReplace = new Dictionary<ExpressionSyntax, ExpressionSyntax>();
+            for (int i = 0; i < analyzingInterpolation.InterpolatedInserts.Count; i++)
             {
-                newParams.Add(@"\{" + param.Expression.ToString() + "}");
+                var insert = analyzingInterpolation.InterpolatedInserts[i];
+                expressionsToReplace.Add(insert.Expression,interpolationArgs[i].Expression);
             }
-            var interpolatedStringText = "\"" + string.Format(escapedFormat, newParams.ToArray()) + "\"";
-            var newStringInterpolation = SyntaxFactory.ParseExpression(interpolatedStringText)
-                .WithSameTriviaAs(invocationExpression)
-                .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
+            var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(invocationExpression, newStringInterpolation);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

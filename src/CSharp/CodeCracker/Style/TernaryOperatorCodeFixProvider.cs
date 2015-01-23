@@ -39,11 +39,11 @@ namespace CodeCracker.Style
             var statementInsideIf = (ReturnStatementSyntax)(ifStatement.Statement is BlockSyntax ? ((BlockSyntax)ifStatement.Statement).Statements.Single() : ifStatement.Statement);
             var elseStatement = ifStatement.Else;
             var statementInsideElse = (ReturnStatementSyntax)(elseStatement.Statement is BlockSyntax ? ((BlockSyntax)elseStatement.Statement).Statements.Single() : elseStatement.Statement);
-            var ternary = SyntaxFactory.ParseStatement("return \{ifStatement.Condition.ToString()} ? \{statementInsideIf.Expression.ToString()} : \{statementInsideElse.Expression.ToString()};")
+            var ternary = SyntaxFactory.ParseStatement($"return {ifStatement.Condition.ToString()} ? {statementInsideIf.Expression.ToString()} : {statementInsideElse.Expression.ToString()};")
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ifStatement, ternary);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
@@ -81,11 +81,11 @@ namespace CodeCracker.Style
             var assignmentExpressionInsideIf = (AssignmentExpressionSyntax)expressionInsideIf.Expression;
             var assignmentExpressionInsideElse = (AssignmentExpressionSyntax)expressionInsideElse.Expression;
             var variableIdentifierInsideIf = assignmentExpressionInsideIf.Left as IdentifierNameSyntax;
-            var ternary = SyntaxFactory.ParseStatement("\{variableIdentifierInsideIf.Identifier.Text} = \{ifStatement.Condition.ToString()} ? \{assignmentExpressionInsideIf.Right.ToString()} : \{assignmentExpressionInsideElse.Right.ToString()};")
+            var ternary = SyntaxFactory.ParseStatement($"{variableIdentifierInsideIf.Identifier.Text} = {ifStatement.Condition.ToString()} ? {assignmentExpressionInsideIf.Right.ToString()} : {assignmentExpressionInsideElse.Right.ToString()};")
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ifStatement, ternary);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

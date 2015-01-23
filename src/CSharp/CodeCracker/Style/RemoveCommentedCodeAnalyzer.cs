@@ -127,6 +127,8 @@ namespace CodeCracker.Style
             {
                 Code = code;
                 NumberOfComments = numberOfComments;
+                Start = start;
+                End = end;
             }
         }
     }

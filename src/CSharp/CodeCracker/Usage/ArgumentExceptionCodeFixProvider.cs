@@ -49,9 +49,7 @@ namespace CodeCracker.Usage
             var paramNameLiteral = argumentList.Arguments[1].Expression as LiteralExpressionSyntax;
             var paramNameOpt = semanticModel.GetConstantValue(paramNameLiteral);
             var currentParamName = paramNameOpt.Value as string;
-
-            var newLiteral = SyntaxFactory.ParseExpression(string.Format("\"{0}\"", newParamName));
-
+            var newLiteral = SyntaxFactory.ParseExpression($"\"{newParamName}\"");
             var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(paramNameLiteral, newLiteral);
             var newDocument = document.WithSyntaxRoot(newRoot);

@@ -75,7 +75,7 @@ Namespace TestHelper
             For i = 0 To attempts - 1
                 Dim actions = New List(Of CodeAction)()
                 Dim context = New CodeFixContext(document, analyzerDiagnostics(0), Sub(a, d) actions.Add(a), CancellationToken.None)
-                codeFixProvider.ComputeFixesAsync(context).Wait()
+                Await codeFixProvider.ComputeFixesAsync(context)
 
                 If Not actions.Any() Then
                     Exit For

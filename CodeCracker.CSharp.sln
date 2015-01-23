@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22310.1
+VisualStudioVersion = 14.0.22512.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2F5240AD-2B4E-48A4-B9FC-7D19DACEF2CD}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,10 +19,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		buildNuget.cmd = buildNuget.cmd
-		src\CSharp\buildNugetCSharp.cmd = src\CSharp\buildNugetCSharp.cmd
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{051F1BE2-9A44-4B84-9DF8-6537852B7BBC}"
+	ProjectSection(SolutionItems) = preProject
+		test\CSharp\AnalyzeCecil.ps1 = test\CSharp\AnalyzeCecil.ps1
+		test\CSharp\AnalyzeCoreFx.ps1 = test\CSharp\AnalyzeCoreFx.ps1
+		test\CSharp\AnalyzeRoslyn.ps1 = test\CSharp\AnalyzeRoslyn.ps1
 		runTestsCS.ps1 = runTestsCS.ps1
+		test.ps1 = test.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{40545653-8444-49E0-8DAD-BBB381F8A3B2}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		build.ps1 = build.ps1
+		build.targets.ps1 = build.targets.ps1
+		psake.ps1 = psake.ps1
+		test.ps1 = test.ps1
 	EndProjectSection
 EndProject
 Global
@@ -52,5 +67,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{051F1BE2-9A44-4B84-9DF8-6537852B7BBC} = {7B4F0131-D598-4692-9E2C-111E6C42C6AD}
+		{40545653-8444-49E0-8DAD-BBB381F8A3B2} = {7B4F0131-D598-4692-9E2C-111E6C42C6AD}
 	EndGlobalSection
 EndGlobal

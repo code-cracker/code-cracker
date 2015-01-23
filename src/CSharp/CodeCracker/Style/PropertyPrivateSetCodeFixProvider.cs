@@ -34,8 +34,8 @@ namespace CodeCracker.Style
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Consider use a 'private set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.PrivateFix)), diagnostic);
-            context.RegisterFix(CodeAction.Create("Consider use a 'protected set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.ProtectedFix)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Change property to 'private set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.PrivateFix)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Change property to 'protected set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.ProtectedFix)), diagnostic);
         }
 
         private async Task<Document> ChangePropertySetAsync(Document document, PropertyDeclarationSyntax propertyStatement, CancellationToken cancellationToken, FixType fixType)

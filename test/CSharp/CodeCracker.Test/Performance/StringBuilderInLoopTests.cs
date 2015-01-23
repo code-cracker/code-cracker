@@ -499,5 +499,93 @@ namespace CodeCracker.Test.Performance
                 myString = builder.ToString();".WrapInMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task WhileWithtStringConcatOnFieldWithAccessCreatesDiagnostic()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class SomeObject
+        {
+			public string A = "";
+        }
+        class TypeName
+        {
+            private SomeObject someObject = new SomeObject();
+            public void Foo()
+            {
+                while (DateTime.Now.Second % 2 == 0)
+                {
+                    someObject.A += """";
+                }
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhileWithtStringConcatOnFieldWithAccessOnArrayCreatesDiagnostic()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class SomeObject
+        {
+			public string[] A;
+        }
+        class TypeName
+        {
+            private SomeObject someObject = new SomeObject();
+            public void Foo()
+            {
+                while (DateTime.Now.Second % 2 == 0)
+                {
+                    someObject.A[DateTime.Now.Second] += """";
+                }
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A[DateTime.Now.Second]"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task ForWithAssignmentOnIntArrayDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+				var length = 12;
+				var baseOffset = 4;
+				var branches = new int[length];
+				for (int i = 0; i < length; i++)
+					branches[i] = baseOffset + int.Parse("""");
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }

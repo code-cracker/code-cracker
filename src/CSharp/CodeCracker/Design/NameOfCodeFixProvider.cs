@@ -36,31 +36,13 @@ namespace CodeCracker.Design
 
         private async Task<Document> MakeNameOfAsync(Document document, LiteralExpressionSyntax stringLiteral, CancellationToken cancelationToken)
         {
-            var methodDeclaration = stringLiteral.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-            if (methodDeclaration != null)
-            {
-                var methodParameter = methodDeclaration.ParameterList.Parameters.First();
-
-                return await NewDocument(document, stringLiteral, methodParameter);
-            }
-            else
-            {
-                var constructorDeclaration = stringLiteral.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
-                var constructorParameter = constructorDeclaration.ParameterList.Parameters.First();
-
-                return await NewDocument(document, stringLiteral, constructorParameter);
-            }
-        }
-
-        private async Task<Document> NewDocument(Document document, LiteralExpressionSyntax stringLiteral, ParameterSyntax methodParameter)
-        {
-            var newNameof = SyntaxFactory.ParseExpression("nameof(\{methodParameter.Identifier.Value})")
+            var newNameof = SyntaxFactory.ParseExpression($"nameof({stringLiteral.Token.ValueText})")
                                     .WithLeadingTrivia(stringLiteral.GetLeadingTrivia())
                                     .WithTrailingTrivia(stringLiteral.GetTrailingTrivia())
                                     .WithAdditionalAnnotations(Formatter.Annotation);
 
-            var root = await document.GetSyntaxRootAsync();
-            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(stringLiteral, newNameof);
+            var root = await document.GetSyntaxRootAsync(cancelationToken);
+            var newRoot = root.ReplaceNode(stringLiteral, newNameof);
             return document.WithSyntaxRoot(newRoot);
         }
     }
