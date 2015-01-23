@@ -37,9 +37,9 @@ Namespace TestHelper
         ''' <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
         ''' <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         ''' <param name="allowNewCompilerDiagnostics">A bool controlling whether Or Not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        Protected Sub VerifyCSharpFix(oldSource As String, newSource As String, Optional codeFixIndex As Integer? = Nothing, Optional allowNewCompilerDiagnostics As Boolean = False)
-            VerifyFix(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics)
-        End Sub
+        Protected Async Function VerifyCSharpFixAsync(oldSource As String, newSource As String, Optional codeFixIndex As Integer? = Nothing, Optional allowNewCompilerDiagnostics As Boolean = False) As Task
+            Await VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics)
+        End Function
 
         ''' <summary>
         ''' Called to test a VB codefix when applied on the inputted string as a source
@@ -48,9 +48,9 @@ Namespace TestHelper
         ''' <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
         ''' <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         ''' <param name="allowNewCompilerDiagnostics">A bool controlling whether Or Not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        Protected Sub VerifyBasicFix(oldSource As String, newSource As String, Optional codeFixIndex As Integer? = Nothing, Optional allowNewCompilerDiagnostics As Boolean = False)
-            VerifyFix(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics)
-        End Sub
+        Protected Async Function VerifyBasicFixAsync(oldSource As String, newSource As String, Optional codeFixIndex As Integer? = Nothing, Optional allowNewCompilerDiagnostics As Boolean = False) As Task
+            Await VerifyFixAsync(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics)
+        End Function
 
         ''' <summary>
         ''' General verifier for codefixes.
@@ -65,11 +65,11 @@ Namespace TestHelper
         ''' <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
         ''' <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         ''' <param name="allowNewCompilerDiagnostics">A bool controlling whether Or Not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        Private Sub VerifyFix(language As String, analyzer As DiagnosticAnalyzer, codeFixProvider As CodeFixProvider, oldSource As String, newSource As String, codeFixIndex As Integer?, allowNewCompilerDiagnostics As Boolean)
+        Private Async Function VerifyFixAsync(language As String, analyzer As DiagnosticAnalyzer, codeFixProvider As CodeFixProvider, oldSource As String, newSource As String, codeFixIndex As Integer?, allowNewCompilerDiagnostics As Boolean) As Task
 
             Dim document = CreateDocument(oldSource, language)
-            Dim analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, New Document() {document})
-            Dim compilerDiagnostics = GetCompilerDiagnostics(document)
+            Dim analyzerDiagnostics = Await GetSortedDiagnosticsFromDocumentsAsync(analyzer, New Document() {document})
+            Dim compilerDiagnostics = Await GetCompilerDiagnosticsAsync(document)
             Dim attempts = analyzerDiagnostics.Length
 
             For i = 0 To attempts - 1
@@ -82,20 +82,22 @@ Namespace TestHelper
                 End If
 
                 If (codeFixIndex IsNot Nothing) Then
-                    document = ApplyFix(document, actions.ElementAt(codeFixIndex))
+                    document = Await ApplyFixAsync(document, actions.ElementAt(codeFixIndex))
                     Exit For
                 End If
 
-                document = ApplyFix(document, actions.ElementAt(0))
-                analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, New Document() {document})
+                document = Await ApplyFixAsync(document, actions.ElementAt(0))
+                analyzerDiagnostics = Await GetSortedDiagnosticsFromDocumentsAsync(analyzer, New Document() {document})
 
-                Dim newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document))
+                Dim newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, Await GetCompilerDiagnosticsAsync(document))
 
                 'check if applying the code fix introduced any New compiler diagnostics
                 If Not allowNewCompilerDiagnostics AndAlso newCompilerDiagnostics.Any() Then
                     ' Format And get the compiler diagnostics again so that the locations make sense in the output
                     document = document.WithSyntaxRoot(Formatter.Format(document.GetSyntaxRootAsync().Result, Formatter.Annotation, document.Project.Solution.Workspace))
-                    newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document))
+                    newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, Await GetCompilerDiagnosticsAsync(document))
+
+                    Dim test = Await GetStringFromDocumentAsync(document)
 
                     Assert.True(False,
                         String.Format("Fix introduced new compiler diagnostics:{2}{0}{2}{2}New document:{2}{1}{2}",
@@ -110,8 +112,8 @@ Namespace TestHelper
             Next
 
             'after applying all of the code fixes, compare the resulting string to the inputted one
-            Dim actual = GetStringFromDocument(document)
+            Dim actual = Await GetStringFromDocumentAsync(document)
             Assert.Equal(newSource, actual)
-        End Sub
+        End Function
     End Class
 End Namespace

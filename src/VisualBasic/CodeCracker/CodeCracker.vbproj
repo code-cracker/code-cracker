@@ -89,18 +89,38 @@
     <Import Include="Windows.UI.Xaml.Media.Imaging" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeCrackerAnalyzerBase.vb" />
+    <Compile Include="Design\CatchEmptyAnalyzer.vb" />
+    <Compile Include="Design\CatchEmptyCodeFixProvider.vb" />
+    <Compile Include="Design\DesignDiagnostics.vb" />
+    <Compile Include="Design\EmptyCatchBlockAnalyzer.vb" />
+    <Compile Include="Design\EmptyCatchBlockCodeFixProvider.vb" />
+    <Compile Include="Design\NameOfAnalyzer.vb" />
+    <Compile Include="Design\NameOfCodeFixProvider.vb" />
+    <Compile Include="Design\StaticConstructorExceptionAnalyzer.vb" />
+    <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.vb" />
     <Compile Include="Extensions\AnalyzerExtensions.vb" />
     <Compile Include="HelpLink.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Performance\EmptyFinalizerAnalyzer.vb" />
+    <Compile Include="Performance\EmptyFinalizerCodeFixProvider.vb" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenPossibleAnalyzer.vb" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenPossibleCodeFixProvider.vb" />
+    <Compile Include="Performance\PerformanceDiagnostics.vb" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleAnalyzer.vb" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleCodeFixProvider.vb" />
+    <Compile Include="Performance\SealedAttributeAnalyzer.vb" />
+    <Compile Include="Performance\SealedAttributeCodeFixProvider.vb" />
+    <Compile Include="Performance\StringBuilderInLoopAnalyzer.vb" />
+    <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.vb" />
+    <Compile Include="SupportedCategories.vb" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Design\" />
     <Folder Include="Globalization\" />
     <Folder Include="Interoperability\" />
     <Folder Include="Maintainability\" />
     <Folder Include="Mobility\" />
     <Folder Include="Naming\" />
-    <Folder Include="Performance\" />
     <Folder Include="Portability\" />
     <Folder Include="Refactoring\" />
     <Folder Include="Reliability\" />
@@ -121,9 +141,27 @@
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-beta1-20141031-01\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Convention">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Hosting">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Runtime">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Metadata">
       <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.17-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>

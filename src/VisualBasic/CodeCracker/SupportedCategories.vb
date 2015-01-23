@@ -1,0 +1,15 @@
+﻿Public Module SupportedCategories
+    Public Const Design = "Design"
+    Public Const Globalization = "Globalization"
+    Public Const Interoperability = "Interoperability"
+    Public Const Maintainability = "Maintainability"
+    Public Const Mobility = "Mobility"
+    Public Const Naming = "Naming"
+    Public Const Performance = "Performance"
+    Public Const Portabliity = "Portability"
+    Public Const Refactoring = "Refactoring"
+    Public Const Reliability = "Reliability"
+    Public Const Security = "Security"
+    Public Const Style = "Style"
+    Public Const Usage = "Usage"
+End Module

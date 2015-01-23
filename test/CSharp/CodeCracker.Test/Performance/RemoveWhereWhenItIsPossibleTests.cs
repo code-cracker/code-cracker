@@ -1,5 +1,6 @@
 ﻿using CodeCracker.Performance;
 using Microsoft.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
@@ -33,7 +34,9 @@ namespace Sample
         }
     }
 }";
-
+            var a = new int[10];
+            var f = a.Where(i => i > 10).Any();
+                
             var expected = new DiagnosticResult
             {
                 Id = RemoveWhereWhenItIsPossibleAnalyzer.DiagnosticId,
@@ -98,7 +101,8 @@ namespace Sample
         public async Task DoSomething()
         {
             var a = new int[10];
-            var f = a.Where(item => item > 10)." + method + @"();
+            var f = a.Where(item => item > 10)." + method + @"()
+;
         }
     }
 }";
@@ -113,7 +117,8 @@ namespace Sample
         public async Task DoSomething()
         {
             var a = new int[10];
-            var f = a." + method + @"(item => item > 10);
+            var f = a." + method + @"(item => item > 10)
+;
         }
     }
 }";
