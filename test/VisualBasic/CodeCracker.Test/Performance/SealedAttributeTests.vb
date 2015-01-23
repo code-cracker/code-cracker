@@ -81,7 +81,7 @@ End Interface"
     End Function
 
     <Fact>
-    Public Sub WhenSealedModifierIsAppliedOnClass()
+    Public Async Function WhenSealedModifierIsAppliedOnClass() As Task
         Const test = "
 Public Class MyAttribute
     Inherits System.Attribute
@@ -92,6 +92,6 @@ Public NotInheritable Class MyAttribute
     Inherits System.Attribute
 End Class"
 
-        VerifyBasicFix(test, fix, 0)
-    End Sub
+        Await VerifyBasicFixAsync(test, fix, 0)
+    End Function
 End Class

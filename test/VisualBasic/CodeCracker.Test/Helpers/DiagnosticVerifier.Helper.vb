@@ -32,55 +32,8 @@ Namespace TestHelper
         ''' <param name="language">The language the soruce classes are in</param>
         ''' <param name="analyzer">The analyzer to be run on the sources</param>
         ''' <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-        Private Shared Function GetSortedDiagnostics(sources As String(), language As String, analyzer As DiagnosticAnalyzer) As Diagnostic()
-            Return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources, language))
-        End Function
-
-        ''' <summary>
-        ''' Given an analyzer And a document to apply it to, run the analyzer And gather an array of diagnostics found in it.
-        ''' The returned diagnostics are then ordered by location in the source document.
-        ''' </summary>
-        ''' <param name="analyzer">The analyzer to run on the documents</param>
-        ''' <param name="documents">The Documents that the analyzer will be run on</param>
-        ''' <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-        Protected Shared Function GetSortedDiagnosticsFromDocuments(analyzer As DiagnosticAnalyzer, documents As Document()) As Diagnostic()
-
-            Dim projects = New HashSet(Of Project)()
-            For Each document In documents
-                projects.Add(document.Project)
-            Next
-
-            Dim diagnostics = New List(Of Diagnostic)()
-            For Each project In projects
-
-                Dim compilation = project.GetCompilationAsync().Result
-                Dim driver = AnalyzerDriver.Create(compilation, ImmutableArray.Create(analyzer), Nothing, compilation, CancellationToken.None)
-                Dim discarded = compilation.GetDiagnostics
-                Dim diags = driver.GetDiagnosticsAsync.Result
-                For Each diag In diags
-
-                    If diag.Location = Location.None OrElse diag.Location.IsInMetadata Then
-
-                        diagnostics.Add(diag)
-                    Else
-
-                        For i = 0 To documents.Length - 1
-
-                            Dim document = documents(i)
-                            Dim tree = document.GetSyntaxTreeAsync().Result
-                            If tree Is diag.Location.SourceTree Then
-
-                                diagnostics.Add(diag)
-                            End If
-                        Next
-                    End If
-                Next
-            Next
-
-            Dim results = SortDiagnostics(diagnostics)
-            diagnostics.Clear()
-
-            Return results
+        Private Shared Async Function GetSortedDiagnosticsAsync(sources As String(), language As String, analyzer As DiagnosticAnalyzer) As Task(Of Diagnostic())
+            Return Await GetSortedDiagnosticsFromDocumentsAsync(analyzer, GetDocuments(sources, language))
         End Function
 
         ''' <summary>

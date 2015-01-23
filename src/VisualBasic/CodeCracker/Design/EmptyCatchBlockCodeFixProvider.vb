@@ -16,8 +16,7 @@ Public Class EmptyCatchBlockCodeFixProvider
         Dim diag = context.Diagnostics.First
         Dim diagSpan = diag.Location.SourceSpan
         Dim declaration = root.FindToken(diagSpan.Start).Parent.AncestorsAndSelf.OfType(Of CatchBlockSyntax).First
-        context.RegisterFix(CodeAction.Create("Remove Empty Catch Block", Function(c) RemoveEmptyCatchBlockAsync(context.Document, declaration, c)), diag)
-        context.RegisterFix(CodeAction.Create("Remove Empty Catch Block and put a documentation link about Try...Catch usage", Function(c) RemoveEmptyCatchBlockPutCommentAsnyc(context.Document, declaration, c)), diag)
+        context.RegisterFix(CodeAction.Create("Remove Empty Catch Block", Function(c) RemoveTry(context.Document, declaration, c)), diag)
         context.RegisterFix(CodeAction.Create("Insert Exception class to Catch", Function(c) InsertExceptionClassCommentAsync(context.Document, declaration, c)), diag)
     End Function
 
@@ -29,43 +28,20 @@ Public Class EmptyCatchBlockCodeFixProvider
         Return WellKnownFixAllProviders.BatchFixer
     End Function
 
-    Private Async Function RemoveTry(document As Document, catchBlock As CatchBlockSyntax, Optional insertComment As Boolean = False) As Task(Of Document)
+    Private Async Function RemoveTry(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
         Dim tryBlock = DirectCast(catchBlock.Parent, TryBlockSyntax)
         Dim statements = tryBlock.Statements
+        Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
 
-        If insertComment Then
-            Dim firstStatement = statements.FirstOrDefault()
-            If firstStatement IsNot Nothing Then
-                Dim comment() As SyntaxTrivia = {
-                 SyntaxFactory.CommentTrivia("//TODO: Consider reading MSDN Documentation about how to use Try...Catch => http://msdn.microsoft.com/en-us/library/0yd65esw.aspx")
-                    }
+        Dim newRoot = root.ReplaceNode(catchBlock.Parent,
+                                       statements.Select(Function(s) s.
+                                            WithLeadingTrivia(catchBlock.Parent.GetLeadingTrivia()).
+                                            WithTrailingTrivia(catchBlock.Parent.GetTrailingTrivia())))
 
-                firstStatement = firstStatement.WithLeadingTrivia(firstStatement.GetLeadingTrivia()).
-                    WithTrailingTrivia(comment).
-                    WithAdditionalAnnotations(Formatter.Annotation)
-
-                'firstStatement = firstStatement.WithLeadingTrivia(SyntaxFactory.TriviaList(New SyntaxTrivia() {tryBlock.GetTrailingTrivia().First,
-                '    SyntaxFactory.CommentTrivia("TODO: Consider reading MSDN Documentation about how to use Try...Catch => http://msdn.microsoft.com/en-us/library/0yd65esw.aspx"), tryBlock.GetTrailingTrivia().Last()})).
-                '    WithAdditionalAnnotations(Formatter.Annotation)
-
-                statements.Replace(statements.First(), firstStatement)
-            End If
-        End If
-
-        Dim root = Await document.GetSyntaxRootAsync()
-        Dim newRoot = root.ReplaceNode(catchBlock.Parent, statements.Select(Function(s) s.NormalizeWhitespace().
-            WithLeadingTrivia(catchBlock.Parent.GetLeadingTrivia()).
-            WithTrailingTrivia(catchBlock.Parent.GetTrailingTrivia())))
         Dim newDocument = document.WithSyntaxRoot(newRoot)
         Return newDocument
     End Function
 
-    Private Async Function RemoveEmptyCatchBlockAsync(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
-        Return Await RemoveTry(document, catchBlock)
-    End Function
-    Private Async Function RemoveEmptyCatchBlockPutCommentAsnyc(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
-        Return Await RemoveTry(document, catchBlock, True)
-    End Function
     Private Async Function InsertExceptionClassCommentAsync(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
         Dim statements = New SyntaxList(Of SyntaxNode)().Add(SyntaxFactory.ThrowStatement())
 

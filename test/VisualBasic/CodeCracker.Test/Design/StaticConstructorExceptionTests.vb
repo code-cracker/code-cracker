@@ -66,7 +66,7 @@ End Class"
     End Function
 
     <Fact>
-    Public Sub WhenThrowIsRemovedFromStaticConstructor()
+    Public Async Function WhenThrowIsRemovedFromStaticConstructor() As Task
         Dim test = "
 Public Class TestClass
     Shared Sub New()
@@ -79,9 +79,9 @@ Public Class TestClass
     Shared Sub New()
     End Sub
 End Class"
-        VerifyBasicFix(test, fix, 0)
+        Await VerifyBasicFixAsync(test, fix, 0)
 
-    End Sub
+    End Function
 
     <Fact>
     Sub CanGetTypeSymbolForInferedString()
@@ -105,21 +105,11 @@ End Class"
             Dim localSym = semanticModel.GetDeclaredSymbol(node.Declarators.Single.Names.Single)
             Trace.WriteLine(localSym.ToDisplayString())
 
-            ' TODO: Figure how to get the typeinfo from inferred type
             Dim symbol = semanticModel.GetTypeInfo(node) ' Is Nothing
             Dim variableType = node.Declarators.First.AsClause?.Type ' This is null for inferred types
             If variableType IsNot Nothing Then
-                Dim typeSymbol = SemanticModel.GetTypeInfo(variableType).ConvertedType
-                If typeSymbol.IsReferenceType AndAlso typeSymbol.SpecialType <> SpecialType.System_String Then
-                    '
-                    'Then
-                    'If node.Declarators.First.AsClause() IsNot Nothing Then
-                    'Assert.True(node.Declarators.First.AsClause.Type.r)
-                    'Assert.Equal(node.Declarators.First.AsClause.VBKind, vbString)
-                End If
+                Dim typeSymbol = semanticModel.GetTypeInfo(variableType).ConvertedType
             End If
-
-
         Next
     End Sub
 

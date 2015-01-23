@@ -25,11 +25,8 @@ Namespace TestHelper
 #End Region
 
 #Region " Get Diagnostics "
-        Private Shared Async Function GetSortedDiagnosticsAsync(sources() As String, language As String, analyzer As DiagnosticAnalyzer) As Task(Of Diagnostic())
-            Return Await GetSortedDiagnosticsFromDocumentsAsync(analyzer, TestHelpers.GetDocuments(sources, language))
-        End Function
 
-        Private Shared Async Function GetSortedDiagnosticsFromDocumentsAsync(analyzer As DiagnosticAnalyzer, documents() As Document) As Task(Of Diagnostic())
+        Friend Shared Async Function GetSortedDiagnosticsFromDocumentsAsync(analyzer As DiagnosticAnalyzer, documents() As Document) As Task(Of Diagnostic())
             Dim projects = New HashSet(Of Project)
             For Each document In documents
                 projects.Add(document.Project)
@@ -78,10 +75,10 @@ Namespace TestHelper
         ''' </summary>
         ''' <param name="source">A class in the form of a string to run the analyzer on</param>
         ''' <param name="expected"> DiagnosticResults that should appear after the analyzer Is run on the source</param>
-        Protected Sub VerifyCSharpDiagnostic(source As String, ParamArray expected As DiagnosticResult())
+        Protected Async Function VerifyCSharpDiagnostic(source As String, ParamArray expected As DiagnosticResult()) As Task
 
-            VerifyDiagnostics({source}, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected)
-        End Sub
+            Await VerifyDiagnosticsAsync({source}, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected)
+        End Function
 
         ''' <summary>
         ''' Called to test a VB DiagnosticAnalyzer when applied on the single inputted string as a source
@@ -89,10 +86,10 @@ Namespace TestHelper
         ''' </summary>
         ''' <param name="source">A class in the form of a string to run the analyzer on</param>
         ''' <param name="expected">DiagnosticResults that should appear after the analyzer Is run on the source</param>
-        Protected Sub VerifyBasicDiagnostic(source As String, ParamArray expected As DiagnosticResult())
+        Protected Async Function VerifyBasicDiagnosticAsync(source As String, ParamArray expected As DiagnosticResult()) As Task
 
-            VerifyDiagnostics({source}, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected)
-        End Sub
+            Await VerifyDiagnosticsAsync({source}, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected)
+        End Function
 
         ''' <summary>
         ''' Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source
@@ -100,10 +97,10 @@ Namespace TestHelper
         ''' </summary>
         ''' <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
         ''' <param name="expected">DiagnosticResults that should appear after the analyzer Is run on the sources</param>
-        Protected Sub VerifyCSharpDiagnostic(sources As String(), ParamArray expected As DiagnosticResult())
+        Protected Async Function VerifyCSharpDiagnosticAsync(sources As String(), ParamArray expected As DiagnosticResult()) As Task
 
-            VerifyDiagnostics(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected)
-        End Sub
+            Await VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected)
+        End Function
 
         ''' <summary>
         ''' Called to test a VB DiagnosticAnalyzer when applied on the inputted strings as a source
@@ -111,10 +108,10 @@ Namespace TestHelper
         ''' </summary>
         ''' <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
         ''' <param name="expected">DiagnosticResults that should appear after the analyzer Is run on the sources</param>
-        Protected Sub VerifyBasicDiagnostic(sources As String(), ParamArray expected As DiagnosticResult())
+        Protected Async Function VerifyBasicDiagnosticAsync(sources As String(), ParamArray expected As DiagnosticResult()) As Task
 
-            VerifyDiagnostics(sources, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected)
-        End Sub
+            Await VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected)
+        End Function
 
         ''' <summary>
         ''' General method that gets a collection of actual diagnostics found in the source after the analyzer Is run, 
@@ -124,11 +121,11 @@ Namespace TestHelper
         ''' <param name="language">The language of the classes represented by the source strings</param>
         ''' <param name="analyzer">The analyzer to be run on the source code</param>
         ''' <param name="expected">DiagnosticResults that should appear after the analyzer Is run on the sources</param>
-        Private Sub VerifyDiagnostics(sources As String(), language As String, analyzer As DiagnosticAnalyzer, ParamArray expected As DiagnosticResult())
+        Private Async Function VerifyDiagnosticsAsync(sources As String(), language As String, analyzer As DiagnosticAnalyzer, ParamArray expected As DiagnosticResult()) As Task
 
-            Dim diagnostics = GetSortedDiagnostics(sources, language, analyzer)
+            Dim diagnostics = Await GetSortedDiagnosticsAsync(sources, language, analyzer)
             VerifyDiagnosticResults(diagnostics, analyzer, expected)
-        End Sub
+        End Function
 
 #End Region
 

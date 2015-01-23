@@ -69,7 +69,7 @@ End Namespace"
     <InlineData("Single")>
     <InlineData("SingleOrDefault")>
     <InlineData("Count")>
-    Public Sub FixRemovesWhereMovingPredicateTo(method As String)
+    Public Async Function FixRemovesWhereMovingPredicateTo(method As String) As Task
         Dim test = "
 Imports System.Linq
 Namespace Sample
@@ -92,8 +92,8 @@ Namespace Sample
     End Class
 End Namespace"
 
-        VerifyBasicFix(test, expected)
-    End Sub
+        Await VerifyBasicFixAsync(test, expected)
+    End Function
 
     <Theory>
     <InlineData("First")>
@@ -104,7 +104,7 @@ End Namespace"
     <InlineData("Single")>
     <InlineData("SingleOrDefault")>
     <InlineData("Count")>
-    Public Sub FixRemovesWherePreservingPreviousExpressionsMovingPredicateTo(method As String)
+    Public Async Function FixRemovesWherePreservingPreviousExpressionsMovingPredicateTo(method As String) As Task
         Dim test = "
 Imports System.Linq
 Namespace Sample
@@ -127,21 +127,11 @@ Namespace Sample
     End Class
 End Namespace"
 
-        VerifyBasicFix(test, expected)
-    End Sub
+        Await VerifyBasicFixAsync(test, expected)
+    End Function
 
     Private Sub testee()
         Dim a(10) As Integer
         Dim f = a.Where(Function(i) i > 10).Any()
     End Sub
 End Class
-
-'Imports System.Linq
-'Namespace Sample
-'    Public Class Foo
-'        Public Async Function DoSomething() As Task
-'            Dim a(10) As Integer
-'            Dim f = a.Where(Function(item) item > 10).Any()
-'        End Function
-'    End Class
-'End Namespace

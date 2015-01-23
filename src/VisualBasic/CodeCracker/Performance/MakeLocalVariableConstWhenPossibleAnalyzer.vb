@@ -3,7 +3,6 @@ Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
-'Imports Microsoft.CodeAnalysis.VisualBasic.VisualBasicExtensions
 
 Imports System.Linq
 
@@ -45,8 +44,6 @@ Public Class MakeLocalVariableConstWhenPossibleAnalyzer
 
             ' is constant?
             If declaration.Modifiers.Any(SyntaxKind.ConstKeyword) Then Return False
-
-            'Dim vType = semanticModel.GetTypeInfo(variable.Names.First()).Type
 
             Dim constantValue = semanticModel.GetConstantValue(variable.Initializer.Value)
             Dim valueIsConstant As Boolean = constantValue.HasValue

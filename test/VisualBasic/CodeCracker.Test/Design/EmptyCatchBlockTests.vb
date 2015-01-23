@@ -3,16 +3,6 @@ Imports Xunit
 
 Public Class EmptyCatchBlockTests
     Inherits CodeFixTest(Of EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider)
-    'Public Async Function Foo() As Task
-    '    Dim b = 1
-    '    Dim c = 2
-    '    Try
-    '        ' Do something
-    '        Dim a = "A"
-    '    Catch ex As Exception
-    '        Dim x = 1
-    '    End Try
-    'End Function
 
     Private test = "
 Imports System
@@ -47,7 +37,7 @@ End Namespace"
     End Function
 
     <Fact>
-    Public Sub WhenRemoveTryCatchStatement()
+    Public Async Function WhenRemoveTryCatchStatement() As Task
         Dim fix = "
 Imports System
 Namespace ConsoleApplication1
@@ -58,26 +48,11 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-        VerifyBasicFix(test, fix)
-    End Sub
+        Await VerifyBasicFixAsync(test, fix)
+    End Function
 
     <Fact>
-    Public Sub WhenRemoveTryCatchStatementAndPutComment()
-        Dim fix = "
-Imports System
-Namespace ConsoleApplication1
-    Class TypeName
-        Public Async Function Foo() As Task
-            Dim a = ""A""
-            ' TODO: Consider reading MSDN Documentation about how to use Try...Catch => http://msdn.microsoft.com/en-us/library/0yd65esw.aspx
-        End Function
-    End Class
-End Namespace"
-
-        VerifyBasicFix(test, fix, 1)
-    End Sub
-    <Fact>
-    Public Sub WhenPutExceptionClassInCatchBlock()
+    Public Async Function WhenPutExceptionClassInCatchBlock() As Task
         Dim fix = "
 Imports System
 Namespace ConsoleApplication1
@@ -92,6 +67,6 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-        VerifyBasicFix(test, fix, 2)
-    End Sub
+        Await VerifyBasicFixAsync(test, fix, 1)
+    End Function
 End Class

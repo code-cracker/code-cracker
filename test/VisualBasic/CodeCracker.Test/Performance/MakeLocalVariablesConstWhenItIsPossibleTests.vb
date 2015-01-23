@@ -31,9 +31,8 @@ Public Class MakeLocalVariablesConstWhenItIsPossibleTests
     ' Interpolated strings are valid as consts in VB
     '<Fact>
     'Public Async Function IgnoresStringInterpolations() As Task
-    '    Dim test = "Dim a as String = ""a value is {0}".WrapInMethod
-    '    Await VerifyBasicHasNoDiagnosticsAsync(test)
     'End Function
+
     <Fact>
     Public Async Function IgnoresVariablesThatChangesValueOutsideDeclarations() As Task
         Dim test = "Dim a as Integer = 10 : a = 20".WrapInMethod
@@ -84,37 +83,37 @@ Public Class MakeLocalVariablesConstWhenItIsPossibleTests
     End Function
 
     <Fact>
-    Public Sub FixMakesAVariableConstWhenDeclarationSpecifiesTypeName()
+    Public Async Function FixMakesAVariableConstWhenDeclarationSpecifiesTypeName() As Task
         Dim test = "Dim a As Integer = 10".WrapInMethod()
         Dim expected = "Const a As Integer = 10".WrapInMethod()
-        VerifyBasicFix(test, expected)
-    End Sub
+        Await VerifyBasicFixAsync(test, expected)
+    End Function
 
     <Fact>
-    Public Sub FixMakesAVariableConstWhenDeclarationInfersType()
+    Public Async Function FixMakesAVariableConstWhenDeclarationInfersType() As Task
         Dim test = "Dim a = 10".WrapInMethod()
         Dim expected = "Const a = 10".WrapInMethod()
-        VerifyBasicFix(test, expected)
-    End Sub
+        Await VerifyBasicFixAsync(test, expected)
+    End Function
     <Fact>
-    Public Sub FixMakesAVariableConstWhenDeclarationInfersString()
+    Public Async Function FixMakesAVariableConstWhenDeclarationInfersString() As Task
         Dim test = "Dim a = """"".WrapInMethod()
         Dim expected = "Const a = """"".WrapInMethod()
-        VerifyBasicFix(test, expected)
-    End Sub
+        Await VerifyBasicFixAsync(test, expected)
+    End Function
 
     <Fact>
-    Public Sub FixMakesAVariableConstWhenSettingNullToAReferenceType()
+    Public Async Function FixMakesAVariableConstWhenSettingNullToAReferenceType() As Task
         Dim test = "Dim a As Foo = Nothing".WrapInMethod()
         Dim expected = "Const a As Foo = Nothing".WrapInMethod()
-        VerifyBasicFix(test, expected)
-    End Sub
+        Await VerifyBasicFixAsync(test, expected)
+    End Function
     <Fact>
-    Public Sub FixMakesAVariableConstWhenInferingType()
+    Public Async Function FixMakesAVariableConstWhenInferingType() As Task
         Dim test = "Dim a = 10".WrapInMethod()
         Dim expected = "Const a = 10".WrapInMethod()
-        VerifyBasicFix(test, expected)
-    End Sub
+        Await VerifyBasicFixAsync(test, expected)
+    End Function
 
     ' Test does not apply in VB. Can't make a class into a const
     '<Fact>
@@ -144,12 +143,3 @@ End Namespace".Replace("code", code)
 
     End Function
 End Module
-
-'Using System
-'Namespace ConsoleApplication1
-'    Class TypeName
-'        Public Sub Foo()
-'            code
-'        End Sub
-'    End Class
-'End Namespace

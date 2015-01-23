@@ -4,14 +4,6 @@ Imports Xunit
 Public Class CatchEmptyTests
     Inherits CodeFixTest(Of CatchEmptyAnalyzer, CatchEmptyCodeFixProvider)
 
-    'Public Async Function Foo() As Task
-    '    Try
-    '        ' Do something
-    '    Catch
-    '        Dim x = 0
-    '    End Try
-    'End Function
-
     <Fact>
     Public Async Function CatchEmptyAnalyserCreateDiagnostic() As Task
         Const source = "
@@ -31,7 +23,7 @@ End Namespace"
     End Function
 
     <Fact>
-    Public Sub WhenFindCatchEmptyThenPutExceptionClass()
+    Public Async Function WhenFindCatchEmptyThenPutExceptionClass() As Task
         Const source = "
 Imports System
 Namespace ConsoleApplication1
@@ -59,8 +51,8 @@ Namespace ConsoleApplication1
         End Function
     End Class
 End Namespace"
-        VerifyBasicFix(source, fix, 0)
-    End Sub
+        Await VerifyBasicFixAsync(source, fix, 0)
+    End Function
 
 End Class
 

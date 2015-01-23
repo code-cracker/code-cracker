@@ -46,24 +46,16 @@ Public Class StringBuilderInLoopCodeFixProvider
         Dim newLoopStatement = loopStatement.ReplaceNode(expressionStatementParent, newExpressionStatementParent)
         Dim stringBuilderType = SyntaxFactory.ParseTypeName("System.Text.StringBuilder").WithAdditionalAnnotations(Simplifier.Annotation)
 
-        Dim modifiers As SyntaxTokenList = SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.DimKeyword).WithTrailingTrivia(SyntaxFactory.WhitespaceTrivia(" ")))
-        Dim names() As ModifiedIdentifierSyntax = {SyntaxFactory.ModifiedIdentifier(builderName).WithTrailingTrivia(SyntaxFactory.WhitespaceTrivia(" "))}
-        Dim identifiers = SyntaxFactory.SeparatedList(Of ModifiedIdentifierSyntax)(names)
-
-        Dim builder As New System.Text.StringBuilder()
-        Dim emptyAttributeList As New SyntaxList(Of AttributeListSyntax)()
-
-        Dim declarator = SyntaxFactory.VariableDeclarator(identifiers,
-                                                          SyntaxFactory.AsNewClause(SyntaxFactory.ObjectCreationExpression(emptyAttributeList, stringBuilderType, SyntaxFactory.ArgumentList(), Nothing)),
-                                                          Nothing).WithTrailingTrivia(SyntaxFactory.LineFeed)
-
         Dim declarators As New SeparatedSyntaxList(Of VariableDeclaratorSyntax)()
-        declarators = declarators.Add(declarator)
+        declarators = declarators.Add(SyntaxFactory.VariableDeclarator(New SeparatedSyntaxList(Of ModifiedIdentifierSyntax)().Add(SyntaxFactory.ModifiedIdentifier(builderName)),
+             SyntaxFactory.AsNewClause(SyntaxFactory.ObjectCreationExpression(stringBuilderType).WithArgumentList(SyntaxFactory.ArgumentList())),
+             Nothing))
 
-        Dim stringBuilderDeclaration = SyntaxFactory.LocalDeclarationStatement(modifiers, declarators)
+        Dim stringBuilderDeclaration = SyntaxFactory.LocalDeclarationStatement(SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.DimKeyword)),
+                                                                               declarators).NormalizeWhitespace(" ").WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)
 
-        Dim appendExpressionOnInitialization = SyntaxFactory.ExpressionStatement(SyntaxFactory.ParseExpression(builderName & ".Append(" & assignmentStatement.Left.ToString() & ")")).WithTrailingTrivia(SyntaxFactory.LineFeed)
-        Dim stringBuilderToString = SyntaxFactory.ExpressionStatement(SyntaxFactory.ParseExpression(assignmentStatement.Left.ToString() & " = " & builderName & ".ToString()")).WithTrailingTrivia(SyntaxFactory.LineFeed)
+        Dim appendExpressionOnInitialization = SyntaxFactory.ParseExecutableStatement(builderName & ".Append(" & assignmentStatement.Left.ToString() & ")").WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed) '.WithLeadingTrivia(assignmentStatement.GetLeadingTrivia()).WithTrailingTrivia(assignmentStatement.GetTrailingTrivia())
+        Dim stringBuilderToString = SyntaxFactory.ParseExecutableStatement(assignmentStatement.Left.ToString() & " = " & builderName & ".ToString()").WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed) '.WithLeadingTrivia(assignmentStatement.GetLeadingTrivia()).WithTrailingTrivia(assignmentStatement.GetTrailingTrivia())
 
         Dim loopParent = loopStatement.Parent
         Dim newLoopParent = loopParent.ReplaceNode(loopStatement,
@@ -77,19 +69,15 @@ Public Class StringBuilderInLoopCodeFixProvider
 
     Private Shared Function ReplaceAddExpressionByStringBuilderAppendExpression(assignment As AssignmentStatementSyntax, expressionStatement As SyntaxNode, expressionStatementParent As SyntaxNode, builderName As String) As SyntaxNode
         Dim appendExpressionOnLoop = If(assignment.IsKind(SyntaxKind.SimpleAssignmentStatement),
-            SyntaxFactory.ParseExpression(builderName & ".Append(" & DirectCast(assignment.Right, BinaryExpressionSyntax).Right.ToString() & ")"),
-            SyntaxFactory.ParseExpression(builderName & ".Append(" & assignment.Right.ToString() & ")"))
+            SyntaxFactory.ParseExecutableStatement(builderName & ".Append(" & DirectCast(assignment.Right, BinaryExpressionSyntax).Right.ToString() & ")"),
+            SyntaxFactory.ParseExecutableStatement(builderName & ".Append(" & assignment.Right.ToString() & ")")).
+                WithLeadingTrivia(assignment.GetLeadingTrivia()).
+                WithTrailingTrivia(assignment.GetTrailingTrivia())
 
-        Dim invokeExp = SyntaxFactory.InvocationExpression(appendExpressionOnLoop).
-            WithLeadingTrivia(expressionStatement.GetLeadingTrivia()).
-            WithTrailingTrivia(expressionStatement.GetTrailingTrivia()).
-            WithTrailingTrivia(SyntaxFactory.LineFeed)
-
-        Dim invokeStatement = SyntaxFactory.ExpressionStatement(invokeExp)
-
-        Dim newExpressionStatementParent = expressionStatementParent.ReplaceNode(expressionStatement, invokeStatement)
+        Dim newExpressionStatementParent = expressionStatementParent.ReplaceNode(expressionStatement, appendExpressionOnLoop)
         Return newExpressionStatementParent
     End Function
+
     Private Shared Function FindAvailableStringBuilderVariableName(assignmentStatement As AssignmentStatementSyntax, semanticModel As SemanticModel) As String
         Const builderNameBase = "builder"
         Dim builderName = builderNameBase

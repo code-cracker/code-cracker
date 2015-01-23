@@ -85,7 +85,7 @@ End Class"
     End Function
 
     <Fact>
-    Public Sub WhenUsingStringLiteralEqualsParameterNameInConstructorFixItToNameof()
+    Public Async Function WhenUsingStringLiteralEqualsParameterNameInConstructorFixItToNameof() As Task
         Dim test = "
 Public Class TypeName
     Sub New(b As String)
@@ -100,11 +100,11 @@ Public Class TypeName
     End Sub
 End Class"
 
-        VerifyBasicFix(test, fixtest, 0)
-    End Sub
+        Await VerifyBasicFixAsync(test, fixtest, 0)
+    End Function
 
     <Fact>
-    Public Sub WhenUsingStringLiteralEqualsParameterNameInConstructorFixItToNameofMustKeepComments()
+    Public Async Function WhenUsingStringLiteralEqualsParameterNameInConstructorFixItToNameofMustKeepComments() As Task
         Dim test = "
 Public Class TypeName
     Sub New(b As String)
@@ -123,11 +123,11 @@ Public Class TypeName
     End Sub
 End Class"
 
-        VerifyBasicFix(test, fixtest, 0)
-    End Sub
+        Await VerifyBasicFixAsync(test, fixtest, 0)
+    End Function
 
     <Fact>
-    Public Sub WhenUsingStringLiteralEqualsParameterNameInMethodFixItToNameof()
+    Public Async Function WhenUsingStringLiteralEqualsParameterNameInMethodFixItToNameof() As Task
         Dim test = "
 Public Class TypeName
     Sub Foo(b As String)
@@ -142,11 +142,11 @@ Public Class TypeName
     End Sub
 End Class"
 
-        VerifyBasicFix(test, fixtest, 0)
-    End Sub
+        Await VerifyBasicFixAsync(test, fixtest, 0)
+    End Function
 
     <Fact>
-    Public Sub WhenUsingStringLiteralEqualsParameterNameInMethodMustKeepComments()
+    Public Async Function WhenUsingStringLiteralEqualsParameterNameInMethodMustKeepComments() As Task
         Dim test = "
 Public Class TypeName
     Sub Foo(b As String)
@@ -165,6 +165,6 @@ Public Class TypeName
     End Sub
 End Class"
 
-        VerifyBasicFix(test, fixtest, 0)
-    End Sub
+        Await VerifyBasicFixAsync(test, fixtest, 0)
+    End Function
 End Class
