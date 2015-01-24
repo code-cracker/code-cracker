@@ -6,12 +6,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 namespace CodeCracker.Usage
 {
-    [ExportCodeFixProvider("CodeCrackerCallExtensionMethodAsExtensionCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerCallExtensionMethodAsExtensionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class CallExtensionMethodAsExtensionCodeFixProvider : CodeFixProvider
     {
         public override async Task ComputeFixesAsync(CodeFixContext context)

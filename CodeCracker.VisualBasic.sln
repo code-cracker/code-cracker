@@ -14,7 +14,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5413BEBC-2F00-4B54-98E9-B1A7618C3C2A}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D1591C8E-982D-402F-B3CB-1D1662104425}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		build.ps1 = build.ps1
+		build.targets.ps1 = build.targets.ps1
+		psake.ps1 = psake.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{22D6C608-E7F1-4236-BB07-BE5F97A4C810}"
+	ProjectSection(SolutionItems) = preProject
 		runTestsVB.ps1 = runTestsVB.ps1
+		test.ps1 = test.ps1
 	EndProjectSection
 EndProject
 Global
@@ -44,5 +63,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D1591C8E-982D-402F-B3CB-1D1662104425} = {3DB077DC-387D-4AAD-9ECE-96D3D24FB3A6}
+		{22D6C608-E7F1-4236-BB07-BE5F97A4C810} = {3DB077DC-387D-4AAD-9ECE-96D3D24FB3A6}
 	EndGlobalSection
 EndGlobal

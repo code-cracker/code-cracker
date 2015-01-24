@@ -1,6 +1,8 @@
 ﻿Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
+Imports System.Collections.Immutable
 Imports System.Text
+Imports System.Threading
 Imports Xunit
 
 Namespace TestHelper
@@ -8,54 +10,56 @@ Namespace TestHelper
     Partial Public MustInherit Class DiagnosticVerifier
 #Region " To be implemented by Test classes "
         ''' <summary>
-        ''' Get the CSharp analyzer being tested - to be implemented in non-abstract class
-        ''' </summary>
-        Protected Overridable Function GetCSharpDiagnosticAnalyzer() As DiagnosticAnalyzer
-            Return Nothing
-        End Function
-
-        ''' <summary>
         ''' Get the Visual Basic analyzer being tested (C#) - to be implemented in non-abstract class
         ''' </summary>
-        Protected Overridable Function GetBasicDiagnosticAnalyzer() As DiagnosticAnalyzer
+        Protected Overridable Function GetDiagnosticAnalyzer() As DiagnosticAnalyzer
             Return Nothing
         End Function
 #End Region
 
+#Region " Get Diagnostics "
+
+        Friend Shared Async Function GetSortedDiagnosticsFromDocumentsAsync(analyzer As DiagnosticAnalyzer, documents() As Document) As Task(Of Diagnostic())
+            Dim projects = New HashSet(Of Project)
+            For Each document In documents
+                projects.Add(document.Project)
+            Next
+
+            Dim diagnostics = New List(Of Diagnostic)()
+            For Each project In projects
+                Dim compilation = Await project.GetCompilationAsync()
+                Dim driver = AnalyzerDriver.Create(compilation, ImmutableArray.Create(analyzer), Nothing, compilation, CancellationToken.None)
+                Dim discarded = compilation.GetDiagnostics
+                Dim diags = Await driver.GetDiagnosticsAsync
+                For Each diag In diags
+                    If diag.Location = Location.None OrElse diag.Location.IsInMetadata Then
+                        diagnostics.Add(diag)
+                    Else
+                        For Each document In documents
+                            Dim tree = Await document.GetSyntaxTreeAsync
+                            If tree.Equals(diag.Location.SourceTree) Then
+                                diagnostics.Add(diag)
+                            End If
+                        Next
+                    End If
+
+                Next
+            Next
+            Dim results = SortDiagnostics(diagnostics)
+            diagnostics.Clear()
+            Return results
+        End Function
+#End Region
 #Region " Verifier wrappers "
+        Protected Async Function VerifyDiagnosticsAsync(source As String, ParamArray expected As DiagnosticResult()) As Task
+            Dim sources = {source}
+            Await VerifyDiagnosticsAsync(sources, GetDiagnosticAnalyzer(), expected)
+        End Function
 
-        ''' <summary>
-        ''' Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
-        ''' Note: input a DiagnosticResult For Each Diagnostic expected
-        ''' </summary>
-        ''' <param name="source">A class in the form of a string to run the analyzer on</param>
-        ''' <param name="expected"> DiagnosticResults that should appear after the analyzer Is run on the source</param>
-        Protected Sub VerifyCSharpDiagnostic(source As String, ParamArray expected As DiagnosticResult())
-
-            VerifyDiagnostics({source}, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected)
-        End Sub
-
-        ''' <summary>
-        ''' Called to test a VB DiagnosticAnalyzer when applied on the single inputted string as a source
-        ''' Note: input a DiagnosticResult For Each Diagnostic expected
-        ''' </summary>
-        ''' <param name="source">A class in the form of a string to run the analyzer on</param>
-        ''' <param name="expected">DiagnosticResults that should appear after the analyzer Is run on the source</param>
-        Protected Sub VerifyBasicDiagnostic(source As String, ParamArray expected As DiagnosticResult())
-
-            VerifyDiagnostics({source}, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected)
-        End Sub
-
-        ''' <summary>
-        ''' Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source
-        ''' Note: input a DiagnosticResult For Each Diagnostic expected
-        ''' </summary>
-        ''' <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-        ''' <param name="expected">DiagnosticResults that should appear after the analyzer Is run on the sources</param>
-        Protected Sub VerifyCSharpDiagnostic(sources As String(), ParamArray expected As DiagnosticResult())
-
-            VerifyDiagnostics(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected)
-        End Sub
+        Private Async Function VerifyDiagnosticsAsync(sources As String(), analyzer As DiagnosticAnalyzer, ParamArray expected As DiagnosticResult()) As Task
+            Dim diagnostics = Await GetSortedDiagnosticsAsync(sources, analyzer)
+            VerifyDiagnosticResults(diagnostics, analyzer, expected)
+        End Function
 
         ''' <summary>
         ''' Called to test a VB DiagnosticAnalyzer when applied on the inputted strings as a source
@@ -63,24 +67,9 @@ Namespace TestHelper
         ''' </summary>
         ''' <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
         ''' <param name="expected">DiagnosticResults that should appear after the analyzer Is run on the sources</param>
-        Protected Sub VerifyBasicDiagnostic(sources As String(), ParamArray expected As DiagnosticResult())
-
-            VerifyDiagnostics(sources, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected)
-        End Sub
-
-        ''' <summary>
-        ''' General method that gets a collection of actual diagnostics found in the source after the analyzer Is run, 
-        ''' then verifies each of them.
-        ''' </summary>
-        ''' <param name="sources">An array of strings to create source documents from to run teh analyzers on</param>
-        ''' <param name="language">The language of the classes represented by the source strings</param>
-        ''' <param name="analyzer">The analyzer to be run on the source code</param>
-        ''' <param name="expected">DiagnosticResults that should appear after the analyzer Is run on the sources</param>
-        Private Sub VerifyDiagnostics(sources As String(), language As String, analyzer As DiagnosticAnalyzer, ParamArray expected As DiagnosticResult())
-
-            Dim diagnostics = GetSortedDiagnostics(sources, language, analyzer)
-            VerifyDiagnosticResults(diagnostics, analyzer, expected)
-        End Sub
+        Protected Async Function VerifyDiagnosticAsync(sources As String(), ParamArray expected As DiagnosticResult()) As Task
+            Await VerifyDiagnosticsAsync(sources, GetDiagnosticAnalyzer(), expected)
+        End Function
 
 #End Region
 
@@ -93,7 +82,6 @@ Namespace TestHelper
         ''' <param name="analyzer">The analyzer that was being run on the sources</param>
         ''' <param name="expectedResults">Diagnsotic Results that should have appeared in the code</param>
         Private Shared Sub VerifyDiagnosticResults(actualResults As IEnumerable(Of Diagnostic), analyzer As DiagnosticAnalyzer, ParamArray expectedResults As DiagnosticResult())
-
             Dim expectedCount = expectedResults.Count()
             Dim actualCount = actualResults.Count()
 
@@ -276,7 +264,7 @@ Diagnostic:
 "Test base does not currently handle diagnostics in metadata locations. Diagnostic in metadata:
 ", diagnostics(i)))
 
-                            Dim resultMethodName As String = If(diagnostics(i).Location.SourceTree.FilePath.EndsWith(".cs"), "GetCSharpResultAt", "GetBasicResultAt")
+                            Dim resultMethodName As String = "GetBasicResultAt"
                             Dim linePosition = diagnostics(i).Location.GetLineSpan().StartLinePosition
 
                             builder.AppendFormat("{0}({1}, {2}, {3}.{4})",

@@ -1,5 +1,6 @@
 ﻿using CodeCracker.Performance;
 using Microsoft.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
@@ -33,7 +34,6 @@ namespace Sample
         }
     }
 }";
-
             var expected = new DiagnosticResult
             {
                 Id = RemoveWhereWhenItIsPossibleAnalyzer.DiagnosticId,

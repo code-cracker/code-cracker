@@ -16,8 +16,8 @@ Namespace TestHelper
         ''' <param name="document">The Document to apply the fix on</param>
         ''' <param name="codeAction">A CodeAction that will be applied to the Document.</param>
         ''' <returns>A Document with the changes from the CodeAction</returns>
-        Private Shared Function ApplyFix(document As Document, codeAction As CodeAction) As Document
-            Dim operations = codeAction.GetOperationsAsync(CancellationToken.None).Result
+        Friend Shared Async Function ApplyFixAsync(document As Document, codeAction As CodeAction) As Task(Of Document)
+            Dim operations = Await codeAction.GetOperationsAsync(CancellationToken.None)
             Dim solution = operations.OfType(Of ApplyChangesOperation).Single.ChangedSolution
             Return solution.GetDocument(document.Id)
         End Function
@@ -57,8 +57,8 @@ Namespace TestHelper
         ''' </summary>
         ''' <param name="document">The Document to run the compiler diagnostic analyzers on</param>
         ''' <returns>The compiler diagnostics that were found in the code</returns>
-        Private Shared Function GetCompilerDiagnostics(document As Document) As IEnumerable(Of Diagnostic)
-            Return document.GetSemanticModelAsync().Result.GetDiagnostics()
+        Friend Shared Async Function GetCompilerDiagnosticsAsync(document As Document) As Task(Of IEnumerable(Of Diagnostic))
+            Return (Await document.GetSemanticModelAsync()).GetDiagnostics()
         End Function
 
         ''' <summary>
@@ -66,9 +66,9 @@ Namespace TestHelper
         ''' </summary>
         ''' <param name="document">The Document to be converted to a string</param>
         ''' <returns>A string containing the syntax of the Document after formatting</returns>
-        Private Shared Function GetStringFromDocument(document As Document) As String
-            Dim simplifiedDoc = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result
-            Dim root = simplifiedDoc.GetSyntaxRootAsync().Result
+        Friend Shared Async Function GetStringFromDocumentAsync(document As Document) As Task(Of String)
+            Dim simplifiedDoc = Await Simplifier.ReduceAsync(document, Simplifier.Annotation)
+            Dim root = Await simplifiedDoc.GetSyntaxRootAsync()
             root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace)
             Return root.GetText().ToString()
         End Function
