@@ -134,7 +134,7 @@ End Namespace"
 
         Private Sub testee()
             Dim a(10) As Integer
-            Dim f = a.Where(Function(i) i > 10).Any()
+            Dim f = a.Any(Function(i) i > 10)
         End Sub
     End Class
 End Namespace

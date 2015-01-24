@@ -182,7 +182,7 @@ End Namespace"
 
         <Fact>
         Public Async Function FixesAddAssignmentInWhileWithSystemTextInContext() As Task
-            Dim source = "
+            Const source = "
 Imports System
 Imports System.Text
 Namespace ConsoleApplication1
@@ -198,7 +198,7 @@ Namespace ConsoleApplication1
 End Namespace"
 
 
-            Dim fix = "
+            Const fix = "
 Imports System
 Imports System.Text
 Namespace ConsoleApplication1
@@ -293,7 +293,7 @@ End Namespace"
 
         <Fact>
         Public Async Function FixesAddAssignmentWithoutClashingTheBuilderNameOnAField() As Task
-            Dim source = "
+            Const source = "
 Namespace ConsoleApplication1
 
     Class TypeName
@@ -309,7 +309,7 @@ Namespace ConsoleApplication1
 End Namespace"
 
 
-            Dim fix = "
+            Const fix = "
 Namespace ConsoleApplication1
 
     Class TypeName

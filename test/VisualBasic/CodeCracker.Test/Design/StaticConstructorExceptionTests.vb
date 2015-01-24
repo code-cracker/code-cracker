@@ -12,7 +12,7 @@ Namespace Design
 
         <Fact>
         Public Async Function WarningIfExceptionIsThrownInsideStaticConstructor() As Task
-            Dim test = "
+            Const test = "
 Public Class TestClass
     Shared Sub New()
         Throw New System.Exception()
@@ -30,7 +30,7 @@ End Class"
 
         <Fact>
         Public Async Function NotWarningWhenNoExceptionIsThrownInsideStaticConstructor() As Task
-            Dim test = "
+            Const test = "
 Public Class TestClass
     Public Sub New()
         Throw New System.Exception()
@@ -42,7 +42,7 @@ End Class"
 
         <Fact>
         Public Async Function StaticConstructorWithoutException() As Task
-            Dim test = "
+            Const test = "
 Public Class TestClass
     Shared Sub New()
         
@@ -55,7 +55,7 @@ End Class"
 
         <Fact>
         Public Async Function InstanceConstructorWithoutException() As Task
-            Dim test = "
+            Const test = "
 Public Class TestClass
     Public Sub New()
         
@@ -68,14 +68,14 @@ End Class"
 
         <Fact>
         Public Async Function WhenThrowIsRemovedFromStaticConstructor() As Task
-            Dim test = "
+            Const test = "
 Public Class TestClass
     Shared Sub New()
         Throw New System.Exception()
     End Sub
 End Class"
 
-            Dim fix = "
+            Const fix = "
 Public Class TestClass
     Shared Sub New()
     End Sub
@@ -86,7 +86,7 @@ End Class"
 
         <Fact>
         Sub CanGetTypeSymbolForInferedString()
-            Dim code = "
+            Const code = "
     Class C
         Shared Sub Main()
             Dim b As String = """"

@@ -264,7 +264,7 @@ Diagnostic:
 "Test base does not currently handle diagnostics in metadata locations. Diagnostic in metadata:
 ", diagnostics(i)))
 
-                            Dim resultMethodName As String = "GetBasicResultAt"
+                            Const resultMethodName As String = "GetBasicResultAt"
                             Dim linePosition = diagnostics(i).Location.GetLineSpan().StartLinePosition
 
                             builder.AppendFormat("{0}({1}, {2}, {3}.{4})",

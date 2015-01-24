@@ -8,11 +8,11 @@ Imports System
 Namespace ConsoleApplication1
     Class TypeName
         Public Sub Foo()
-            code
+            the_code
             ' VB Requires value to be used or another analyzer is added which breaks the tests
             Console.WriteLine(a)
         End Sub
     End Class
-End Namespace".Replace("code", code)
+End Namespace".Replace("the_code", code)
     End Function
 End Module

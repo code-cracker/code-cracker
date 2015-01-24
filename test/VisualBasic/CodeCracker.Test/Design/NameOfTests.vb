@@ -8,7 +8,7 @@ Namespace Design
 
         <Fact>
         Public Async Function IgnoreIfStringLiteralIsWhitespace() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Sub Foo()
         Dim whatever = """"
@@ -20,7 +20,7 @@ End Class"
 
         <Fact>
         Public Async Function IgnoreIfStringLiteralIsNothing() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Sub Foo()
         Dim whatever = Nothing
@@ -32,7 +32,7 @@ End Class"
 
         <Fact>
         Public Async Function IgnoreIfConstructorHasNoParameters() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Public Sub New()
         dim whatever = ""b""
@@ -44,7 +44,7 @@ End Class"
 
         <Fact>
         Public Async Function IgnoreIfMethodHasNoParameters() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Sub Foo()
         Dim whatever = """"
@@ -56,7 +56,7 @@ End Class"
 
         <Fact>
         Public Async Function IgnoreIfMethodHasParametersUnlineOfStringLiteral() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Sub Foo(a As String)
         Dim whatever = ""b""
@@ -68,7 +68,7 @@ End Class"
 
         <Fact>
         Public Async Function WhenUsingStringLiteralEqualsParameterNameReturnAnalyzerCreatesDiagnostic() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Sub Foo(b As String)
         Dim whatever = ""b""
@@ -87,14 +87,14 @@ End Class"
 
         <Fact>
         Public Async Function WhenUsingStringLiteralEqualsParameterNameInConstructorFixItToNameof() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Sub New(b As String)
         Dim whatever = ""b""
     End Sub
 End Class"
 
-            Dim fixtest = "
+            Const fixtest = "
 Public Class TypeName
     Sub New(b As String)
         Dim whatever = nameof(b)
@@ -106,7 +106,7 @@ End Class"
 
         <Fact>
         Public Async Function WhenUsingStringLiteralEqualsParameterNameInConstructorFixItToNameofMustKeepComments() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Sub New(b As String)
         'a
@@ -115,7 +115,7 @@ Public Class TypeName
     End Sub
 End Class"
 
-            Dim fixtest = "
+            Const fixtest = "
 Public Class TypeName
     Sub New(b As String)
         'a
@@ -129,14 +129,14 @@ End Class"
 
         <Fact>
         Public Async Function WhenUsingStringLiteralEqualsParameterNameInMethodFixItToNameof() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Sub Foo(b As String)
         Dim whatever = ""b""
     End Sub
 End Class"
 
-            Dim fixtest = "
+            Const fixtest = "
 Public Class TypeName
     Sub Foo(b As String)
         Dim whatever = nameof(b)
@@ -148,7 +148,7 @@ End Class"
 
         <Fact>
         Public Async Function WhenUsingStringLiteralEqualsParameterNameInMethodMustKeepComments() As Task
-            Dim test = "
+            Const test = "
 Public Class TypeName
     Sub Foo(b As String)
         'a
@@ -157,7 +157,7 @@ Public Class TypeName
     End Sub
 End Class"
 
-            Dim fixtest = "
+            Const fixtest = "
 Public Class TypeName
     Sub Foo(b As String)
         'a

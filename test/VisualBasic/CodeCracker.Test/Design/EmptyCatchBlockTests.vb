@@ -21,7 +21,7 @@ End Namespace"
 
         <Fact>
         Public Async Function EmptyCatchBlockAnalyzerCreateDiagnostic() As Task
-            Dim testWithBlock = "
+            Const testWithBlock = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -40,7 +40,7 @@ End Namespace"
 
         <Fact>
         Public Async Function WhenRemoveTryCatchStatement() As Task
-            Dim fix = "
+            Const fix = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -55,7 +55,7 @@ End Namespace"
 
         <Fact>
         Public Async Function WhenPutExceptionClassInCatchBlock() As Task
-            Dim fix = "
+            Const fix = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName

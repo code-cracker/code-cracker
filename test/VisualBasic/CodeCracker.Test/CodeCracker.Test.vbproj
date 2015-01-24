@@ -23,6 +23,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>CodeCracker.Test.VisualBasic.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>CodeCracker.Test.VisualBasic.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -200,6 +202,9 @@
       <Project>{41fa4971-d354-4647-a269-4a886da2ef4c}</Project>
       <Name>CodeCracker</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0331\tools\analyzers\CodeCracker.VisualBasic.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
