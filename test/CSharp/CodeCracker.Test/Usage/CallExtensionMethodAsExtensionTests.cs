@@ -192,5 +192,28 @@ namespace CodeCracker.Test.Usage
 
             await VerifyCSharpFixAsync(source, expected);
         }
+
+        [Fact]
+        public async Task WhenCallExtensionMethodWithDynamicArgumentHasNoDiagnostics()
+        {
+            const string source = @"
+                    using System;
+                    using System.Collections.Generic;
+                    using System.Linq;
+
+                    namespace ConsoleApplication1
+                    {
+                        class ExtensionTest
+                        {
+                            void method()
+                            {
+                                var list = new List<int>() { 5, 56, 2, 4, 63, 2 };
+                                dynamic dList = list;
+                                Console.WriteLine(Enumerable.First(dList));
+                            }
+                        }
+                    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }

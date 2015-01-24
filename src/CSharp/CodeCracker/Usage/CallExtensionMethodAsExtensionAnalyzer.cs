@@ -22,7 +22,7 @@ namespace CodeCracker.Usage
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
-            isEnabledByDefault: false,
+            isEnabledByDefault: true,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
@@ -54,6 +54,8 @@ namespace CodeCracker.Usage
 
             var methodSymbol = GetCallerMethodSymbol(context.SemanticModel, methodCaller.Name, argumentsCount);
             if (methodSymbol == null || !methodSymbol.IsExtensionMethod) return;
+
+            if (ContainsDynamicArgument(context.SemanticModel, childNodes)) return;
 
             context.ReportDiagnostic(
                 Diagnostic.Create(
@@ -87,6 +89,14 @@ namespace CodeCracker.Usage
         {
             var symbolInfo = semanticModel.GetSymbolInfo(expression);
             return symbolInfo.Symbol as INamedTypeSymbol;
+        }
+
+        private static bool ContainsDynamicArgument(SemanticModel sm, IEnumerable<SyntaxNode> childNodes)
+        {
+            return childNodes
+                    .OfType<ArgumentListSyntax>()
+                    .SelectMany(s => s.Arguments)
+                    .Any(a => sm.GetTypeInfo(a.Expression).Type?.Name == "dynamic");
         }
     }
 }
