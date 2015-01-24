@@ -4,13 +4,14 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeCracker.Design
 {
-    [ExportCodeFixProvider("CodeCrackerStaticConstructorExceptionCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerStaticConstructorExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class StaticConstructorExceptionCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()

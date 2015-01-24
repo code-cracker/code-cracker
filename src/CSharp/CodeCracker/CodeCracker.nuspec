@@ -13,7 +13,7 @@
         <description>A analyzer library for C# that uses Roslyn to produce refactorings, code analysis, and other niceties.
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this software, nor it will be. Ever.</description>
-        <releaseNotes>Second alpha release</releaseNotes>
+        <releaseNotes>Third alpha release</releaseNotes>
         <copyright>Copyright CodeCracker 2014</copyright>
         <tags>roslyn, analyzers</tags>
         <frameworkAssemblies>

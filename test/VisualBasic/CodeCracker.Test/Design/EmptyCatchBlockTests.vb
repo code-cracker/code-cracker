@@ -1,10 +1,12 @@
-﻿Imports CodeCracker.Test.TestHelper
+﻿Imports CodeCracker.Design
+Imports CodeCracker.Test.TestHelper
 Imports Xunit
 
-Public Class EmptyCatchBlockTests
-    Inherits CodeFixTest(Of EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider)
+Namespace Design
+    Public Class EmptyCatchBlockTests
+        Inherits CodeFixTest(Of EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider)
 
-    Private test = "
+        Private test = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -17,9 +19,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-    <Fact>
-    Public Async Function EmptyCatchBlockAnalyzerCreateDiagnostic() As Task
-        Dim testWithBlock = "
+        <Fact>
+        Public Async Function EmptyCatchBlockAnalyzerCreateDiagnostic() As Task
+            Dim testWithBlock = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -33,12 +35,12 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-        Await VerifyBasicHasNoDiagnosticsAsync(testWithBlock)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(testWithBlock)
+        End Function
 
-    <Fact>
-    Public Async Function WhenRemoveTryCatchStatement() As Task
-        Dim fix = "
+        <Fact>
+        Public Async Function WhenRemoveTryCatchStatement() As Task
+            Dim fix = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -48,12 +50,12 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-        Await VerifyBasicFixAsync(test, fix)
-    End Function
+            Await VerifyBasicFixAsync(test, fix)
+        End Function
 
-    <Fact>
-    Public Async Function WhenPutExceptionClassInCatchBlock() As Task
-        Dim fix = "
+        <Fact>
+        Public Async Function WhenPutExceptionClassInCatchBlock() As Task
+            Dim fix = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -67,6 +69,7 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-        Await VerifyBasicFixAsync(test, fix, 1)
-    End Function
-End Class
+            Await VerifyBasicFixAsync(test, fix, 1)
+        End Function
+    End Class
+End Namespace

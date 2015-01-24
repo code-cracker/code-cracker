@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test
+namespace CodeCracker.Test.Style
 {
     public class ConvertLambdaExpressionToMethodGroupTests
         : CodeFixTest<ConvertLambdaExpressionToMethodGroupAnalyzer, ConvertLambdaExpressionToMethodGroupFixProvider>

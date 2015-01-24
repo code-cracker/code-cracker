@@ -56,7 +56,7 @@ namespace CodeCracker.Performance
             if (!supportedMethods.Contains(candidate)) return;
 
             if (nextMethodInvoke.ArgumentList.Arguments.Any()) return;
-            
+
             var diagnostic = Diagnostic.Create(Rule, GetNameExpressionOfTheInvokedMethod(whereInvoke).GetLocation(), candidate);
             context.ReportDiagnostic(diagnostic);
         }

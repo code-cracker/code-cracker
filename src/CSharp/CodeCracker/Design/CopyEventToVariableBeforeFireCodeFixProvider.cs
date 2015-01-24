@@ -5,13 +5,14 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeCracker.Design
 {
-    [ExportCodeFixProvider("CodeCrackerCopyEventToVariableBeforeFireCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerCopyEventToVariableBeforeFireCodeFixProvider", LanguageNames.CSharp), Shared]
     public class CopyEventToVariableBeforeFireCodeFixProvider : CodeFixProvider
     {
         private const string SyntaxAnnotatinKind = "CC-CopyEvent";

@@ -1,20 +1,22 @@
-﻿Imports CodeCracker.Test.TestHelper
+﻿Imports CodeCracker.Performance
+Imports CodeCracker.Test.TestHelper
 Imports Xunit
 
-Public Class RemoveWhereWhenItIsPossibleTests
-    Inherits CodeFixTest(Of RemoveWhereWhenItIsPossibleAnalyzer, RemoveWhereWhenItIsPossibleCodeFixProvider)
+Namespace Performance
+    Public Class RemoveWhereWhenItIsPossibleTests
+        Inherits CodeFixTest(Of RemoveWhereWhenItIsPossibleAnalyzer, RemoveWhereWhenItIsPossibleCodeFixProvider)
 
-    <Theory>
-    <InlineData("First")>
-    <InlineData("FirstOrDefault")>
-    <InlineData("Last")>
-    <InlineData("LastOrDefault")>
-    <InlineData("Any")>
-    <InlineData("Single")>
-    <InlineData("SingleOrDefault")>
-    <InlineData("Count")>
-    Public Async Function CreateDiagnosticWhenUsingWhereWith(method As String) As Task
-        Dim test = "
+        <Theory>
+        <InlineData("First")>
+        <InlineData("FirstOrDefault")>
+        <InlineData("Last")>
+        <InlineData("LastOrDefault")>
+        <InlineData("Any")>
+        <InlineData("Single")>
+        <InlineData("SingleOrDefault")>
+        <InlineData("Count")>
+        Public Async Function CreateDiagnosticWhenUsingWhereWith(method As String) As Task
+            Dim test = "
 Imports System.Linq
 Namespace Sample
     Public Class Foo
@@ -25,28 +27,28 @@ Namespace Sample
     End Class
 End Namespace"
 
-        Dim expected = New DiagnosticResult With
-        {
-            .Id = PerformanceDiagnostics.RemoveWhereWhenItIsPossibleId,
-            .Message = "You can remove 'Where' moving the predicate to '" + method + "'.",
-            .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-            .Locations = {New DiagnosticResultLocation("Test0.vb", 7, 23)}
-        }
+            Dim expected = New DiagnosticResult With
+            {
+                .Id = RemoveWhereWhenItIsPossibleAnalyzer.DiagnosticId,
+                .Message = "You can remove 'Where' moving the predicate to '" + method + "'.",
+                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
+                .Locations = {New DiagnosticResultLocation("Test0.vb", 7, 23)}
+            }
 
-        Await VerifyBasicDiagnosticsAsync(test, expected)
-    End Function
+            Await VerifyDiagnosticsAsync(test, expected)
+        End Function
 
-    <Theory>
-    <InlineData("First")>
-    <InlineData("FirstOrDefault")>
-    <InlineData("Last")>
-    <InlineData("LastOrDefault")>
-    <InlineData("Any")>
-    <InlineData("Single")>
-    <InlineData("SingleOrDefault")>
-    <InlineData("Count")>
-    Public Async Function DoNotCreateDiagnosticWheUsingWhereAndAnotherMethodWithPredicates(method As String) As Task
-        Dim test = "
+        <Theory>
+        <InlineData("First")>
+        <InlineData("FirstOrDefault")>
+        <InlineData("Last")>
+        <InlineData("LastOrDefault")>
+        <InlineData("Any")>
+        <InlineData("Single")>
+        <InlineData("SingleOrDefault")>
+        <InlineData("Count")>
+        Public Async Function DoNotCreateDiagnosticWheUsingWhereAndAnotherMethodWithPredicates(method As String) As Task
+            Dim test = "
 Imports System.Linq
 Namespace Sample
     Public Class Foo
@@ -57,20 +59,20 @@ Namespace Sample
     End Class
 End Namespace"
 
-        Await VerifyBasicHasNoDiagnosticsAsync(test)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
 
-    <Theory>
-    <InlineData("First")>
-    <InlineData("FirstOrDefault")>
-    <InlineData("Last")>
-    <InlineData("LastOrDefault")>
-    <InlineData("Any")>
-    <InlineData("Single")>
-    <InlineData("SingleOrDefault")>
-    <InlineData("Count")>
-    Public Async Function FixRemovesWhereMovingPredicateTo(method As String) As Task
-        Dim test = "
+        <Theory>
+        <InlineData("First")>
+        <InlineData("FirstOrDefault")>
+        <InlineData("Last")>
+        <InlineData("LastOrDefault")>
+        <InlineData("Any")>
+        <InlineData("Single")>
+        <InlineData("SingleOrDefault")>
+        <InlineData("Count")>
+        Public Async Function FixRemovesWhereMovingPredicateTo(method As String) As Task
+            Dim test = "
 Imports System.Linq
 Namespace Sample
     Public Class Foo
@@ -81,7 +83,7 @@ Namespace Sample
     End Class
 End Namespace"
 
-        Dim expected = "
+            Dim expected = "
 Imports System.Linq
 Namespace Sample
     Public Class Foo
@@ -92,20 +94,20 @@ Namespace Sample
     End Class
 End Namespace"
 
-        Await VerifyBasicFixAsync(test, expected)
-    End Function
+            Await VerifyBasicFixAsync(test, expected)
+        End Function
 
-    <Theory>
-    <InlineData("First")>
-    <InlineData("FirstOrDefault")>
-    <InlineData("Last")>
-    <InlineData("LastOrDefault")>
-    <InlineData("Any")>
-    <InlineData("Single")>
-    <InlineData("SingleOrDefault")>
-    <InlineData("Count")>
-    Public Async Function FixRemovesWherePreservingPreviousExpressionsMovingPredicateTo(method As String) As Task
-        Dim test = "
+        <Theory>
+        <InlineData("First")>
+        <InlineData("FirstOrDefault")>
+        <InlineData("Last")>
+        <InlineData("LastOrDefault")>
+        <InlineData("Any")>
+        <InlineData("Single")>
+        <InlineData("SingleOrDefault")>
+        <InlineData("Count")>
+        Public Async Function FixRemovesWherePreservingPreviousExpressionsMovingPredicateTo(method As String) As Task
+            Dim test = "
 Imports System.Linq
 Namespace Sample
     Public Class Foo
@@ -116,7 +118,7 @@ Namespace Sample
     End Class
 End Namespace"
 
-        Dim expected = "
+            Dim expected = "
 Imports System.Linq
 Namespace Sample
     Public Class Foo
@@ -127,11 +129,12 @@ Namespace Sample
     End Class
 End Namespace"
 
-        Await VerifyBasicFixAsync(test, expected)
-    End Function
+            Await VerifyBasicFixAsync(test, expected)
+        End Function
 
-    Private Sub testee()
-        Dim a(10) As Integer
-        Dim f = a.Where(Function(i) i > 10).Any()
-    End Sub
-End Class
+        Private Sub testee()
+            Dim a(10) As Integer
+            Dim f = a.Where(Function(i) i > 10).Any()
+        End Sub
+    End Class
+End Namespace

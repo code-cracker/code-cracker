@@ -9,10 +9,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Composition;
 
 namespace CodeCracker.Style
 {
-    [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
+    [ExportCodeFixProvider(Id, LanguageNames.CSharp), Shared]
     public class StringRepresentationCodeFixProvider : CodeFixProvider
     {
         public const string Id = "CodeCrackerStringRepresentationCodeFixProvider";

@@ -5,7 +5,7 @@ Namespace TestHelper
     Public MustInherit Class CodeFixTest(Of T As {DiagnosticAnalyzer, New}, U As {CodeFixProvider, New})
         Inherits CodeFixVerifier
 
-        Protected Overrides Function GetBasicDiagnosticAnalyzer() As DiagnosticAnalyzer
+        Protected Overrides Function GetDiagnosticAnalyzer() As DiagnosticAnalyzer
             Return New T()
         End Function
 

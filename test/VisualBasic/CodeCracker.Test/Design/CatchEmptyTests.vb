@@ -1,12 +1,14 @@
-﻿Imports CodeCracker.Test.TestHelper
+﻿Imports CodeCracker.Design
+Imports CodeCracker.Test.TestHelper
 Imports Xunit
 
-Public Class CatchEmptyTests
-    Inherits CodeFixTest(Of CatchEmptyAnalyzer, CatchEmptyCodeFixProvider)
+Namespace Design
+    Public Class CatchEmptyTests
+        Inherits CodeFixTest(Of CatchEmptyAnalyzer, CatchEmptyCodeFixProvider)
 
-    <Fact>
-    Public Async Function CatchEmptyAnalyserCreateDiagnostic() As Task
-        Const source = "
+        <Fact>
+        Public Async Function CatchEmptyAnalyserCreateDiagnostic() As Task
+            Const source = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -19,12 +21,12 @@ Namespace ConsoleApplication1
         End Function
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(source)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
 
-    <Fact>
-    Public Async Function WhenFindCatchEmptyThenPutExceptionClass() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenFindCatchEmptyThenPutExceptionClass() As Task
+            Const source = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -38,7 +40,7 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-        Const fix = "
+            Const fix = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -51,8 +53,8 @@ Namespace ConsoleApplication1
         End Function
     End Class
 End Namespace"
-        Await VerifyBasicFixAsync(source, fix, 0)
-    End Function
+            Await VerifyBasicFixAsync(source, fix, 0)
+        End Function
 
-End Class
-
+    End Class
+End Namespace

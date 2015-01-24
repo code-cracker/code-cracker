@@ -15,6 +15,5 @@
         public const string Security = "Security";
         public const string Style = "Style";
         public const string Usage = "Usage";
-        
     }
 }

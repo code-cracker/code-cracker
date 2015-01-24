@@ -41,7 +41,7 @@ namespace CodeCracker.Performance
             var whereMemberAccess = whereInvoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             var nextMethodMemberAccess = nextMethodInvoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             var newNextMethodInvoke = SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression( SyntaxKind.SimpleMemberAccessExpression, whereMemberAccess.Expression, nextMethodMemberAccess.Name),
+                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, whereMemberAccess.Expression, nextMethodMemberAccess.Name),
                 whereInvoke.ArgumentList);
             var newRoot = root.ReplaceNode(nextMethodInvoke, newNextMethodInvoke);
             var newDocument = document.WithSyntaxRoot(newRoot);
