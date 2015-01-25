@@ -42,7 +42,8 @@ namespace CodeCracker.Usage
             if (ident == null) return;
             var exSymbol = context.SemanticModel.GetSymbolInfo(ident).Symbol as ILocalSymbol;
             if (exSymbol == null) return;
-            var catchClause = context.Node.Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().First();
+            var catchClause = context.Node.Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().FirstOrDefault();
+            if (catchClause == null) return;
             var catchExSymbol = context.SemanticModel.GetDeclaredSymbol(catchClause.Declaration);
             if (!catchExSymbol.Equals(exSymbol)) return;
             var diagnostic = Diagnostic.Create(Rule, throwStatement.GetLocation(), "Don't throw the same exception you caught, you lose the original stack trace.");
