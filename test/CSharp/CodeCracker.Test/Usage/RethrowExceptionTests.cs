@@ -105,5 +105,24 @@ namespace CodeCracker.Test.Usage
     }";
             await VerifyCSharpFixAsync(sourceWithoutUsingSystem, fixtest, 0);
         }
+
+        [Fact]
+        public async Task WhenThrowingExceptionOutsideAnyCatchBlock()
+        {
+
+            const string fixtest = @"
+                namespace ConsoleApplication1
+                {
+                    class TypeName
+                    {
+                        public async Task Foo()
+                        {
+                            var ex = new ArgumentException(""An Exception"");
+                            throw ex;
+                        }
+                    }
+                }";
+            await VerifyCSharpHasNoDiagnosticsAsync(fixtest);
+        }
     }
 }
