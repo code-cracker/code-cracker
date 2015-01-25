@@ -22,7 +22,7 @@ namespace CodeCracker.Usage
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: false,
+            isEnabledByDefault: true,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId));
 
@@ -75,7 +75,7 @@ namespace CodeCracker.Usage
 
         private static ISymbol FindDisposeMethod(INamedTypeSymbol symbol)
         {
-            var methods = symbol.GetMembers("Dispose").Cast<IMethodSymbol>();
+            var methods = symbol.GetMembers().Where(x => x.ToString().Contains($"{x.ContainingType.Name}.Dispose(")).Cast<IMethodSymbol>();
             var disposeWithDisposedParameter = methods.FirstOrDefault(m => m.Parameters.FirstOrDefault()?.Type.SpecialType == SpecialType.System_Boolean);
 
             return disposeWithDisposedParameter != null ? disposeWithDisposedParameter : methods.FirstOrDefault(m => !m.Parameters.Any());
