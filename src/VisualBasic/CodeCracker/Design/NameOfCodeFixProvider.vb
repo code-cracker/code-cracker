@@ -44,7 +44,7 @@ Namespace Design
         End Function
 
         Private Async Function NewDocument(document As Document, stringLiteral As LiteralExpressionSyntax, methodParameter As ParameterSyntax) As Task(Of Document)
-            Dim newNameof = SyntaxFactory.ParseExpression(String.Format("nameof({0})", methodParameter.Identifier.Identifier.ValueText)).
+            Dim newNameof = SyntaxFactory.ParseExpression(String.Format("NameOf({0})", methodParameter.Identifier.Identifier.ValueText)).
             WithLeadingTrivia(stringLiteral.GetLeadingTrivia).
             WithTrailingTrivia(stringLiteral.GetTrailingTrivia).
             WithAdditionalAnnotations(Formatter.Annotation)

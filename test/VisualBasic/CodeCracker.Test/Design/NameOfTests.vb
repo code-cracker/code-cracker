@@ -97,7 +97,7 @@ End Class"
             Const fixtest = "
 Public Class TypeName
     Sub New(b As String)
-        Dim whatever = nameof(b)
+        Dim whatever = NameOf(b)
     End Sub
 End Class"
 
@@ -119,7 +119,7 @@ End Class"
 Public Class TypeName
     Sub New(b As String)
         'a
-        Dim whatever = nameof(b) 'd
+        Dim whatever = NameOf(b) 'd
         'b
     End Sub
 End Class"
@@ -139,7 +139,7 @@ End Class"
             Const fixtest = "
 Public Class TypeName
     Sub Foo(b As String)
-        Dim whatever = nameof(b)
+        Dim whatever = NameOf(b)
     End Sub
 End Class"
 
@@ -161,7 +161,7 @@ End Class"
 Public Class TypeName
     Sub Foo(b As String)
         'a
-        Dim whatever = nameof(b) 'd
+        Dim whatever = NameOf(b) 'd
         'b
     End Sub
 End Class"
