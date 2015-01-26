@@ -156,5 +156,64 @@ namespace CodeCracker.Test.Usage
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
+        [Fact]
+        public async void WhenClassExplicitImplementsOfIDisposableCallSuppressFinalize()
+        {
+            const string source = @"
+                    public class MyType : System.IDisposable
+                    { 
+                        public void IDisposable.Dispose() 
+                        { 
+                            var x = 123;
+                        } 
+                    }";
+
+            const string fixtest = @"
+                    public class MyType : System.IDisposable
+                    { 
+                        public void IDisposable.Dispose() 
+                        { 
+                            var x = 123;
+                            GC.SuppressFinalize(this);
+                        } 
+                    }";
+
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async void WhenClassHasParametrizedDisposeMethodAndExplicitlyImplementsIDisposable()
+        {
+            const string source = @"
+                    public class MyType : System.IDisposable
+                    { 
+                        public void IDisposable.Dispose() 
+                        { 
+                            Dispose(true);
+                        } 
+
+                        protected virtual void Dispose(bool disposing)
+                        {
+                            
+                        }
+                    }";
+
+            const string fixtest = @"
+                    public class MyType : System.IDisposable
+                    { 
+                        public void IDisposable.Dispose() 
+                        { 
+                            Dispose(true);
+                        } 
+
+                        protected virtual void Dispose(bool disposing)
+                        {
+                            GC.SuppressFinalize(this);
+                        }
+                    }";
+
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
     }
 }
