@@ -23,7 +23,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = CopyEventToVariableBeforeFireAnalyzer.DiagnosticId,
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
                 Message = "Copy the 'MyEvent' event to a variable before fire it.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
@@ -53,7 +53,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = CopyEventToVariableBeforeFireAnalyzer.DiagnosticId,
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
                 Message = "Copy the 'MyEvent' event to a variable before fire it.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
@@ -85,7 +85,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = CopyEventToVariableBeforeFireAnalyzer.DiagnosticId,
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
                 Message = "Copy the 'MyEvent' event to a variable before fire it.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 25) }

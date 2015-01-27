@@ -11,7 +11,7 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertToSwitchAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0019";
+        private static readonly string diagnosticId = DiagnosticId.ConvertToSwitch.ToDiagnosticId();
         internal const string Title = "Use 'switch'";
         internal const string MessageFormat = "You could use 'switch' instead of 'if'.";
         internal const string Category = SupportedCategories.Style;
@@ -19,14 +19,14 @@ namespace CodeCracker.Style
             + "on the variable\r\n\r\n"
             + "Note: This diagnostic trigger for 3 or more 'case' statements";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            diagnosticId,
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(diagnosticId));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -40,24 +40,15 @@ namespace CodeCracker.Style
             var ifStatement = (IfStatementSyntax)context.Node;
 
             // ignoring else if
-            if (ifStatement.Parent is ElseClauseSyntax)
-            {
-                return;
-            }
+            if (ifStatement.Parent is ElseClauseSyntax) return;
 
             // ignoring simple if statement
-            if (ifStatement.Else == null)
-            {
-                return;
-            }
+            if (ifStatement.Else == null) return;
 
             var nestedIfs = FindNestedIfs(ifStatement).ToArray();
 
-            // ignoring less than 3 nested ifs 
-            if (nestedIfs.Length < 3)
-            {
-                return;
-            }
+            // ignoring less than 3 nested ifs
+            if (nestedIfs.Length < 3) return;
 
             // ignoring when not all conditionals are "equals"
             IdentifierNameSyntax common = null;
@@ -67,23 +58,14 @@ namespace CodeCracker.Style
                 var condition = nestedIfs[i].Condition as BinaryExpressionSyntax;
 
                 // all ifs should have binary expressions as conditions
-                if (condition == null)
-                {
-                    return;
-                }
+                if (condition == null) return;
 
                 // all conditions should be "equal"
-                if (!condition.IsKind(SyntaxKind.EqualsExpression))
-                {
-                    return;
-                }
+                if (!condition.IsKind(SyntaxKind.EqualsExpression)) return;
 
                 var left = condition.Left as IdentifierNameSyntax;
                 // all conditions should have an identifier in the left
-                if (left == null)
-                {
-                    return;
-                }
+                if (left == null) return;
 
                 if (i == 0)
                 {
@@ -97,22 +79,15 @@ namespace CodeCracker.Style
 
                 var right = context.SemanticModel.GetConstantValue(condition.Right);
                 // only constants in the right side
-                if (!right.HasValue)
-                {
-                    return;
-                }
+                if (!right.HasValue) return;
 
             }
-
-
 
             var diagnostic = Diagnostic.Create(Rule, ifStatement.GetLocation());
             context.ReportDiagnostic(diagnostic);
         }
 
-        internal static IEnumerable<IfStatementSyntax> FindNestedIfs(
-                IfStatementSyntax ifStatement
-                )
+        internal static IEnumerable<IfStatementSyntax> FindNestedIfs(IfStatementSyntax ifStatement)
         {
             do
             {
@@ -121,8 +96,5 @@ namespace CodeCracker.Style
                 ifStatement = ifStatement.Else.ChildNodes().FirstOrDefault() as IfStatementSyntax;
             } while (ifStatement != null);
         }
-
-
-
     }
 }

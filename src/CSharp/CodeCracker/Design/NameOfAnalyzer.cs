@@ -10,7 +10,6 @@ namespace CodeCracker.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class NameOfAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0021";
         internal const string Title = "You should use nameof instead of the parameter string";
         internal const string MessageFormat = "Use 'nameof({0})' instead of specifying the parameter name.";
         internal const string Category = SupportedCategories.Design;
@@ -18,21 +17,19 @@ namespace CodeCracker.Design
             + "a string literal as it produce code that is easier to refactor.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.NameOf.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.NameOf));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.StringLiteralExpression);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
@@ -59,9 +56,7 @@ namespace CodeCracker.Design
             context.ReportDiagnostic(diagnostic);
         }
 
-        private bool AreEqual(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters)
-        {
-            return parameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString());
-        }
+        private bool AreEqual(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters) =>
+            parameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString());
     }
 }

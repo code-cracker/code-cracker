@@ -6,34 +6,29 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
 namespace CodeCracker.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class CallExtensionMethodAsExtensionAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0026";
         internal const string Title = "Call Extension Method As Extension";
         internal const string MessageFormat = "Do not call '{0}' method of class '{1}' as a static method";
         internal const string Category = SupportedCategories.Usage;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.CallExtensionMethodAsExtension));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-        {
-            get { return ImmutableArray.Create(Rule); }
-        }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

@@ -80,7 +80,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = RegexAnalyzer.DiagnosticId,
+                Id = DiagnosticId.Regex.ToDiagnosticId(),
                 Message = message,
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 64) }
@@ -121,7 +121,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = RegexAnalyzer.DiagnosticId,
+                Id = DiagnosticId.Regex.ToDiagnosticId(),
                 Message = message,
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 33) }
@@ -130,9 +130,6 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new RegexAnalyzer();
-        }
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new RegexAnalyzer();
     }
 }

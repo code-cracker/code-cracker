@@ -17,15 +17,10 @@ namespace CodeCracker.Usage
     [ExportCodeFixProvider("DisposableFieldNotDisposedCodeFixProvider", LanguageNames.CSharp), Shared]
     public class DisposableFieldNotDisposedCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(DisposableFieldNotDisposedAnalyzer.DiagnosticIdCreated, DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(), DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {

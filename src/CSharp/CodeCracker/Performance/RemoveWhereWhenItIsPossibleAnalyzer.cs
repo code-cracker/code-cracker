@@ -10,7 +10,7 @@ namespace CodeCracker.Performance
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RemoveWhereWhenItIsPossibleAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0011";
+        private static readonly string diagnosticId = DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId();
         internal const string Title = "You should remove the 'Where' invocation when it is possible.";
         internal const string MessageFormat = "You can remove 'Where' moving the predicate to '{0}'.";
         internal const string Category = SupportedCategories.Performance;
@@ -28,21 +28,19 @@ namespace CodeCracker.Performance
             "Count"
         };
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            diagnosticId,
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(diagnosticId));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
-        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {

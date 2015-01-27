@@ -4,26 +4,22 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
-using System;
 
 namespace CodeCracker.Refactoring
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ParameterRefactoryAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0020";
-        internal const string Title = "You should using 'new class'";
+        public const string DiagnosticId = "CC0044";
+        internal const string Title = "You should use a class";
         internal const string MessageFormat = "When the method has more than three parameters, use new class.";
         internal const string Category = "Syntax";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Hidden, isEnabledByDefault: true);
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-        public override void Initialize(AnalysisContext context)
-        {
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration);
-        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {

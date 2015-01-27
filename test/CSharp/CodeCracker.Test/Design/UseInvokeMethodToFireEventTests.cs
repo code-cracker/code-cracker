@@ -23,7 +23,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = UseInvokeMethodToFireEventAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
                 Message = "Use ?.Invoke operator and method to fire 'MyEvent' event.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
@@ -53,7 +53,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = UseInvokeMethodToFireEventAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
                 Message = "Use ?.Invoke operator and method to fire 'MyEvent' event.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
@@ -85,7 +85,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = UseInvokeMethodToFireEventAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
                 Message = "Use ?.Invoke operator and method to fire 'MyEvent' event.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 25) }

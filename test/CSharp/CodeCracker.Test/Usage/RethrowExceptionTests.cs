@@ -30,7 +30,7 @@ namespace CodeCracker.Test.Usage
         {
             var expected = new DiagnosticResult
             {
-                Id = RethrowExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.RethrowException.ToDiagnosticId(),
                 Message = "Don't throw the same exception you caught, you lose the original stack trace.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 21) }

@@ -41,7 +41,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToSwitchAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToSwitch.ToDiagnosticId(),
                 Message = "You could use 'switch' instead of 'if'.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -79,7 +79,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToSwitchAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToSwitch.ToDiagnosticId(),
                 Message = "You could use 'switch' instead of 'if'.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }

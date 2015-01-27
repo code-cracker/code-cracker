@@ -14,7 +14,7 @@ namespace CodeCracker.Style
     public class ConvertLambdaExpressionToMethodGroupFixProvider :CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
-            ImmutableArray.Create(ConvertLambdaExpressionToMethodGroupAnalyzer.DiagnosticId);
+            ImmutableArray.Create(DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

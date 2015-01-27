@@ -10,7 +10,6 @@ namespace CodeCracker.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UseInvokeMethodToFireEventAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0031";
         internal const string Title = "Use Invoke Method To Fire Event Analyzer";
         internal const string MessageFormat = "Use ?.Invoke operator and method to fire '{0}' event.";
         internal const string Category = SupportedCategories.Design;
@@ -18,21 +17,19 @@ namespace CodeCracker.Design
             + "invoke method to avoid throwing a NullReference exception when there is no event handler attached.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.UseInvokeMethodToFireEvent));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.InvocationExpression);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

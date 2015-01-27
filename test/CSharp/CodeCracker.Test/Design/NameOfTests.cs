@@ -96,7 +96,7 @@ public class TypeName
 }";
             var expected = new DiagnosticResult
             {
-                Id = NameOfAnalyzer.DiagnosticId,
+                Id = DiagnosticId.NameOf.ToDiagnosticId(),
                 Message = "Use 'nameof(b)' instead of specifying the parameter name.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 27) }

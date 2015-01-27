@@ -10,7 +10,6 @@ namespace CodeCracker.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StaticConstructorExceptionAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0024";
         internal const string Title = "Don't throw exception inside static constructors.";
         internal const string MessageFormat = "Don't throw exception inside static constructors.";
         internal const string Category = SupportedCategories.Design;
@@ -20,21 +19,19 @@ namespace CodeCracker.Design
             + "and should be avoided.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.StaticConstructorException.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.StaticConstructorException));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.ConstructorDeclaration);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

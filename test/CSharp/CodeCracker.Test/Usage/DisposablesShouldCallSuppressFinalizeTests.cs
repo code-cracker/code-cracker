@@ -20,7 +20,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = DisposablesShouldCallSuppressFinalizeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
                 Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 33) }
@@ -42,7 +42,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = DisposablesShouldCallSuppressFinalizeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
                 Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 33) }

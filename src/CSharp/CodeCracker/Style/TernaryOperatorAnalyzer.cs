@@ -10,38 +10,36 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TernaryOperatorAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticIdForIfWithReturn = "CC0013";
+        private static readonly string diagnosticIdForIfWithReturn = DiagnosticId.TernaryOperator_Return.ToDiagnosticId();
         internal const string TitleForIfWithReturn = "User ternary operator";
         internal const string MessageFormatForIfWithReturn = "{0}";
         internal const string Category = SupportedCategories.Style;
-        public const string DiagnosticIdForIfWithAssignment = "CC0014";
+        private static readonly string diagnosticIdForIfWithAssignment = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId();
         internal const string TitleForIfWithAssignment = "User ternary operator";
         internal const string MessageFormatForIfWithAssignment = "{0}";
 
         internal static DiagnosticDescriptor RuleForIfWithReturn = new DiagnosticDescriptor(
-            DiagnosticIdForIfWithReturn,
+            diagnosticIdForIfWithReturn,
             TitleForIfWithReturn,
             MessageFormatForIfWithReturn,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticIdForIfWithReturn));
+            helpLink: HelpLink.ForDiagnostic(diagnosticIdForIfWithReturn));
 
         internal static DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(
-            DiagnosticIdForIfWithAssignment,
+            diagnosticIdForIfWithAssignment,
             TitleForIfWithAssignment,
             MessageFormatForIfWithAssignment,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticIdForIfWithAssignment));
+            helpLink: HelpLink.ForDiagnostic(diagnosticIdForIfWithAssignment));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForIfWithReturn, RuleForIfWithAssignment); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(RuleForIfWithReturn, RuleForIfWithAssignment);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.IfStatement);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

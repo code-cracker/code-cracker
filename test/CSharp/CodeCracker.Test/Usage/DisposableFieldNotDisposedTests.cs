@@ -42,7 +42,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -88,14 +88,14 @@ namespace CodeCracker.Test.Usage
     }";
             var expected1 = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdCreated,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field1"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
             };
             var expected2 = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field2"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 41) }
@@ -126,7 +126,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -156,7 +156,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -230,7 +230,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdCreated,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -261,7 +261,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdCreated,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 23) }
@@ -294,7 +294,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -326,7 +326,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -352,7 +352,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdCreated,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -379,7 +379,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 33) }

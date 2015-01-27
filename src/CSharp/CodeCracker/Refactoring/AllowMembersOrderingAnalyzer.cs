@@ -9,25 +9,20 @@ namespace CodeCracker.Refactoring
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AllowMembersOrderingAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0035";
-
         internal const string Title = "Ordering member inside this type.";
         internal const string MessageFormat = "Ordering member inside this type.";
         internal const string Category = SupportedCategories.Refactoring;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.AllowMembersOrdering.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.AllowMembersOrdering));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-        {
-            get { return ImmutableArray.Create(Rule); }
-        }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context)
         {

@@ -370,7 +370,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ForInArrayAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
                 Message = "You can use foreach instead of for.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
@@ -403,7 +403,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ForInArrayAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
                 Message = "You can use foreach instead of for.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 17) }

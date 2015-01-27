@@ -9,7 +9,7 @@ namespace CodeCracker.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IfReturnTrueAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0007";
+        private static readonly string diagnosticId = DiagnosticId.IfReturnTrue.ToDiagnosticId();
         internal const string Title = "Return Condition directly";
         internal const string Message = "{0}";
         internal const string Category = SupportedCategories.Usage;
@@ -17,21 +17,19 @@ namespace CodeCracker.Usage
             + "As the condition is already a boolean it can be returned directly";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            diagnosticId,
             Title,
             Message,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(diagnosticId));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.IfStatement);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

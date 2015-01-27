@@ -28,7 +28,7 @@ namespace CodeCracker.Test.Usage
             var source = "new System.IO.MemoryStream();".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = DisposableVariableNotDisposedAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
                 Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -43,7 +43,7 @@ namespace CodeCracker.Test.Usage
             var source = "System.IO.MemoryStream a, b = new System.IO.MemoryStream();".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = DisposableVariableNotDisposedAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
                 Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 47) }
@@ -74,7 +74,7 @@ m.Dispose();".WrapInMethod();
             var source = "string.Format(\"\", new System.IO.MemoryStream());".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = DisposableVariableNotDisposedAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
                 Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 35) }
@@ -89,7 +89,7 @@ m.Dispose();".WrapInMethod();
 m.Dispose(true);".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = DisposableVariableNotDisposedAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
                 Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
@@ -117,7 +117,7 @@ m.Dispose(true);".WrapInMethod();
 ";
             var expected = new DiagnosticResult
             {
-                Id = DisposableVariableNotDisposedAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
                 Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "Disposable"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 33) }
@@ -169,7 +169,7 @@ m.Dispose(true);".WrapInMethod();
 ";
             var expected = new DiagnosticResult
             {
-                Id = DisposableVariableNotDisposedAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
                 Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "Disposable"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 33) }

@@ -36,7 +36,7 @@ namespace Sample
 }";
             var expected = new DiagnosticResult
             {
-                Id = RemoveWhereWhenItIsPossibleAnalyzer.DiagnosticId,
+                Id = DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId(),
                 Message = "You can remove 'Where' moving the predicate to '" + method + "'.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 23) }

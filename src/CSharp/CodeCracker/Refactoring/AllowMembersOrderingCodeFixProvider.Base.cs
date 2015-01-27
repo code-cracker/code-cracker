@@ -14,6 +14,11 @@ namespace CodeCracker.Refactoring
 {
     public abstract class BaseAllowMembersOrderingCodeFixProvider : CodeFixProvider
     {
+        public override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.AllowMembersOrdering.ToDiagnosticId());
+
+        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
         protected readonly string codeActionDescription;
 
         protected BaseAllowMembersOrderingCodeFixProvider(string codeActionDescription) : base()
@@ -79,10 +84,5 @@ namespace CodeCracker.Refactoring
                 });
             return orderChanged;
         }
-
-        public override ImmutableArray<string> GetFixableDiagnosticIds() =>
-            ImmutableArray.Create(AllowMembersOrderingAnalyzer.DiagnosticId);
-
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
     }
 }

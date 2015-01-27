@@ -180,7 +180,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
@@ -207,7 +207,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
@@ -234,7 +234,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
@@ -261,7 +261,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
@@ -288,7 +288,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }

@@ -53,7 +53,7 @@ namespace CodeCracker.Test.Refactoring
 
             var expected = new DiagnosticResult
             {
-                Id = AllowMembersOrderingAnalyzer.DiagnosticId,
+                Id = DiagnosticId.AllowMembersOrdering.ToDiagnosticId(),
                 Message = AllowMembersOrderingAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 14 + typeDeclaration.Length) }

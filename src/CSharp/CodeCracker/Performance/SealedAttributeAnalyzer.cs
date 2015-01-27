@@ -8,7 +8,6 @@ namespace CodeCracker.Performance
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class SealedAttributeAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0023";
         internal const string Title = "Unsealed Attribute";
         internal const string MessageFormat = "Mark '{0}' as sealed.";
         internal const string Category = SupportedCategories.Performance;
@@ -16,14 +15,14 @@ namespace CodeCracker.Performance
             + "inheritence hierarchy of the attribute class. "
             + "Marking the type as sealed eliminate this search and can improve performance";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId,
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId.SealedAttribute.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.SealedAttribute));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

@@ -9,23 +9,22 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertToExpressionBodiedMemberAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0038";
         internal const string Title = "You should use expression bodied members whenever possible.";
         internal const string MessageFormat = "Use an expression bodied member.";
         internal const string Category = SupportedCategories.Style;
         const string Description = "Usage of an expression bodied members improve readability of the code.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: false,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ConvertToExpressionBodiedMember));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context)
         {

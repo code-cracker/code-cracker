@@ -12,6 +12,11 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerUnnecessaryParenthesisCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UnnecessaryParenthesisCodeFixProvider : CodeFixProvider
     {
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.UnnecessaryParenthesis.ToDiagnosticId());
+
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
@@ -21,16 +26,6 @@ namespace CodeCracker.Style
             root = root.RemoveNode(declaration, SyntaxRemoveOptions.KeepTrailingTrivia);
             var newDocument = context.Document.WithSyntaxRoot(root);
             context.RegisterFix(CodeAction.Create("Remove unnecessary parenthesis", newDocument), diagnostic);
-        }
-
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(UnnecessaryParenthesisAnalyzer.DiagnosticId);
-        }
-
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
         }
     }
 }

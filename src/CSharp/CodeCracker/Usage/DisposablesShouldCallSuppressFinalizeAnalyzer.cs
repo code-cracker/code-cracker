@@ -9,7 +9,6 @@ namespace CodeCracker.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DisposablesShouldCallSuppressFinalizeAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0029";
         internal const string Title = "Disposables Should Call Suppress Finalize";
         internal const string MessageFormat = "'{0}' should call GC.SuppressFinalize inside the Dispose method.";
         internal const string Category = SupportedCategories.Naming;
@@ -17,21 +16,19 @@ namespace CodeCracker.Usage
             + "finalize method to avoid any finalizer from being called.\r\n"
             + "This rule should be followed even if the class doesn't have a finalizer as a derived class could have one.";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: false,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSymbolAction(Analyze, SymbolKind.NamedType);
-        }
 
         private async void Analyze(SymbolAnalysisContext context)
         {
