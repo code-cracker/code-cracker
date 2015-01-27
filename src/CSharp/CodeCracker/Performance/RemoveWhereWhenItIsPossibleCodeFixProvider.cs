@@ -27,10 +27,10 @@ namespace CodeCracker.Performance
             var whereInvoke = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
             var nextMethodInvoke = whereInvoke.Parent.FirstAncestorOrSelf<InvocationExpressionSyntax>();
             var message = "Remove 'Where' moving predicate to '" + RemoveWhereWhenItIsPossibleAnalyzer.GetNameOfTheInvokedMethod(nextMethodInvoke) + "'";
-            context.RegisterFix(CodeAction.Create(message, c => RemoveWhere(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create(message, c => RemoveWhereAsync(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic);
         }
 
-        private async Task<Document> RemoveWhere(Document document, InvocationExpressionSyntax whereInvoke, InvocationExpressionSyntax nextMethodInvoke, CancellationToken cancellationToken)
+        private async Task<Document> RemoveWhereAsync(Document document, InvocationExpressionSyntax whereInvoke, InvocationExpressionSyntax nextMethodInvoke, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var whereMemberAccess = whereInvoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();

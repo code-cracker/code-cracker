@@ -30,10 +30,10 @@ namespace CodeCracker.Usage
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
             if (objectCreation != null)
-                context.RegisterFix(CodeAction.Create($"Dispose object: '{objectCreation.Type.ToString()}'", c => CreateUsing(context.Document, objectCreation, c)), diagnostic);
+                context.RegisterFix(CodeAction.Create($"Dispose object: '{objectCreation.Type.ToString()}'", c => CreateUsingAsync(context.Document, objectCreation, c)), diagnostic);
         }
 
-        private static async Task<Document> CreateUsing(Document document, ObjectCreationExpressionSyntax objectCreation, CancellationToken cancellationToken)
+        private static async Task<Document> CreateUsingAsync(Document document, ObjectCreationExpressionSyntax objectCreation, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             SyntaxNode newRoot, root = await document.GetSyntaxRootAsync();

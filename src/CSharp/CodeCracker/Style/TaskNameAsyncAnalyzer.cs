@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
-using System.Threading.Tasks;
 
 namespace CodeCracker.Style
 {
@@ -37,7 +36,7 @@ namespace CodeCracker.Style
         {
             var method = (MethodDeclarationSyntax)context.Node;
             if (method.Identifier.ToString().EndsWith("Async")) return;
-            
+
             var errorMessage = method.Identifier.ToString() + "Async";
             var diag = Diagnostic.Create(Rule, method.GetLocation(), errorMessage);
 

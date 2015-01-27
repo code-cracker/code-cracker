@@ -28,10 +28,10 @@ namespace CodeCracker.Performance
             var finalizer = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<DestructorDeclarationSyntax>().First();
 
             context.RegisterFix(
-                CodeAction.Create("Remove finalizer", ct => RemoveThrow(context.Document, finalizer, ct)), diagnostic);
+                CodeAction.Create("Remove finalizer", ct => RemoveThrowAsync(context.Document, finalizer, ct)), diagnostic);
         }
 
-        private async Task<Document> RemoveThrow(Document document, DestructorDeclarationSyntax finalizer, CancellationToken ct)
+        private async Task<Document> RemoveThrowAsync(Document document, DestructorDeclarationSyntax finalizer, CancellationToken ct)
         {
             return document.WithSyntaxRoot((await document.GetSyntaxRootAsync(ct)).RemoveNode(finalizer, SyntaxRemoveOptions.KeepNoTrivia));
         }

@@ -33,10 +33,10 @@ namespace CodeCracker.Design
             var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
             context.RegisterFix(
-                CodeAction.Create("Use ?.Invoke operator and method to fire an event.", ct => UseInvoke(context.Document, invocation, ct)), diagnostic);
+                CodeAction.Create("Use ?.Invoke operator and method to fire an event.", ct => UseInvokeAsync(context.Document, invocation, ct)), diagnostic);
         }
 
-        private async Task<Document> UseInvoke(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
+        private async Task<Document> UseInvokeAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
         {
             var newInvocation =
                     SyntaxFactory.ConditionalAccessExpression(

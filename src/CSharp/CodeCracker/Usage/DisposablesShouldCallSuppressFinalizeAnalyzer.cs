@@ -28,9 +28,9 @@ namespace CodeCracker.Usage
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context) =>
-            context.RegisterSymbolAction(Analyze, SymbolKind.NamedType);
+            context.RegisterSymbolAction(AnalyzeAsync, SymbolKind.NamedType);
 
-        private async void Analyze(SymbolAnalysisContext context)
+        private async void AnalyzeAsync(SymbolAnalysisContext context)
         {
             var symbol = (INamedTypeSymbol)context.Symbol;
 

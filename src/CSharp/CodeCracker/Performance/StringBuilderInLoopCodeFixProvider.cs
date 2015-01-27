@@ -32,10 +32,10 @@ namespace CodeCracker.Usage
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var assignmentExpression = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<AssignmentExpressionSyntax>().First();
-            context.RegisterFix(CodeAction.Create($"Use StringBuilder to create a value for '{assignmentExpression.Left.ToString()}'", c => UseStringBuilder(context.Document, assignmentExpression, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create($"Use StringBuilder to create a value for '{assignmentExpression.Left.ToString()}'", c => UseStringBuilderAsync(context.Document, assignmentExpression, c)), diagnostic);
         }
 
-        private async Task<Document> UseStringBuilder(Document document, AssignmentExpressionSyntax assignmentExpression, CancellationToken cancellationToken)
+        private async Task<Document> UseStringBuilderAsync(Document document, AssignmentExpressionSyntax assignmentExpression, CancellationToken cancellationToken)
         {
             var expressionStatement = assignmentExpression.Parent;
             var expressionStatementParent = expressionStatement.Parent;
