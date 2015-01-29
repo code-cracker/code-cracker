@@ -31,10 +31,16 @@ namespace CodeCracker.Usage
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression);
         }
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             var comparison = (BinaryExpressionSyntax)context.Node;
-            var semanticModel = context.SemanticModel;
+
+            // Only handle the case where both operands of type bool; other cases involve
+            // too much complexity to be able to deliver an accurate diagnostic confidently.
+            var leftType = context.SemanticModel.GetTypeInfo(comparison.Left).Type;
+            var rightType = context.SemanticModel.GetTypeInfo(comparison.Right).Type;
+            if (!IsBoolean(leftType) || !IsBoolean(rightType))
+                return;
 
             var right = context.SemanticModel.GetConstantValue(comparison.Right);
             if (!right.HasValue) return;
@@ -43,6 +49,11 @@ namespace CodeCracker.Usage
 
             var diagnostic = Diagnostic.Create(Rule, comparison.GetLocation());
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static bool IsBoolean(ITypeSymbol symbol)
+        {
+            return symbol.SpecialType == SpecialType.System_Boolean;
         }
     }
 }

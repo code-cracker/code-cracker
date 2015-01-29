@@ -20,6 +20,8 @@ namespace CodeCracker.Test.Usage
         [InlineData("var fee = (foo != false);", 28)]
         public async Task WhenComparingWithBoolAnalyzerCreatesDiagnostic(string sample, int column)
         {
+            sample = "bool foo; " + sample; // add declaration of foo
+            column += 10;                   // adjust column for added declaration
             var test = sample.WrapInMethod();
 
             var expected = new DiagnosticResult
@@ -39,8 +41,11 @@ namespace CodeCracker.Test.Usage
         [InlineData("var fee = (foo == 0);")]
         [InlineData("if (foo != 0) {}")]
         [InlineData("var fee = (foo != 0);")]
+        [InlineData("var fee = (foo == bar);")]
+        [InlineData("var fee = (foo != bar);")]
         public async Task IgnoresWhenComparingWithNotBool(string sample)
         {
+            sample = "bool foo; " + sample;
             var test = sample.WrapInMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
@@ -57,6 +62,8 @@ namespace CodeCracker.Test.Usage
         [InlineData("var fee = (foo != false);", "var fee = (foo);")]
         public async Task FixRemovesRedundantComparisons(string original, string result)
         {
+            original = "bool foo;" + original;
+            result = "bool foo; " + result;
             var test = original.WrapInMethod();
             var fixtest = result.WrapInMethod();
 
