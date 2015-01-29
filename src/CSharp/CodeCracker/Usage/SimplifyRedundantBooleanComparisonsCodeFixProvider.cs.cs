@@ -35,12 +35,27 @@ namespace CodeCracker.Usage
             context.RegisterFix(CodeAction.Create("Removes redundant comparision", c => RemoveRedundantComparisonAsync(context.Document, comparison, c)), diagnostic);
         }
 
-        private async Task<Document> RemoveRedundantComparisonAsync(Document document, BinaryExpressionSyntax comparison, CancellationToken cancellationToken)
+        private static async Task<Document> RemoveRedundantComparisonAsync(Document document, BinaryExpressionSyntax comparison, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var right = (bool)semanticModel.GetConstantValue(comparison.Right).Value;
-            var replacer = comparison.Left;
-            if ((!right && comparison.IsKind(SyntaxKind.EqualsExpression)) || (right && comparison.IsKind(SyntaxKind.NotEqualsExpression)))
+
+            bool constValue;
+            ExpressionSyntax replacer;
+            var rightConst = semanticModel.GetConstantValue(comparison.Right);
+            if (rightConst.HasValue)
+            {
+                constValue = (bool) rightConst.Value;
+                replacer = comparison.Left;
+            }
+            else
+            {
+                var leftConst = semanticModel.GetConstantValue(comparison.Left);
+                constValue = (bool) leftConst.Value;
+                replacer = comparison.Right;
+            }
+                
+
+            if ((!constValue && comparison.IsKind(SyntaxKind.EqualsExpression)) || (constValue && comparison.IsKind(SyntaxKind.NotEqualsExpression)))
                 replacer = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, replacer);
             replacer = replacer.WithAdditionalAnnotations(Formatter.Annotation);
 

@@ -42,10 +42,10 @@ namespace CodeCracker.Usage
             if (!IsBoolean(leftType) || !IsBoolean(rightType))
                 return;
 
-            var right = context.SemanticModel.GetConstantValue(comparison.Right);
-            if (!right.HasValue) return;
-
-            if (!(right.Value is bool)) return;
+            var leftConstant = context.SemanticModel.GetConstantValue(comparison.Left);
+            var rightConstant = context.SemanticModel.GetConstantValue(comparison.Right);
+            if (!leftConstant.HasValue && !rightConstant.HasValue)
+                return;
 
             var diagnostic = Diagnostic.Create(Rule, comparison.GetLocation());
             context.ReportDiagnostic(diagnostic);
