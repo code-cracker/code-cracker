@@ -144,21 +144,21 @@ namespace TestHelper
             return root.GetText().ToString();
         }
 
-        public static string WrapInMethod(this string code)
+        public static string WrapInMethod(this string code, bool isAsync = false)
         {
-            return @"
+            return string.Format(@"
     using System;
 
     namespace ConsoleApplication1
-    {
+    {{
         class TypeName
-        {
-            public void Foo()
-            {
-                " + code + @"
-            }
-        }
-    }";
+        {{
+            public {1}void Foo()
+            {{
+                {0}
+            }}
+        }}
+    }}", code, isAsync ? "async " : "");
         }
     }
 }

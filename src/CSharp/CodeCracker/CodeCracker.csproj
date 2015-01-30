@@ -43,6 +43,8 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.cs" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.cs" />
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupAnalyzer.cs" />
@@ -190,7 +192,6 @@
     <Folder Include="Mobility\" />
     <Folder Include="Naming\" />
     <Folder Include="Portability\" />
-    <Folder Include="Reliability\" />
     <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
