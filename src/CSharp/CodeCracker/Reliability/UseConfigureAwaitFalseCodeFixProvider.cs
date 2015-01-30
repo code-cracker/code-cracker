@@ -7,9 +7,13 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using System.Threading;
+using Microsoft.CodeAnalysis.Text;
+using System.Composition;
 
 namespace CodeCracker.Reliability
 {
+    [ExportCodeFixProvider("CodeCrackerUseConfigureAwaitFalseCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UseConfigureAwaitFalseCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> GetFixableDiagnosticIds()
