@@ -45,5 +45,32 @@ namespace CodeCracker.Test.Reliability
             var test = sample.WrapInMethod(isAsync: true);
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
+
+        [Theory]
+        [InlineData(
+            "System.Threading.Tasks.Task t; await t;",
+            "System.Threading.Tasks.Task t; await t.ConfigureAwait(false);")]
+        [InlineData(
+            "System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42);",
+            "System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42).ConfigureAwait(false);")]
+        [InlineData(
+            "await System.Threading.Tasks.Task.Delay(1000);",
+            "await System.Threading.Tasks.Task.Delay(1000).ConfigureAwait(false);")]
+        [InlineData(
+            "await System.Threading.Tasks.Task.FromResult(0);",
+            "await System.Threading.Tasks.Task.FromResult(0).ConfigureAwait(false);")]
+        [InlineData(
+            "await System.Threading.Tasks.Task.Run(() => {});",
+            "await System.Threading.Tasks.Task.Run(() => {}).ConfigureAwait(false);")]
+        [InlineData(
+            "Func<System.Threading.Tasks.Task> f; await f();",
+            "Func<System.Threading.Tasks.Task> f; await f().ConfigureAwait(false);")]
+        public async Task FixAddsConfigureAwaitFalse(string original, string result)
+        {
+            var test = original.WrapInMethod(isAsync: true);
+            var fixtest = result.WrapInMethod(isAsync: true);
+
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
     }
 }

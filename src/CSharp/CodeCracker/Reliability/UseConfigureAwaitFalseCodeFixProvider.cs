@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
 
 namespace CodeCracker.Reliability
 {
@@ -12,12 +14,36 @@ namespace CodeCracker.Reliability
     {
         public override ImmutableArray<string> GetFixableDiagnosticIds()
         {
-            throw new NotImplementedException();
+            return ImmutableArray.Create(UseConfigureAwaitFalseAnalyzer.DiagnosticId);
         }
 
-        public override Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override FixAllProvider GetFixAllProvider()
         {
-            throw new NotImplementedException();
+            return WellKnownFixAllProviders.BatchFixer;
+        }
+
+        public override async Task ComputeFixesAsync(CodeFixContext context)
+        {
+            var diagnostic = context.Diagnostics.First();
+            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+            var awaitExpression = (AwaitExpressionSyntax) root.FindNode(diagnostic.Location.SourceSpan);
+            var newExpression = SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    awaitExpression.Expression,
+                    SyntaxFactory.IdentifierName("ConfigureAwait")),
+                SyntaxFactory.ArgumentList(
+                    SyntaxFactory.SingletonSeparatedList(
+                        SyntaxFactory.Argument(
+                            SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression)))))
+                .WithAdditionalAnnotations(Formatter.Annotation);
+
+            var newRoot = root.ReplaceNode(awaitExpression.Expression, newExpression);
+            var newDocument = context.Document.WithSyntaxRoot(newRoot);
+            
+            context.RegisterFix(
+                CodeAction.Create("Use ConfigureAwait(false)", newDocument),
+                diagnostic);
         }
     }
 }
