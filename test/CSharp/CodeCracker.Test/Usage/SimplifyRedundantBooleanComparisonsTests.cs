@@ -66,6 +66,16 @@ namespace CodeCracker.Test.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Theory]
+        [InlineData("if ( == ) {}")]
+        [InlineData("if (foo == ) {}")]
+        [InlineData("if ( == foo) {}")]
+        public async Task IgnoresIncompleteComparisonExpression(string sample)
+        {
+            sample = "bool foo; " + sample;
+            var test = sample.WrapInMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
 
         [Theory]
         [InlineData("if (foo == true) {}", "if (foo) {}" )]
