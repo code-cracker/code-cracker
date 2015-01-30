@@ -1,8 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 namespace CodeCracker.Usage
 {
@@ -53,7 +53,7 @@ namespace CodeCracker.Usage
 
         private static bool IsBoolean(ITypeSymbol symbol)
         {
-            return symbol.SpecialType == SpecialType.System_Boolean;
+            return symbol != null && symbol.SpecialType == SpecialType.System_Boolean;
         }
     }
 }
