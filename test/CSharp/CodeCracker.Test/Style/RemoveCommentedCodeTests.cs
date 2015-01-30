@@ -8,7 +8,6 @@ namespace CodeCracker.Test.Style
 {
     public class RemoveCommentedCodeTests : CodeFixTest<RemoveCommentedCodeAnalyzer, RemoveCommentedCodeCodeFixProvider>
     {
-
         [Fact]
         public async Task IgnoresSingleWordComment()
         {
@@ -29,7 +28,7 @@ namespace CodeCracker.Test.Style
             var test = @"// a = 10;".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = RemoveCommentedCodeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.RemoveCommentedCode.ToDiagnosticId(),
                 Message = RemoveCommentedCodeAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -61,7 +60,7 @@ namespace CodeCracker.Test.Style
             // }".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = RemoveCommentedCodeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.RemoveCommentedCode.ToDiagnosticId(),
                 Message = RemoveCommentedCodeAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 13) }
@@ -124,6 +123,5 @@ namespace CodeCracker.Test.Style
             ".WrapInMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
-
     }
 }

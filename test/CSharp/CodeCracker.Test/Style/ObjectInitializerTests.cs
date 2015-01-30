@@ -116,7 +116,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ObjectInitializerAnalyzer.DiagnosticIdLocalDeclaration,
+                Id = DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(),
                 Message = "You can use initializers in here.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 17) }
@@ -208,7 +208,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ObjectInitializerAnalyzer.DiagnosticIdAssignment,
+                Id = DiagnosticId.ObjectInitializer_Assignment.ToDiagnosticId(),
                 Message = "You can use initializers in here.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }

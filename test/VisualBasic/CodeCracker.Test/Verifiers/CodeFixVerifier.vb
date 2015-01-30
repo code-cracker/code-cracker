@@ -14,13 +14,6 @@ Namespace TestHelper
     ''' </summary>
     Partial Public MustInherit Class CodeFixVerifier
         Inherits DiagnosticVerifier
-        ''' <summary>
-        ''' Returns the codefix being tested (C#) - to be implemented in non-abstract class
-        ''' </summary>
-        ''' <returns>The CodeFixProvider to be used for CSharp code</returns>
-        Protected Overridable Function GetCSharpCodeFixProvider() As CodeFixProvider
-            Return Nothing
-        End Function
 
         ''' <summary>
         ''' Returns the codefix being tested (VB) - to be implemented in non-abstract class
@@ -31,17 +24,6 @@ Namespace TestHelper
         End Function
 
         ''' <summary>
-        ''' Called to test a C# codefix when applied on the inputted string as a source
-        ''' </summary>
-        ''' <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
-        ''' <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
-        ''' <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
-        ''' <param name="allowNewCompilerDiagnostics">A bool controlling whether Or Not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        Protected Async Function VerifyCSharpFixAsync(oldSource As String, newSource As String, Optional codeFixIndex As Integer? = Nothing, Optional allowNewCompilerDiagnostics As Boolean = False) As Task
-            Await VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics)
-        End Function
-
-        ''' <summary>
         ''' Called to test a VB codefix when applied on the inputted string as a source
         ''' </summary>
         ''' <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
@@ -49,7 +31,7 @@ Namespace TestHelper
         ''' <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         ''' <param name="allowNewCompilerDiagnostics">A bool controlling whether Or Not the test will fail if the CodeFix introduces other warnings after being applied</param>
         Protected Async Function VerifyBasicFixAsync(oldSource As String, newSource As String, Optional codeFixIndex As Integer? = Nothing, Optional allowNewCompilerDiagnostics As Boolean = False) As Task
-            Await VerifyFixAsync(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics)
+            Await VerifyFixAsync(GetDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics)
         End Function
 
         ''' <summary>
@@ -58,16 +40,15 @@ Namespace TestHelper
         ''' Then gets the string after the codefix Is applied And compares it with the expected result.
         ''' Note: If any codefix causes New diagnostics To show up, the test fails unless allowNewCompilerDiagnostics Is Set To True.
         ''' </summary>
-        ''' <param name="language">The language the source code Is in</param>
         ''' <param name="analyzer">The analyzer to be applied to the source code</param>
         ''' <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic Is found</param>
         ''' <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
         ''' <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
         ''' <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         ''' <param name="allowNewCompilerDiagnostics">A bool controlling whether Or Not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        Private Async Function VerifyFixAsync(language As String, analyzer As DiagnosticAnalyzer, codeFixProvider As CodeFixProvider, oldSource As String, newSource As String, codeFixIndex As Integer?, allowNewCompilerDiagnostics As Boolean) As Task
+        Private Async Function VerifyFixAsync(analyzer As DiagnosticAnalyzer, codeFixProvider As CodeFixProvider, oldSource As String, newSource As String, codeFixIndex As Integer?, allowNewCompilerDiagnostics As Boolean) As Task
 
-            Dim document = CreateDocument(oldSource, language)
+            Dim document = CreateDocument(oldSource)
             Dim analyzerDiagnostics = Await GetSortedDiagnosticsFromDocumentsAsync(analyzer, New Document() {document})
             Dim compilerDiagnostics = Await GetCompilerDiagnosticsAsync(document)
             Dim attempts = analyzerDiagnostics.Length

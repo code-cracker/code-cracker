@@ -26,6 +26,7 @@
     <NoWarn>40057</NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <CodeAnalysisRuleSet>..\..\..\codecrackerandall.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,6 +39,7 @@
     <DocumentationFile>CodeCracker.VisualBasic.xml</DocumentationFile>
     <NoWarn>40057</NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -53,6 +55,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework and Windows SDK is automatically included -->
+    <None Include="CodeCracker.nuspec" />
     <None Include="packages.config" />
     <None Include="tools\install.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -89,10 +92,8 @@
     <Import Include="Windows.UI.Xaml.Media.Imaging" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeCrackerAnalyzerBase.vb" />
     <Compile Include="Design\CatchEmptyAnalyzer.vb" />
     <Compile Include="Design\CatchEmptyCodeFixProvider.vb" />
-    <Compile Include="Design\DesignDiagnostics.vb" />
     <Compile Include="Design\EmptyCatchBlockAnalyzer.vb" />
     <Compile Include="Design\EmptyCatchBlockCodeFixProvider.vb" />
     <Compile Include="Design\NameOfAnalyzer.vb" />
@@ -102,11 +103,8 @@
     <Compile Include="Extensions\AnalyzerExtensions.vb" />
     <Compile Include="HelpLink.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
-    <Compile Include="Performance\EmptyFinalizerAnalyzer.vb" />
-    <Compile Include="Performance\EmptyFinalizerCodeFixProvider.vb" />
     <Compile Include="Performance\MakeLocalVariableConstWhenPossibleAnalyzer.vb" />
     <Compile Include="Performance\MakeLocalVariableConstWhenPossibleCodeFixProvider.vb" />
-    <Compile Include="Performance\PerformanceDiagnostics.vb" />
     <Compile Include="Performance\RemoveWhereWhenItIsPossibleAnalyzer.vb" />
     <Compile Include="Performance\RemoveWhereWhenItIsPossibleCodeFixProvider.vb" />
     <Compile Include="Performance\SealedAttributeAnalyzer.vb" />
@@ -132,6 +130,9 @@
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
     </Reference>
@@ -140,9 +141,6 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-beta1-20141031-01\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
@@ -166,6 +164,9 @@
     <Reference Include="System.Reflection.Metadata">
       <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.17-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0331\tools\analyzers\CodeCracker.VisualBasic.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -6,12 +6,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 namespace CodeCracker.Usage
 {
-    [ExportCodeFixProvider("CodeCrackerCallExtensionMethodAsExtensionCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerCallExtensionMethodAsExtensionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class CallExtensionMethodAsExtensionCodeFixProvider : CodeFixProvider
     {
         public override async Task ComputeFixesAsync(CodeFixContext context)
@@ -33,15 +34,10 @@ namespace CodeCracker.Usage
                     diagnostic);
         }
 
-        public override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(CallExtensionMethodAsExtensionAnalyzer.DiagnosticId);
-        }
+        public override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId());
 
-        public override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         private async Task<Document> CallAsExtensionAsync(Document document, InvocationExpressionSyntax staticInvocationExpression, CancellationToken cancellationToken)
         {

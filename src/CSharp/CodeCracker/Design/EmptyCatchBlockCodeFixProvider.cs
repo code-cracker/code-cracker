@@ -15,15 +15,10 @@ namespace CodeCracker.Design
     [ExportCodeFixProvider("EmptyCatchBlockCodeFixProvider", LanguageNames.CSharp), Shared]
     public class EmptyCatchBlockCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(EmptyCatchBlockAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.EmptyCatchBlock.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -36,7 +31,7 @@ namespace CodeCracker.Design
             context.RegisterFix(CodeAction.Create("Insert Exception class to Catch", c => InsertExceptionClassCommentAsync(context.Document, declaration, c)), diagnostic);
         }
 
-        private async Task<Document> RemoveTry(Document document, CatchClauseSyntax catchStatement, CancellationToken cancellationToken, bool insertComment = false)
+        private async Task<Document> RemoveTryAsync(Document document, CatchClauseSyntax catchStatement, CancellationToken cancellationToken, bool insertComment = false)
         {
             var tryStatement = (TryStatementSyntax)catchStatement.Parent;
             var tryBlock = tryStatement.Block;
@@ -56,12 +51,12 @@ namespace CodeCracker.Design
 
         private async Task<Document> RemoveEmptyCatchBlockAsync(Document document, CatchClauseSyntax catchStatement, CancellationToken cancellationToken)
         {
-            return await RemoveTry(document, catchStatement, cancellationToken);
+            return await RemoveTryAsync(document, catchStatement, cancellationToken);
         }
 
         private async Task<Document> RemoveEmptyCatchBlockPutCommentAsync(Document document, CatchClauseSyntax catchStatement, CancellationToken cancellationToken)
         {
-            return await RemoveTry(document, catchStatement, cancellationToken, true);
+            return await RemoveTryAsync(document, catchStatement, cancellationToken, true);
         }
 
         private async Task<Document> InsertExceptionClassCommentAsync(Document document, CatchClauseSyntax catchStatement, CancellationToken cancellationToken)

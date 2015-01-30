@@ -29,10 +29,10 @@ Public Module AnalyzerExtensions
 
     <Extension> Public Function WithSameTriviaAs(target As SyntaxNode, source As SyntaxNode) As SyntaxNode
         If target Is Nothing Then
-            Throw New ArgumentNullException("target")
+            Throw New ArgumentNullException(NameOf(target))
         End If
         If source Is Nothing Then
-            Throw New ArgumentNullException("source")
+            Throw New ArgumentNullException(NameOf(target))
         End If
 
         Return target.WithLeadingTrivia(source.GetLeadingTrivia()).WithTrailingTrivia(source.GetTrailingTrivia())

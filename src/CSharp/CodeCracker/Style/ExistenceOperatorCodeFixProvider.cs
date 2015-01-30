@@ -15,15 +15,10 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerExistenceOperatorCodeFixProvider ", LanguageNames.CSharp), Shared]
     public class ExistenceOperatorCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(ExistenceOperatorAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.ExistenceOperator.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -42,11 +37,11 @@ namespace CodeCracker.Style
             var returnIf = statementInsideIf as ReturnStatementSyntax;
             var returnElse = statementInsideElse as ReturnStatementSyntax;
             if (returnIf != null && returnElse != null)
-                return await UseExistenceOperatorAsyncWithReturn(document, ifStatement, cancellationToken, returnIf);
-            return await UseExistenceOperatorAsyncWithAssignment(document, ifStatement, cancellationToken, (ExpressionStatementSyntax)statementInsideIf);
+                return await UseExistenceOperatorAsyncWithReturnAsync(document, ifStatement, cancellationToken, returnIf);
+            return await UseExistenceOperatorAsyncWithAssignmentAsync(document, ifStatement, cancellationToken, (ExpressionStatementSyntax)statementInsideIf);
         }
 
-        private async Task<Document> UseExistenceOperatorAsyncWithReturn(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ReturnStatementSyntax returnIf)
+        private async Task<Document> UseExistenceOperatorAsyncWithReturnAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ReturnStatementSyntax returnIf)
         {
             var newMemberAccess = ((MemberAccessExpressionSyntax)returnIf.Expression).ToConditionalAccessExpression();
             var newReturn = SyntaxFactory.ReturnStatement(newMemberAccess)
@@ -59,7 +54,7 @@ namespace CodeCracker.Style
             return newDocument;
         }
 
-        private async Task<Document> UseExistenceOperatorAsyncWithAssignment(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ExpressionStatementSyntax expressionIf)
+        private async Task<Document> UseExistenceOperatorAsyncWithAssignmentAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ExpressionStatementSyntax expressionIf)
         {
             var memberAccessAssignment = (AssignmentExpressionSyntax)expressionIf.Expression;
             var newMemberAccess = ((MemberAccessExpressionSyntax)memberAccessAssignment.Right).ToConditionalAccessExpression();

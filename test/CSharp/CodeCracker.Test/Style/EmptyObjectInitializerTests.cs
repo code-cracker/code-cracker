@@ -14,7 +14,7 @@ namespace CodeCracker.Test.Style
             const string code = @"var a = new A {};";
             var expected = new DiagnosticResult
             {
-                Id = EmptyObjectInitializerAnalyzer.DiagnosticId,
+                Id = DiagnosticId.EmptyObjectInitializer.ToDiagnosticId(),
                 Message = "Remove empty object initializer.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 15) }

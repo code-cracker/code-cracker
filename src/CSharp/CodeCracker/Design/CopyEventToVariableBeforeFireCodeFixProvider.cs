@@ -5,26 +5,22 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeCracker.Design
 {
-    [ExportCodeFixProvider("CodeCrackerCopyEventToVariableBeforeFireCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerCopyEventToVariableBeforeFireCodeFixProvider", LanguageNames.CSharp), Shared]
     public class CopyEventToVariableBeforeFireCodeFixProvider : CodeFixProvider
     {
         private const string SyntaxAnnotatinKind = "CC-CopyEvent";
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(CopyEventToVariableBeforeFireAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -34,10 +30,10 @@ namespace CodeCracker.Design
             var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
             context.RegisterFix(
-                CodeAction.Create("Copy event reference to a variable", ct => CreateVariable(context.Document, invocation, ct)), diagnostic);
+                CodeAction.Create("Copy event reference to a variable", ct => CreateVariableAsync(context.Document, invocation, ct)), diagnostic);
         }
 
-        private async Task<Document> CreateVariable(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
+        private async Task<Document> CreateVariableAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
         {
             const string handlerName = "handler";
 

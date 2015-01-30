@@ -14,15 +14,10 @@ namespace CodeCracker.Performance
     [ExportCodeFixProvider("CodeCrackerRemoveWhereWhenItIsPossibleCodeFixProvider", LanguageNames.CSharp), Shared]
     public class RemoveWhereWhenItIsPossibleCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(RemoveWhereWhenItIsPossibleAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -32,16 +27,16 @@ namespace CodeCracker.Performance
             var whereInvoke = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
             var nextMethodInvoke = whereInvoke.Parent.FirstAncestorOrSelf<InvocationExpressionSyntax>();
             var message = "Remove 'Where' moving predicate to '" + RemoveWhereWhenItIsPossibleAnalyzer.GetNameOfTheInvokedMethod(nextMethodInvoke) + "'";
-            context.RegisterFix(CodeAction.Create(message, c => RemoveWhere(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create(message, c => RemoveWhereAsync(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic);
         }
 
-        private async Task<Document> RemoveWhere(Document document, InvocationExpressionSyntax whereInvoke, InvocationExpressionSyntax nextMethodInvoke, CancellationToken cancellationToken)
+        private async Task<Document> RemoveWhereAsync(Document document, InvocationExpressionSyntax whereInvoke, InvocationExpressionSyntax nextMethodInvoke, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var whereMemberAccess = whereInvoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             var nextMethodMemberAccess = nextMethodInvoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             var newNextMethodInvoke = SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression( SyntaxKind.SimpleMemberAccessExpression, whereMemberAccess.Expression, nextMethodMemberAccess.Name),
+                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, whereMemberAccess.Expression, nextMethodMemberAccess.Name),
                 whereInvoke.ArgumentList);
             var newRoot = root.ReplaceNode(nextMethodInvoke, newNextMethodInvoke);
             var newDocument = document.WithSyntaxRoot(newRoot);

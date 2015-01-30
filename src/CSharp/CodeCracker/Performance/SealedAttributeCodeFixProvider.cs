@@ -5,24 +5,20 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeCracker.Performance
 {
-    [ExportCodeFixProvider("CodeCrackerSealedAttributeCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerSealedAttributeCodeFixProvider", LanguageNames.CSharp), Shared]
     public class SealedAttributeCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(SealedAttributeAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.SealedAttribute.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -31,11 +27,10 @@ namespace CodeCracker.Performance
             var sourceSpan = diagnostic.Location.SourceSpan;
             var type = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
 
-            context.RegisterFix(
-                CodeAction.Create("Mark as sealed", ct => MarkClassAsSealed(context.Document, type, ct)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Mark as sealed", ct => MarkClassAsSealedAsync(context.Document, type, ct)), diagnostic);
         }
 
-        private async Task<Document> MarkClassAsSealed(Document document, ClassDeclarationSyntax type, CancellationToken ct)
+        private async Task<Document> MarkClassAsSealedAsync(Document document, ClassDeclarationSyntax type, CancellationToken ct)
         {
             return document
                 .WithSyntaxRoot((await document.GetSyntaxRootAsync(ct))

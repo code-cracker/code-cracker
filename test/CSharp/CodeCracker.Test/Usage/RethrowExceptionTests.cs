@@ -30,7 +30,7 @@ namespace CodeCracker.Test.Usage
         {
             var expected = new DiagnosticResult
             {
-                Id = RethrowExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.RethrowException.ToDiagnosticId(),
                 Message = "Don't throw the same exception you caught, you lose the original stack trace.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 21) }
@@ -104,6 +104,25 @@ namespace CodeCracker.Test.Usage
         }
     }";
             await VerifyCSharpFixAsync(sourceWithoutUsingSystem, fixtest, 0);
+        }
+
+        [Fact]
+        public async Task WhenThrowingExceptionOutsideAnyCatchBlock()
+        {
+
+            const string fixtest = @"
+                namespace ConsoleApplication1
+                {
+                    class TypeName
+                    {
+                        public async Task Foo()
+                        {
+                            var ex = new ArgumentException(""An Exception"");
+                            throw ex;
+                        }
+                    }
+                }";
+            await VerifyCSharpHasNoDiagnosticsAsync(fixtest);
         }
     }
 }

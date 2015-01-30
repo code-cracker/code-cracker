@@ -11,25 +11,22 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RemoveCommentedCodeAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0037";
         internal const string Title = "Remove commented code.";
         internal const string MessageFormat = "Commented code should be removed.";
         internal const string Category = SupportedCategories.Style;
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.RemoveCommentedCode.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.RemoveCommentedCode));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxTreeAction(AnalyzeSingleLineCommentTrivia);
-        }
 
         private void AnalyzeSingleLineCommentTrivia(SyntaxTreeAnalysisContext context)
         {

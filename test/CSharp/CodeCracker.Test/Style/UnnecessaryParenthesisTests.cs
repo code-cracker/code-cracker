@@ -14,7 +14,7 @@ namespace CodeCracker.Test.Style
             const string source = @"var a = new B() { X = 1 };";
             var expected = new DiagnosticResult
             {
-                Id = UnnecessaryParenthesisAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UnnecessaryParenthesis.ToDiagnosticId(),
                 Message = "Remove unnecessary parenthesis.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 14) }

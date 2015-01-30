@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test
+namespace CodeCracker.Test.Style
 {
     public class ConvertLambdaExpressionToMethodGroupTests
         : CodeFixTest<ConvertLambdaExpressionToMethodGroupAnalyzer, ConvertLambdaExpressionToMethodGroupFixProvider>
@@ -15,7 +15,7 @@ namespace CodeCracker.Test
             const string test = @"var f = a.Where(item => filter(item));";
             var expected = new DiagnosticResult
             {
-                Id = ConvertLambdaExpressionToMethodGroupAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(),
                 Message = "You should remove the lambda expression and pass just 'filter' instead.",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 17) }
@@ -30,7 +30,7 @@ namespace CodeCracker.Test
             const string test = @"var f = a.Where(item => { return filter(item); });";
             var expected = new DiagnosticResult
             {
-                Id = ConvertLambdaExpressionToMethodGroupAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(),
                 Message = "You should remove the lambda expression and pass just 'filter' instead.",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 17) }
@@ -45,7 +45,7 @@ namespace CodeCracker.Test
             const string test = @"var f = a.Foo((param1, param2) => { return filter(param1, param2); });";
             var expected = new DiagnosticResult
             {
-                Id = ConvertLambdaExpressionToMethodGroupAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(),
                 Message = "You should remove the lambda expression and pass just 'filter' instead.",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 15) }

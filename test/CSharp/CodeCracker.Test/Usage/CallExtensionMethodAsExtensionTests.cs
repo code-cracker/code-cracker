@@ -46,7 +46,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = CallExtensionMethodAsExtensionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
                 Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 33) }
@@ -73,7 +73,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = CallExtensionMethodAsExtensionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
                 Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 33) }
@@ -191,6 +191,29 @@ namespace CodeCracker.Test.Usage
                     }";
 
             await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenCallExtensionMethodWithDynamicArgumentHasNoDiagnostics()
+        {
+            const string source = @"
+                    using System;
+                    using System.Collections.Generic;
+                    using System.Linq;
+
+                    namespace ConsoleApplication1
+                    {
+                        class ExtensionTest
+                        {
+                            void method()
+                            {
+                                var list = new List<int>() { 5, 56, 2, 4, 63, 2 };
+                                dynamic dList = list;
+                                Console.WriteLine(Enumerable.First(dList));
+                            }
+                        }
+                    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }

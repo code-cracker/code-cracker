@@ -1,6 +1,5 @@
 ﻿using CodeCracker.Usage;
 using Microsoft.CodeAnalysis;
-using System;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
@@ -20,7 +19,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'c' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 56) }
@@ -40,7 +39,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'c' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 56) }
@@ -149,7 +148,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'c' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 62) }
@@ -191,7 +190,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'c' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 62) }
@@ -229,7 +228,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'paramName' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 82) }

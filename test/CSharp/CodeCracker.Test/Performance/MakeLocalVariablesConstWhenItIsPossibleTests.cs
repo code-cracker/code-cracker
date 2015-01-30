@@ -59,7 +59,7 @@ namespace CodeCracker.Test.Performance
             var test = @"int a = 10;".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
+                Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
                 Message = "This variables can be made const.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -71,10 +71,10 @@ namespace CodeCracker.Test.Performance
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstantInAVarDeclaration()
         {
             var test = @"var a = 10;".WrapInMethod();
-            
+
             var expected = new DiagnosticResult
             {
-                Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
+                Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
                 Message = "This variables can be made const.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -86,10 +86,10 @@ namespace CodeCracker.Test.Performance
         public async Task CreateDiagnosticsWhenAssigningNullToAReferenceType()
         {
             var test = @"Foo a = null;".WrapInMethod();
-            
+
             var expected = new DiagnosticResult
             {
-                Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
+                Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
                 Message = "This variables can be made const.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -242,7 +242,5 @@ namespace CodeCracker.Test.Performance
     }";
             await VerifyCSharpFixAsync(test, expected);
         }
-
-        
     }
 }

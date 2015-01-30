@@ -5,18 +5,19 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeCracker.Design
 {
-    [ExportCodeFixProvider("CodeCrackerUseInvokeMethodToFireEventCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerUseInvokeMethodToFireEventCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UseInvokeMethodToFireEventCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
         {
-            return ImmutableArray.Create(UseInvokeMethodToFireEventAnalyzer.DiagnosticId);
+            return ImmutableArray.Create(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId());
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
@@ -32,10 +33,10 @@ namespace CodeCracker.Design
             var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
             context.RegisterFix(
-                CodeAction.Create("Use ?.Invoke operator and method to fire an event.", ct => UseInvoke(context.Document, invocation, ct)), diagnostic);
+                CodeAction.Create("Use ?.Invoke operator and method to fire an event.", ct => UseInvokeAsync(context.Document, invocation, ct)), diagnostic);
         }
 
-        private async Task<Document> UseInvoke(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
+        private async Task<Document> UseInvokeAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
         {
             var newInvocation =
                     SyntaxFactory.ConditionalAccessExpression(

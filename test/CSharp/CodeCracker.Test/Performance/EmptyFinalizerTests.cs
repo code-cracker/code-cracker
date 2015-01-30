@@ -22,7 +22,7 @@ namespace CodeCracker.Test.Performance
 
             var expected = new DiagnosticResult
             {
-                Id = EmptyFinalizerAnalyzer.DiagnosticId,
+                Id = DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
@@ -45,7 +45,7 @@ namespace CodeCracker.Test.Performance
 
             var expected = new DiagnosticResult
             {
-                Id = EmptyFinalizerAnalyzer.DiagnosticId,
+                Id = DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
@@ -71,7 +71,7 @@ namespace CodeCracker.Test.Performance
 
             var expected = new DiagnosticResult
             {
-                Id = EmptyFinalizerAnalyzer.DiagnosticId,
+                Id = DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }

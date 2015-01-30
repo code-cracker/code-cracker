@@ -8,7 +8,6 @@ namespace CodeCracker.Test.Style
 {
     public class ExistenceOperatorWithReturnTests : CodeFixTest<ExistenceOperatorAnalyzer, ExistenceOperatorCodeFixProvider>
     {
-
         [Fact]
         public async Task WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic()
         {
@@ -256,7 +255,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ExistenceOperatorAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ExistenceOperator.ToDiagnosticId(),
                 Message = "You can use the existence operator.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
@@ -641,7 +640,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ExistenceOperatorAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ExistenceOperator.ToDiagnosticId(),
                 Message = "You can use the existence operator.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }

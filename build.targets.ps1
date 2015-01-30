@@ -15,9 +15,8 @@ Properties {
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
     $nupkgPathJoint = "$rootDir\CodeCracker.{0}.nupkg"
-    $xunitConsoleExe  = "$packagesDir\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe"
+    $xunitConsoleExe  = "$packagesDir\xunit.runners.2.0.0-rc1-build2826\tools\xunit.console.x86.exe"
     $openCoverExe = "$packagesDir\OpenCover.4.5.3607-rc27\OpenCover.Console.exe"
-    $xunitConsoleExe = "$packagesDir\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe"
     $testDllCS = "CodeCracker.Test.CSharp.dll"
     $testDllVB = "CodeCracker.Test.VisualBasic.dll"
     $testDirCS = "$testDir\CSharp\CodeCracker.Test\bin\Debug"
@@ -196,4 +195,5 @@ function RunTestWithCoverage($fullTestDllPaths) {
         Write-Host -ForegroundColor DarkBlue "Uploading coverage report to Coveralls.io"
         Exec { . $converallsNetExe --opencover $outputXml }
     }
+}
 }

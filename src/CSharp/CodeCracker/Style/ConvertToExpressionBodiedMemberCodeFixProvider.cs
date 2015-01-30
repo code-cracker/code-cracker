@@ -15,15 +15,10 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerConvertToExpressionBodiedMemberCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ConvertToExpressionBodiedMemberCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -65,10 +60,10 @@ namespace CodeCracker.Style
 
             newDeclaration = newDeclaration.WithAdditionalAnnotations(Formatter.Annotation);
 
-            return await ReplaceNode(document, declaration, newDeclaration, cancellationToken);
+            return await ReplaceNodeAsync(document, declaration, newDeclaration, cancellationToken);
         }
 
-        public async Task<Document> ReplaceNode(Document document, SyntaxNode @old, SyntaxNode @new, CancellationToken cancellationToken)
+        public async Task<Document> ReplaceNodeAsync(Document document, SyntaxNode @old, SyntaxNode @new, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(@old, @new);
@@ -95,7 +90,7 @@ namespace CodeCracker.Style
 
             newDeclaration = newDeclaration.WithAdditionalAnnotations(Formatter.Annotation);
 
-            return await ReplaceNode(document, declaration, newDeclaration, cancellationToken);
+            return await ReplaceNodeAsync(document, declaration, newDeclaration, cancellationToken);
         }
     }
 }

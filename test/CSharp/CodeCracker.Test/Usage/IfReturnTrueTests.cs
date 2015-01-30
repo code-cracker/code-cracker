@@ -156,7 +156,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = IfReturnTrueAnalyzer.DiagnosticId,
+                Id = DiagnosticId.IfReturnTrue.ToDiagnosticId(),
                 Message = "You should return directly.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
@@ -189,7 +189,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = IfReturnTrueAnalyzer.DiagnosticId,
+                Id = DiagnosticId.IfReturnTrue.ToDiagnosticId(),
                 Message = "You should return directly.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }

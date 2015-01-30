@@ -10,28 +10,26 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertLambdaExpressionToMethodGroupAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0020";
+        private static readonly string diagnosticId = DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId();
         internal const string Title = "You should remove the lambda expression when it only invokes a method with the same signature";
         internal const string MessageFormat = "You should remove the lambda expression and pass just '{0}' instead.";
         internal const string Category = SupportedCategories.Style;
         const string Description = "The extra unnecessary layer of indirection induced by the lambda expression may be avoided by passing the method group instead.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            diagnosticId,
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(diagnosticId));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression);
-        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
