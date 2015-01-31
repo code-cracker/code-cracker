@@ -100,7 +100,9 @@
     <Compile Include="Design\NameOfCodeFixProvider.vb" />
     <Compile Include="Design\StaticConstructorExceptionAnalyzer.vb" />
     <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.vb" />
+    <Compile Include="DiagnosticId.vb" />
     <Compile Include="Extensions\AnalyzerExtensions.vb" />
+    <Compile Include="Extensions\CodeCrackerExtensions.vb" />
     <Compile Include="HelpLink.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Performance\MakeLocalVariableConstWhenPossibleAnalyzer.vb" />

@@ -144,6 +144,7 @@
     <Compile Include="Design\EmptyCatchBlockTests.vb" />
     <Compile Include="Design\NameOfTests.vb" />
     <Compile Include="Design\StaticConstructorExceptionTests.vb" />
+    <Compile Include="Extensions\CodeCrackerExtensionTests.vb" />
     <Compile Include="Helpers\Extensions.vb" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.vb" />
     <Compile Include="Helpers\DiagnosticResult.vb" />
