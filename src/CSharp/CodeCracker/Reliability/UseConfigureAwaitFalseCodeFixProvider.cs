@@ -1,15 +1,13 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using System.Threading;
-using Microsoft.CodeAnalysis.Text;
+using System.Collections.Immutable;
 using System.Composition;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CodeCracker.Reliability
 {
@@ -30,7 +28,7 @@ namespace CodeCracker.Reliability
         {
             var diagnostic = context.Diagnostics.First();
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var awaitExpression = (AwaitExpressionSyntax) root.FindNode(diagnostic.Location.SourceSpan);
+            var awaitExpression = (AwaitExpressionSyntax)root.FindNode(diagnostic.Location.SourceSpan);
             var newExpression = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
@@ -44,7 +42,7 @@ namespace CodeCracker.Reliability
 
             var newRoot = root.ReplaceNode(awaitExpression.Expression, newExpression);
             var newDocument = context.Document.WithSyntaxRoot(newRoot);
-            
+
             context.RegisterFix(
                 CodeAction.Create("Use ConfigureAwait(false)", newDocument),
                 diagnostic);

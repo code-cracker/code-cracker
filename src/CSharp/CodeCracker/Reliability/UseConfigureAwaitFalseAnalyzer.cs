@@ -32,7 +32,7 @@ namespace CodeCracker.Reliability
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var awaitExpression = (AwaitExpressionSyntax) context.Node;
+            var awaitExpression = (AwaitExpressionSyntax)context.Node;
             var awaitedExpression = awaitExpression.Expression;
             if (!IsTask(awaitedExpression, context))
                 return;

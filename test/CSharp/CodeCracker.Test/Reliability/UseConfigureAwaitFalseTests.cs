@@ -1,13 +1,12 @@
-﻿using System.Threading.Tasks;
-using CodeCracker.Reliability;
+﻿using CodeCracker.Reliability;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
 namespace CodeCracker.Test.Reliability
 {
-    public class UseConfigureAwaitFalseTests : 
-        CodeFixTest<UseConfigureAwaitFalseAnalyzer, UseConfigureAwaitFalseCodeFixProvider>
+    public class UseConfigureAwaitFalseTests : CodeFixTest<UseConfigureAwaitFalseAnalyzer, UseConfigureAwaitFalseCodeFixProvider>
     {
         [Theory]
         [InlineData("System.Threading.Tasks.Task t; await t;", 48)]
