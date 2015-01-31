@@ -35,7 +35,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = InterfaceNameAnalyzer.DiagnosticId,
+                Id = DiagnosticId.InterfaceName.ToDiagnosticId(),
                 Message = InterfaceNameAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 9) }

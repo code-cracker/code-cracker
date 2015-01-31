@@ -98,7 +98,7 @@ namespace Foo
         {
             var diagnostic = new DiagnosticResult
             {
-                Id = RemoveTrailingWhitespaceAnalyzer.DiagnosticId,
+                Id = DiagnosticId.RemoveTrailingWhitespace.ToDiagnosticId(),
                 Message = RemoveTrailingWhitespaceAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }

@@ -10,7 +10,6 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AlwaysUseVarAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.AlwaysUseVar.ToDiagnosticId();
         internal const string Title = "You should use 'var' whenever possible.";
         internal const string MessageFormat = "Use 'var' instead of specifying the type name.";
         internal const string Category = SupportedCategories.Style;
@@ -18,14 +17,14 @@ namespace CodeCracker.Style
             + "Code depending on types for their readability should be refactored with better variable "
             + "names or by introducing well-named methods.";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            diagnosticId,
+            DiagnosticId.AlwaysUseVar.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description:Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.AlwaysUseVar));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

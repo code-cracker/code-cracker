@@ -16,15 +16,10 @@ namespace CodeCracker.Usage
     [ExportCodeFixProvider("CodeCrackerUnusedParametersCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UnusedParametersCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(UnusedParametersAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {

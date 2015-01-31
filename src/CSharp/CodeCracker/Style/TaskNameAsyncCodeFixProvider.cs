@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Rename;
 using System.Collections.Immutable;
 using System.Composition;
@@ -16,12 +15,9 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerTaskNameAsyncCodeFixProvider", LanguageNames.CSharp), Shared]
     public class TaskNameAsyncCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(TaskNameAsyncAnalyzer.DiagnosticId);
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(DiagnosticId.TaskNameAsync.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -35,7 +31,7 @@ namespace CodeCracker.Style
         private async Task<Solution> ChangeMethodNameAsync(Document document, MethodDeclarationSyntax methodStatement, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var newName = methodStatement.Identifier.ToString()+"Async";
+            var newName = methodStatement.Identifier.ToString() + "Async";
             var solution = document.Project.Solution;
             var symbol = semanticModel.GetDeclaredSymbol(methodStatement, cancellationToken);
             var options = solution.Workspace.Options;

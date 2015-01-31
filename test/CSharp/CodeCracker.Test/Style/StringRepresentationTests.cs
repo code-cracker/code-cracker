@@ -1,5 +1,6 @@
 ﻿using CodeCracker.Style;
 using Microsoft.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
@@ -57,7 +58,7 @@ class C
 
             var expected = new DiagnosticResult
             {
-                Id = StringRepresentationAnalyzer.RegularStringId,
+                Id = DiagnosticId.StringRepresentation_RegularString.ToDiagnosticId(),
                 Message = "Change to regular string",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
@@ -79,7 +80,7 @@ class C
 
             var expected = new DiagnosticResult
             {
-                Id = StringRepresentationAnalyzer.VerbatimStringId,
+                Id = DiagnosticId.StringRepresentation_VerbatimString.ToDiagnosticId(),
                 Message = "Change to verbatim string",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
@@ -210,6 +211,7 @@ class C
         }
 
         [Fact]
+        [SuppressMessage("Style", "CC0065", Justification = "Necessary for test")]
         public Task StringToVerbatimHandleCrLf()
         {
             const string before = @"

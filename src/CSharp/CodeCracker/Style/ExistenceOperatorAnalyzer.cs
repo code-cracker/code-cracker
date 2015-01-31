@@ -9,27 +9,23 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ExistenceOperatorAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.ExistenceOperator.ToDiagnosticId();
         internal const string Title = "Use the existence operator";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Style;
         const string Description = "The null-propagating operator allow for terse code to handle potentially null variables.";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            diagnosticId,
+            DiagnosticId.ExistenceOperator.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ExistenceOperator));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.IfStatement);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.IfStatement);
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

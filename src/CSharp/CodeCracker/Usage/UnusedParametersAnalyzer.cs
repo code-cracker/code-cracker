@@ -10,7 +10,6 @@ namespace CodeCracker.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UnusedParametersAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0057";
         internal const string Title = "Unused parameters";
         internal const string Message = "Parameter '{0}' is not used.";
         internal const string Category = SupportedCategories.Usage;
@@ -18,7 +17,7 @@ namespace CodeCracker.Usage
             + "You should delete the parameter is such cases.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.UnusedParameters.ToDiagnosticId(),
             Title,
             Message,
             Category,
@@ -26,14 +25,12 @@ namespace CodeCracker.Usage
             isEnabledByDefault: true,
             description: Description,
             customTags: WellKnownDiagnosticTags.Unnecessary,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.UnusedParameters));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.MethodDeclaration, SyntaxKind.ConstructorDeclaration);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

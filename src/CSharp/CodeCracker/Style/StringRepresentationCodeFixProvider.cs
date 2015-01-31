@@ -20,12 +20,9 @@ namespace CodeCracker.Style
         public const string ToRegularId = Id + "ToRegularString";
         public const string ToVerbatimId = Id + "ToVerbatimString";
 
-        static readonly ImmutableArray<string> fixableDiagnosticIds =
-            ImmutableArray.Create(
-                StringRepresentationAnalyzer.RegularStringId,
-                StringRepresentationAnalyzer.VerbatimStringId);
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.StringRepresentation_RegularString.ToDiagnosticId(), DiagnosticId.StringRepresentation_VerbatimString.ToDiagnosticId());
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => fixableDiagnosticIds;
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)

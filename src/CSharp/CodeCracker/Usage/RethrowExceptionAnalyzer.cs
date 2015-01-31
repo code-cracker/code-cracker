@@ -10,7 +10,6 @@ namespace CodeCracker.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RethrowExceptionAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.RethrowException.ToDiagnosticId();
         internal const string Title = "Your throw does nothing";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Naming;
@@ -19,14 +18,14 @@ namespace CodeCracker.Usage
             + "The correct way to rethrow an exception without changing it is by using 'throw' without any parameter.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            diagnosticId,
+            DiagnosticId.RethrowException.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.Regex));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

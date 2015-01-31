@@ -54,7 +54,7 @@ namespace CodeCracker.Test.Performance
                 }".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -82,7 +82,7 @@ namespace CodeCracker.Test.Performance
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
@@ -111,7 +111,7 @@ namespace CodeCracker.Test.Performance
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "MyString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
@@ -132,14 +132,14 @@ namespace CodeCracker.Test.Performance
                 }".WrapInMethod();
             var expected1 = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString1"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 21) }
             };
             var expected2 = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString2"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
@@ -158,7 +158,7 @@ namespace CodeCracker.Test.Performance
                 }".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -389,7 +389,7 @@ namespace CodeCracker.Test.Performance
                 }".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -431,7 +431,7 @@ namespace CodeCracker.Test.Performance
                 }".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -471,7 +471,7 @@ namespace CodeCracker.Test.Performance
                 } while (DateTime.Now.Second % 2 == 0);".WrapInMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -525,7 +525,7 @@ namespace CodeCracker.Test.Performance
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
@@ -558,7 +558,7 @@ namespace CodeCracker.Test.Performance
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A[DateTime.Now.Second]"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }

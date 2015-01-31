@@ -13,32 +13,27 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StringRepresentationAnalyzer : DiagnosticAnalyzer
     {
-        public const string RegularStringId = "CC0045";
-        public const string VerbatimStringId = "CC0046";
-
         internal static DiagnosticDescriptor RegularStringRule = new DiagnosticDescriptor(
-            RegularStringId,
+            DiagnosticId.StringRepresentation_RegularString.ToDiagnosticId(),
             "Regular string",
             "Change to regular string",
             SupportedCategories.Style,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(RegularStringId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_RegularString));
 
         internal static DiagnosticDescriptor VerbatimStringRule = new DiagnosticDescriptor(
-            VerbatimStringId,
+            DiagnosticId.StringRepresentation_VerbatimString.ToDiagnosticId(),
             "Verbatim string",
             "Change to verbatim string",
             SupportedCategories.Style,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(VerbatimStringId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_VerbatimString));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-            = ImmutableArray.Create(RegularStringRule, VerbatimStringRule);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(RegularStringRule, VerbatimStringRule);
 
-        public override void Initialize(AnalysisContext context)
-            => context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.StringLiteralExpression);
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.StringLiteralExpression);
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

@@ -9,18 +9,17 @@ namespace CodeCracker.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class CatchEmptyAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.CatchEmpty.ToDiagnosticId();
         internal const string Title = "Your catch maybe include some Exception";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Design;
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            diagnosticId,
+            DiagnosticId.CatchEmpty.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.CatchEmpty));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

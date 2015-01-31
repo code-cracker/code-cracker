@@ -21,7 +21,7 @@ namespace CodeCracker.Test.Reliability
 
             var expected = new DiagnosticResult
             {
-                Id = UseConfigureAwaitFalseAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId(),
                 Message = "Consider using ConfigureAwait(false) on the awaited task.",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, column) }

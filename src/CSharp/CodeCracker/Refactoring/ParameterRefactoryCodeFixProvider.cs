@@ -17,16 +17,10 @@ namespace CodeCracker.Refactoring
     [ExportCodeFixProvider("ParameterRefactoryCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ParameterRefactoryCodeFixProvider : CodeFixProvider
     {
-        public string nome = "";
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(ParameterRefactoryAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.ParameterRefactory.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -184,12 +178,10 @@ namespace CodeCracker.Refactoring
         {
             return string.Concat(text.Replace(text[0].ToString(), text[0].ToString().ToUpper()));
         }
+
         private static string FirstLetteToLower(string text)
         {
             return string.Concat(text.Replace(text[0].ToString(), text[0].ToString().ToLower()));
         }
-
     }
-
 }
-

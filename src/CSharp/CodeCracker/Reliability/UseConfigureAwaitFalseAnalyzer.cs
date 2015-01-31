@@ -1,34 +1,30 @@
-﻿using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 
 namespace CodeCracker.Reliability
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UseConfigureAwaitFalseAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0070";
         internal const string Title = "Use ConfigureAwait(false) on awaited task.";
         internal const string MessageFormat = "Consider using ConfigureAwait(false) on the awaited task.";
         internal const string Category = SupportedCategories.Reliability;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.UseConfigureAwaitFalse));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.AwaitExpression);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.AwaitExpression);
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {

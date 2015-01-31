@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -16,15 +15,10 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerStringFormatCodeFixProvider ", LanguageNames.CSharp), Shared]
     public class StringFormatCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(StringFormatAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.StringFormat.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -48,7 +42,7 @@ namespace CodeCracker.Style
             for (int i = 0; i < analyzingInterpolation.InterpolatedInserts.Count; i++)
             {
                 var insert = analyzingInterpolation.InterpolatedInserts[i];
-                expressionsToReplace.Add(insert.Expression,interpolationArgs[i].Expression);
+                expressionsToReplace.Add(insert.Expression, interpolationArgs[i].Expression);
             }
             var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
             var root = await document.GetSyntaxRootAsync(cancellationToken);

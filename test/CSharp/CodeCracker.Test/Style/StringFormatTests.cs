@@ -177,7 +177,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringFormatAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
                 Message = StringFormatAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
@@ -203,7 +203,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringFormatAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
                 Message = StringFormatAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
@@ -407,7 +407,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringFormatAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
                 Message = StringFormatAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }

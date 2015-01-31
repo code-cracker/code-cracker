@@ -13,7 +13,7 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerRemoveTrailingWhitespaceCodeFixProvider", LanguageNames.CSharp), Shared]
     public class RemoveTrailingWhitespaceCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(RemoveTrailingWhitespaceAnalyzer.DiagnosticId);
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(DiagnosticId.RemoveTrailingWhitespace.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

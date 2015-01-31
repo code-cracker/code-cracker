@@ -91,7 +91,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
@@ -112,7 +112,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
@@ -134,14 +134,14 @@ namespace CodeCracker.Test.Usage
     }";
             var expected1 = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
             };
             var expected2 = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "j"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 25) }
@@ -168,28 +168,28 @@ namespace CodeCracker.Test.Usage
     }";
             var expected1 = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
             };
             var expected2 = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "j"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 25) }
             };
             var expected3 = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "k"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
             };
             var expected4 = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "l"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 25) }
@@ -213,7 +213,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 29) }
@@ -234,7 +234,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
@@ -295,7 +295,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
@@ -320,7 +320,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
@@ -385,7 +385,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "j"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 28) }
@@ -641,7 +641,7 @@ namespace CodeCracker.Test.Usage
    }";
             var expected = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 32) }
@@ -662,7 +662,7 @@ namespace CodeCracker.Test.Usage
    }";
             var expected = new DiagnosticResult
             {
-                Id = ReadonlyFieldAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
                 Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 32) }

@@ -14,15 +14,10 @@ namespace CodeCracker.Reliability
     [ExportCodeFixProvider("CodeCrackerUseConfigureAwaitFalseCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UseConfigureAwaitFalseCodeFixProvider : CodeFixProvider
     {
-        public override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(UseConfigureAwaitFalseAnalyzer.DiagnosticId);
-        }
+        public override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public override async Task ComputeFixesAsync(CodeFixContext context)
         {

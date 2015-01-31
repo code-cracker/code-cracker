@@ -9,7 +9,6 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyObjectInitializerAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.EmptyObjectInitializer.ToDiagnosticId();
         internal const string Title = "Empty Object Initializer";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Style;
@@ -17,7 +16,7 @@ namespace CodeCracker.Style
             + "If there is no member to initialize, prefer using the standard constructor syntax.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            diagnosticId,
+            DiagnosticId.EmptyObjectInitializer.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
@@ -25,7 +24,7 @@ namespace CodeCracker.Style
             isEnabledByDefault: true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.EmptyObjectInitializer));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

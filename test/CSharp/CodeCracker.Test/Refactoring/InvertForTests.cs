@@ -128,7 +128,7 @@ namespace CodeCracker.Test.Refactoring
 
             var expected = new DiagnosticResult
             {
-                Id = InvertForAnalyzer.DiagnosticId,
+                Id = DiagnosticId.InvertFor.ToDiagnosticId(),
                 Message = "Make it a for loop that decrement the counter.",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -144,7 +144,7 @@ namespace CodeCracker.Test.Refactoring
 
             var expected = new DiagnosticResult
             {
-                Id = InvertForAnalyzer.DiagnosticId,
+                Id = DiagnosticId.InvertFor.ToDiagnosticId(),
                 Message = "Make it a for loop that decrement the counter.",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 28) }
@@ -160,7 +160,7 @@ namespace CodeCracker.Test.Refactoring
 
             var expected = new DiagnosticResult
             {
-                Id = InvertForAnalyzer.DiagnosticId,
+                Id = DiagnosticId.InvertFor.ToDiagnosticId(),
                 Message = "Make it a for loop that increment the counter.",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }

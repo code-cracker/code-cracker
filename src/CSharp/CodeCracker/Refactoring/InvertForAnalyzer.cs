@@ -9,26 +9,22 @@ namespace CodeCracker.Refactoring
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class InvertForAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0042";
         internal const string Title = "Invert the for loop counting.";
         internal const string MessageFormat = "Make it a for loop that {0} the counter.";
         internal const string Category = SupportedCategories.Refactoring;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.InvertFor.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.InvertFor));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ForStatement);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ForStatement);
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
