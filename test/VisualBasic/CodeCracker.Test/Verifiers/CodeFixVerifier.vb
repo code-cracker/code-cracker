@@ -30,8 +30,8 @@ Namespace TestHelper
         ''' <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
         ''' <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         ''' <param name="allowNewCompilerDiagnostics">A bool controlling whether Or Not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        Protected Async Function VerifyBasicFixAsync(oldSource As String, newSource As String, Optional codeFixIndex As Integer? = Nothing, Optional allowNewCompilerDiagnostics As Boolean = False) As Task
-            Await VerifyFixAsync(GetDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics)
+        Protected Async Function VerifyBasicFixAsync(oldSource As String, newSource As String, Optional codeFixIndex As Integer? = Nothing, Optional allowNewCompilerDiagnostics As Boolean = False, Optional codeFixProvider As CodeFixProvider = Nothing) As Task
+            Await VerifyFixAsync(GetDiagnosticAnalyzer(), If(codeFixProvider, GetBasicCodeFixProvider()), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics)
         End Function
 
         ''' <summary>
