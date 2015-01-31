@@ -28,10 +28,10 @@ namespace CodeCracker.Usage
             var method = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
             context.RegisterFix(
-                CodeAction.Create("Call GC.SuppressFinalize", ct => RemoveThrow(context.Document, method, ct)), diagnostic);
+                CodeAction.Create("Call GC.SuppressFinalize", ct => RemoveThrowAsync(context.Document, method, ct)), diagnostic);
         }
 
-        private async Task<Document> RemoveThrow(Document document, MethodDeclarationSyntax method, CancellationToken ct)
+        private async Task<Document> RemoveThrowAsync(Document document, MethodDeclarationSyntax method, CancellationToken ct)
         {
             return document
                 .WithSyntaxRoot((await document.GetSyntaxRootAsync(ct))

@@ -27,10 +27,10 @@ namespace CodeCracker.Design
             var @throw = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
 
             context.RegisterFix(
-                CodeAction.Create("Remove this exception", ct => RemoveThrow(context.Document, @throw, ct)), diagnostic);
+                CodeAction.Create("Remove this exception", ct => RemoveThrowAsync(context.Document, @throw, ct)), diagnostic);
         }
 
-        private async Task<Document> RemoveThrow(Document document, ThrowStatementSyntax @throw, CancellationToken ct)
+        private async Task<Document> RemoveThrowAsync(Document document, ThrowStatementSyntax @throw, CancellationToken ct)
         {
             return document.WithSyntaxRoot((await document.GetSyntaxRootAsync(ct)).RemoveNode(@throw, SyntaxRemoveOptions.KeepNoTrivia));
         }

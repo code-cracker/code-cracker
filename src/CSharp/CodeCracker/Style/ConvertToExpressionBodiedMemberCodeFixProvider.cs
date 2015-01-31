@@ -60,10 +60,10 @@ namespace CodeCracker.Style
 
             newDeclaration = newDeclaration.WithAdditionalAnnotations(Formatter.Annotation);
 
-            return await ReplaceNode(document, declaration, newDeclaration, cancellationToken);
+            return await ReplaceNodeAsync(document, declaration, newDeclaration, cancellationToken);
         }
 
-        public async Task<Document> ReplaceNode(Document document, SyntaxNode @old, SyntaxNode @new, CancellationToken cancellationToken)
+        public async Task<Document> ReplaceNodeAsync(Document document, SyntaxNode @old, SyntaxNode @new, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(@old, @new);
@@ -90,7 +90,7 @@ namespace CodeCracker.Style
 
             newDeclaration = newDeclaration.WithAdditionalAnnotations(Formatter.Annotation);
 
-            return await ReplaceNode(document, declaration, newDeclaration, cancellationToken);
+            return await ReplaceNodeAsync(document, declaration, newDeclaration, cancellationToken);
         }
     }
 }

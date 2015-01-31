@@ -30,10 +30,10 @@ namespace CodeCracker.Design
             var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
             context.RegisterFix(
-                CodeAction.Create("Copy event reference to a variable", ct => CreateVariable(context.Document, invocation, ct)), diagnostic);
+                CodeAction.Create("Copy event reference to a variable", ct => CreateVariableAsync(context.Document, invocation, ct)), diagnostic);
         }
 
-        private async Task<Document> CreateVariable(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
+        private async Task<Document> CreateVariableAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
         {
             const string handlerName = "handler";
 

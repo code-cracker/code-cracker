@@ -26,7 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <CodeAnalysisRuleSet>..\..\..\codecrackerandall.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\..\codecrackerandall.test.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -131,11 +131,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Performance\StringBuilderInLoopTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.cs" />
     <Compile Include="Refactoring\ParameterRefectoryTest.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
     <Compile Include="Style\RemoveTrailingWhitespaceTests.cs" />
     <Compile Include="Style\StringFormatTests.cs" />
@@ -207,11 +209,10 @@
     <Folder Include="Interoperability\" />
     <Folder Include="Naming\" />
     <Folder Include="Portability\" />
-    <Folder Include="Reliability\" />
     <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0311\tools\analyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0339\tools\analyzers\CodeCracker.CSharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
