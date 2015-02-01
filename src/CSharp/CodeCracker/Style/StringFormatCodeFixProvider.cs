@@ -39,10 +39,10 @@ namespace CodeCracker.Style
             var analyzingInterpolation = (InterpolatedStringSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
             var interpolationArgs = arguments.Skip(1).ToArray();
             var expressionsToReplace = new Dictionary<ExpressionSyntax, ExpressionSyntax>();
-            for (int i = 0; i < analyzingInterpolation.InterpolatedInserts.Count; i++)
+            foreach (var insert in analyzingInterpolation.InterpolatedInserts)
             {
-                var insert = analyzingInterpolation.InterpolatedInserts[i];
-                expressionsToReplace.Add(insert.Expression, interpolationArgs[i].Expression);
+                var index = (int)((LiteralExpressionSyntax)insert.Expression).Token.Value;
+                expressionsToReplace.Add(insert.Expression, interpolationArgs[index].Expression);
             }
             var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
             var root = await document.GetSyntaxRootAsync(cancellationToken);

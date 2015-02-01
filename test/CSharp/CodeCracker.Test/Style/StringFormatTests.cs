@@ -480,5 +480,43 @@ namespace CodeCracker.Test.Style
     }";
             await VerifyCSharpFixAsync(source, expected);
         }
+
+        [Fact]
+        public async Task StringFormatChangesToStringInterpolationWithInvertedIndexes()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                //comment before
+                var s = string.Format(""This {1} is {0}"", noun, adjective);//comment right after
+                //comment after
+            }
+        }
+    }";
+            const string expected = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                //comment before
+                var s = $""This {adjective} is {noun}"";//comment right after
+                //comment after
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
+        }
     }
 }
