@@ -32,7 +32,7 @@ End {0}", typeDeclaration, memberA, memberB)
             Assert.True(codeFixProvider.HasIComparerBeenCalled, "The IComparer must be used to sort the members of that type")
         End Function
 
-        <Fact>
+        <Theory>
         <InlineData("Class")>
         <InlineData("Structure")>
         Public Async Function BaseAllowMembersOrderingShouldSupportWriteMembers(typeDeclaration As String) As Task
@@ -73,8 +73,8 @@ Namespace ConsoleApplication1
         End Event
         Public Delegate Function doubleDelegate(num As Double) As Double
         Public Sub New()
-            Prop = ""
-            Field = ""
+            Prop = """"
+            Field = """"
         End Sub
         Public Event EventField1 As Action
         Public field As String
@@ -92,11 +92,6 @@ Namespace ConsoleApplication1
         End Interface
         Public Class Foo2
         End Class
-        Public Delegate Function doubleDelegate(num As Double) As Double
-        Public Enum Eenum
-            Enum1
-            Enum2 = 1
-        End Enum
         Public Custom Event CustomEvent As EventHandler
             AddHandler(value As EventHandler)
 
@@ -108,19 +103,24 @@ Namespace ConsoleApplication1
 
             End RaiseEvent
         End Event
+        Public Delegate Function doubleDelegate(num As Double) As Double
+        Public Enum Eenum
+            Enum1
+            Enum2 = 1
+        End Enum
         Public Event EventField1 As Action
-        Public Sub New()
-            Prop = ""
-            Field = ""
-        End Sub
+        Public field As String
+        Public Property Prop As String
         Public Shared Operator +(f1 As Foo, f2 As Foo) As Foo
             Return New Foo()
         End Operator
-        Public field As String
-        Public Property Prop As String
         Public Structure Struct
 
         End Structure
+        Public Sub New()
+            Prop = """"
+            Field = """"
+        End Sub
         Sub Method(a As String)
 
         End Sub
