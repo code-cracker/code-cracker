@@ -12,7 +12,7 @@ Namespace Performance
         Inherits CodeFixProvider
 
         Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(RemoveWhereWhenItIsPossibleAnalyzer.DiagnosticId)
+            Return ImmutableArray.Create(RemoveWhereWhenItIsPossibleAnalyzer.Id)
         End Function
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider

@@ -17,7 +17,7 @@ Namespace Refactoring
         End Sub
 
         Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(AllowMembersOrderingAnalyzer.DiagnosticId)
+            Return ImmutableArray.Create(AllowMembersOrderingAnalyzer.Id)
         End Function
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider

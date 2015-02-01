@@ -3,26 +3,27 @@ Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports System.Collections.Immutable
+Imports CodeCracker.Extensions
 
 Namespace Performance
     <DiagnosticAnalyzer(LanguageNames.VisualBasic)>
     Public Class StringBuilderInLoopAnalyzer
         Inherits DiagnosticAnalyzer
 
-        Public Const DiagnosticId As String = "CC0039"
+        Public Shared ReadOnly Id As String = DiagnosticId.StringBuilderInLoop.ToDiagnosticId()
         Public Const Title As String = "Don't concatenate strings in loops"
         Public Const MessageFormat As String = "Don't concatenate '{0}' in a loop."
         Public Const Category As String = SupportedCategories.Performance
         Public Const Description As String = "Do not concatenate a string in a loop. It will allocate a lot of memory. Use a StringBuilder instead. It will require less allocation, less garbage collection work, less CPU cycles, and less overall time."
         Protected Shared Rule As DiagnosticDescriptor = New DiagnosticDescriptor(
-            DiagnosticId,
+            Id,
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId))
+            helpLink:=HelpLink.ForDiagnostic(Id))
 
         Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
 

@@ -33,4 +33,5 @@
     AllowMembersOrdering = 35
     RemoveCommentedCode = 37
     ConvertToExpressionBodiedMember = 38
+    StringBuilderInLoop = 39
 End Enum

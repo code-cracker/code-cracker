@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Immutable
+Imports CodeCracker.Extensions
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -9,19 +10,19 @@ Namespace Refactoring
     Public Class AllowMembersOrderingAnalyzer
         Inherits DiagnosticAnalyzer
 
-        Public Const DiagnosticId = "CC0035"
+        Public Shared ReadOnly Id As String = DiagnosticId.AllowMembersOrdering.ToDiagnosticId()
 
         Friend Const Title = "Ordering member inside this type."
         Friend Const MessageFormat = "Ordering member inside this type."
         Friend Const Category = SupportedCategories.Refactoring
         Friend Shared Rule As New DiagnosticDescriptor(
-            DiagnosticId,
+            Id,
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault:=True,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId))
+            helpLink:=HelpLink.ForDiagnostic(Id))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get

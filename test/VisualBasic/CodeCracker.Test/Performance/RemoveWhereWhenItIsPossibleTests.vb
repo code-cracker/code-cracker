@@ -29,7 +29,7 @@ End Namespace"
 
             Dim expected = New DiagnosticResult With
             {
-                .Id = RemoveWhereWhenItIsPossibleAnalyzer.DiagnosticId,
+                .Id = RemoveWhereWhenItIsPossibleAnalyzer.Id,
                 .Message = "You can remove 'Where' moving the predicate to '" + method + "'.",
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 7, 23)}

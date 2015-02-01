@@ -3,26 +3,27 @@ Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports System.Collections.Immutable
+Imports CodeCracker.Extensions
 
 Namespace Performance
     <DiagnosticAnalyzer(LanguageNames.VisualBasic)>
     Public Class MakeLocalVariableConstWhenPossibleAnalyzer
         Inherits DiagnosticAnalyzer
 
-        Public Const DiagnosticId As String = "CC0030"
+        Public Shared ReadOnly Id As String = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId()
         Public Const Title As String = "Make Local Variable Constant."
         Public Const MessageFormat As String = "This variable can be made const."
         Public Const Category As String = SupportedCategories.Performance
         Public Const Description As String = "If this variable is assigned a constant value and never changed, it can be made 'const'."
         Protected Shared Rule As DiagnosticDescriptor = New DiagnosticDescriptor(
-            DiagnosticId,
+            Id,
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId))
+            helpLink:=HelpLink.ForDiagnostic(Id))
 
         Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
 

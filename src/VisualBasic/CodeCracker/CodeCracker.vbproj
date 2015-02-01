@@ -114,7 +114,6 @@
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.vb" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.vb" />
-    <Compile Include="Refactoring\ParameterRefactoryAnalyzer.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.vb" />
     <Compile Include="SupportedCategories.vb" />
