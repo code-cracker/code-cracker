@@ -26,7 +26,7 @@ Properties {
     $reportGeneratorExe = "$packagesDir\ReportGenerator.2.0.4.0\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
     $converallsNetExe = "$packagesDir\coveralls.io.1.1.86\tools\coveralls.net.exe"
-    $isRelease = $isAppVeyor -and ($env:APPVEYOR_REPO_BRANCH -ne "release")
+    $isRelease = $isAppVeyor -and ($env:APPVEYOR_REPO_BRANCH -eq "release")
 }
 
 FormatTaskName (("-"*25) + "[{0}]" + ("-"*25))
