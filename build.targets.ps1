@@ -196,4 +196,3 @@ function RunTestWithCoverage($fullTestDllPaths) {
         Exec { . $converallsNetExe --opencover $outputXml }
     }
 }
-}
