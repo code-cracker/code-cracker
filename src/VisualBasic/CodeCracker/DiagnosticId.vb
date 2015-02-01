@@ -33,4 +33,5 @@
     AllowMembersOrdering = 35
     RemoveCommentedCode = 37
     ConvertToExpressionBodiedMember = 38
+    ParameterRefactory = 44
 End Enum
