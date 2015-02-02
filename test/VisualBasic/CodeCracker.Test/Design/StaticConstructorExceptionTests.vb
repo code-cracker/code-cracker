@@ -20,7 +20,7 @@ Public Class TestClass
 End Class"
 
             Dim expected = New DiagnosticResult With {
-                .Id = StaticConstructorExceptionAnalyzer.DiagnosticId,
+                .Id = StaticConstructorExceptionAnalyzer.Id,
                 .Message = "Don't throw exceptions inside static constructors.",
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 4, 9)}

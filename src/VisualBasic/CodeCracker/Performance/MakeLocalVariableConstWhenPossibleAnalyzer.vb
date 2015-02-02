@@ -23,7 +23,7 @@ Namespace Performance
             DiagnosticSeverity.Info,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(Id))
+            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.MakeLocalVariableConstWhenItIsPossible))
 
         Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
 
