@@ -100,7 +100,9 @@
     <Compile Include="Design\NameOfCodeFixProvider.vb" />
     <Compile Include="Design\StaticConstructorExceptionAnalyzer.vb" />
     <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.vb" />
+    <Compile Include="DiagnosticId.vb" />
     <Compile Include="Extensions\AnalyzerExtensions.vb" />
+    <Compile Include="Extensions\CodeCrackerExtensions.vb" />
     <Compile Include="HelpLink.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Performance\MakeLocalVariableConstWhenPossibleAnalyzer.vb" />
@@ -111,6 +113,9 @@
     <Compile Include="Performance\SealedAttributeCodeFixProvider.vb" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.vb" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.vb" />
     <Compile Include="SupportedCategories.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -120,7 +125,6 @@
     <Folder Include="Mobility\" />
     <Folder Include="Naming\" />
     <Folder Include="Portability\" />
-    <Folder Include="Refactoring\" />
     <Folder Include="Reliability\" />
     <Folder Include="Security\" />
     <Folder Include="Style\" />
@@ -129,9 +133,6 @@
   <ItemGroup>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>

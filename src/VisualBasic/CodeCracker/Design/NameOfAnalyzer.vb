@@ -3,26 +3,27 @@ Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports System.Collections.Immutable
+Imports CodeCracker.Extensions
 
 Namespace Design
     <DiagnosticAnalyzer(LanguageNames.VisualBasic)>
     Public Class NameOfAnalyzer
         Inherits DiagnosticAnalyzer
 
-        Public Const DiagnosticId As String = "CC0021"
+        Public Shared ReadOnly Id As String = DiagnosticId.NameOf.ToDiagnosticId()
         Public Const Title As String = "You should use nameof instead of the parameter string"
         Public Const MessageFormat As String = "Use 'NameOf({0})' instead of specifying the parameter name."
         Public Const Category As String = SupportedCategories.Design
         Public Const Description As String = "The NameOf() operator should be used to specify the name of a parameter instead of a string literal as it produces code that is easier to refactor."
         Protected Shared Rule As DiagnosticDescriptor = New DiagnosticDescriptor(
-            DiagnosticId,
+            Id,
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId))
+            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.NameOf))
 
         Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
 
