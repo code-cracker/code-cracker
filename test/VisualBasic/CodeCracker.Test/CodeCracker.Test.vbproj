@@ -167,6 +167,9 @@
     <Compile Include="Performance\RemoveWhereWhenItIsPossibleTests.vb" />
     <Compile Include="Performance\SealedAttributeTests.vb" />
     <Compile Include="Performance\StringBuilderLoopTests.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Stylecop.vb" />
     <Compile Include="Verifiers\CodeFixTest.vb" />
     <Compile Include="Verifiers\CodeFixVerifier.vb" />
     <Compile Include="Verifiers\DiagnosticVerifier.Extras.vb" />
