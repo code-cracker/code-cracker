@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\packages\xunit.runner.visualstudio.2.0.0-rc1-build1030\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\..\packages\xunit.runner.visualstudio.2.0.0-rc1-build1030\build\net20\xunit.runner.visualstudio.props')" />
   <Import Project="..\..\..\packages\xunit.core.2.0.0-rc1-build2826\build\portable-net45+aspnetcore50+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props" Condition="Exists('..\..\..\packages\xunit.core.2.0.0-rc1-build2826\build\portable-net45+aspnetcore50+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -13,7 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <NuGetPackageImportStamp>c83427b7</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>c58adf46</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -144,6 +143,7 @@
     <Compile Include="Design\EmptyCatchBlockTests.vb" />
     <Compile Include="Design\NameOfTests.vb" />
     <Compile Include="Design\StaticConstructorExceptionTests.vb" />
+    <Compile Include="Extensions\CodeCrackerExtensionTests.vb" />
     <Compile Include="Helpers\Extensions.vb" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.vb" />
     <Compile Include="Helpers\DiagnosticResult.vb" />
@@ -167,6 +167,9 @@
     <Compile Include="Performance\RemoveWhereWhenItIsPossibleTests.vb" />
     <Compile Include="Performance\SealedAttributeTests.vb" />
     <Compile Include="Performance\StringBuilderLoopTests.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Stylecop.vb" />
     <Compile Include="Verifiers\CodeFixTest.vb" />
     <Compile Include="Verifiers\CodeFixVerifier.vb" />
     <Compile Include="Verifiers\DiagnosticVerifier.Extras.vb" />
@@ -212,7 +215,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\packages\xunit.core.2.0.0-rc1-build2826\build\portable-net45+aspnetcore50+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\xunit.core.2.0.0-rc1-build2826\build\portable-net45+aspnetcore50+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props'))" />
-    <Error Condition="!Exists('..\..\..\packages\xunit.runner.visualstudio.2.0.0-rc1-build1030\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\xunit.runner.visualstudio.2.0.0-rc1-build1030\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

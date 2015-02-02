@@ -8,21 +8,21 @@ Namespace Design
     Public Class StaticConstructorExceptionAnalyzer
         Inherits DiagnosticAnalyzer
 
-        Public Const DiagnosticId As String = "CC0024"
+        Public Shared ReadOnly Id As String = DiagnosticId.StaticConstructorException.ToDiagnosticId()
         Public Const Title As String = "Don't throw exception inside static constructors."
         Public Const MessageFormat As String = "Don't throw exceptions inside static constructors."
         Public Const Category As String = SupportedCategories.Design
         Public Const Description As String = "Static constructor are called before the first time a class is used but the caller doesn't control when exactly.
 Exception thrown in this context forces callers to use 'try' block around any useage of the class and should be avoided."
         Protected Shared Rule As DiagnosticDescriptor = New DiagnosticDescriptor(
-                DiagnosticId,
+                Id,
                 Title,
                 MessageFormat,
                 Category,
                 DiagnosticSeverity.Warning,
                 isEnabledByDefault:=True,
                 description:=Description,
-                helpLink:=HelpLink.ForDiagnostic(DiagnosticId))
+                helpLink:=HelpLink.ForDiagnostic(DiagnosticId.StaticConstructorException))
 
         Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
 

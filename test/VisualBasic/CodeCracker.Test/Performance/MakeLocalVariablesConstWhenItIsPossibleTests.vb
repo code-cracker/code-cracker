@@ -42,7 +42,7 @@ Namespace Performance
             Dim test = "Dim a As Integer = 10".WrapInMethod()
             Dim expected = New DiagnosticResult With
         {
-            .Id = MakeLocalVariableConstWhenPossibleAnalyzer.DiagnosticId,
+            .Id = MakeLocalVariableConstWhenPossibleAnalyzer.Id,
             .Message = "This variable can be made const.",
             .Severity = DiagnosticSeverity.Info,
             .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 13)}
@@ -55,7 +55,7 @@ Namespace Performance
             Dim test = "Dim a = 10".WrapInMethod()
             Dim expected = New DiagnosticResult With
         {
-            .Id = MakeLocalVariableConstWhenPossibleAnalyzer.DiagnosticId,
+            .Id = MakeLocalVariableConstWhenPossibleAnalyzer.Id,
             .Message = "This variable can be made const.",
             .Severity = DiagnosticSeverity.Info,
             .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 13)}
@@ -68,7 +68,7 @@ Namespace Performance
             Dim test = "Dim a As Foo = Nothing".WrapInMethod()
             Dim expected = New DiagnosticResult With
         {
-            .Id = MakeLocalVariableConstWhenPossibleAnalyzer.DiagnosticId,
+            .Id = MakeLocalVariableConstWhenPossibleAnalyzer.Id,
             .Message = "This variable can be made const.",
             .Severity = DiagnosticSeverity.Info,
             .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 13)}

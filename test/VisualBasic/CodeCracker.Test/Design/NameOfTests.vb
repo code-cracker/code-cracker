@@ -76,7 +76,7 @@ Public Class TypeName
 End Class"
 
             Dim expected = New DiagnosticResult With {
-                .Id = NameOfAnalyzer.DiagnosticId,
+                .Id = DiagnosticId.NameOf.ToDiagnosticId(),
                 .Message = "Use 'NameOf(b)' instead of specifying the parameter name.",
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 4, 24)}
