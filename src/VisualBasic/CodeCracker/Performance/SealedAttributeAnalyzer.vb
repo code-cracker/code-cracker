@@ -1,7 +1,6 @@
 ﻿Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports System.Collections.Immutable
-Imports CodeCracker.Extensions
 
 Namespace Performance
     <DiagnosticAnalyzer(LanguageNames.VisualBasic)>

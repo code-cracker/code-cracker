@@ -1,5 +1,4 @@
 ﻿Imports System.Collections.Immutable
-Imports CodeCracker.Extensions
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic

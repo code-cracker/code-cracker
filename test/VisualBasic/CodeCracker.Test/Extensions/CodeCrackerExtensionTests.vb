@@ -1,5 +1,4 @@
-﻿Imports CodeCracker.Extensions
-Imports Xunit
+﻿Imports Xunit
 
 Namespace Extensions
     Public Class CodeCrackerExtensionTests

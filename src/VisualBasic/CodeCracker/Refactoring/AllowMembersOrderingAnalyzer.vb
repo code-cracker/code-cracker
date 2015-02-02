@@ -1,5 +1,4 @@
 ﻿Imports System.Collections.Immutable
-Imports CodeCracker.Extensions
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -31,8 +30,7 @@ Namespace Refactoring
         End Property
 
         Public Overrides Sub Initialize(context As AnalysisContext)
-            context.RegisterSyntaxNodeAction(AddressOf Analyze, SyntaxKind.ClassBlock)
-            context.RegisterSyntaxNodeAction(AddressOf Analyze, SyntaxKind.StructureBlock)
+            context.RegisterSyntaxNodeAction(AddressOf Analyze, SyntaxKind.ClassBlock, SyntaxKind.StructureBlock)
         End Sub
 
         Public Sub Analyze(context As SyntaxNodeAnalysisContext)
