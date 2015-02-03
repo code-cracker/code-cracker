@@ -21,12 +21,9 @@ namespace CodeCracker.Style
             ProtectedFix
         }
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(PropertyPrivateSetAnalyzer.DiagnosticId);
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(DiagnosticId.PropertyPrivateSet.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {

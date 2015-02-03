@@ -43,6 +43,8 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.cs" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.cs" />
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupAnalyzer.cs" />
@@ -190,11 +192,10 @@
     <Folder Include="Mobility\" />
     <Folder Include="Naming\" />
     <Folder Include="Portability\" />
-    <Folder Include="Reliability\" />
     <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0339\tools\analyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0346\tools\analyzers\CodeCracker.CSharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>

@@ -21,7 +21,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = AbstractClassShouldNotHavePublicCtorsAnalyzer.DiagnosticId,
+                Id = DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId(),
                 Message = "Constructor should not be public.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }

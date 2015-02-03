@@ -11,7 +11,6 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertToSwitchAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.ConvertToSwitch.ToDiagnosticId();
         internal const string Title = "Use 'switch'";
         internal const string MessageFormat = "You could use 'switch' instead of 'if'.";
         internal const string Category = SupportedCategories.Style;
@@ -19,21 +18,18 @@ namespace CodeCracker.Style
             + "on the variable\r\n\r\n"
             + "Note: This diagnostic trigger for 3 or more 'case' statements";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            diagnosticId,
+            DiagnosticId.ConvertToSwitch.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ConvertToSwitch));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.IfStatement);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.IfStatement);
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {

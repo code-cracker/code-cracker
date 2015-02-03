@@ -1,7 +1,6 @@
 ﻿Imports System.Collections.Immutable
 Imports System.Composition
 Imports System.Threading
-Imports CodeCracker.Extensions
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeActions
 Imports Microsoft.CodeAnalysis.CodeFixes

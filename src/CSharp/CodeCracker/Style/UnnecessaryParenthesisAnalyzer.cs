@@ -9,7 +9,6 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UnnecessaryParenthesisAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.UnnecessaryParenthesis.ToDiagnosticId();
         internal const string Title = "Unnecessary Parenthesis";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Style;
@@ -17,7 +16,7 @@ namespace CodeCracker.Style
             + " an initializer as it is implicit";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            diagnosticId,
+            DiagnosticId.UnnecessaryParenthesis.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
@@ -25,7 +24,7 @@ namespace CodeCracker.Style
             customTags: WellKnownDiagnosticTags.Unnecessary,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.UnnecessaryParenthesis));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

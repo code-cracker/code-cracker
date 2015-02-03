@@ -15,7 +15,7 @@ End Class"
 
             Dim expected = New DiagnosticResult With
                 {
-                .Id = SealedAttributeAnalyzer.DiagnosticId,
+                .Id = SealedAttributeAnalyzer.Id,
                 .Message = "Mark 'MyAttribute' as NotInheritable.",
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 2, 14)}
@@ -38,7 +38,7 @@ End Class"
 
             Dim expected = New DiagnosticResult With
                 {
-                .Id = SealedAttributeAnalyzer.DiagnosticId,
+                .Id = SealedAttributeAnalyzer.Id,
                 .Message = "Mark 'OtherAttribute' as NotInheritable.",
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 14)}

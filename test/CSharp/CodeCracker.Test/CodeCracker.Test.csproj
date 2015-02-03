@@ -15,7 +15,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>c1a1ad0e</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>bd89c709</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -137,6 +137,7 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.cs" />
     <Compile Include="Refactoring\ParameterRefectoryTest.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
     <Compile Include="Style\RemoveTrailingWhitespaceTests.cs" />
     <Compile Include="Style\StringFormatTests.cs" />
@@ -191,7 +192,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <Compile Include="Verifiers\DiagnosticVerifier.Extras.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -208,11 +211,10 @@
     <Folder Include="Interoperability\" />
     <Folder Include="Naming\" />
     <Folder Include="Portability\" />
-    <Folder Include="Reliability\" />
     <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0339\tools\analyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0346\tools\analyzers\CodeCracker.CSharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

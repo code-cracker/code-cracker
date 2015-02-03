@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CodeCracker.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -97,7 +96,7 @@ namespace ConsoleApplication1
 
         private static DiagnosticResult CreateDiagnosticResult(int line, int column) {
             return new DiagnosticResult {
-                Id = JsonNetAnalyzer.DiagnosticId,
+                Id = DiagnosticId.JsonNet.ToDiagnosticId(),
                 Message = "Error parsing boolean value. Path '', line 0, position 0.",
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] {new DiagnosticResultLocation("Test0.cs", line, column)}

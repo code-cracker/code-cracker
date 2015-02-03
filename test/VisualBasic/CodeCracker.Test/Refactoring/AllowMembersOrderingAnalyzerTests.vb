@@ -44,7 +44,7 @@ End {0}", typeDeclaration)
 End {0}", typeDeclaration)
 
             Dim expected = New TestHelper.DiagnosticResult With {
-                .Id = AllowMembersOrderingAnalyzer.DiagnosticId,
+                .Id = AllowMembersOrderingAnalyzer.Id,
                 .Message = AllowMembersOrderingAnalyzer.MessageFormat,
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden,
                 .Locations = {New TestHelper.DiagnosticResultLocation("Test0.vb", 2, 14 + typeDeclaration.Length)}

@@ -15,15 +15,10 @@ namespace CodeCracker.Usage
     [ExportCodeFixProvider("CodeCrackerArgumentExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class SimplifyRedundantBooleanComparisonsCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(SimplifyRedundantBooleanComparisonsAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.SimplifyRedundantBooleanComparisons.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -44,16 +39,16 @@ namespace CodeCracker.Usage
             var rightConst = semanticModel.GetConstantValue(comparison.Right);
             if (rightConst.HasValue)
             {
-                constValue = (bool) rightConst.Value;
+                constValue = (bool)rightConst.Value;
                 replacer = comparison.Left;
             }
             else
             {
                 var leftConst = semanticModel.GetConstantValue(comparison.Left);
-                constValue = (bool) leftConst.Value;
+                constValue = (bool)leftConst.Value;
                 replacer = comparison.Right;
             }
-                
+
 
             if ((!constValue && comparison.IsKind(SyntaxKind.EqualsExpression)) || (constValue && comparison.IsKind(SyntaxKind.NotEqualsExpression)))
                 replacer = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, replacer);

@@ -15,15 +15,10 @@ namespace CodeCracker.Design
     [ExportCodeFixProvider("CodeCrackerUseInvokeMethodToFireEventCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UseInvokeMethodToFireEventCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId());
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {

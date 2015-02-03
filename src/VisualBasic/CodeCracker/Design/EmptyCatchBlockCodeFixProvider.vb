@@ -13,7 +13,7 @@ Namespace Design
         Inherits CodeFixProvider
 
         Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create("CC0004")
+            Return ImmutableArray.Create(DiagnosticId.EmptyCatchBlock.ToDiagnosticId())
         End Function
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider

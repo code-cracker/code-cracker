@@ -11,7 +11,6 @@ namespace CodeCracker.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class JsonNetAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0054";
         internal const string Title = "Your Json syntax is wrong";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Usage;
@@ -19,16 +18,16 @@ namespace CodeCracker.Usage
             + "by throwing an exception.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.JsonNet.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.JsonNet));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context)
         {

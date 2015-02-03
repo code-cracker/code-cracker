@@ -39,7 +39,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = TaskNameAsyncAnalyzer.DiagnosticId,
+                Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
                 Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat,"TestAsync"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }

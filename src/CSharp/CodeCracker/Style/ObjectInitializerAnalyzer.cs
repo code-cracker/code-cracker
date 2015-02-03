@@ -11,34 +11,32 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ObjectInitializerAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticIdLocalDeclaration = DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId();
         internal const string TitleLocalDeclaration = "Use object initializer";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Style;
-        private static readonly string diagnosticIdAssignment = DiagnosticId.ObjectInitializer_Assignment.ToDiagnosticId();
         internal const string TitleAssignment = "Use object initializer";
         const string Description = "When possible an object initializer should be used to initialize the properties of an "
             + "object instead of multiple assignments.";
 
         internal static DiagnosticDescriptor RuleAssignment = new DiagnosticDescriptor(
-            diagnosticIdAssignment,
+            DiagnosticId.ObjectInitializer_Assignment.ToDiagnosticId(),
             TitleLocalDeclaration,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticIdAssignment));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_Assignment));
 
         internal static DiagnosticDescriptor RuleLocalDeclaration = new DiagnosticDescriptor(
-            diagnosticIdLocalDeclaration,
+            DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(),
             TitleLocalDeclaration,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticIdLocalDeclaration));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_LocalDeclaration));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(RuleLocalDeclaration, RuleAssignment);

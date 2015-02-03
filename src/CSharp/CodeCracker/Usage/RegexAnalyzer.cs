@@ -10,7 +10,6 @@ namespace CodeCracker.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RegexAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.Regex.ToDiagnosticId();
         internal const string Title = "Your Regex expression is wrong";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Naming;
@@ -18,14 +17,14 @@ namespace CodeCracker.Usage
             + "by throwing an exception.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            diagnosticId,
+            DiagnosticId.Regex.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.Regex));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

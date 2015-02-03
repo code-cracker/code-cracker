@@ -70,7 +70,7 @@ End Namespace"
 
         Private Shared Function GetExpected() As DiagnosticResult
             Return New DiagnosticResult With {
-                .Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                .Id = StringBuilderInLoopAnalyzer.Id,
                 .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"),
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 9, 17)}
@@ -122,14 +122,14 @@ End Namespace"
 ".WrapInMethod()
 
             Dim expected1 As New DiagnosticResult With {
-                    .Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                    .Id = StringBuilderInLoopAnalyzer.Id,
                     .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"),
                     .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                     .Locations = {New DiagnosticResultLocation("Test0.vb", 10, 17)}
                 }
 
             Dim expected2 As New DiagnosticResult With {
-                    .Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                    .Id = StringBuilderInLoopAnalyzer.Id,
                     .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString2"),
                     .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                     .Locations = {New DiagnosticResultLocation("Test0.vb", 11, 17)}
@@ -381,7 +381,7 @@ End Namespace"
 
             Dim expected As New DiagnosticResult With
                 {
-                .Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                .Id = StringBuilderInLoopAnalyzer.Id,
                 .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"),
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 9, 17)}
@@ -419,7 +419,7 @@ End Namespace"
 
             Dim expected As New DiagnosticResult With
                 {
-                .Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                .Id = StringBuilderInLoopAnalyzer.Id,
                 .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"),
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 9, 17)}

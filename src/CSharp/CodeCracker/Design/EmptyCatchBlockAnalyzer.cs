@@ -9,21 +9,20 @@ namespace CodeCracker.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyCatchBlockAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.EmptyCatchBlock.ToDiagnosticId();
         internal const string Title = "Catch block cannot be empty";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Design;
         const string Description = "An empty catch block suppress all errors and shouldn't be used.\r\n"
             +"If the error is expected consider logging it or changing the control flow such that it is explicit.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(diagnosticId,
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId.EmptyCatchBlock.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.EmptyCatchBlock));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

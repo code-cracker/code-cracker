@@ -16,15 +16,10 @@ namespace CodeCracker.Usage
     [ExportCodeFixProvider("StringBuilderInLoopCodeFixProvider", LanguageNames.CSharp), Shared]
     public class StringBuilderInLoopCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(StringBuilderInLoopAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.StringBuilderInLoop.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return null; //todo: allow for a fixall but only if we can fix the clash on the builder name in a nice way
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => null; //todo: allow for a fixall but only if we can fix the clash on the builder name in a nice way
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {

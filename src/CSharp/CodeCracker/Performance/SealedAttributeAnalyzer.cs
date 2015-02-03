@@ -24,12 +24,9 @@ namespace CodeCracker.Performance
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId.SealedAttribute));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSymbolAction(Analyze, SymbolKind.NamedType);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSymbolAction(Analyze, SymbolKind.NamedType);
 
         private void Analyze(SymbolAnalysisContext context)
         {

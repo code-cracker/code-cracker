@@ -5,14 +5,12 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Collections.Generic;
-using System;
 
 namespace CodeCracker.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ReadonlyFieldAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0052";
         internal const string Title = "Make field readonly";
         internal const string Message = "Make '{0}' readonly";
         internal const string Category = SupportedCategories.Usage;
@@ -20,21 +18,18 @@ namespace CodeCracker.Usage
         private Compilation compilation;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.ReadonlyField.ToDiagnosticId(),
             Title,
             Message,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ReadonlyField));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterCompilationStartAction(AnalyzeCompilation);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterCompilationStartAction(AnalyzeCompilation);
 
         private void AnalyzeCompilation(CompilationStartAnalysisContext context)
         {

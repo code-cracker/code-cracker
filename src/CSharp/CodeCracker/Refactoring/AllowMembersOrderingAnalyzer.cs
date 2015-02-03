@@ -24,11 +24,8 @@ namespace CodeCracker.Refactoring
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
-            context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.StructDeclaration);
-        }
+        public override void Initialize(AnalysisContext context) =>
+            context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
 
         private void Analyze(SyntaxNodeAnalysisContext context)
         {

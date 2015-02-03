@@ -9,28 +9,24 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class InterfaceNameAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0062";
         internal const string Title = "You should add letter 'I' before interface name.";
         internal const string MessageFormat = "Consider naming interfaces starting with 'I'.";
         internal const string Category = SupportedCategories.Style;
         const string Description = "Consider naming interfaces starting with 'I'.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.InterfaceName.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.InterfaceName));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.InterfaceDeclaration);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.InterfaceDeclaration);
 
         private static void AnalyzeClass(SyntaxNodeAnalysisContext context)
         {

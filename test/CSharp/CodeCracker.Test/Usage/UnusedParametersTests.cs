@@ -276,7 +276,7 @@ namespace CodeCracker.Test.Usage
         {
             return new DiagnosticResult
             {
-                Id = UnusedParametersAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UnusedParameters.ToDiagnosticId(),
                 Message = string.Format(UnusedParametersAnalyzer.Message, parameterName),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }

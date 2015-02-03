@@ -11,7 +11,6 @@ namespace CodeCracker.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ArgumentExceptionAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticId = DiagnosticId.ArgumentException.ToDiagnosticId();
         internal const string Title = "Invalid argument name";
         internal const string MessageFormat = "Type argument '{0}' is not in the argument list.";
         internal const string Category = SupportedCategories.Naming;
@@ -19,14 +18,14 @@ namespace CodeCracker.Usage
             + "must be the name of one of the method arguments.\r\n"
             + "It can be either specified directly or using the nameof() operator (C#6 only)";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            diagnosticId,
+            DiagnosticId.ArgumentException.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description:Description,
-            helpLink: HelpLink.ForDiagnostic(diagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ArgumentException));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

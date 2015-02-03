@@ -15,15 +15,10 @@ namespace CodeCracker.Usage
 
     public class AbstractClassShouldNotHavePublicCtorsCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(AbstractClassShouldNotHavePublicCtorsAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -33,7 +28,7 @@ namespace CodeCracker.Usage
 
             var ctor = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
 
-            context.RegisterFix(CodeAction.Create("Use 'protected' instead of 'public'" , c => ReplacePublicWithProtectedAsync(context.Document, ctor, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Use 'protected' instead of 'public'", c => ReplacePublicWithProtectedAsync(context.Document, ctor, c)), diagnostic);
         }
 
         private async Task<Document> ReplacePublicWithProtectedAsync(Document document, ConstructorDeclarationSyntax ctor, CancellationToken cancellationToken)
@@ -44,7 +39,7 @@ namespace CodeCracker.Usage
 
             var newModifiers = ctor.Modifiers.Replace(@public, @protected);
             var newCtor = ctor.WithModifiers(newModifiers);
-            
+
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ctor, newCtor);
             var newDocument = document.WithSyntaxRoot(newRoot);

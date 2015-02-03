@@ -9,19 +9,19 @@ Namespace Refactoring
     Public Class AllowMembersOrderingAnalyzer
         Inherits DiagnosticAnalyzer
 
-        Public Const DiagnosticId = "CC0035"
+        Public Shared ReadOnly Id As String = DiagnosticId.AllowMembersOrdering.ToDiagnosticId()
 
         Friend Const Title = "Ordering member inside this type."
         Friend Const MessageFormat = "Ordering member inside this type."
         Friend Const Category = SupportedCategories.Refactoring
         Friend Shared Rule As New DiagnosticDescriptor(
-            DiagnosticId,
+            Id,
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault:=True,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId))
+            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.AllowMembersOrdering))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get
@@ -30,8 +30,7 @@ Namespace Refactoring
         End Property
 
         Public Overrides Sub Initialize(context As AnalysisContext)
-            context.RegisterSyntaxNodeAction(AddressOf Analyze, SyntaxKind.ClassBlock)
-            context.RegisterSyntaxNodeAction(AddressOf Analyze, SyntaxKind.StructureBlock)
+            context.RegisterSyntaxNodeAction(AddressOf Analyze, SyntaxKind.ClassBlock, SyntaxKind.StructureBlock)
         End Sub
 
         Public Sub Analyze(context As SyntaxNodeAnalysisContext)

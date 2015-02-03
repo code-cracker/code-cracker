@@ -10,31 +10,28 @@ namespace CodeCracker.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TernaryOperatorAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly string diagnosticIdForIfWithReturn = DiagnosticId.TernaryOperator_Return.ToDiagnosticId();
-        internal const string TitleForIfWithReturn = "User ternary operator";
+        internal const string Title = "User ternary operator";
         internal const string MessageFormatForIfWithReturn = "{0}";
         internal const string Category = SupportedCategories.Style;
-        private static readonly string diagnosticIdForIfWithAssignment = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId();
-        internal const string TitleForIfWithAssignment = "User ternary operator";
         internal const string MessageFormatForIfWithAssignment = "{0}";
 
         internal static DiagnosticDescriptor RuleForIfWithReturn = new DiagnosticDescriptor(
-            diagnosticIdForIfWithReturn,
-            TitleForIfWithReturn,
+            DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
+            Title,
             MessageFormatForIfWithReturn,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(diagnosticIdForIfWithReturn));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return));
 
         internal static DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(
-            diagnosticIdForIfWithAssignment,
-            TitleForIfWithAssignment,
+            DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
+            Title,
             MessageFormatForIfWithAssignment,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(diagnosticIdForIfWithAssignment));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Assignment));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(RuleForIfWithReturn, RuleForIfWithAssignment);
 

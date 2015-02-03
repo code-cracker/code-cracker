@@ -58,7 +58,7 @@ namespace ConsoleApplication1
 
         private static DiagnosticResult CreateDiagnosticResult(int line, int column, Action getErrorMessageAction) {
             return new DiagnosticResult {
-                Id = IPAddressAnalyzer.DiagnosticId,
+                Id = DiagnosticId.IPAddress.ToDiagnosticId(),
                 Message = GetErrorMessage(getErrorMessageAction),
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] {new DiagnosticResultLocation("Test0.cs", line, column)}

@@ -34,7 +34,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = SimplifyRedundantBooleanComparisonsAnalyzer.DiagnosticId,
+                Id = DiagnosticId.SimplifyRedundantBooleanComparisons.ToDiagnosticId(),
                 Message = "You can remove this comparison.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, column) }

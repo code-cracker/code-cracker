@@ -96,7 +96,7 @@ namespace ConsoleApplication1
         {
             return new DiagnosticResult
             {
-                Id = UriAnalyzer.DiagnosticId,
+                Id = DiagnosticId.Uri.ToDiagnosticId(),
                 Message = GetErrorMessage(getErrorMessageAction),
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }

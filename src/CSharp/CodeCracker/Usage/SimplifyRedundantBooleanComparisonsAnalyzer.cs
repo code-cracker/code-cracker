@@ -9,27 +9,24 @@ namespace CodeCracker.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class SimplifyRedundantBooleanComparisonsAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0049";
         internal const string Title = "Simplify expression";
         internal const string MessageFormat = "You can remove this comparison.";
         internal const string Category = SupportedCategories.Usage;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.SimplifyRedundantBooleanComparisons.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.SimplifyRedundantBooleanComparisons));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression);
-        }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {

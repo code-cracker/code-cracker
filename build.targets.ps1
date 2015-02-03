@@ -26,6 +26,7 @@ Properties {
     $reportGeneratorExe = "$packagesDir\ReportGenerator.2.0.4.0\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
     $converallsNetExe = "$packagesDir\coveralls.io.1.1.86\tools\coveralls.net.exe"
+    $isRelease = $isAppVeyor -and ($env:APPVEYOR_REPO_BRANCH -eq "release")
 }
 
 FormatTaskName (("-"*25) + "[{0}]" + ("-"*25))
@@ -97,14 +98,14 @@ Task Test-No-Coverage-CSharp {
     RunTest "$testDirCS\$testDllCS"
 }
 
-Task Update-Nuspec -precondition { return $isAppVeyor } -depends Update-Nuspec-Joint
-Task Update-Nuspec-Joint -precondition { return $isAppVeyor } -depends Update-Nuspec-CSharp, Update-Nuspec-VB {
+Task Update-Nuspec -precondition { return $isAppVeyor -and ($isRelease -ne $true) } -depends Update-Nuspec-Joint
+Task Update-Nuspec-Joint -precondition { return $isAppVeyor -and ($isRelease -ne $true) } -depends Update-Nuspec-CSharp, Update-Nuspec-VB {
     UpdateNuspec $nuspecPathJoint "joint package"
 }
-Task Update-Nuspec-CSharp -precondition { return $isAppVeyor } {
+Task Update-Nuspec-CSharp -precondition { return $isAppVeyor -and ($isRelease -ne $true) } {
     UpdateNuspec $nuspecPathCS "C#"
 }
-Task Update-Nuspec-VB -precondition { return $isAppVeyor } {
+Task Update-Nuspec-VB -precondition { return $isAppVeyor -and ($isRelease -ne $true) } {
     UpdateNuspec $nuspecPathVB "VB"
 }
 
@@ -195,5 +196,4 @@ function RunTestWithCoverage($fullTestDllPaths) {
         Write-Host -ForegroundColor DarkBlue "Uploading coverage report to Coveralls.io"
         Exec { . $converallsNetExe --opencover $outputXml }
     }
-}
 }
