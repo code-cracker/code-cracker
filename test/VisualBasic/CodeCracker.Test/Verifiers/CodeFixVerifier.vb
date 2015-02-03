@@ -94,10 +94,6 @@ Namespace TestHelper
 
             'after applying all of the code fixes, compare the resulting string to the inputted one
             Dim actual = Await GetStringFromDocumentAsync(document)
-
-            'Assist debugging by showing sources in output
-            Console.WriteLine(newSource)
-            Console.WriteLine(actual)
             Assert.Equal(newSource, actual)
         End Function
     End Class
