@@ -34,4 +34,5 @@
     RemoveCommentedCode = 37
     ConvertToExpressionBodiedMember = 38
     StringBuilderInLoop = 39
+    ParameterRefactory = 44
 End Enum

@@ -116,6 +116,8 @@
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.vb" />
+    <Compile Include="Refactoring\ParameterRefactoryAnalyzer.vb" />
+    <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.vb" />
     <Compile Include="SupportedCategories.vb" />
   </ItemGroup>
   <ItemGroup>
