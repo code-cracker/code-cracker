@@ -37,6 +37,7 @@ namespace CodeCracker.Style
             var fieldMembers = methodMembers.OfType<FieldDeclarationSyntax>();
             var parameters = constructorMethod.ParameterList.Parameters;
 
+            if (constructorMethod.Body == null) return;
             if (constructorMethod?.Body.Statements.Count == 0 && parameters.Count > 0)
             {
                 foreach (var par in parameters)
