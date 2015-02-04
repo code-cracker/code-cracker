@@ -44,6 +44,7 @@
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorAnalyzer.cs" />
+    <Compile Include="Refactoring\IntroduceFieldFromConstructorCodeFixProvider.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.cs" />
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
