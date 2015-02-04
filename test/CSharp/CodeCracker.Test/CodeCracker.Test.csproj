@@ -133,6 +133,7 @@
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Performance\StringBuilderInLoopTests.cs" />
+    <Compile Include="Refactoring\AddBracesToSwitchCaseTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.cs" />
     <Compile Include="Refactoring\ParameterRefectoryTests.cs" />
