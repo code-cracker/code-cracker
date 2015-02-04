@@ -42,7 +42,10 @@ namespace CodeCracker.Style
             foreach (var insert in analyzingInterpolation.InterpolatedInserts)
             {
                 var index = (int)((LiteralExpressionSyntax)insert.Expression).Token.Value;
-                expressionsToReplace.Add(insert.Expression, interpolationArgs[index].Expression);
+                var expression = interpolationArgs[index].Expression;
+                var conditional = expression as ConditionalExpressionSyntax;
+                if (conditional != null) expression = SyntaxFactory.ParenthesizedExpression(expression);
+                expressionsToReplace.Add(insert.Expression, expression);
             }
             var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
             var root = await document.GetSyntaxRootAsync(cancellationToken);

@@ -518,5 +518,37 @@ namespace CodeCracker.Test.Style
     }";
             await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
         }
+
+        [Fact]
+        public async Task StringFormatWithTernaryOperatorFixesWithParenthesis()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = string.Format(""This {0} is {1}"", noun, true ? adjective : noun);
+            }
+        }
+    }";
+            const string expected = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = $""This {noun} is {(true ? adjective : noun)}"";
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
+        }
     }
 }
