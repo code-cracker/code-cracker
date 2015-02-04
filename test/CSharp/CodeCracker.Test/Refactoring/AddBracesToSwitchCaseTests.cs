@@ -9,7 +9,7 @@ namespace CodeCracker.Test.Refactoring
     public class AddBracesToSwitchCaseTests : CodeFixTest<AddBracesToSwitchCaseAnalyzer, AddBracesToSwitchCaseCodeFix>
     {
         [Fact]
-        public async Task IgnoresWhenSwitchSectionAlreadyHasBraces()
+        public async Task IgnoresWhenSingleSwitchSectionAlreadyHasBraces()
         {
             string test = @"switch(x)
 {
@@ -23,7 +23,7 @@ namespace CodeCracker.Test.Refactoring
         }
 
         [Fact]
-        public async Task IgnoresWhenSwitchSectionAlreadyHasBracesFollowedByBreak()
+        public async Task IgnoresWhenSingleSwitchSectionAlreadyHasBracesFollowedByBreak()
         {
             string test = @"switch(x)
 {
@@ -37,47 +37,109 @@ namespace CodeCracker.Test.Refactoring
         }
 
         [Fact]
-        public async Task CreateDiagnosticWhenSwitchSectionHasNoBraces()
+        public async Task IgnoresWhenAllSwitchSectionsAlreadyHaveBraces()
         {
             string test = @"switch(x)
 {
     case 0:
+    {
         Foo();
         break;
-}";
-            var diagnostic = new DiagnosticResult
-            {
-                Id = AddBracesToSwitchCaseAnalyzer.DiagnosticId,
-                Message = "Add braces for this case",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] {new DiagnosticResultLocation("Test0.cs", 12, 5)}
-            };
-            await VerifyCSharpDiagnosticAsync(test.WrapInMethod(), diagnostic);
-        }
-
-        [Fact]
-        public async Task CreateDiagnosticWhenSwitchSectionHasNoBracesAndMultipleCases()
-        {
-            string test = @"switch(x)
-{
-    case 0:
+    }
     case 1:
-    case 2:
+        {
+            Bar();
+        }
+        break;
+    default:
+    {
+        Baz();
+        break;
+    }
+
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInMethod());
+        }
+
+        [Fact]
+        public async Task CreateDiagnosticWhenSingleSwitchSectionHasNoBraces()
+        {
+            string test = @"switch(x)
+{
+    case 0:
         Foo();
         break;
 }";
             var diagnostic = new DiagnosticResult
             {
                 Id = AddBracesToSwitchCaseAnalyzer.DiagnosticId,
-                Message = "Add braces for this case",
+                Message = "Add braces for each case in this switch",
                 Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 5) }
+                Locations = new[] {new DiagnosticResultLocation("Test0.cs", 10, 17)}
             };
             await VerifyCSharpDiagnosticAsync(test.WrapInMethod(), diagnostic);
         }
 
         [Fact]
-        public async Task FixAddsBraces()
+        public async Task CreateDiagnosticWhenNotAllSwitchSectionsHaveBraces()
+        {
+            string test = @"switch(x)
+{
+    case 0:
+    {
+        Foo();
+        break;
+    }
+    case 1:
+        Brz();
+        break;
+    default:
+    {
+        Baz();
+        break;
+    }
+}";
+            var diagnostic = new DiagnosticResult
+            {
+                Id = AddBracesToSwitchCaseAnalyzer.DiagnosticId,
+                Message = "Add braces for each case in this switch",
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
+            };
+            await VerifyCSharpDiagnosticAsync(test.WrapInMethod(), diagnostic);
+        }
+
+        [Fact]
+        public async Task CreateDiagnosticWhenDefaultSectionsHasNoBraces()
+        {
+            string test = @"switch(x)
+{
+    case 0:
+    {
+        Foo();
+        break;
+    }
+    case 1:
+    {
+        Bar();
+        break;
+    }
+    default:
+        Baz();
+        break;
+}";
+            var diagnostic = new DiagnosticResult
+            {
+                Id = AddBracesToSwitchCaseAnalyzer.DiagnosticId,
+                Message = "Add braces for each case in this switch",
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
+            };
+            await VerifyCSharpDiagnosticAsync(test.WrapInMethod(), diagnostic);
+        }
+
+        [Fact]
+        public async Task FixAddsBracesForSingleSection()
         {
             string test = @"switch(x)
 {
@@ -102,18 +164,30 @@ namespace CodeCracker.Test.Refactoring
             string test = @"switch(x)
 {
     case 0:
-    case 1:
-    case 2:
         Foo();
+        break;
+    case 1:
+        Bar();
+        break;
+    default:
+        Baz();
         break;
 }";
             string expected = @"switch(x)
 {
     case 0:
-    case 1:
-    case 2:
     {
         Foo();
+        break;
+    }
+    case 1:
+    {
+        Bar();
+        break;
+    }
+    default:
+    {
+        Baz();
         break;
     }
 }";

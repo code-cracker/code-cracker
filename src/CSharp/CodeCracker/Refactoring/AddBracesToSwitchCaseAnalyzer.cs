@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,8 +11,8 @@ namespace CodeCracker.Refactoring
     public class AddBracesToSwitchCaseAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "CC0071";
-        internal const string Title = "Add braces to switch case.";
-        internal const string MessageFormat = "Add braces for this case";
+        internal const string Title = "Add braces to switch cases.";
+        internal const string MessageFormat = "Add braces for each case in this switch";
         internal const string Category = SupportedCategories.Refactoring;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -27,23 +28,22 @@ namespace CodeCracker.Refactoring
 
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.CaseSwitchLabel);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.SwitchStatement);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var caseLabel = (CaseSwitchLabelSyntax) context.Node;
-            var section = caseLabel.Parent as SwitchSectionSyntax;
-            if (section == null)
-                return;
-            
-            // Only for the first case of a section
-            if (section.Labels.First() != caseLabel)
-                return;
+            var @switch = (SwitchStatementSyntax) context.Node;
+            if (!@switch.Sections.All(HasBraces))
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Rule, @switch.GetLocation()));
+            }
+        }
 
+        internal static bool HasBraces(SwitchSectionSyntax section)
+        {
             if (section.Statements.Count == 1)
             {
-                // If the section already contains only a block, don't offer to refactor.
                 // Example:
                 //
                 // case 42:
@@ -54,11 +54,10 @@ namespace CodeCracker.Refactoring
 
                 var firstStatement = section.Statements.First();
                 if (firstStatement is BlockSyntax)
-                    return;
+                    return true;
             }
             else if (section.Statements.Count == 2)
             {
-                // If the section contains only a block followed by a break, don't offer to refactor.
                 // Example:
                 //
                 // case 42:
@@ -70,9 +69,9 @@ namespace CodeCracker.Refactoring
                 var firstStatement = section.Statements.First();
                 var lastStatement = section.Statements.Last();
                 if (firstStatement is BlockSyntax && lastStatement is BreakStatementSyntax)
-                    return;
+                    return true;
             }
-            context.ReportDiagnostic(Diagnostic.Create(Rule, caseLabel.GetLocation()));
+            return false;
         }
     }
 }
