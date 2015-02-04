@@ -132,7 +132,7 @@
     <Compile Include="Design\UseInvokeMethodToFireEventAnalyzer.cs" />
     <Compile Include="Design\UseInvokeMethodToFireEventCodeFixProvider.cs" />
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsAnalyzer.cs" />
-    <Compile Include="Usage\SimplifyRedundantBooleanComparisonsCodeFixProvider.cs.cs" />
+    <Compile Include="Usage\SimplifyRedundantBooleanComparisonsCodeFixProvider.cs" />
     <Compile Include="Usage\UriAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>

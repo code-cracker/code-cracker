@@ -135,7 +135,7 @@
     <Compile Include="Performance\StringBuilderInLoopTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.cs" />
-    <Compile Include="Refactoring\ParameterRefectoryTest.cs" />
+    <Compile Include="Refactoring\ParameterRefectoryTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />

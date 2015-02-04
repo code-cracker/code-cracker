@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test.Refactoring
 {
-    public class ParameterRefectoryTest : CodeFixTest<ParameterRefactoryAnalyzer, ParameterRefactoryCodeFixProvider>
+    public class ParameterRefectoryTests : CodeFixTest<ParameterRefactoryAnalyzer, ParameterRefactoryCodeFixProvider>
     {
 
         [Fact]
@@ -20,7 +20,6 @@ namespace CodeCracker.Test.Refactoring
         {
             public void Foo(string name,string age,string day)
             {
-               
             }
         }
     }";
