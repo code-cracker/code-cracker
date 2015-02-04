@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CodeCracker.Test.Refactoring
 {
-    public class AddBracesToSwitchCaseTests : CodeFixTest<AddBracesToSwitchCaseAnalyzer, AddBracesToSwitchCaseCodeFix>
+    public class AddBracesToSwitchSectionsTests : CodeFixTest<AddBracesToSwitchSectionsAnalyzer, AddBracesToSwitchSectionsCodeFix>
     {
         [Fact]
         public async Task IgnoresWhenSingleSwitchSectionAlreadyHasBraces()
@@ -72,7 +72,7 @@ namespace CodeCracker.Test.Refactoring
 }";
             var diagnostic = new DiagnosticResult
             {
-                Id = AddBracesToSwitchCaseAnalyzer.DiagnosticId,
+                Id = AddBracesToSwitchSectionsAnalyzer.DiagnosticId,
                 Message = "Add braces for each case in this switch",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] {new DiagnosticResultLocation("Test0.cs", 10, 17)}
@@ -101,7 +101,7 @@ namespace CodeCracker.Test.Refactoring
 }";
             var diagnostic = new DiagnosticResult
             {
-                Id = AddBracesToSwitchCaseAnalyzer.DiagnosticId,
+                Id = AddBracesToSwitchSectionsAnalyzer.DiagnosticId,
                 Message = "Add braces for each case in this switch",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -130,7 +130,7 @@ namespace CodeCracker.Test.Refactoring
 }";
             var diagnostic = new DiagnosticResult
             {
-                Id = AddBracesToSwitchCaseAnalyzer.DiagnosticId,
+                Id = AddBracesToSwitchSectionsAnalyzer.DiagnosticId,
                 Message = "Add braces for each case in this switch",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }

@@ -37,8 +37,8 @@
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
-    <Compile Include="Refactoring\AddBracesToSwitchCaseAnalyzer.cs" />
-    <Compile Include="Refactoring\AddBracesToSwitchCaseCodeFix.cs" />
+    <Compile Include="Refactoring\AddBracesToSwitchSectionsAnalyzer.cs" />
+    <Compile Include="Refactoring\AddBracesToSwitchSectionsCodeFix.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />

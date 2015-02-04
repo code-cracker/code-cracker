@@ -8,11 +8,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace CodeCracker.Refactoring
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class AddBracesToSwitchCaseAnalyzer : DiagnosticAnalyzer
+    public class AddBracesToSwitchSectionsAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0071";
-        internal const string Title = "Add braces to switch cases.";
-        internal const string MessageFormat = "Add braces for each case in this switch";
+        public const string DiagnosticId = "CC0073";
+        internal const string Title = "Add braces to switch sections.";
+        internal const string MessageFormat = "Add braces for each section in this switch";
         internal const string Category = SupportedCategories.Refactoring;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -22,7 +22,7 @@ namespace CodeCracker.Refactoring
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(CodeCracker.DiagnosticId.AddBracesToSwitchCase));
+            helpLink: HelpLink.ForDiagnostic(CodeCracker.DiagnosticId.AddBracesToSwitchSections));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

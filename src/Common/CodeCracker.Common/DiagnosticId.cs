@@ -54,6 +54,6 @@
         IPAddress = 64,
         RemoveTrailingWhitespace = 65,
         UseConfigureAwaitFalse = 70,
-        AddBracesToSwitchCase = 71
+        AddBracesToSwitchSections = 73
     }
 }

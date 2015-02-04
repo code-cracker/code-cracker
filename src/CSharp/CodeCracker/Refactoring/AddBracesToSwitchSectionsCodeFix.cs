@@ -14,11 +14,11 @@ using Microsoft.CodeAnalysis.Formatting;
 namespace CodeCracker.Refactoring
 {
     [ExportCodeFixProvider("AddBracesToSwitchCaseCodeFixCodeFixProvider", LanguageNames.CSharp), Shared]
-    public class AddBracesToSwitchCaseCodeFix : CodeFixProvider
+    public class AddBracesToSwitchSectionsCodeFix : CodeFixProvider
     {
         public override ImmutableArray<string> GetFixableDiagnosticIds()
         {
-            return ImmutableArray.Create(AddBracesToSwitchCaseAnalyzer.DiagnosticId);
+            return ImmutableArray.Create(AddBracesToSwitchSectionsAnalyzer.DiagnosticId);
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
@@ -29,7 +29,7 @@ namespace CodeCracker.Refactoring
         public override Task ComputeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterFix(CodeAction.Create("Add braces to each case", ct => AddBracesAsync(context, ct)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Add braces to each switch section", ct => AddBracesAsync(context, ct)), diagnostic);
             return Task.FromResult(0);
         }
 
@@ -42,7 +42,7 @@ namespace CodeCracker.Refactoring
             foreach (var section in @switch.Sections)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (!AddBracesToSwitchCaseAnalyzer.HasBraces(section))
+                if (!AddBracesToSwitchSectionsAnalyzer.HasBraces(section))
                 {
                     var newSection = AddBraces(section);
                     sections.Add(newSection);
