@@ -100,7 +100,6 @@
     <Compile Include="Design\NameOfCodeFixProvider.vb" />
     <Compile Include="Design\StaticConstructorExceptionAnalyzer.vb" />
     <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.vb" />
-    <Compile Include="DiagnosticId.vb" />
     <Compile Include="Extensions\AnalyzerExtensions.vb" />
     <Compile Include="Extensions\CodeCrackerExtensions.vb" />
     <Compile Include="HelpLink.vb" />
@@ -170,6 +169,12 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0331\tools\analyzers\CodeCracker.VisualBasic.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CodeCracker.Common\CodeCracker.Common.csproj">
+      <Project>{753d4757-fcba-43ba-b1be-89201acda192}</Project>
+      <Name>CodeCracker.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

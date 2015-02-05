@@ -34,7 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DiagnosticId.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
@@ -196,6 +195,12 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0346\tools\analyzers\CodeCracker.CSharp.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CodeCracker.Common\CodeCracker.Common.csproj">
+      <Project>{753d4757-fcba-43ba-b1be-89201acda192}</Project>
+      <Name>CodeCracker.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>

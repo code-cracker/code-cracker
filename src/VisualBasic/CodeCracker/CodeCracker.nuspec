@@ -24,5 +24,6 @@ This is a community project, free and open source. Everyone is invited to contri
         <file src="tools\install.ps1" target="tools\install.ps1" />
         <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
         <file src="bin\debug\CodeCracker.VisualBasic.dll" target="tools\analyzers\CodeCracker.VisualBasic.dll" />
+        <file src="bin\debug\CodeCracker.Common.dll" target="tools\analyzers\CodeCracker.Common.dll" />
     </files>
 </package>
