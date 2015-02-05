@@ -145,19 +145,19 @@ namespace TestHelper
 
         public static string WrapInMethod(this string code, bool isAsync = false)
         {
-            return string.Format(@"
+            return $@"
     using System;
 
     namespace ConsoleApplication1
     {{
         class TypeName
         {{
-            public {1}void Foo()
+            public {(isAsync ? "async " : "")}void Foo()
             {{
-                {0}
+                {code}
             }}
         }}
-    }}", code, isAsync ? "async " : "");
+    }}";
         }
     }
 }

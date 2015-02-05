@@ -168,13 +168,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0331\tools\analyzers\CodeCracker.VisualBasic.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Common\CodeCracker.Common\CodeCracker.Common.csproj">
       <Project>{753d4757-fcba-43ba-b1be-89201acda192}</Project>
       <Name>CodeCracker.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0365\tools\analyzers\CodeCracker.VisualBasic.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
