@@ -230,7 +230,33 @@ public class TypeName
     }
 }";
 
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAll()
+        {
+            const string source = @"
+public class TypeName
+{
+    void Foo(string a, string b)
+    {
+        var whatever = ""a"";
+        var whatever2 = ""b"";
+    }
+}";
+
+            const string fixtest = @"
+public class TypeName
+{
+    void Foo(string a, string b)
+    {
+        var whatever = nameof(a);
+        var whatever2 = nameof(b);
+    }
+}";
+
+            await VerifyFixAllAsync(source, fixtest);
         }
     }
 }
