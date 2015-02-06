@@ -53,6 +53,7 @@
         Uri = 63,
         IPAddress = 64,
         RemoveTrailingWhitespace = 65,
-        UseConfigureAwaitFalse = 70
+        UseConfigureAwaitFalse = 70,
+        AddBracesToSwitchSections = 73
     }
 }
