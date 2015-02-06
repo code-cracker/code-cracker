@@ -18,7 +18,7 @@ namespace CodeCracker.Refactoring
     {
         public override ImmutableArray<string> GetFixableDiagnosticIds()
         {
-            return ImmutableArray.Create(AddBracesToSwitchSectionsAnalyzer.DiagnosticId);
+            return ImmutableArray.Create(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId());
         }
 
         public sealed override FixAllProvider GetFixAllProvider()

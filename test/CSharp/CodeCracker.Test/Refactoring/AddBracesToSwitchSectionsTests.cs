@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task IgnoresWhenSingleSwitchSectionAlreadyHasBraces()
         {
-            string test = @"switch(x)
+            var test = @"switch(x)
 {
     case 0:
     {
@@ -25,7 +25,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task IgnoresWhenSingleSwitchSectionAlreadyHasBracesFollowedByBreak()
         {
-            string test = @"switch(x)
+            var test = @"switch(x)
 {
     case 0:
         {
@@ -39,7 +39,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task IgnoresWhenAllSwitchSectionsAlreadyHaveBraces()
         {
-            string test = @"switch(x)
+            var test = @"switch(x)
 {
     case 0:
     {
@@ -64,7 +64,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task CreateDiagnosticWhenSingleSwitchSectionHasNoBraces()
         {
-            string test = @"switch(x)
+            var test = @"switch(x)
 {
     case 0:
         Foo();
@@ -72,8 +72,8 @@ namespace CodeCracker.Test.Refactoring
 }";
             var diagnostic = new DiagnosticResult
             {
-                Id = AddBracesToSwitchSectionsAnalyzer.DiagnosticId,
-                Message = "Add braces for each case in this switch",
+                Id = DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(),
+                Message = "Add braces for each section in this switch",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] {new DiagnosticResultLocation("Test0.cs", 10, 17)}
             };
@@ -83,7 +83,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task CreateDiagnosticWhenNotAllSwitchSectionsHaveBraces()
         {
-            string test = @"switch(x)
+            var test = @"switch(x)
 {
     case 0:
     {
@@ -101,8 +101,8 @@ namespace CodeCracker.Test.Refactoring
 }";
             var diagnostic = new DiagnosticResult
             {
-                Id = AddBracesToSwitchSectionsAnalyzer.DiagnosticId,
-                Message = "Add braces for each case in this switch",
+                Id = DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(),
+                Message = "Add braces for each section in this switch",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
@@ -112,7 +112,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task CreateDiagnosticWhenDefaultSectionsHasNoBraces()
         {
-            string test = @"switch(x)
+            var test = @"switch(x)
 {
     case 0:
     {
@@ -130,8 +130,8 @@ namespace CodeCracker.Test.Refactoring
 }";
             var diagnostic = new DiagnosticResult
             {
-                Id = AddBracesToSwitchSectionsAnalyzer.DiagnosticId,
-                Message = "Add braces for each case in this switch",
+                Id = DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(),
+                Message = "Add braces for each section in this switch",
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
@@ -141,13 +141,13 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task FixAddsBracesForSingleSection()
         {
-            string test = @"switch(x)
+            var test = @"switch(x)
 {
     case 0:
         Foo();
         break;
 }";
-            string expected = @"switch(x)
+            var expected = @"switch(x)
 {
     case 0:
     {
@@ -161,7 +161,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task FixAddsBracesWithMultipleCases()
         {
-            string test = @"switch(x)
+            var test = @"switch(x)
 {
     case 0:
         Foo();
@@ -173,7 +173,7 @@ namespace CodeCracker.Test.Refactoring
         Baz();
         break;
 }";
-            string expected = @"switch(x)
+            var expected = @"switch(x)
 {
     case 0:
     {

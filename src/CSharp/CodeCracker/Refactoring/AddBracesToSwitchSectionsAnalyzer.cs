@@ -10,26 +10,22 @@ namespace CodeCracker.Refactoring
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AddBracesToSwitchSectionsAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0073";
         internal const string Title = "Add braces to switch sections.";
         internal const string MessageFormat = "Add braces for each section in this switch";
         internal const string Category = SupportedCategories.Refactoring;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(CodeCracker.DiagnosticId.AddBracesToSwitchSections));
+            helpLink: HelpLink.ForDiagnostic(DiagnosticId.AddBracesToSwitchSections));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.SwitchStatement);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.SwitchStatement);
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
