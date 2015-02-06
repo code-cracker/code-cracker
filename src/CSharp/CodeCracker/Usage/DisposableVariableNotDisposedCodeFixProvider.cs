@@ -20,8 +20,9 @@ namespace CodeCracker.Usage
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
             ImmutableArray.Create(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId());
+        public readonly static string MessageFormat = "Dispose object: '{0}'";
 
-        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public sealed override FixAllProvider GetFixAllProvider() => DisposableVariableNotDisposedFixAllProvider.Instance;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -30,20 +31,28 @@ namespace CodeCracker.Usage
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
             if (objectCreation != null)
-                context.RegisterFix(CodeAction.Create($"Dispose object: '{objectCreation.Type.ToString()}'", c => CreateUsingAsync(context.Document, objectCreation, c)), diagnostic);
+                context.RegisterFix(CodeAction.Create(string.Format(MessageFormat, objectCreation.Type.ToString()), c => CreateUsingAsync(context.Document, objectCreation, c)), diagnostic);
         }
 
         private static async Task<Document> CreateUsingAsync(Document document, ObjectCreationExpressionSyntax objectCreation, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            SyntaxNode newRoot, root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync();
+            var newRoot = CreateUsing(root, objectCreation, semanticModel);
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            return newDocument;
+        }
+
+        public static SyntaxNode CreateUsing(SyntaxNode root, ObjectCreationExpressionSyntax objectCreation, SemanticModel semanticModel)
+        {
+            SyntaxNode newRoot;
             if (objectCreation.Parent.IsKind(SyntaxKind.SimpleAssignmentExpression))
             {
                 var assignmentExpression = (AssignmentExpressionSyntax)objectCreation.Parent;
                 var statement = assignmentExpression.Parent as ExpressionStatementSyntax;
                 var identitySymbol = (ILocalSymbol)semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
                 newRoot = UsedOutsideParentBlock(semanticModel, statement, identitySymbol)
-                    ? CreaterRootAddingDisposeToEndOfMethod(root, statement, identitySymbol)
+                    ? CreateRootAddingDisposeToEndOfMethod(root, statement, identitySymbol)
                     : CreateRootWithUsing(root, statement, u => u.WithExpression(assignmentExpression));
             }
             else if (objectCreation.Parent.IsKind(SyntaxKind.EqualsValueClause) && objectCreation.Parent.Parent.IsKind(SyntaxKind.VariableDeclarator))
@@ -57,11 +66,10 @@ namespace CodeCracker.Usage
             {
                 newRoot = CreateRootWithUsing(root, (ExpressionStatementSyntax)objectCreation.Parent, u => u.WithExpression(objectCreation));
             }
-            var newDocument = document.WithSyntaxRoot(newRoot);
-            return newDocument;
+            return newRoot;
         }
 
-        private static SyntaxNode CreaterRootAddingDisposeToEndOfMethod(SyntaxNode root, ExpressionStatementSyntax statement, ILocalSymbol identitySymbol)
+        private static SyntaxNode CreateRootAddingDisposeToEndOfMethod(SyntaxNode root, ExpressionStatementSyntax statement, ILocalSymbol identitySymbol)
         {
             var method = statement.FirstAncestorOrSelf<MethodDeclarationSyntax>();
             var newDispose = ImplementsDisposableExplicitly(identitySymbol.Type)

@@ -659,5 +659,53 @@ m.Dispose();".WrapInMethod();
 ";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task FixAll()
+        {
+            const string source = @"
+                using System;
+                class A
+                {
+                    void Foo()
+                    {
+                        var d1 = new Disposable1();
+                        var d2 = new Disposable2();
+                    }
+                }
+                class Disposable1 : IDisposable
+                {
+                    public void Dispose() { }
+                }
+                class Disposable2 : IDisposable
+                {
+                    public void Dispose() { }
+                }
+";
+            const string fixtest = @"
+                using System;
+                class A
+                {
+                    void Foo()
+                    {
+                        using (var d1 = new Disposable1())
+                        {
+                            using (var d2 = new Disposable2())
+                            {
+                            }
+                        }
+                    }
+                }
+                class Disposable1 : IDisposable
+                {
+                    public void Dispose() { }
+                }
+                class Disposable2 : IDisposable
+                {
+                    public void Dispose() { }
+                }
+";
+            await VerifyFixAllAsync(source, fixtest);
+        }
     }
 }
