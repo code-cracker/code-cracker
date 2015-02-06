@@ -33,7 +33,15 @@ namespace CodeCracker.Refactoring
         private async Task<Document> IntroduceFieldFromConstructorAsync(Document document, ConstructorDeclarationSyntax constructorStatement, string parameterName, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
-            var fieldName = "_" + parameterName;
+
+            var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
+            var fieldMembers = oldClass.Members.OfType<FieldDeclarationSyntax>();
+            var fieldName = parameterName;
+
+            if(fieldMembers.Any(p => p.Declaration.Variables.First().Identifier.Text == fieldName))
+            {
+                fieldName += "1";
+            }
 
             var assignmentField = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(),
@@ -45,7 +53,6 @@ namespace CodeCracker.Refactoring
                               .WithAdditionalAnnotations(Formatter.Annotation);
 
             var newConstructor = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignmentField));
-            var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
             var newClassConstructor = oldClass.ReplaceNode(constructorStatement, newConstructor);
             var newClass = newClassConstructor.WithMembers(newClassConstructor.Members.Insert(0, newField))
                            .WithoutAnnotations(Formatter.Annotation);
