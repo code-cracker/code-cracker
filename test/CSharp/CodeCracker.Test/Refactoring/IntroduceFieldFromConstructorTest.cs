@@ -21,7 +21,7 @@ namespace CodeCracker.Test.Refactoring
 
             public TypeName(int par)
             {
-               _par = par;
+               this._par = par;
             }
         }
     }";
@@ -42,12 +42,34 @@ namespace CodeCracker.Test.Refactoring
 
             public TypeName(int par)
             {
-               _par = par;
+               this._par = par;
             }
         }
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
+
+        [Fact]
+        public async Task WhenConstructorParameterHasAnyFieldAssign()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private int myField;
+
+            public TypeName(int par)
+            {
+               this.myField = par;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
 
 
         [Fact]
@@ -64,7 +86,7 @@ namespace CodeCracker.Test.Refactoring
             {
             }
         }
-    }"; 
+    }";
 
             const string expected = @"
     using System;
@@ -77,13 +99,12 @@ namespace CodeCracker.Test.Refactoring
 
             public TypeName(int par)
             {
-               _par = par;
+               this._par = par;
             }
         }
     }";
-            await VerifyCSharpFixAsync(test, expected, 0);
+            await VerifyCSharpFixAsync(test, expected);
         }
-        
     }
 
 }

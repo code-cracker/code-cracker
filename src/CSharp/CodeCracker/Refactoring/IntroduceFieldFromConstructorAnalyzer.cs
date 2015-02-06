@@ -13,7 +13,7 @@ namespace CodeCracker.Refactoring
     {
         internal const string Title = "Consider introduce field for constructor parameters.";
         internal const string MessageFormat = "Introduce a field for parameter: {0}";
-        internal const string Category = SupportedCategories.Style;
+        internal const string Category = SupportedCategories.Refactoring;
         const string Description = "Consider introduce field for constructor parameters.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -21,7 +21,7 @@ namespace CodeCracker.Refactoring
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Error,
+            DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId.TaskNameAsync));
@@ -33,8 +33,6 @@ namespace CodeCracker.Refactoring
         private static void AnalyzeConstructor(SyntaxNodeAnalysisContext context)
         {
             var constructorMethod = (ConstructorDeclarationSyntax)context.Node;
-            var methodMembers = (constructorMethod.Parent as ClassDeclarationSyntax).Members;
-            var fieldMembers = methodMembers.OfType<FieldDeclarationSyntax>();
             var parameters = constructorMethod.ParameterList.Parameters;
 
             if (constructorMethod.Body == null) return;

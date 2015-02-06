@@ -25,9 +25,9 @@ namespace CodeCracker.Refactoring
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var parameterName = diagnostic.Descriptor.MessageFormat.ToString().Split(':')[1].Trim();
+            var parameterName = diagnostic.GetMessage().Split(':')[1].Trim();
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Introduce field from constructor.", c => IntroduceFieldFromConstructorAsync(context.Document, declaration, parameterName, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create($"Introduce field: {parameterName} from constructor.", c => IntroduceFieldFromConstructorAsync(context.Document, declaration, parameterName, c)), diagnostic);
         }
 
         private async Task<Document> IntroduceFieldFromConstructorAsync(Document document, ConstructorDeclarationSyntax constructorStatement, string parameterName, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ namespace CodeCracker.Refactoring
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var fieldName = "_" + parameterName;
 
-            var assignField = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+            var assignmentField = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(),
                                                SyntaxFactory.IdentifierName(fieldName)), SyntaxFactory.IdentifierName(parameterName)));
 
@@ -44,13 +44,13 @@ namespace CodeCracker.Refactoring
                               .WithModifiers(SyntaxFactory.TokenList(new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword) }))
                               .WithAdditionalAnnotations(Formatter.Annotation);
 
-            var newConstructor = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignField));
+            var newConstructor = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignmentField));
             var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
             var newClassConstructor = oldClass.ReplaceNode(constructorStatement, newConstructor);
             var newClass = newClassConstructor.WithMembers(newClassConstructor.Members.Insert(0, newField))
                            .WithoutAnnotations(Formatter.Annotation);
-            var newRoot = root.ReplaceNode(oldClass, newClass);    
+            var newRoot = root.ReplaceNode(oldClass, newClass);
             return document.WithSyntaxRoot(newRoot);
         }
     }
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+}
