@@ -144,41 +144,29 @@ namespace TestHelper
             var document = TestHelpers.CreateDocument(oldSource, LanguageNames.CSharp);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
-            var attempts = analyzerDiagnostics.Length;
 
-            for (int i = 0; i < attempts; ++i)
+            var fixAllProvider = codeFixProvider.GetFixAllProvider();
+            var fixAllContext = NewFixAllContext(document, document.Project, codeFixProvider, FixAllScope.Document,
+                null,//code action ids in codecracker are always null
+                analyzerDiagnostics.Select(a => a.Id),
+                (project, doc, diagnosticIds, cancelationToken) => Task.FromResult<IEnumerable<Diagnostic>>(analyzerDiagnostics),
+                CancellationToken.None);
+
+            var action = await fixAllProvider.GetFixAsync(fixAllContext);
+            if (action == null) throw new Exception("No action supplied for the code fix.");
+
+            document = await ApplyFixAsync(document, action);
+
+            //check if applying the code fix introduced any new compiler diagnostics
+            var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
+            if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
             {
-                var fixAllProvider = codeFixProvider.GetFixAllProvider();
-                var fixAllContext = NewFixAllContext(document, document.Project, codeFixProvider, FixAllScope.Document,
-                    null,//code action ids in codecracker are always null
-                    analyzerDiagnostics.Select(a => a.Id),
-                    (project, doc, diagnosticIds, cancelationToken) => Task.FromResult<IEnumerable<Diagnostic>>(analyzerDiagnostics),
-                    CancellationToken.None);
-                var action = await fixAllProvider.GetFixAsync(fixAllContext);
-
-                if (action == null) break;
-
-                document = await ApplyFixAsync(document, action);
-                analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
-
-                var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
-
-                //check if applying the code fix introduced any new compiler diagnostics
-                if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
-                {
-                    // Format and get the compiler diagnostics again so that the locations make sense in the output
-                    document = document.WithSyntaxRoot(Formatter.Format(await document.GetSyntaxRootAsync(), Formatter.Annotation, document.Project.Solution.Workspace));
-                    newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
-
-                    Assert.True(false, $"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString()))}\r\n\r\nNew document:\r\n{(await document.GetSyntaxRootAsync()).ToFullString()}\r\n");
-                }
-
-                //check if there are analyzer diagnostics left after the code fix
-                if (!analyzerDiagnostics.Any())
-                    break;
+                // Format and get the compiler diagnostics again so that the locations make sense in the output
+                document = document.WithSyntaxRoot(Formatter.Format(await document.GetSyntaxRootAsync(), Formatter.Annotation, document.Project.Solution.Workspace));
+                newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
+                Assert.True(false, $"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString()))}\r\n\r\nNew document:\r\n{(await document.GetSyntaxRootAsync()).ToFullString()}\r\n");
             }
 
-            //after applying all of the code fixes, compare the resulting string to the inputted one
             var actual = await TestHelpers.GetStringFromDocumentAsync(document);
             Assert.Equal(newSource, actual);
         }
