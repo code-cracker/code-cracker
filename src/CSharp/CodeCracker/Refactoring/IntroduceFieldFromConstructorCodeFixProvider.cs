@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.Refactoring
 {
     [ExportCodeFixProvider("CodeCrackerIntroduceFieldFromConstructorCodeFixProvider", LanguageNames.CSharp), Shared]
     public class IntroduceFieldFromConstructorCodeFixProvider : CodeFixProvider
@@ -25,76 +25,32 @@ namespace CodeCracker.Style
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var parameterName = diagnostic.Descriptor.MessageFormat.ToString().Split(':')[1].Trim();
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Introduce field from constructor.", c => IntroduceFieldFromConstructorAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create("Introduce field from constructor.", c => IntroduceFieldFromConstructorAsync(context.Document, declaration, parameterName, c)), diagnostic);
         }
 
-        private async Task<Document> IntroduceFieldFromConstructorAsync(Document document, ConstructorDeclarationSyntax constructorStatement, CancellationToken cancellationToken)
+        private async Task<Document> IntroduceFieldFromConstructorAsync(Document document, ConstructorDeclarationSyntax constructorStatement, string parameterName, CancellationToken cancellationToken)
         {
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
+            var fieldName = "_" + parameterName;
 
-            var classRoot = (constructorStatement.Parent as ClassDeclarationSyntax);
-            var methodMembers = (constructorStatement.Parent as ClassDeclarationSyntax).Members;
-            var fieldMembers = methodMembers.OfType<FieldDeclarationSyntax>();
-            var parameters = constructorStatement.ParameterList.Parameters;
-
-            var root = await document.GetSyntaxRootAsync();
-            var newDocument = document;
-            foreach (var par in parameters)
-            {
-                var parName = par.Identifier.Text;
-                var fieldName = parName;
-                var field = fieldMembers.FirstOrDefault(p => p.Declaration.Variables.First().Identifier == par.Identifier && p.Declaration.Type == par.Type);
-                if (field == null)
-                {
-                    var memberField = SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)))
-                                      .WithVariables(SyntaxFactory.SingletonSeparatedList<VariableDeclaratorSyntax>(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(parName)))))
-                                      .WithModifiers(SyntaxFactory.TokenList(new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword) }))
-                                      .WithAdditionalAnnotations(Formatter.Annotation);
-
-                    var newClass = classRoot.WithMembers(classRoot.Members.Insert(0, memberField));
-                    var newRootField = root.ReplaceNode(classRoot, newClass);
-                    newDocument = newDocument.WithSyntaxRoot(newRootField);
-
-                    var assignField = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+            var assignField = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(),
-                                               SyntaxFactory.IdentifierName(fieldName)), SyntaxFactory.IdentifierName(parName));
+                                               SyntaxFactory.IdentifierName(fieldName)), SyntaxFactory.IdentifierName(parameterName)));
 
-                    var assignStatement = SyntaxFactory.ExpressionStatement(assignField)
-                                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
-                                    .WithAdditionalAnnotations(Formatter.Annotation)
-                                    .NormalizeWhitespace();
+            var newField = SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)))
+                              .WithVariables(SyntaxFactory.SingletonSeparatedList<VariableDeclaratorSyntax>(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(fieldName)))))
+                              .WithModifiers(SyntaxFactory.TokenList(new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword) }))
+                              .WithAdditionalAnnotations(Formatter.Annotation);
 
-                    var newBody = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignStatement));
-                    var newRootAssign = root.ReplaceNode(constructorStatement, newBody);
-
-                    newDocument = newDocument.WithSyntaxRoot(newRootAssign);
-
-                    return newDocument;
-                }
-            //    var assignField = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-            //                                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(),
-            //                                    SyntaxFactory.IdentifierName(fieldName)), SyntaxFactory.IdentifierName(parName));
-
-            //    var assignStatement = SyntaxFactory.ExpressionStatement(assignField)
-            //                    .WithSemicolonToken(SyntaxFactory.MissingToken(SyntaxKind.SemicolonToken))
-            //                    .WithAdditionalAnnotations(Formatter.Annotation);
-            //    //root = await newDocument.GetSyntaxRootAsync();
-            //    SyntaxNode newRootAssign;
-            //    if (constructorStatement.Body.Statements.Count == 0)
-            //    {
-            //        var newBody = constructorStatement.Body.Statements.Insert(0, assignStatement);
-            //        newRootAssign = root.ReplaceNode(constructorStatement.Body, newBody);
-            //    }
-            //    else
-            //    {
-            //        newRootAssign = root.InsertNodesAfter(constructorStatement.Body.Statements.Last(), new[] { assignStatement as SyntaxNode });
-            //    }
-            //    newDocument = newDocument.WithSyntaxRoot(newRootAssign);
-
-            }
-
-            return newDocument;
+            var newConstructor = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignField));
+            var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
+            var newClassConstructor = oldClass.ReplaceNode(constructorStatement, newConstructor);
+            var newClass = newClassConstructor.WithMembers(newClassConstructor.Members.Insert(0, newField))
+                           .WithoutAnnotations(Formatter.Annotation);
+            var newRoot = root.ReplaceNode(oldClass, newClass);    
+            return document.WithSyntaxRoot(newRoot);
         }
     }
 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
