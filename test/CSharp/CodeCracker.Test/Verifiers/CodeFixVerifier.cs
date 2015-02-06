@@ -129,6 +129,49 @@ namespace TestHelper
             Assert.Equal(newSource, actual);
         }
 
+        protected async Task VerifyFixAllAsync(string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null)
+        {
+            if (formatBeforeCompare)
+            {
+                oldSources = await Task.WhenAll(oldSources.Select(s => TestHelpers.FormatSourceAsync(LanguageNames.CSharp, s)));
+                newSources = await Task.WhenAll(newSources.Select(s => TestHelpers.FormatSourceAsync(LanguageNames.CSharp, s)));
+            }
+            await VerifyFixAllAsync(GetCSharpDiagnosticAnalyzer(), codeFixProvider ?? GetCSharpCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics);
+        }
+
+        private async Task VerifyFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics)
+        {
+            var project = TestHelpers.CreateProject(oldSources, LanguageNames.CSharp);
+            var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, project.Documents.ToArray());
+            var compilerDiagnostics = (await Task.WhenAll(project.Documents.Select(d => GetCompilerDiagnosticsAsync(d)))).SelectMany(d => d);
+
+            var fixAllProvider = codeFixProvider.GetFixAllProvider();
+            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Project,
+                null,//code action ids in codecracker are always null
+                analyzerDiagnostics.Select(a => a.Id),
+                (theProject, doc, diagnosticIds, cancelationToken) => Task.FromResult(analyzerDiagnostics.Where(d => d.Location.SourceTree.FilePath == doc.Name)),
+                CancellationToken.None);
+
+            var action = await fixAllProvider.GetFixAsync(fixAllContext);
+            if (action == null) throw new Exception("No action supplied for the code fix.");
+
+            project = await ApplyFixAsync(project, action);
+
+            //check if applying the code fix introduced any new compiler diagnostics
+            var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, (await Task.WhenAll(project.Documents.Select(d => GetCompilerDiagnosticsAsync(d)))).SelectMany(d => d));
+            if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
+                Assert.True(false, $"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString()))}\r\n");
+
+            var docs = project.Documents.ToArray();
+            for (int i = 0; i < docs.Length; i++)
+            {
+                var document = docs[i];
+                var actual = await TestHelpers.GetStringFromDocumentAsync(document);
+                Assert.Equal(newSources[i], actual);
+            }
+        }
+
+
         protected async Task VerifyFixAllAsync(string oldSource, string newSource, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null)
         {
             if (formatBeforeCompare)
@@ -210,6 +253,5 @@ namespace TestHelper
                 Assert.False(actions.Any(), $"Should not have a code fix registered for diagnostic '{analyzerDiagnostic.Id}'");
             }
         }
-
     }
 }

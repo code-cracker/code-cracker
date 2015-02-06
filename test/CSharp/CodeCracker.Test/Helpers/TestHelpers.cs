@@ -94,11 +94,12 @@ namespace TestHelper
 
             workspace.AddProject(projectInfo);
 
-            const int count = 0;
+            var count = 0;
             foreach (var source in sources)
             {
                 var newFileName = fileNamePrefix + count + "." + fileExt;
                 workspace.AddDocument(projectId, newFileName, SourceText.From(source));
+                count++;
             }
 
             var project = workspace.CurrentSolution.GetProject(projectId);

@@ -29,6 +29,13 @@ namespace TestHelper
             return solution.GetDocument(document.Id);
         }
 
+        private static async Task<Project> ApplyFixAsync(Project project, CodeAction codeAction)
+        {
+            var operations = await codeAction.GetOperationsAsync(CancellationToken.None);
+            var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
+            return solution.GetProject(project.Id);
+        }
+
         /// <summary>
         /// Compare two collections of Diagnostics,and return a list of any new diagnostics that appear only in the second collection.
         /// Note: Considers Diagnostics to be the same if they have the same Ids.  In teh case of mulitple diagnostics with the smae Id in a row,

@@ -17,8 +17,6 @@ namespace TestHelper
     /// </summary>
     public abstract partial class DiagnosticVerifier
     {
-        #region  Get Diagnostics
-
         /// <summary>
         /// Given classes in the form of strings, their language, and an IDiagnosticAnlayzer to apply to it, return the diagnostics found in the string after converting it to a document.
         /// </summary>
@@ -43,9 +41,7 @@ namespace TestHelper
         {
             var projects = new HashSet<Project>();
             foreach (var document in documents)
-            {
                 projects.Add(document.Project);
-            }
 
             var diagnostics = new List<Diagnostic>();
             foreach (var project in projects)
@@ -62,20 +58,17 @@ namespace TestHelper
                     }
                     else
                     {
-                        foreach (var document in documents)
+                        foreach (var document in project.Documents)
                         {
                             var tree = await document.GetSyntaxTreeAsync();
                             if (tree == diag.Location.SourceTree)
-                            {
                                 diagnostics.Add(diag);
-                            }
                         }
                     }
                 }
             }
 
             var results = SortDiagnostics(diagnostics);
-            diagnostics.Clear();
             return results;
         }
 
@@ -84,14 +77,8 @@ namespace TestHelper
         /// </summary>
         /// <param name="diagnostics">The list of Diagnostics to be sorted</param>
         /// <returns>An IEnumerable containing the Diagnostics in order of Location</returns>
-        private static Diagnostic[] SortDiagnostics(IEnumerable<Diagnostic> diagnostics)
-        {
-            return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
-        }
-
-        #endregion
-
-
+        private static Diagnostic[] SortDiagnostics(IEnumerable<Diagnostic> diagnostics) =>
+            diagnostics.OrderBy(d => d.Location.SourceTree.FilePath).ThenBy(d => d.Location.SourceSpan.Start).ToArray();
     }
 }
 

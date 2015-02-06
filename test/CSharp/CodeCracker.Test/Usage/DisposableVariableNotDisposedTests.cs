@@ -707,5 +707,71 @@ m.Dispose();".WrapInMethod();
 ";
             await VerifyFixAllAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task FixAllInProject()
+        {
+            const string source1 = @"
+                using System;
+                class Disposable1 : IDisposable
+                {
+                    public void Dispose() { }
+                }
+                class Disposable2 : IDisposable
+                {
+                    public void Dispose() { }
+                }
+";
+            const string source2 = @"
+                class A
+                {
+                    void Foo()
+                    {
+                        var d1 = new Disposable1();
+                        var d2 = new Disposable2();
+                    }
+                }
+";
+            const string source3 = @"
+                class B
+                {
+                    void Foo()
+                    {
+                        var e1 = new Disposable1();
+                        var e2 = new Disposable2();
+                    }
+                }
+";
+            const string fixtest1 = source1;
+            const string fixtest2 = @"
+                class A
+                {
+                    void Foo()
+                    {
+                        using (var d1 = new Disposable1())
+                        {
+                            using (var d2 = new Disposable2())
+                            {
+                            }
+                        }
+                    }
+                }
+";
+            const string fixtest3 = @"
+                class B
+                {
+                    void Foo()
+                    {
+                        using (var e1 = new Disposable1())
+                        {
+                            using (var e2 = new Disposable2())
+                            {
+                            }
+                        }
+                    }
+                }
+";
+            await VerifyFixAllAsync(new[] { source1, source2, source3 }, new[] { fixtest1, fixtest2, fixtest3 });
+        }
     }
 }
