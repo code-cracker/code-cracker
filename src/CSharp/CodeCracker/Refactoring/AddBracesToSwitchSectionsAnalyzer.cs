@@ -23,7 +23,7 @@ namespace CodeCracker.Refactoring
             isEnabledByDefault: true,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId.AddBracesToSwitchSections));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.SwitchStatement);
 
@@ -31,37 +31,19 @@ namespace CodeCracker.Refactoring
         {
             var @switch = (SwitchStatementSyntax) context.Node;
             if (!@switch.Sections.All(HasBraces))
-            {
                 context.ReportDiagnostic(Diagnostic.Create(Rule, @switch.GetLocation()));
-            }
         }
 
         internal static bool HasBraces(SwitchSectionSyntax section)
         {
             if (section.Statements.Count == 1)
             {
-                // Example:
-                //
-                // case 42:
-                //     {
-                //         Foo();
-                //         break;
-                //     }
-
                 var firstStatement = section.Statements.First();
                 if (firstStatement is BlockSyntax)
                     return true;
             }
             else if (section.Statements.Count == 2)
             {
-                // Example:
-                //
-                // case 42:
-                //     {
-                //         Foo();
-                //     }
-                //     break;
-
                 var firstStatement = section.Statements.First();
                 var lastStatement = section.Statements.Last();
                 if (firstStatement is BlockSyntax && lastStatement is BreakStatementSyntax)

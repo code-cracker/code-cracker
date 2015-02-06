@@ -11,7 +11,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task IgnoresWhenSingleSwitchSectionAlreadyHasBraces()
         {
-            var test = @"switch(x)
+            const string test = @"switch(x)
 {
     case 0:
     {
@@ -25,7 +25,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task IgnoresWhenSingleSwitchSectionAlreadyHasBracesFollowedByBreak()
         {
-            var test = @"switch(x)
+            const string test = @"switch(x)
 {
     case 0:
         {
@@ -39,7 +39,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task IgnoresWhenAllSwitchSectionsAlreadyHaveBraces()
         {
-            var test = @"switch(x)
+            const string test = @"switch(x)
 {
     case 0:
     {
@@ -64,7 +64,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task CreateDiagnosticWhenSingleSwitchSectionHasNoBraces()
         {
-            var test = @"switch(x)
+            const string test = @"switch(x)
 {
     case 0:
         Foo();
@@ -83,7 +83,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task CreateDiagnosticWhenNotAllSwitchSectionsHaveBraces()
         {
-            var test = @"switch(x)
+            const string test = @"switch(x)
 {
     case 0:
     {
@@ -112,7 +112,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task CreateDiagnosticWhenDefaultSectionsHasNoBraces()
         {
-            var test = @"switch(x)
+            const string test = @"switch(x)
 {
     case 0:
     {
@@ -141,13 +141,13 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task FixAddsBracesForSingleSection()
         {
-            var test = @"switch(x)
+            const string test = @"switch(x)
 {
     case 0:
         Foo();
         break;
 }";
-            var expected = @"switch(x)
+            const string expected = @"switch(x)
 {
     case 0:
     {
@@ -161,7 +161,7 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task FixAddsBracesWithMultipleCases()
         {
-            var test = @"switch(x)
+            const string test = @"switch(x)
 {
     case 0:
         Foo();
@@ -173,7 +173,7 @@ namespace CodeCracker.Test.Refactoring
         Baz();
         break;
 }";
-            var expected = @"switch(x)
+            const string expected = @"switch(x)
 {
     case 0:
     {
