@@ -36,38 +36,12 @@ namespace CodeCracker.Refactoring
             var parameters = constructorMethod.ParameterList.Parameters;
 
             if (constructorMethod.Body == null) return;
-            if (constructorMethod?.Body.Statements.Count == 0 && parameters.Count > 0)
-            {
-                foreach (var par in parameters)
-                {
-                    var errorMessage = par.Identifier.Text;
-                    var diag = Diagnostic.Create(Rule, constructorMethod.GetLocation(), errorMessage);
-                    context.ReportDiagnostic(diag);
-                }
-                return;
-            }
 
+            var dfa = context.SemanticModel.AnalyzeDataFlow(constructorMethod.Body);
             foreach (var par in parameters)
             {
-                var foundAssignment = false;
-                foreach (var statement in constructorMethod.Body.Statements)
-                {
-                    if (statement.IsKind(SyntaxKind.ExpressionStatement))
-                    {
-                        var expression = statement as ExpressionStatementSyntax;
-                        var assign = expression.Expression as AssignmentExpressionSyntax;
-                        if ((assign?.Left.IsKind(SyntaxKind.SimpleMemberAccessExpression) ?? false) && (assign?.Right.IsKind(SyntaxKind.IdentifierName) ?? false))
-                        {
-                            var right = assign.Right as IdentifierNameSyntax;
-                            if (right.Identifier.Text == par.Identifier.Text)
-                            {
-                                foundAssignment = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (!foundAssignment)
+                var parSymbol = context.SemanticModel.GetDeclaredSymbol(par);
+                if(!dfa.ReadInside.Any(s => s == parSymbol))
                 {
                     var errorMessage = par.Identifier.Text;
                     var diag = Diagnostic.Create(Rule, constructorMethod.GetLocation(), errorMessage);

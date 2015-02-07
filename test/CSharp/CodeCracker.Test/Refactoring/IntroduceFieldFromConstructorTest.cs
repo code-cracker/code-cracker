@@ -115,7 +115,7 @@ namespace CodeCracker.Test.Refactoring
     {
         class TypeName
         {
-            private int par;
+            private string par;
 
             public TypeName(int par)
             {
@@ -131,7 +131,7 @@ namespace CodeCracker.Test.Refactoring
         class TypeName
         {
             private readonly int par1;
-            private int par;
+            private string par;
 
             public TypeName(int par)
             {
