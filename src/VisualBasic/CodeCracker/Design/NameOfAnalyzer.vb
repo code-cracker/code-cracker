@@ -3,6 +3,7 @@ Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports System.Collections.Immutable
+Imports System.Linq
 
 Namespace Design
     <DiagnosticAnalyzer(LanguageNames.VisualBasic)>
@@ -32,31 +33,35 @@ Namespace Design
 
         Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
             Dim stringLiteral = DirectCast(context.Node, LiteralExpressionSyntax)
-            If Not String.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText) Then
-                ' TODO: This appears to only return the first sub, not one that matches the string literal ensure this is working correctly with multiple items.
-                Dim methodDeclaration = stringLiteral.AncestorsAndSelf().OfType(Of Syntax.MethodBlockSyntax).FirstOrDefault()
-                If methodDeclaration IsNot Nothing Then
-                    Dim methodParams = methodDeclaration.Begin.ParameterList.Parameters
-                    If Not AreEqual(stringLiteral, methodParams) Then Exit Sub
-
-                Else
-                    Dim constructorDeclaration = stringLiteral.AncestorsAndSelf.OfType(Of ConstructorBlockSyntax).FirstOrDefault
-                    If constructorDeclaration IsNot Nothing Then
-                        Dim constructorParams = constructorDeclaration.Begin.ParameterList.Parameters
-                        If Not AreEqual(stringLiteral, constructorParams) Then Exit Sub
-                    Else
-                        Exit Sub
-                    End If
-                End If
-                Dim diag = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value)
-                context.ReportDiagnostic(diag)
-            End If
-
+            If String.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText) Then Return
+            Dim parameters = GetParameters(stringLiteral)
+            If Not parameters.Any() Then Return
+            Dim attribute = stringLiteral.FirstAncestorOfType(Of AttributeSyntax)()
+            Dim method = TryCast(stringLiteral.FirstAncestorOfType(GetType(MethodBlockSyntax), GetType(ConstructorBlockSyntax)), MethodBlockBaseSyntax)
+            If attribute IsNot Nothing AndAlso method.Begin.AttributeLists.Any(Function(a) a.Attributes.Contains(attribute)) Then Return
+            If Not AreEqual(stringLiteral, parameters) Then Return
+            Dim diag = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value)
+            context.ReportDiagnostic(diag)
         End Sub
 
         Private Function AreEqual(stringLiteral As LiteralExpressionSyntax, paramaters As SeparatedSyntaxList(Of ParameterSyntax)) As Boolean
             Return paramaters.Any(Function(p) p.Identifier?.Identifier.ValueText = stringLiteral.Token.ValueText)
         End Function
 
+        Public Function GetParameters(node As SyntaxNode) As SeparatedSyntaxList(Of ParameterSyntax)
+            Dim methodDeclaration = node.FirstAncestorOfType(Of MethodBlockSyntax)()
+            Dim parameters As SeparatedSyntaxList(Of ParameterSyntax)
+            If methodDeclaration IsNot Nothing Then
+                parameters = methodDeclaration.Begin.ParameterList.Parameters
+            Else
+                Dim constructorDeclaration = node.FirstAncestorOfType(Of ConstructorBlockSyntax)()
+                If constructorDeclaration IsNot Nothing Then
+                    parameters = constructorDeclaration.Begin.ParameterList.Parameters
+                Else
+                    Return New SeparatedSyntaxList(Of ParameterSyntax)()
+                End If
+            End If
+            Return parameters
+        End Function
     End Class
 End Namespace

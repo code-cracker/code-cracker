@@ -47,7 +47,7 @@ namespace CodeCracker.Design
 
         public SeparatedSyntaxList<ParameterSyntax> GetParameters(SyntaxNode node)
         {
-            var methodDeclaration = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+            var methodDeclaration = node.FirstAncestorOfType<MethodDeclarationSyntax>();
             SeparatedSyntaxList<ParameterSyntax> parameters;
             if (methodDeclaration != null)
             {
@@ -55,7 +55,7 @@ namespace CodeCracker.Design
             }
             else
             {
-                var constructorDeclaration = node.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
+                var constructorDeclaration = node.FirstAncestorOfType<ConstructorDeclarationSyntax>();
                 if (constructorDeclaration != null)
                     parameters = constructorDeclaration.ParameterList.Parameters;
                 else return new SeparatedSyntaxList<ParameterSyntax>();

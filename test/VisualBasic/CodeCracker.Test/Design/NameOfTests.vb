@@ -168,5 +168,16 @@ End Class"
 
             Await VerifyBasicFixAsync(test, fixtest, 0)
         End Function
+
+        <Fact>
+        Public Async Function IgnoreAttributes() As Task
+            Const test = "
+Public Class TypeName
+    <Whatever(""a"")>
+    Sub Foo(a as String)
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
     End Class
 End Namespace
