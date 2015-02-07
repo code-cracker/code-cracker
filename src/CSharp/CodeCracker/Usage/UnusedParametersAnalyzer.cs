@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -38,21 +39,37 @@ namespace CodeCracker.Usage
             if (methodOrConstructor == null) return;
             var semanticModel = context.SemanticModel;
             if (!IsCandidateForRemoval(methodOrConstructor, semanticModel)) return;
+            var parameters = methodOrConstructor.ParameterList.Parameters.ToDictionary(p => p, p => semanticModel.GetDeclaredSymbol(p));
+            var ctor = methodOrConstructor as ConstructorDeclarationSyntax;
+            if (ctor?.Initializer != null)
+            {
+                var symbolsTouched = new List<ISymbol>();
+                foreach (var arg in ctor.Initializer.ArgumentList.Arguments)
+                {
+                    var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(arg.Expression);
+                    if (!dataFlowAnalysis.Succeeded) continue;
+                    symbolsTouched.AddRange(dataFlowAnalysis.ReadInside);
+                    symbolsTouched.AddRange(dataFlowAnalysis.WrittenInside);
+                }
+                var parametersToRemove = parameters.Where(p => symbolsTouched.Contains(p.Value)).ToList();
+                foreach (var parameter in parametersToRemove)
+                    parameters.Remove(parameter.Key);
+            }
             if (methodOrConstructor.Body.Statements.Any())
             {
                 var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(methodOrConstructor.Body.Statements.First(), methodOrConstructor.Body.Statements.Last());
                 if (!dataFlowAnalysis.Succeeded) return;
-                foreach (var parameter in methodOrConstructor.ParameterList.Parameters)
+                foreach (var parameter in parameters)
                 {
-                    var parameterSymbol = semanticModel.GetDeclaredSymbol(parameter);
+                    var parameterSymbol = parameter.Value;
                     if (parameterSymbol == null) continue;
                     if (!dataFlowAnalysis.ReadInside.Contains(parameterSymbol) && !dataFlowAnalysis.WrittenInside.Contains(parameterSymbol))
-                        context = ReportDiagnostic(context, parameter);
+                        context = ReportDiagnostic(context, parameter.Key);
                 }
             }
             else
             {
-                foreach (var parameter in methodOrConstructor.ParameterList.Parameters)
+                foreach (var parameter in parameters.Keys)
                     context = ReportDiagnostic(context, parameter);
             }
         }

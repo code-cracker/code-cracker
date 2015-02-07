@@ -67,17 +67,11 @@ namespace TestHelper
                     }
                 }
             }
-
             var results = SortDiagnostics(diagnostics);
             return results;
         }
 
-        /// <summary>
-        /// Sort diagnostices by location in source document
-        /// </summary>
-        /// <param name="diagnostics">The list of Diagnostics to be sorted</param>
-        /// <returns>An IEnumerable containing the Diagnostics in order of Location</returns>
-        private static Diagnostic[] SortDiagnostics(IEnumerable<Diagnostic> diagnostics) =>
+        private static Diagnostic[] SortDiagnostics(List<Diagnostic> diagnostics) =>
             diagnostics.OrderBy(d => d.Location.SourceTree.FilePath).ThenBy(d => d.Location.SourceSpan.Start).ToArray();
     }
 }

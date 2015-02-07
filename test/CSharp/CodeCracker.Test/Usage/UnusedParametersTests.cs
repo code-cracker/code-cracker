@@ -420,5 +420,35 @@ class TypeName
 }";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task CallToBaseDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Base
+{
+  protected Base(int a) { a = 1; }
+}
+class Derived : Base
+{
+  Derived(int a) : base(a) { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task CallToBaseWithExpressionDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Base
+{
+  protected Base(int a) { a = 1; }
+}
+class Derived : Base
+{
+  Derived(int a) : base(a + 1) { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
