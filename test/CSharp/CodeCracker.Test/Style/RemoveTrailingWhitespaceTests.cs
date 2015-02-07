@@ -85,7 +85,6 @@ namespace Foo
             await VerifyCSharpFixAsync(source, expected, formatBeforeCompare: false);
         }
 
-
         [Fact]
         public async Task StringWithTrailingWhitespaceDoesNotCreateDiagnostic()
         {
@@ -104,6 +103,42 @@ namespace Foo
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
             };
             return diagnostic;
+        }
+
+        [Fact]
+        public async Task FixSingleLineXmlComments()
+        {
+            const string source = @"
+/// <summary>
+/// Comment 
+/// </summary>
+class Foo { }";
+            const string expected = @"
+/// <summary>
+/// Comment
+/// </summary>
+class Foo { }";
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare: false);
+        }
+
+        [Fact]
+        public async Task FixMultiLineXmlComments()
+        {
+            const string source = @"
+/**
+* <summary>
+* Comment 
+* </summary>
+*/
+class Foo { }";
+            const string expected = @"
+/**
+* <summary>
+* Comment
+* </summary>
+*/
+class Foo { }";
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare: false);
         }
     }
 }

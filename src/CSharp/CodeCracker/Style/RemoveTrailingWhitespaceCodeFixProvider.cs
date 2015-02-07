@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -32,6 +33,22 @@ namespace CodeCracker.Style
             if (trivia.IsKind(SyntaxKind.WhitespaceTrivia))
             {
                 newRoot = root.ReplaceTrivia(trivia, new SyntaxTrivia[] { });
+            }
+            else if (trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia, SyntaxKind.MultiLineDocumentationCommentTrivia))
+            {
+                var commentText = trivia.ToFullString();
+                var commentLines = commentText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                var newComment = "";
+                var builder = new System.Text.StringBuilder();
+                builder.Append(newComment);
+                for (int i = 0; i < commentLines.Length; i++)
+                {
+                    var commentLine = commentLines[i];
+                    builder.Append(Regex.Replace(commentLine, @"\s+$", ""));
+                    if (i < commentLines.Length - 1) builder.Append(Environment.NewLine);
+                }
+                newComment = builder.ToString();
+                newRoot = root.ReplaceTrivia(trivia, SyntaxFactory.SyntaxTrivia(SyntaxKind.DocumentationCommentExteriorTrivia, newComment));
             }
             else
             {

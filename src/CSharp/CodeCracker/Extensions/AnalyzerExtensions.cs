@@ -121,16 +121,17 @@ namespace CodeCracker
         public static IEnumerable<TypeDeclarationSyntax> DescendantTypes(this SyntaxNode root)
         {
             return root
-                .DescendantNodes(n => !(n.IsKind(SyntaxKind.MethodDeclaration)
-                || n.IsKind(SyntaxKind.ConstructorDeclaration)
-                || n.IsKind(SyntaxKind.DelegateDeclaration)
-                || n.IsKind(SyntaxKind.DestructorDeclaration)
-                || n.IsKind(SyntaxKind.EnumDeclaration)
-                || n.IsKind(SyntaxKind.PropertyDeclaration)
-                || n.IsKind(SyntaxKind.FieldDeclaration)
-                || n.IsKind(SyntaxKind.InterfaceDeclaration)
-                || n.IsKind(SyntaxKind.PropertyDeclaration)
-                || n.IsKind(SyntaxKind.EventDeclaration)))
+                .DescendantNodes(n => !(n.IsKind(
+                    SyntaxKind.MethodDeclaration,
+                    SyntaxKind.ConstructorDeclaration,
+                    SyntaxKind.DelegateDeclaration,
+                    SyntaxKind.DestructorDeclaration,
+                    SyntaxKind.EnumDeclaration,
+                    SyntaxKind.PropertyDeclaration,
+                    SyntaxKind.FieldDeclaration,
+                    SyntaxKind.InterfaceDeclaration,
+                    SyntaxKind.PropertyDeclaration,
+                    SyntaxKind.EventDeclaration)))
                 .OfType<TypeDeclarationSyntax>();
         }
 
@@ -166,5 +167,35 @@ namespace CodeCracker
                 typeSymbol = typeSymbol.BaseType;
             }
         }
+
+#pragma warning disable CC0026 //todo: related to bug #262, remove pragma when fixed
+        public static bool IsKind(this SyntaxToken token, params SyntaxKind[] kinds)
+        {
+            foreach (var kind in kinds)
+                if (Microsoft.CodeAnalysis.CSharpExtensions.IsKind(token, kind)) return true;
+            return false;
+        }
+
+        public static bool IsKind(this SyntaxTrivia trivia, params SyntaxKind[] kinds)
+        {
+            foreach (var kind in kinds)
+                if (Microsoft.CodeAnalysis.CSharpExtensions.IsKind(trivia, kind)) return true;
+            return false;
+        }
+
+        public static bool IsKind(this SyntaxNode node, params SyntaxKind[] kinds)
+        {
+            foreach (var kind in kinds)
+                if (Microsoft.CodeAnalysis.CSharpExtensions.IsKind(node, kind)) return true;
+            return false;
+        }
+
+        public static bool IsKind(this SyntaxNodeOrToken nodeOrToken, params SyntaxKind[] kinds)
+        {
+            foreach (var kind in kinds)
+                if (Microsoft.CodeAnalysis.CSharpExtensions.IsKind(nodeOrToken, kind)) return true;
+            return false;
+        }
+#pragma warning restore CC0026
     }
 }
