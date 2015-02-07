@@ -47,8 +47,9 @@ namespace CodeCracker.Design
                                     SyntaxFactory.VariableDeclarator(
                                         SyntaxFactory.Identifier(handlerName),
                                         null,
-                                        SyntaxFactory.EqualsValueClause(invocation.Expression))
-                                })));
+                                        SyntaxFactory.EqualsValueClause(invocation.Expression.WithoutLeadingTrivia().WithoutTrailingTrivia()))
+                                })))
+                    .WithLeadingTrivia(invocation.Parent.GetLeadingTrivia());
 
             var newInvocation =
                     SyntaxFactory.IfStatement(
@@ -67,20 +68,15 @@ namespace CodeCracker.Design
             var newNode = invocation.Parent.WithAdditionalAnnotations(new SyntaxAnnotation(SyntaxAnnotatinKind));
 
             if (oldNode.Parent.IsEmbeddedStatementOwner())
-            {
                 newNode = SyntaxFactory.Block((StatementSyntax)newNode);
-            }
 
             var newRoot = root.ReplaceNode(oldNode, newNode);
-            newRoot = newRoot.InsertNodesAfter(GetMark(newRoot), new[] { variable as SyntaxNode, newInvocation as SyntaxNode });
+            newRoot = newRoot.InsertNodesAfter(GetMark(newRoot), new SyntaxNode[] { variable, newInvocation });
             newRoot = newRoot.RemoveNode(GetMark(newRoot), SyntaxRemoveOptions.KeepNoTrivia);
-
             return document.WithSyntaxRoot(newRoot.WithAdditionalAnnotations(Formatter.Annotation));
         }
 
-        private static SyntaxNode GetMark(SyntaxNode node)
-        {
-            return node.DescendantNodes().First(n => n.GetAnnotations(SyntaxAnnotatinKind).Any());
-        }
+        private static SyntaxNode GetMark(SyntaxNode node) =>
+            node.DescendantNodes().First(n => n.GetAnnotations(SyntaxAnnotatinKind).Any());
     }
 }
