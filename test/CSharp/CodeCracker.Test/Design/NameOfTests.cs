@@ -19,7 +19,6 @@ public class TypeName
         var whatever = """";
     }
 }";
-
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -257,6 +256,20 @@ public class TypeName
 }";
 
             await VerifyFixAllAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task IgnoreAttributes()
+        {
+            const string test = @"
+public class TypeName
+{
+    [Whatever(""a"")]
+    void Foo(string a)
+    {
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }
 }

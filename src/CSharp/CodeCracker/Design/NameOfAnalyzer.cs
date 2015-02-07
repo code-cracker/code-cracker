@@ -35,25 +35,32 @@ namespace CodeCracker.Design
         {
             var stringLiteral = context.Node as LiteralExpressionSyntax;
             if (string.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText)) return;
-            var methodDeclaration = stringLiteral.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+            var parameters = GetParameters(stringLiteral);
+            if (!parameters.Any()) return;
+            var attribute = stringLiteral.FirstAncestorOfType<AttributeSyntax>();
+            var method = stringLiteral.FirstAncestorOfType(typeof(MethodDeclarationSyntax), typeof(ConstructorDeclarationSyntax)) as BaseMethodDeclarationSyntax;
+            if (attribute != null && method.AttributeLists.Any(a => a.Attributes.Contains(attribute))) return;
+            if (!AreEqual(stringLiteral, parameters)) return;
+            var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value);
+            context.ReportDiagnostic(diagnostic);
+        }
 
+        public SeparatedSyntaxList<ParameterSyntax> GetParameters(SyntaxNode node)
+        {
+            var methodDeclaration = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+            SeparatedSyntaxList<ParameterSyntax> parameters;
             if (methodDeclaration != null)
             {
-                var methodParameters = methodDeclaration.ParameterList.Parameters;
-                if (!AreEqual(stringLiteral, methodParameters)) return;
+                parameters = methodDeclaration.ParameterList.Parameters;
             }
             else
             {
-                var constructorDeclaration = stringLiteral.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
+                var constructorDeclaration = node.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
                 if (constructorDeclaration != null)
-                {
-                    var constructorParameters = constructorDeclaration.ParameterList.Parameters;
-                    if (!AreEqual(stringLiteral, constructorParameters)) return;
-                }
-                else return;
+                    parameters = constructorDeclaration.ParameterList.Parameters;
+                else return new SeparatedSyntaxList<ParameterSyntax>();
             }
-            var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value);
-            context.ReportDiagnostic(diagnostic);
+            return parameters;
         }
 
         private bool AreEqual(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters) =>
