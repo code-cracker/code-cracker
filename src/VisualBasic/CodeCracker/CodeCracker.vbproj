@@ -117,6 +117,8 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.vb" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.vb" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.vb" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.vb" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.vb" />
     <Compile Include="SupportedCategories.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -126,7 +128,6 @@
     <Folder Include="Mobility\" />
     <Folder Include="Naming\" />
     <Folder Include="Portability\" />
-    <Folder Include="Reliability\" />
     <Folder Include="Security\" />
     <Folder Include="Style\" />
     <Folder Include="Usage\" />
