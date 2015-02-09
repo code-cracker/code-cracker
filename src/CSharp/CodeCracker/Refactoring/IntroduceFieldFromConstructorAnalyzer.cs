@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -37,14 +36,15 @@ namespace CodeCracker.Refactoring
 
             if (constructorMethod.Body == null) return;
 
-            var dfa = context.SemanticModel.AnalyzeDataFlow(constructorMethod.Body);
+            var analysis = context.SemanticModel.AnalyzeDataFlow(constructorMethod.Body);
+            if (!analysis.Succeeded) return;
             foreach (var par in parameters)
             {
                 var parSymbol = context.SemanticModel.GetDeclaredSymbol(par);
-                if(!dfa.ReadInside.Any(s => s == parSymbol))
+                if(!analysis.ReadInside.Any(s => s.Equals(parSymbol)))
                 {
                     var errorMessage = par.Identifier.Text;
-                    var diag = Diagnostic.Create(Rule, constructorMethod.GetLocation(), errorMessage);
+                    var diag = Diagnostic.Create(Rule, par.GetLocation(), errorMessage);
                     context.ReportDiagnostic(diag);
                 }
             }

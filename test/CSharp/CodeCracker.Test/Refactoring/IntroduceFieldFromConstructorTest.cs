@@ -104,6 +104,41 @@ namespace CodeCracker.Test.Refactoring
             await VerifyCSharpFixAsync(test, expected);
         }
 
+        [Fact]
+        public async Task FieldAlreadyExistsAndMatchesType()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private readonly int par;
+
+            public TypeName(int par)
+            {
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private readonly int par;
+
+            public TypeName(int par)
+            {
+               this.par = par;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
 
         [Fact]
         public async Task ConstructorParameterWithPrivateFieldWhenFieldParameterNameAlreadyExists()
@@ -122,7 +157,6 @@ namespace CodeCracker.Test.Refactoring
             }
         }
     }";
-
             const string expected = @"
     using System;
 
@@ -142,8 +176,79 @@ namespace CodeCracker.Test.Refactoring
             await VerifyCSharpFixAsync(test, expected);
         }
 
+        [Fact]
+        public async Task ConstructorParameterWithPrivateFieldWhenFieldParameterNameAlreadyExistsInSecondePosition()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private string bar, par;
+
+            public TypeName(int par)
+            {
+            }
+        }
+    }";
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private readonly int par1;
+            private string bar, par;
+
+            public TypeName(int par)
+            {
+               this.par1 = par;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task ConstructorParameterWithPrivateFieldWhenFieldParameterNameAlreadyExistsTwice()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private string par;
+            private string par1;
+
+            public TypeName(int par)
+            {
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private readonly int par2;
+            private string par;
+            private string par1;
+
+            public TypeName(int par)
+            {
+               this.par2 = par;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
     }
-
-
-
 }
