@@ -54,6 +54,7 @@
         IPAddress = 64,
         RemoveTrailingWhitespace = 65,
         UseConfigureAwaitFalse = 70,
+        IntroduceFieldFromConstructor = 71,
         AddBracesToSwitchSections = 73
     }
 }
