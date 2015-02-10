@@ -117,6 +117,8 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.vb" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.vb" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.vb" />
+    <Compile Include="Style\InterfaceNameAnalyzer.vb" />
+    <Compile Include="Style\InterfaceNameCodeFixProvider.vb" />
     <Compile Include="SupportedCategories.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -128,7 +130,6 @@
     <Folder Include="Portability\" />
     <Folder Include="Reliability\" />
     <Folder Include="Security\" />
-    <Folder Include="Style\" />
     <Folder Include="Usage\" />
   </ItemGroup>
   <ItemGroup>
