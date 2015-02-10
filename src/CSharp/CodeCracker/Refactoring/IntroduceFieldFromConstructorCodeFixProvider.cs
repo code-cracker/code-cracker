@@ -32,33 +32,24 @@ namespace CodeCracker.Refactoring
         public async Task<Document> IntroduceFieldFromConstructorAsyncDocument(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-            var newRoot = IntroduceFieldFromConstructorAsync(semanticModel, root, constructorStatement, parameter);
+            var newRoot = IntroduceFieldFromConstructorAsync(root, constructorStatement, parameter);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return document.WithSyntaxRoot(newRoot);
         }
 
-        public static SyntaxNode IntroduceFieldFromConstructorAsync(SemanticModel semanticModel, SyntaxNode root, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter)
+        public static SyntaxNode IntroduceFieldFromConstructorAsync(SyntaxNode root, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter)
         {
             var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
             var newClass = oldClass;
             var fieldMembers = oldClass.Members.OfType<FieldDeclarationSyntax>();
             var fieldName = parameter.Identifier.ValueText;
 
-            var fieldVariables = fieldMembers.SelectMany(f => f.Declaration.Variables);
-            var existingFieldVariable = fieldVariables.FirstOrDefault(d => d.Identifier.Text == fieldName);
-            if (existingFieldVariable != null)
-            {
-                var variableSymbol = (IFieldSymbol)semanticModel.GetDeclaredSymbol(existingFieldVariable);
-                var parameterSymbol = semanticModel.GetDeclaredSymbol(parameter);
-                if (!variableSymbol.Type.Equals(parameterSymbol.Type)) existingFieldVariable = null;
-            }
-            if (existingFieldVariable == null)
+            if(!fieldMembers.Any(p => p.Declaration.Variables.First().Identifier.Text == fieldName && p.Declaration.Type.ToString() == parameter.Type.ToString()))
             {
                 var identifierPostFix = 0;
                 while (fieldMembers.Any(p => p.Declaration.Variables.Any(d => d.Identifier.Text == fieldName)))
                     fieldName = parameter.Identifier.ValueText + ++identifierPostFix;
-                var newField = SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)))
+                var newField = SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(parameter.Type)
                                   .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(fieldName)))))
                                   .WithModifiers(SyntaxFactory.TokenList(new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword) }))
                                   .WithAdditionalAnnotations(Formatter.Annotation);

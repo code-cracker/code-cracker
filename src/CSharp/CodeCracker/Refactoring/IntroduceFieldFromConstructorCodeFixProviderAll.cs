@@ -62,7 +62,7 @@ namespace CodeCracker.Refactoring
 
                 var constructorMethod = (ConstructorDeclarationSyntax)node.Parent.Parent;
                 var parameter = (ParameterSyntax)node;
-                newRoot = IntroduceFieldFromConstructorCodeFixProvider.IntroduceFieldFromConstructorAsync(semanticModel, newRoot, constructorMethod, parameter);
+                newRoot = IntroduceFieldFromConstructorCodeFixProvider.IntroduceFieldFromConstructorAsync(newRoot, constructorMethod, parameter);
                 node = newRoot.GetAnnotatedNodes(disposeAnnotation).First();
                 newRoot = newRoot.ReplaceNode(node, node.WithoutAnnotations(disposeAnnotation));
             }
