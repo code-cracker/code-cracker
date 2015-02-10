@@ -16,8 +16,9 @@ namespace CodeCracker.Refactoring
     public class IntroduceFieldFromConstructorCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(DiagnosticId.IntroduceFieldFromConstructor.ToDiagnosticId());
+        public readonly static string MessageFormat = "Introduce field: {0} from constructor.";
 
-        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public sealed override FixAllProvider GetFixAllProvider() => IntroduceFieldFromConstructorCodeFixAllProvider.Instance;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -26,13 +27,19 @@ namespace CodeCracker.Refactoring
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
-            context.RegisterFix(CodeAction.Create($"Introduce field: {parameter} from constructor.", c => IntroduceFieldFromConstructorAsync(context.Document, declaration, parameter, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create(string.Format(MessageFormat, parameter), c => IntroduceFieldFromConstructorAsyncDocument(context.Document, declaration, parameter, c)), diagnostic);
         }
-
-        private async Task<Document> IntroduceFieldFromConstructorAsync(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
+        public async Task<Document> IntroduceFieldFromConstructorAsyncDocument(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+            var newRoot = IntroduceFieldFromConstructorAsync(semanticModel, root, constructorStatement, parameter);
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            return document.WithSyntaxRoot(newRoot);
+        }
 
+        public static SyntaxNode IntroduceFieldFromConstructorAsync(SemanticModel semanticModel, SyntaxNode root, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter)
+        {
             var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
             var newClass = oldClass;
             var fieldMembers = oldClass.Members.OfType<FieldDeclarationSyntax>();
@@ -42,7 +49,6 @@ namespace CodeCracker.Refactoring
             var existingFieldVariable = fieldVariables.FirstOrDefault(d => d.Identifier.Text == fieldName);
             if (existingFieldVariable != null)
             {
-                var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
                 var variableSymbol = (IFieldSymbol)semanticModel.GetDeclaredSymbol(existingFieldVariable);
                 var parameterSymbol = semanticModel.GetDeclaredSymbol(parameter);
                 if (!variableSymbol.Type.Equals(parameterSymbol.Type)) existingFieldVariable = null;
@@ -64,7 +70,7 @@ namespace CodeCracker.Refactoring
             var newConstructor = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignmentField));
             newClass = newClass.ReplaceNode(newClass.DescendantNodes().OfType<ConstructorDeclarationSyntax>().First(), newConstructor);
             var newRoot = root.ReplaceNode(oldClass, newClass);
-            return document.WithSyntaxRoot(newRoot);
+            return newRoot;
         }
     }
 }

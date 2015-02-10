@@ -43,6 +43,7 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorAnalyzer.cs" />
+    <Compile Include="Refactoring\IntroduceFieldFromConstructorCodeFixProviderAll.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorCodeFixProvider.cs" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
