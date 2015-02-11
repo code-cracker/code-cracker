@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="DiagnosticId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SupportedCategories.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

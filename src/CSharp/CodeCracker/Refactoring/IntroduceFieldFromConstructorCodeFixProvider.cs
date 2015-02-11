@@ -27,9 +27,9 @@ namespace CodeCracker.Refactoring
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
-            context.RegisterFix(CodeAction.Create(string.Format(MessageFormat, parameter), c => IntroduceFieldFromConstructorAsyncDocument(context.Document, declaration, parameter, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create(string.Format(MessageFormat, parameter), c => IntroduceFieldFromConstructorDocumentAsync(context.Document, declaration, parameter, c)), diagnostic);
         }
-        public async Task<Document> IntroduceFieldFromConstructorAsyncDocument(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
+        public async Task<Document> IntroduceFieldFromConstructorDocumentAsync(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var newRoot = IntroduceFieldFromConstructorAsync(root, constructorStatement, parameter);

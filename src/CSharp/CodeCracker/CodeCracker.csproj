@@ -62,7 +62,6 @@
     <Compile Include="Style\RemoveTrailingWhitespaceAnalyzer.cs" />
     <Compile Include="Style\RemoveTrailingWhitespaceCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatCodeFixProvider.cs" />
-    <Compile Include="SupportedCategories.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsCodeFixProvider.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />

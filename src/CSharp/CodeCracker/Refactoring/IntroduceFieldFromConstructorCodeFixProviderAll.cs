@@ -9,7 +9,7 @@ namespace CodeCracker.Refactoring
 {
     public sealed class IntroduceFieldFromConstructorCodeFixAllProvider : FixAllProvider
     {
-        private static readonly SyntaxAnnotation disposeAnnotation = new SyntaxAnnotation("IntroduceFieldFromConstructorCodeFixAllProvider");
+        private static readonly SyntaxAnnotation introduceFieldAnnotation = new SyntaxAnnotation("IntroduceFieldFromConstructorCodeFixAllProvider");
         private IntroduceFieldFromConstructorCodeFixAllProvider() { }
         public static IntroduceFieldFromConstructorCodeFixAllProvider Instance = new IntroduceFieldFromConstructorCodeFixAllProvider();
         public override async Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
@@ -52,19 +52,19 @@ namespace CodeCracker.Refactoring
             var diagnostics = await fixAllContext.GetDiagnosticsAsync(document).ConfigureAwait(false);
             var root = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
             var nodes = diagnostics.Select(d => root.FindNode(d.Location.SourceSpan)).Where(n => !n.IsMissing);
-            var newRoot = root.ReplaceNodes(nodes, (original, rewritten) => original.WithAdditionalAnnotations(disposeAnnotation));
+            var newRoot = root.ReplaceNodes(nodes, (original, rewritten) => original.WithAdditionalAnnotations(introduceFieldAnnotation));
             var semanticModel = await document.GetSemanticModelAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
             while (true)
             {
-                var annotatedNodes = newRoot.GetAnnotatedNodes(disposeAnnotation);
+                var annotatedNodes = newRoot.GetAnnotatedNodes(introduceFieldAnnotation);
                 var node = annotatedNodes.FirstOrDefault();
                 if (node == null) break;
 
                 var constructorMethod = (ConstructorDeclarationSyntax)node.Parent.Parent;
                 var parameter = (ParameterSyntax)node;
                 newRoot = IntroduceFieldFromConstructorCodeFixProvider.IntroduceFieldFromConstructorAsync(newRoot, constructorMethod, parameter);
-                node = newRoot.GetAnnotatedNodes(disposeAnnotation).First();
-                newRoot = newRoot.ReplaceNode(node, node.WithoutAnnotations(disposeAnnotation));
+                node = newRoot.GetAnnotatedNodes(introduceFieldAnnotation).First();
+                newRoot = newRoot.ReplaceNode(node, node.WithoutAnnotations(introduceFieldAnnotation));
             }
             return newRoot;
         }
