@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsAnalyzer.cs" />
@@ -80,10 +80,8 @@
     <Compile Include="Style\ExistenceOperatorCodeFixProvider.cs" />
     <Compile Include="Style\StringRepresentationCodeFixProvider.cs" />
     <Compile Include="Style\StringRepresentationAnalyzer.cs" />
-    <Compile Include="Extensions\AnalyzerExtensions.cs" />
     <Compile Include="Performance\EmptyFinalizerAnalyzer.cs" />
     <Compile Include="Performance\EmptyFinalizerCodeFixProvider.cs" />
-    <Compile Include="HelpLink.cs" />
     <Compile Include="Performance\MakeLocalVariableConstWhenItIsPossibleAnalyzer.cs" />
     <Compile Include="Performance\MakeLocalVariableConstWhenItIsPossibleCodeFixProvider.cs" />
     <Compile Include="Design\NameOfAnalyzer.cs" />
