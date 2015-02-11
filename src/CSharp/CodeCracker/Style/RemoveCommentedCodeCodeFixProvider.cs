@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("CodeCrackerRemoveCommentedCodeCodeFixProvider", LanguageNames.CSharp), Shared]
     public class RemoveCommentedCodeCodeFixProvider : CodeFixProvider

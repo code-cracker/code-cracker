@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("CodeCrackerRemoveTrailingWhitespaceCodeFixProvider", LanguageNames.CSharp), Shared]
     public class RemoveTrailingWhitespaceCodeFixProvider : CodeFixProvider

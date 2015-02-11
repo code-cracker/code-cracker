@@ -7,7 +7,7 @@ using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("CodeCrackerUnnecessaryParenthesisCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UnnecessaryParenthesisCodeFixProvider : CodeFixProvider

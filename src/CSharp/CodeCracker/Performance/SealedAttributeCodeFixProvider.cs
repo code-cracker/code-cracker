@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Performance
+namespace CodeCracker.CSharp.Performance
 {
     [ExportCodeFixProvider("CodeCrackerSealedAttributeCodeFixProvider", LanguageNames.CSharp), Shared]
     public class SealedAttributeCodeFixProvider : CodeFixProvider

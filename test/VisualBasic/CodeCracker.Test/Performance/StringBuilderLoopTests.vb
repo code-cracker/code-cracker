@@ -1,4 +1,4 @@
-﻿Imports CodeCracker.Performance
+﻿Imports CodeCracker.VisualBasic.Performance
 Imports CodeCracker.Test.TestHelper
 Imports Xunit
 

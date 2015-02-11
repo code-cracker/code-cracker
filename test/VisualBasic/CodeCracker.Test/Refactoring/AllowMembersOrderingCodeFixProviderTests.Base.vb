@@ -1,5 +1,5 @@
 ﻿Imports System.Threading
-Imports CodeCracker.Refactoring
+Imports CodeCracker.VisualBasic.Refactoring
 Imports CodeCracker.Test.TestHelper
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax

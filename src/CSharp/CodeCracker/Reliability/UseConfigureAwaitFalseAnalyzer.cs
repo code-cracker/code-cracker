@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Reliability
+namespace CodeCracker.CSharp.Reliability
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UseConfigureAwaitFalseAnalyzer : DiagnosticAnalyzer

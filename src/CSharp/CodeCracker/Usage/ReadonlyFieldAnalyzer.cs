@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ReadonlyFieldAnalyzer : DiagnosticAnalyzer

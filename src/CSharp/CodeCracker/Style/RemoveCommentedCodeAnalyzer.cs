@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RemoveCommentedCodeAnalyzer : DiagnosticAnalyzer

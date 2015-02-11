@@ -1,10 +1,10 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.CSharp.Test.Style
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "CC0065", Justification = "This is the remove trailing whitespace test class.")]
     public class RemoveTrailingWhitespaceTests : CodeFixTest<RemoveTrailingWhitespaceAnalyzer, RemoveTrailingWhitespaceCodeFixProvider>

@@ -1,4 +1,4 @@
-﻿Imports CodeCracker.Reliability
+﻿Imports CodeCracker.VisualBasic.Reliability
 Imports CodeCracker.Test.TestHelper
 Imports Xunit
 

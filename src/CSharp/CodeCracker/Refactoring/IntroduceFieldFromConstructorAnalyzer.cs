@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Refactoring
+namespace CodeCracker.CSharp.Refactoring
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IntroduceFieldFromConstructorAnalyzer : DiagnosticAnalyzer

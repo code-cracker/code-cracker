@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [ExportCodeFixProvider("CodeCrackerArgumentExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class SimplifyRedundantBooleanComparisonsCodeFixProvider : CodeFixProvider

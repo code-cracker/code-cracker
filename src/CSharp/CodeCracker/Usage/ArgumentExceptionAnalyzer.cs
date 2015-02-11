@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ArgumentExceptionAnalyzer : DiagnosticAnalyzer
@@ -24,7 +24,7 @@ namespace CodeCracker.Usage
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description:Description,
+            description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId.ArgumentException));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
@@ -87,7 +87,7 @@ namespace CodeCracker.Usage
             if (method != null)
             {
                 var parameterList = method.ParameterList;
-                return (parameterList == null) 
+                return (parameterList == null)
                     ? Enumerable.Empty<string>()
                     : parameterList.Parameters.Select(p => p.Identifier.ToString());
             }
@@ -110,14 +110,14 @@ namespace CodeCracker.Usage
                     var result = indexer.ParameterList.Parameters.Select(p => p.Identifier.ToString());
                     if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
                     {
-                        result = result.Concat(new [] { "value" });
+                        result = result.Concat(new[] { "value" });
                     }
                     return result;
                 }
 
                 if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
                 {
-                    return new[] { "value" } ;
+                    return new[] { "value" };
                 }
             }
 

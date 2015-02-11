@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UnusedParametersAnalyzer : DiagnosticAnalyzer

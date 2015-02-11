@@ -1,10 +1,10 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.CSharp.Test.Style
 {
     public class TaskNameAsyncTests : CodeFixTest<TaskNameAsyncAnalyzer, TaskNameAsyncCodeFixProvider>
     {

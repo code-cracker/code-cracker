@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [ExportCodeFixProvider("DisposableFieldNotDisposedCodeFixProvider", LanguageNames.CSharp), Shared]
     public class DisposableFieldNotDisposedCodeFixProvider : CodeFixProvider

@@ -1,4 +1,4 @@
-﻿Imports CodeCracker.Refactoring
+﻿Imports CodeCracker.VisualBasic.Refactoring
 Imports CodeCracker.Test.TestHelper
 Imports Xunit
 

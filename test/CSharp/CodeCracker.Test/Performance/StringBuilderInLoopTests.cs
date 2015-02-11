@@ -1,10 +1,10 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Performance
+namespace CodeCracker.CSharp.Test.Performance
 {
     public class StringBuilderInLoopTests : CodeFixTest<StringBuilderInLoopAnalyzer, StringBuilderInLoopCodeFixProvider>
     {

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Design
+namespace CodeCracker.CSharp.Design
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UseInvokeMethodToFireEventAnalyzer : DiagnosticAnalyzer

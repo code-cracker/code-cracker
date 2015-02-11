@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Refactoring
+namespace CodeCracker.CSharp.Refactoring
 {
 
     [ExportCodeFixProvider("ParameterRefactoryCodeFixProvider", LanguageNames.CSharp), Shared]

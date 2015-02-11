@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertLambdaExpressionToMethodGroupAnalyzer : DiagnosticAnalyzer

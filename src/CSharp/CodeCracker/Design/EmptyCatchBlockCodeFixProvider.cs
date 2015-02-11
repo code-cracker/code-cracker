@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Design
+namespace CodeCracker.CSharp.Design
 {
     [ExportCodeFixProvider("EmptyCatchBlockCodeFixProvider", LanguageNames.CSharp), Shared]
     public class EmptyCatchBlockCodeFixProvider : CodeFixProvider

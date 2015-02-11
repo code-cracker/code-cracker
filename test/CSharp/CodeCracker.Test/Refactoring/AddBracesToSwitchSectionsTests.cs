@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using CodeCracker.Refactoring;
+using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Refactoring
+namespace CodeCracker.CSharp.Test.Refactoring
 {
     public class AddBracesToSwitchSectionsTests : CodeFixTest<AddBracesToSwitchSectionsAnalyzer, AddBracesToSwitchSectionsCodeFix>
     {

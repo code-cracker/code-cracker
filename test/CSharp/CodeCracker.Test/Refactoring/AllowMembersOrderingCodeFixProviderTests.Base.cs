@@ -1,4 +1,4 @@
-﻿using CodeCracker.Refactoring;
+﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Refactoring
+namespace CodeCracker.CSharp.Test.Refactoring
 {
     public class BaseAllowMembersOrderingCodeFixProviderTests :
         CodeFixTest<AllowMembersOrderingAnalyzer, BaseAllowMembersOrderingCodeFixProviderTests.MockCodeFixProvider>

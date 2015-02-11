@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("CodeCrackerTaskNameAsyncCodeFixProvider", LanguageNames.CSharp), Shared]
     public class TaskNameAsyncCodeFixProvider : CodeFixProvider

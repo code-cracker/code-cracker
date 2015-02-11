@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class SimplifyRedundantBooleanComparisonsAnalyzer : DiagnosticAnalyzer

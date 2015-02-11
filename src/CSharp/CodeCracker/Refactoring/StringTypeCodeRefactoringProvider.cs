@@ -8,7 +8,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Refactoring
+namespace CodeCracker.CSharp.Refactoring
 {
     [ExportCodeRefactoringProvider(Id, LanguageNames.CSharp)]
     public class StringTypeCodeRefactoringProvider : CodeRefactoringProvider

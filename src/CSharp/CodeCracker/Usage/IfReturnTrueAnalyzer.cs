@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IfReturnTrueAnalyzer : DiagnosticAnalyzer

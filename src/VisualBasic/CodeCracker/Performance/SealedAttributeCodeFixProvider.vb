@@ -3,6 +3,7 @@ Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeFixes
 Imports Microsoft.CodeAnalysis.CodeActions
 Imports Microsoft.CodeAnalysis.VisualBasic
+Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Performance
     <ExportCodeFixProvider("CodeCrackerSealedAttributeCodeFixProvider", LanguageNames.VisualBasic), Composition.Shared>
@@ -25,7 +26,7 @@ Namespace Performance
             context.RegisterFix(CodeAction.Create("Mark as NotInheritable", Function(ct) MarkClassAsSealed(context.Document, type, ct)), diag)
         End Function
 
-        Private Async Function MarkClassAsSealed(document As Document, type As VisualBasic.Syntax.ClassStatementSyntax, cancellationToken As Threading.CancellationToken) As Task(Of Document)
+        Private Async Function MarkClassAsSealed(document As Document, type As ClassStatementSyntax, cancellationToken As Threading.CancellationToken) As Task(Of Document)
             Return document.
             WithSyntaxRoot((Await document.GetSyntaxRootAsync(cancellationToken)).
             ReplaceNode(type,

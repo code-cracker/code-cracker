@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace CodeCracker.Refactoring
+namespace CodeCracker.CSharp.Refactoring
 {
     [ExportCodeFixProvider("StyleCopAllowMembersOrderingCodeFixProvider", LanguageNames.CSharp), Shared]
     public class StyleCopAllowMembersOrderingCodeFixProvider : BaseAllowMembersOrderingCodeFixProvider

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Performance
+namespace CodeCracker.CSharp.Performance
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyFinalizerAnalyzer : DiagnosticAnalyzer

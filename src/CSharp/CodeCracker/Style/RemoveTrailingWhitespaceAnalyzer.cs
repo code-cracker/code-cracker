@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RemoveTrailingWhitespaceAnalyzer : DiagnosticAnalyzer

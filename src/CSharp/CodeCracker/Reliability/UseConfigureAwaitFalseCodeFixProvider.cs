@@ -9,7 +9,7 @@ using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Reliability
+namespace CodeCracker.CSharp.Reliability
 {
     [ExportCodeFixProvider("CodeCrackerUseConfigureAwaitFalseCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UseConfigureAwaitFalseCodeFixProvider : CodeFixProvider

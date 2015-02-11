@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Refactoring
+namespace CodeCracker.CSharp.Refactoring
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class InvertForAnalyzer : DiagnosticAnalyzer

@@ -1,4 +1,4 @@
-﻿Imports CodeCracker.Style
+﻿Imports CodeCracker.VisualBasic.Style
 Imports CodeCracker.Test.TestHelper
 Imports Xunit
 

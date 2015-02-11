@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Design
+namespace CodeCracker.CSharp.Design
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class CatchEmptyAnalyzer : DiagnosticAnalyzer

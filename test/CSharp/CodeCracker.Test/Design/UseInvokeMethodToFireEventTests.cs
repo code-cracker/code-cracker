@@ -1,9 +1,9 @@
-﻿using CodeCracker.Design;
+﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Design
+namespace CodeCracker.CSharp.Test.Design
 {
     public class UseInvokeMethodToFireEventTests : CodeFixTest<UseInvokeMethodToFireEventAnalyzer, UseInvokeMethodToFireEventCodeFixProvider>
     {

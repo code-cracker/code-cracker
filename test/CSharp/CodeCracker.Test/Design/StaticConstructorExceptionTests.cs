@@ -1,10 +1,10 @@
-﻿using CodeCracker.Design;
+﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Design
+namespace CodeCracker.CSharp.Test.Design
 {
     public class StaticConstructorExceptionTests : CodeFixTest<StaticConstructorExceptionAnalyzer, StaticConstructorExceptionCodeFixProvider>
     {

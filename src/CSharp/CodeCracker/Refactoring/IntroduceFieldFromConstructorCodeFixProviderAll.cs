@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Refactoring
+namespace CodeCracker.CSharp.Refactoring
 {
     public sealed class IntroduceFieldFromConstructorCodeFixAllProvider : FixAllProvider
     {

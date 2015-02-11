@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ForInArrayAnalyzer : DiagnosticAnalyzer

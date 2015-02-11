@@ -10,7 +10,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("CodeCrackerConvertToExpressionBodiedMemberCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ConvertToExpressionBodiedMemberCodeFixProvider : CodeFixProvider

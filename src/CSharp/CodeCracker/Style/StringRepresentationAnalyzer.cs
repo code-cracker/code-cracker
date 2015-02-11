@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     /// <summary>
     /// This analyzer produce 2 different hidden diagnostics one for regular string literals like

@@ -1,10 +1,10 @@
-﻿using CodeCracker.Reliability;
+﻿using CodeCracker.CSharp.Reliability;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Reliability
+namespace CodeCracker.CSharp.Test.Reliability
 {
     public class UseConfigureAwaitFalseTests : CodeFixTest<UseConfigureAwaitFalseAnalyzer, UseConfigureAwaitFalseCodeFixProvider>
     {

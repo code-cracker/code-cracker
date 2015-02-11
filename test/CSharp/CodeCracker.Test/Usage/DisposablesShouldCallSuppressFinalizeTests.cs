@@ -1,9 +1,9 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.CSharp.Test.Usage
 {
     public class DisposablesShouldCallSuppressFinalizeTests : CodeFixTest<DisposablesShouldCallSuppressFinalizeAnalyzer, DisposablesShouldCallSuppressFinalizeCodeFixProvider>
     {

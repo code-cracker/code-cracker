@@ -1,11 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.CSharp.Test.Style
 {
     public class StringRepresentationTests
         : CodeFixTest<StringRepresentationAnalyzer, StringRepresentationCodeFixProvider>

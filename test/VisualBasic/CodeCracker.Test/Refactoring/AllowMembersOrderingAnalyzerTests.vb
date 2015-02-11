@@ -1,5 +1,5 @@
 ﻿Imports Microsoft.CodeAnalysis.Diagnostics
-Imports CodeCracker.Refactoring
+Imports CodeCracker.VisualBasic.Refactoring
 Imports Xunit
 
 Namespace Refactoring

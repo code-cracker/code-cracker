@@ -8,7 +8,7 @@ using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("ConvertSimpleLambdaExpressionToMethodInvocationFixProvider", LanguageNames.CSharp), Shared]
     public class ConvertLambdaExpressionToMethodGroupFixProvider :CodeFixProvider

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Performance
+namespace CodeCracker.CSharp.Performance
 {
     [ExportCodeFixProvider("CodeCrackerEmptyFinalizerCodeFixProvider", LanguageNames.CSharp), Shared]
     public class EmptyFinalizerCodeFixProvider : CodeFixProvider

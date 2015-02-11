@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class PropertyPrivateSetAnalyzer : DiagnosticAnalyzer

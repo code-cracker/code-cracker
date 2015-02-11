@@ -1,4 +1,4 @@
-﻿Imports CodeCracker.Design
+﻿Imports CodeCracker.VisualBasic.Design
 Imports CodeCracker.Test.TestHelper
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.VisualBasic

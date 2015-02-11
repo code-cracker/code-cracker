@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     public sealed class DisposableVariableNotDisposedFixAllProvider : FixAllProvider
     {

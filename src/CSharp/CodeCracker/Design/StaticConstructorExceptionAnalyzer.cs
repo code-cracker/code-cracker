@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Design
+namespace CodeCracker.CSharp.Design
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StaticConstructorExceptionAnalyzer : DiagnosticAnalyzer

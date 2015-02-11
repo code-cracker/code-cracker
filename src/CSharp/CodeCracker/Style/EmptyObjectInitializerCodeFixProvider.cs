@@ -8,7 +8,7 @@ using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("CodeCrackerEmptyObjectInitializerCodeFixProvider", LanguageNames.CSharp), Shared]
     public class EmptyObjectInitializerCodeFixProvider : CodeFixProvider

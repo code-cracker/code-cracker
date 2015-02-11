@@ -1,11 +1,11 @@
-﻿using CodeCracker.Usage.MethodAnalyzers;
+﻿using CodeCracker.CSharp.Usage.MethodAnalyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UriAnalyzer : DiagnosticAnalyzer

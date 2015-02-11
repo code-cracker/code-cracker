@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [ExportCodeFixProvider("CodeCrackerAbstractClassShouldNotHavePublicCtorsCodeFixProvider", LanguageNames.CSharp), Shared]
 
