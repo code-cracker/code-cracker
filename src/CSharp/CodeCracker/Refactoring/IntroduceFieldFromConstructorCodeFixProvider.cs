@@ -16,8 +16,9 @@ namespace CodeCracker.Refactoring
     public class IntroduceFieldFromConstructorCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(DiagnosticId.IntroduceFieldFromConstructor.ToDiagnosticId());
+        public readonly static string MessageFormat = "Introduce field: {0} from constructor.";
 
-        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public sealed override FixAllProvider GetFixAllProvider() => IntroduceFieldFromConstructorCodeFixAllProvider.Instance;
 
         public sealed override async Task ComputeFixesAsync(CodeFixContext context)
         {
@@ -26,33 +27,29 @@ namespace CodeCracker.Refactoring
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
-            context.RegisterFix(CodeAction.Create($"Introduce field: {parameter} from constructor.", c => IntroduceFieldFromConstructorAsync(context.Document, declaration, parameter, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create(string.Format(MessageFormat, parameter), c => IntroduceFieldFromConstructorAsyncDocument(context.Document, declaration, parameter, c)), diagnostic);
         }
-
-        private async Task<Document> IntroduceFieldFromConstructorAsync(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
+        public async Task<Document> IntroduceFieldFromConstructorAsyncDocument(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var newRoot = IntroduceFieldFromConstructorAsync(root, constructorStatement, parameter);
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            return document.WithSyntaxRoot(newRoot);
+        }
 
+        public static SyntaxNode IntroduceFieldFromConstructorAsync(SyntaxNode root, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter)
+        {
             var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
             var newClass = oldClass;
             var fieldMembers = oldClass.Members.OfType<FieldDeclarationSyntax>();
             var fieldName = parameter.Identifier.ValueText;
 
-            var fieldVariables = fieldMembers.SelectMany(f => f.Declaration.Variables);
-            var existingFieldVariable = fieldVariables.FirstOrDefault(d => d.Identifier.Text == fieldName);
-            if (existingFieldVariable != null)
-            {
-                var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-                var variableSymbol = (IFieldSymbol)semanticModel.GetDeclaredSymbol(existingFieldVariable);
-                var parameterSymbol = semanticModel.GetDeclaredSymbol(parameter);
-                if (!variableSymbol.Type.Equals(parameterSymbol.Type)) existingFieldVariable = null;
-            }
-            if (existingFieldVariable == null)
+            if(!fieldMembers.Any(p => p.Declaration.Variables.First().Identifier.Text == fieldName && p.Declaration.Type.ToString() == parameter.Type.ToString()))
             {
                 var identifierPostFix = 0;
                 while (fieldMembers.Any(p => p.Declaration.Variables.Any(d => d.Identifier.Text == fieldName)))
                     fieldName = parameter.Identifier.ValueText + ++identifierPostFix;
-                var newField = SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)))
+                var newField = SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(parameter.Type)
                                   .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(fieldName)))))
                                   .WithModifiers(SyntaxFactory.TokenList(new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword) }))
                                   .WithAdditionalAnnotations(Formatter.Annotation);
@@ -64,7 +61,7 @@ namespace CodeCracker.Refactoring
             var newConstructor = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignmentField));
             newClass = newClass.ReplaceNode(newClass.DescendantNodes().OfType<ConstructorDeclarationSyntax>().First(), newConstructor);
             var newRoot = root.ReplaceNode(oldClass, newClass);
-            return document.WithSyntaxRoot(newRoot);
+            return newRoot;
         }
     }
 }
