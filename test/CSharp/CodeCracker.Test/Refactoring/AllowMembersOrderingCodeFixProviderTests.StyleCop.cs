@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Refactoring
+namespace CodeCracker.Test.CSharp.Refactoring
 {
-    public class StyleCopAllowMembersOrderingCodeFixProviderTests : CodeFixTest<AllowMembersOrderingAnalyzer, StyleCopAllowMembersOrderingCodeFixProvider>
+    public class StyleCopAllowMembersOrderingCodeFixProviderTests : CodeFixVerifier<AllowMembersOrderingAnalyzer, StyleCopAllowMembersOrderingCodeFixProvider>
     {
         [Fact]
         public async Task StyleCopAllowMembersOrderingShouldAssureMembersOrderByType()

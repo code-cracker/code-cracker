@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
-    public class DisposableFieldNotDisposedTests : CodeFixTest<DisposableFieldNotDisposedAnalyzer, DisposableFieldNotDisposedCodeFixProvider>
+    public class DisposableFieldNotDisposedTests : CodeFixVerifier<DisposableFieldNotDisposedAnalyzer, DisposableFieldNotDisposedCodeFixProvider>
     {
 
         [Fact]

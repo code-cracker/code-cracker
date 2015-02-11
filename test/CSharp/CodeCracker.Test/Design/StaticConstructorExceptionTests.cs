@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class StaticConstructorExceptionTests : CodeFixTest<StaticConstructorExceptionAnalyzer, StaticConstructorExceptionCodeFixProvider>
+    public class StaticConstructorExceptionTests : CodeFixVerifier<StaticConstructorExceptionAnalyzer, StaticConstructorExceptionCodeFixProvider>
     {
         [Fact]
         public async Task WarningIfExceptionIsThrowInsideStaticConstructor()

@@ -3,10 +3,10 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
     public class ConvertLambdaExpressionToMethodGroupTests
-        : CodeFixTest<ConvertLambdaExpressionToMethodGroupAnalyzer, ConvertLambdaExpressionToMethodGroupFixProvider>
+        : CodeFixVerifier<ConvertLambdaExpressionToMethodGroupAnalyzer, ConvertLambdaExpressionToMethodGroupFixProvider>
     {
         [Fact]
         public async Task CreateDiagnosticForSimpleLambdaExpression()

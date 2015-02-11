@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Design
     Public Class CatchEmptyTests
-        Inherits CodeFixTest(Of CatchEmptyAnalyzer, CatchEmptyCodeFixProvider)
+        Inherits CodeFixVerifier(Of CatchEmptyAnalyzer, CatchEmptyCodeFixProvider)
 
         <Fact>
         Public Async Function CatchEmptyAnalyserCreateDiagnostic() As Task

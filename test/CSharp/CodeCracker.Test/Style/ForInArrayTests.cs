@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class ForInArrayTests : CodeFixTest<ForInArrayAnalyzer, ForInArrayCodeFixProvider>
+    public class ForInArrayTests : CodeFixVerifier<ForInArrayAnalyzer, ForInArrayCodeFixProvider>
     {
 
         [Fact]

@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class EmptyObjectInitializerTests : CodeFixTest<EmptyObjectInitializerAnalyzer, EmptyObjectInitializerCodeFixProvider>
+    public class EmptyObjectInitializerTests : CodeFixVerifier<EmptyObjectInitializerAnalyzer, EmptyObjectInitializerCodeFixProvider>
     {
         [Fact]
         public async Task EmptyObjectInitializerTriggersFix()

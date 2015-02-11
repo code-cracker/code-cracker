@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class UriAnalyzerTests : CodeFixVerifier
     {
@@ -115,7 +115,7 @@ namespace ConsoleApplication1
             return "";
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
         {
             return new UriAnalyzer();
         }

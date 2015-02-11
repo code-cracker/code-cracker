@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class AlwaysUseVarTests : CodeFixTest<AlwaysUseVarAnalyzer, AlwaysUseVarCodeFixProvider>
+    public class AlwaysUseVarTests : CodeFixVerifier<AlwaysUseVarAnalyzer, AlwaysUseVarCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresConstantDeclarations()

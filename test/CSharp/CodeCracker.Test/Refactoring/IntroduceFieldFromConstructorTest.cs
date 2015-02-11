@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Refactoring
+namespace CodeCracker.Test.CSharp.Refactoring
 {
-    public class IntroduceFieldFromConstructorTest : CodeFixTest<IntroduceFieldFromConstructorAnalyzer, IntroduceFieldFromConstructorCodeFixProvider>
+    public class IntroduceFieldFromConstructorTest : CodeFixVerifier<IntroduceFieldFromConstructorAnalyzer, IntroduceFieldFromConstructorCodeFixProvider>
     {
         [Fact]
         public async Task WhenConstructorParameterHasPrivateField()

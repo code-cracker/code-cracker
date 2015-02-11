@@ -49,7 +49,7 @@ End {0}", typeDeclaration)
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 2, 14 + typeDeclaration.Length)}
                 }
-            Await VerifyDiagnosticsAsync(test, expected)
+            Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
     End Class
 End Namespace

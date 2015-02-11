@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Style
     Public Class InterfaceNameTests
-        Inherits CodeFixTest(Of InterfaceNameAnalyzer, InterfaceNameCodeFixProvider)
+        Inherits CodeFixVerifier(Of InterfaceNameAnalyzer, InterfaceNameCodeFixProvider)
         <Fact>
         Public Async Function InterfaceNameStartsWithLetterI() As Task
             Const source = "Namespace ConsoleApplication1
@@ -30,7 +30,7 @@ End Namespace"
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 2, 5)}
             }
 
-            Await VerifyDiagnosticsAsync(source, expected)
+            Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
 
         <Fact>

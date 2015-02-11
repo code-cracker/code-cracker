@@ -144,10 +144,6 @@
     <Compile Include="Design\NameOfTests.vb" />
     <Compile Include="Design\StaticConstructorExceptionTests.vb" />
     <Compile Include="Extensions\CodeCrackerExtensionTests.vb" />
-    <Compile Include="Helpers\Extensions.vb" />
-    <Compile Include="Helpers\CodeFixVerifier.Helper.vb" />
-    <Compile Include="Helpers\DiagnosticResult.vb" />
-    <Compile Include="Helpers\DiagnosticVerifier.Helper.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -166,17 +162,13 @@
     <Compile Include="Performance\MakeLocalVariablesConstWhenItIsPossibleTests.vb" />
     <Compile Include="Performance\RemoveWhereWhenItIsPossibleTests.vb" />
     <Compile Include="Performance\SealedAttributeTests.vb" />
-    <Compile Include="Performance\StringBuilderLoopTests.vb" />
+    <Compile Include="Performance\StringBuilderInLoopTests.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Stylecop.vb" />
     <Compile Include="Refactoring\ParameterRefactoryTests.vb" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.vb" />
     <Compile Include="Style\InterfaceNameTests.vb" />
-    <Compile Include="Verifiers\CodeFixTest.vb" />
-    <Compile Include="Verifiers\CodeFixVerifier.vb" />
-    <Compile Include="Verifiers\DiagnosticVerifier.Extras.vb" />
-    <Compile Include="Verifiers\DiagnosticVerifier.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">

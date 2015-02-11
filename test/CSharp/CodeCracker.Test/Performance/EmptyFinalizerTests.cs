@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Performance
+namespace CodeCracker.Test.CSharp.Performance
 {
-    public class EmptyFinalizerTests : CodeFixTest<EmptyFinalizerAnalyzer, EmptyFinalizerCodeFixProvider>
+    public class EmptyFinalizerTests : CodeFixVerifier<EmptyFinalizerAnalyzer, EmptyFinalizerCodeFixProvider>
     {
         [Fact]
         public async Task RemoveEmptyFinalizerWhenIsEmpty()

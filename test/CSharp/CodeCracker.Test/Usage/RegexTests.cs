@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class RegexTests : CodeFixVerifier
     {
@@ -129,6 +129,6 @@ namespace CodeCracker.CSharp.Test.Usage
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new RegexAnalyzer();
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() => new RegexAnalyzer();
     }
 }

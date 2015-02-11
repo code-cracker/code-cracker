@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
-    public class RethrowExceptionTests : CodeFixTest<RethrowExceptionAnalyzer, RethrowExceptionCodeFixProvider>
+    public class RethrowExceptionTests : CodeFixVerifier<RethrowExceptionAnalyzer, RethrowExceptionCodeFixProvider>
     {
         private const string sourceWithoutUsingSystem = @"
     namespace ConsoleApplication1

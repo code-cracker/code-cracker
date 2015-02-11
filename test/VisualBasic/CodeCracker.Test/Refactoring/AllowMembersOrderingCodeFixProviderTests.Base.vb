@@ -6,13 +6,13 @@ Imports Xunit
 
 Namespace Refactoring
     Public Class BaseAllowMembersOrderingCodeFixProviderTests
-        Inherits CodeFixTest(Of AllowMembersOrderingAnalyzer, MockCodeFixProvider)
+        Inherits CodeFixVerifier(Of AllowMembersOrderingAnalyzer, MockCodeFixProvider)
 
         <Theory>
         <InlineData("Class", "Property B As String", "Property A As String")>
         Public Async Function BaseAllowMembersOrderingShouldCallIComparerToOrder(typeDeclaration As String, memberA As String, memberB As String) As Task
 
-            Dim codeFixProvider = DirectCast(MyBase.GetBasicCodeFixProvider, MockCodeFixProvider)
+            Dim codeFixProvider = DirectCast(MyBase.GetCodeFixProvider, MockCodeFixProvider)
 
 
             Dim source = String.Format("

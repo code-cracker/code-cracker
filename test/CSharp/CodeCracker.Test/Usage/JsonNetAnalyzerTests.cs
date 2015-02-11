@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class JsonNetTests : CodeFixVerifier
     {
@@ -103,7 +103,7 @@ namespace ConsoleApplication1
         }
 
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
         {
             return new JsonNetAnalyzer();
         }

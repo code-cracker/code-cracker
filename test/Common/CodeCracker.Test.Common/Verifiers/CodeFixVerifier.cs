@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test
+namespace CodeCracker.Test
 {
     /// <summary>
     /// Superclass of all Unit tests made for diagnostics with codefixes.
@@ -24,19 +24,7 @@ namespace CodeCracker.CSharp.Test
         /// Returns the codefix being tested (C#) - to be implemented in non-abstract class
         /// </summary>
         /// <returns>The CodeFixProvider to be used for CSharp code</returns>
-        protected virtual CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// Returns the codefix being tested (VB) - to be implemented in non-abstract class
-        /// </summary>
-        /// <returns>The CodeFixProvider to be used for VisualBasic code</returns>
-        protected virtual CodeFixProvider GetBasicCodeFixProvider()
-        {
-            return null;
-        }
+        protected virtual CodeFixProvider GetCodeFixProvider() => null;
 
         /// <summary>
         /// Called to test a C# codefix when applied on the inputted string as a source
@@ -50,10 +38,10 @@ namespace CodeCracker.CSharp.Test
         {
             if (formatBeforeCompare)
             {
-                oldSource = await TestHelpers.FormatSourceAsync(LanguageNames.CSharp, oldSource);
-                newSource = await TestHelpers.FormatSourceAsync(LanguageNames.CSharp, newSource);
+                oldSource = await FormatSourceAsync(LanguageNames.CSharp, oldSource);
+                newSource = await FormatSourceAsync(LanguageNames.CSharp, newSource);
             }
-            await VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), codeFixProvider ?? GetCSharpCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+            await VerifyFixAsync(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
         }
 
         /// <summary>
@@ -63,9 +51,14 @@ namespace CodeCracker.CSharp.Test
         /// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
         /// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        protected async Task VerifyBasicFixAsync(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
+        protected async Task VerifyBasicFixAsync(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = false, CodeFixProvider codeFixProvider = null)
         {
-            await VerifyFixAsync(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+            if (formatBeforeCompare)
+            {
+                oldSource = await FormatSourceAsync(LanguageNames.VisualBasic, oldSource);
+                newSource = await FormatSourceAsync(LanguageNames.VisualBasic, newSource);
+            }
+            await VerifyFixAsync(LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
         }
 
         /// <summary>
@@ -83,7 +76,7 @@ namespace CodeCracker.CSharp.Test
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
         private async Task VerifyFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
         {
-            var document = TestHelpers.CreateDocument(oldSource, language);
+            var document = CreateDocument(oldSource, language);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
             var attempts = analyzerDiagnostics.Length;
@@ -125,7 +118,7 @@ namespace CodeCracker.CSharp.Test
             }
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
-            var actual = await TestHelpers.GetStringFromDocumentAsync(document);
+            var actual = await GetStringFromDocumentAsync(document);
             Assert.Equal(newSource, actual);
         }
 
@@ -133,15 +126,15 @@ namespace CodeCracker.CSharp.Test
         {
             if (formatBeforeCompare)
             {
-                oldSources = await Task.WhenAll(oldSources.Select(s => TestHelpers.FormatSourceAsync(LanguageNames.CSharp, s)));
-                newSources = await Task.WhenAll(newSources.Select(s => TestHelpers.FormatSourceAsync(LanguageNames.CSharp, s)));
+                oldSources = await Task.WhenAll(oldSources.Select(s => FormatSourceAsync(LanguageNames.CSharp, s)));
+                newSources = await Task.WhenAll(newSources.Select(s => FormatSourceAsync(LanguageNames.CSharp, s)));
             }
-            await VerifyFixAllAsync(GetCSharpDiagnosticAnalyzer(), codeFixProvider ?? GetCSharpCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics);
+            await VerifyFixAllAsync(GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics);
         }
 
         private async Task VerifyFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics)
         {
-            var project = TestHelpers.CreateProject(oldSources, LanguageNames.CSharp);
+            var project = CreateProject(oldSources, LanguageNames.CSharp);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, project.Documents.ToArray());
             var compilerDiagnostics = (await Task.WhenAll(project.Documents.Select(d => GetCompilerDiagnosticsAsync(d)))).SelectMany(d => d);
 
@@ -166,7 +159,7 @@ namespace CodeCracker.CSharp.Test
             for (int i = 0; i < docs.Length; i++)
             {
                 var document = docs[i];
-                var actual = await TestHelpers.GetStringFromDocumentAsync(document);
+                var actual = await GetStringFromDocumentAsync(document);
                 Assert.Equal(newSources[i], actual);
             }
         }
@@ -176,15 +169,15 @@ namespace CodeCracker.CSharp.Test
         {
             if (formatBeforeCompare)
             {
-                oldSource = await TestHelpers.FormatSourceAsync(LanguageNames.CSharp, oldSource);
-                newSource = await TestHelpers.FormatSourceAsync(LanguageNames.CSharp, newSource);
+                oldSource = await FormatSourceAsync(LanguageNames.CSharp, oldSource);
+                newSource = await FormatSourceAsync(LanguageNames.CSharp, newSource);
             }
-            await VerifyFixAllAsync(GetCSharpDiagnosticAnalyzer(), codeFixProvider ?? GetCSharpCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
+            await VerifyFixAllAsync(GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
         }
 
         private async Task VerifyFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics)
         {
-            var document = TestHelpers.CreateDocument(oldSource, LanguageNames.CSharp);
+            var document = CreateDocument(oldSource, LanguageNames.CSharp);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
 
@@ -210,7 +203,7 @@ namespace CodeCracker.CSharp.Test
                 Assert.True(false, $"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString()))}\r\n\r\nNew document:\r\n{(await document.GetSyntaxRootAsync()).ToFullString()}\r\n");
             }
 
-            var actual = await TestHelpers.GetStringFromDocumentAsync(document);
+            var actual = await GetStringFromDocumentAsync(document);
             Assert.Equal(newSource, actual);
         }
 
@@ -228,7 +221,7 @@ namespace CodeCracker.CSharp.Test
         /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
         protected async Task VerifyCSharpHasNoFixAsync(string source, CodeFixProvider codeFixProvider = null)
         {
-            await VerifyHasNoFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), codeFixProvider ?? GetCSharpCodeFixProvider(), source);
+            await VerifyHasNoFixAsync(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), source);
         }
 
         /// <summary>
@@ -242,7 +235,7 @@ namespace CodeCracker.CSharp.Test
         /// <param name="source">A class in the form of a string before the CodeFix was applied to it</param>
         private async Task VerifyHasNoFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string source)
         {
-            var document = TestHelpers.CreateDocument(source, language);
+            var document = CreateDocument(source, language);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
 
             foreach (var analyzerDiagnostic in analyzerDiagnostics)
@@ -253,5 +246,14 @@ namespace CodeCracker.CSharp.Test
                 Assert.False(actions.Any(), $"Should not have a code fix registered for diagnostic '{analyzerDiagnostic.Id}'");
             }
         }
+    }
+
+    public abstract class CodeFixVerifier<T, U> : CodeFixVerifier
+        where T : DiagnosticAnalyzer, new()
+        where U : CodeFixProvider, new()
+    {
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() => new T();
+
+        protected override CodeFixProvider GetCodeFixProvider() => new U();
     }
 }

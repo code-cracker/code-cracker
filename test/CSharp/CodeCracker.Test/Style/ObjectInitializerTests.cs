@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class ObjectInitializerWithLocalDeclarationTests : CodeFixTest<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
+    public class ObjectInitializerWithLocalDeclarationTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
     {
 
         [Fact]
@@ -167,7 +167,7 @@ namespace CodeCracker.CSharp.Test.Style
         }
     }
 
-    public class ObjectInitializerWithAssingmentTests : CodeFixTest<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
+    public class ObjectInitializerWithAssingmentTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
     {
 
         [Fact]

@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Performance
     Public Class SealedAttributeTests
-        Inherits CodeFixTest(Of SealedAttributeAnalyzer, SealedAttributeCodeFixProvider)
+        Inherits CodeFixVerifier(Of SealedAttributeAnalyzer, SealedAttributeCodeFixProvider)
 
         <Fact>
         Public Async Function ApplySealedWhenClassInheritsFromSystemAttributeClass() As Task
@@ -20,7 +20,7 @@ End Class"
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 2, 14)}
             }
 
-            Await VerifyDiagnosticsAsync(test, expected)
+            Await VerifyBasicDiagnosticAsync(test, expected)
 
         End Function
 
@@ -43,7 +43,7 @@ End Class"
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 14)}
             }
 
-            Await VerifyDiagnosticsAsync(test, expected)
+            Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 
         <Fact>

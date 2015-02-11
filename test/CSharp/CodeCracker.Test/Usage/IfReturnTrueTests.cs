@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
-    public class IfReturnTrueTests : CodeFixTest<IfReturnTrueAnalyzer, IfReturnTrueCodeFixProvider>
+    public class IfReturnTrueTests : CodeFixVerifier<IfReturnTrueAnalyzer, IfReturnTrueCodeFixProvider>
     {
 
         [Fact]

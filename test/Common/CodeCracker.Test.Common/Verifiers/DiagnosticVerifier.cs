@@ -7,32 +7,43 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test
+namespace CodeCracker.Test
 {
+    /// <summary>
+    /// Generic superclass of all Unit Tests for DiagnosticAnalyzers
+    /// </summary>
+    public abstract class DiagnosticVerifier<T> : DiagnosticVerifier where T : DiagnosticAnalyzer, new()
+    {
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+        {
+            return new T();
+        }
+    }
+
     /// <summary>
     /// Superclass of all Unit Tests for DiagnosticAnalyzers
     /// </summary>
     public abstract partial class DiagnosticVerifier
     {
-        #region To be implemented by Test classes
+        protected async Task VerifyBasicHasNoDiagnosticsAsync(string source) =>
+            await VerifyBasicDiagnosticAsync(source);
+
+        protected async Task VerifyBasicHasNoDiagnosticsAsync(params string[] sources) =>
+            await VerifyBasicDiagnosticAsync(sources);
+
+        protected async Task VerifyCSharpHasNoDiagnosticsAsync(string source) =>
+            await VerifyCSharpDiagnosticAsync(source);
+
+        protected async Task VerifyCSharpHasNoDiagnosticsAsync(params string[] sources) =>
+            await VerifyCSharpDiagnosticAsync(sources);
+
         /// <summary>
         /// Get the CSharp analyzer being tested - to be implemented in non-abstract class
         /// </summary>
-        protected virtual DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected virtual DiagnosticAnalyzer GetDiagnosticAnalyzer()
         {
             return null;
         }
-
-        /// <summary>
-        /// Get the Visual Basic analyzer being tested (C#) - to be implemented in non-abstract class
-        /// </summary>
-        protected virtual DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
-        {
-            return null;
-        }
-        #endregion
-
-        #region Verifier wrappers
 
         /// <summary>
         /// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
@@ -42,7 +53,7 @@ namespace CodeCracker.CSharp.Test
         /// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
         protected async Task VerifyCSharpDiagnosticAsync(string source, params DiagnosticResult[] expected)
         {
-            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
+            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetDiagnosticAnalyzer(), expected);
         }
 
         /// <summary>
@@ -53,7 +64,7 @@ namespace CodeCracker.CSharp.Test
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source</param>
         protected async Task VerifyBasicDiagnosticAsync(string source, params DiagnosticResult[] expected)
         {
-            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
+            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected);
         }
 
         /// <summary>
@@ -64,7 +75,7 @@ namespace CodeCracker.CSharp.Test
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
         protected async Task VerifyCSharpDiagnosticAsync(string[] sources, params DiagnosticResult[] expected)
         {
-            await VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
+            await VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetDiagnosticAnalyzer(), expected);
         }
 
         /// <summary>
@@ -75,7 +86,7 @@ namespace CodeCracker.CSharp.Test
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
         protected async Task VerifyBasicDiagnosticAsync(string[] sources, params DiagnosticResult[] expected)
         {
-            await VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
+            await VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected);
         }
 
         /// <summary>
@@ -92,9 +103,7 @@ namespace CodeCracker.CSharp.Test
             VerifyDiagnosticResults(diagnostics, analyzer, expected);
         }
 
-        #endregion
 
-        #region Actual comparisons and verifications
         /// <summary>
         /// Checks each of the actual Diagnostics found and compares them with the corresponding DiagnosticResult in the array of expected results.
         /// Diagnostics are considered equal only if the DiagnosticResultLocation, Id, Severity, and Message of the DiagnosticResult match the actual diagnostic.
@@ -179,9 +188,7 @@ namespace CodeCracker.CSharp.Test
                 if (actualLinePosition.Character + 1 != expected.Column)
                     Assert.True(false, $"Expected diagnostic to start at column \"{expected.Column}\" was actually at column \"{actualLinePosition.Character + 1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
         }
-        #endregion
 
-        #region Formatting Diagnostics
         /// <summary>
         /// Helper method to format a Diagnostic into an easily reasible string
         /// </summary>
@@ -231,6 +238,5 @@ namespace CodeCracker.CSharp.Test
             }
             return builder.ToString();
         }
-        #endregion
     }
 }

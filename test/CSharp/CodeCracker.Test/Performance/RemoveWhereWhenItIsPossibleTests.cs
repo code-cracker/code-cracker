@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Performance
+namespace CodeCracker.Test.CSharp.Performance
 {
-    public class RemoveWhereWhenItIsPossibleTests : CodeFixTest<RemoveWhereWhenItIsPossibleAnalyzer, RemoveWhereWhenItIsPossibleCodeFixProvider>
+    public class RemoveWhereWhenItIsPossibleTests : CodeFixVerifier<RemoveWhereWhenItIsPossibleAnalyzer, RemoveWhereWhenItIsPossibleCodeFixProvider>
     {
         [Theory]
         [InlineData("First")]

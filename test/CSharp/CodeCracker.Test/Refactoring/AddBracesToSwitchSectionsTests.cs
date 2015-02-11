@@ -3,9 +3,9 @@ using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Refactoring
+namespace CodeCracker.Test.CSharp.Refactoring
 {
-    public class AddBracesToSwitchSectionsTests : CodeFixTest<AddBracesToSwitchSectionsAnalyzer, AddBracesToSwitchSectionsCodeFix>
+    public class AddBracesToSwitchSectionsTests : CodeFixVerifier<AddBracesToSwitchSectionsAnalyzer, AddBracesToSwitchSectionsCodeFix>
     {
         [Fact]
         public async Task IgnoresWhenSingleSwitchSectionAlreadyHasBraces()
@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Test.Refactoring
         break;
     }
 }";
-            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInMethod());
+            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpMethod());
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace CodeCracker.CSharp.Test.Refactoring
         }
         break;
 }";
-            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInMethod());
+            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpMethod());
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace CodeCracker.CSharp.Test.Refactoring
     }
 
 }";
-            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInMethod());
+            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpMethod());
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace CodeCracker.CSharp.Test.Refactoring
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] {new DiagnosticResultLocation("Test0.cs", 10, 17)}
             };
-            await VerifyCSharpDiagnosticAsync(test.WrapInMethod(), diagnostic);
+            await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), diagnostic);
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace CodeCracker.CSharp.Test.Refactoring
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
-            await VerifyCSharpDiagnosticAsync(test.WrapInMethod(), diagnostic);
+            await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), diagnostic);
         }
 
         [Fact]
@@ -134,7 +134,7 @@ namespace CodeCracker.CSharp.Test.Refactoring
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
-            await VerifyCSharpDiagnosticAsync(test.WrapInMethod(), diagnostic);
+            await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), diagnostic);
         }
 
         [Fact]
@@ -154,7 +154,7 @@ namespace CodeCracker.CSharp.Test.Refactoring
         break;
     }
 }";
-            await VerifyCSharpFixAsync(test.WrapInMethod(), expected.WrapInMethod());
+            await VerifyCSharpFixAsync(test.WrapInCSharpMethod(), expected.WrapInCSharpMethod());
         }
 
         [Fact]
@@ -190,7 +190,7 @@ namespace CodeCracker.CSharp.Test.Refactoring
         break;
     }
 }";
-            await VerifyCSharpFixAsync(test.WrapInMethod(), expected.WrapInMethod());
+            await VerifyCSharpFixAsync(test.WrapInCSharpMethod(), expected.WrapInCSharpMethod());
         }
     }
 }

@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class ExistenceOperatorWithReturnTests : CodeFixTest<ExistenceOperatorAnalyzer, ExistenceOperatorCodeFixProvider>
+    public class ExistenceOperatorWithReturnTests : CodeFixVerifier<ExistenceOperatorAnalyzer, ExistenceOperatorCodeFixProvider>
     {
         [Fact]
         public async Task WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic()
@@ -295,7 +295,7 @@ namespace CodeCracker.CSharp.Test.Style
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
-    public class ExistenceOperatorTestsWithAssignment : CodeFixTest<ExistenceOperatorAnalyzer, ExistenceOperatorCodeFixProvider>
+    public class ExistenceOperatorTestsWithAssignment : CodeFixVerifier<ExistenceOperatorAnalyzer, ExistenceOperatorCodeFixProvider>
     {
 
         [Fact]

@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class InterfaceNameTests : CodeFixTest<InterfaceNameAnalyzer, InterfaceNameCodeFixProvider>
+    public class InterfaceNameTests : CodeFixVerifier<InterfaceNameAnalyzer, InterfaceNameCodeFixProvider>
     {
         [Fact]
         public async Task InterfaceNameStartsWithLetterI()

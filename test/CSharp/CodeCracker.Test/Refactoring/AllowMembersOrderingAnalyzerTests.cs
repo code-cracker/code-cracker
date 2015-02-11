@@ -2,11 +2,11 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-namespace CodeCracker.CSharp.Test.Refactoring
+namespace CodeCracker.Test.CSharp.Refactoring
 {
     public class AllowMembersOrderingAnalyzerTests : CodeFixVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
         {
             return new AllowMembersOrderingAnalyzer();
         }

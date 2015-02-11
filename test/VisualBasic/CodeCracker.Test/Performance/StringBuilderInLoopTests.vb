@@ -2,8 +2,8 @@
 Imports Xunit
 
 Namespace Performance
-    Public Class StringBuilderLoopTests
-        Inherits CodeFixTest(Of StringBuilderInLoopAnalyzer, StringBuilderInLoopCodeFixProvider)
+    Public Class StringBuilderInLoopTests
+        Inherits CodeFixVerifier(Of StringBuilderInLoopAnalyzer, StringBuilderInLoopCodeFixProvider)
 
         <Fact>
         Public Async Function WhileWithoutAddAssignmentExpressionDoesNotCreateDiagnostic() As Task
@@ -29,7 +29,7 @@ End Namespace"
             Dim a = 0
             While A < 10
                 a += 1
-            End While".WrapInMethod()
+            End While".WrapInVBMethod()
 
             Await VerifyBasicHasNoDiagnosticsAsync(source)
         End Function
@@ -40,11 +40,11 @@ End Namespace"
             Dim a = """"
             While DateTime.Now.Second mod 2 = 10
                 a += """"
-            End While".WrapInMethod()
+            End While".WrapInVBMethod()
 
             Dim expected = GetExpected()
 
-            Await VerifyDiagnosticsAsync(source, expected)
+            Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
 
         <Fact>
@@ -64,7 +64,7 @@ End Namespace"
             Dim expected As DiagnosticResult = GetExpected()
             expected.Locations(0).Line = 7
             expected.Locations(0).Column = 17
-            Await VerifyDiagnosticsAsync(source, expected)
+            Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
 
         Private Shared Function GetExpected() As DiagnosticResult
@@ -83,9 +83,9 @@ End Namespace"
             While DateTime.Now.Second mod 2 = 0
                 a += """"
             End While
-".WrapInMethod()
+".WrapInVBMethod()
 
-            Await VerifyDiagnosticsAsync(source, GetExpected())
+            Await VerifyBasicDiagnosticAsync(source, GetExpected())
         End Function
 
         <Fact>
@@ -106,7 +106,7 @@ End Namespace"
             expected.Locations(0).Line = 7
             expected.Locations(0).Column = 17
 
-            Await VerifyDiagnosticsAsync(source, expected)
+            Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
         <Fact>
         Public Async Function WhileWithStringConcatWithSeveralConcatsOnDifferentVarsCreatesSeveralDiagnostics() As Task
@@ -118,7 +118,7 @@ End Namespace"
                 myString2 += """"
             End While
             Console.WriteLine(myString2)
-".WrapInMethod()
+".WrapInVBMethod()
 
             Dim expected1 As New DiagnosticResult With {
                     .Id = StringBuilderInLoopAnalyzer.Id,
@@ -134,7 +134,7 @@ End Namespace"
                     .Locations = {New DiagnosticResultLocation("Test0.vb", 11, 17)}
                 }
 
-            Await VerifyDiagnosticsAsync(source, expected1, expected2)
+            Await VerifyBasicDiagnosticAsync(source, expected1, expected2)
         End Function
 
         <Fact>
@@ -144,9 +144,9 @@ End Namespace"
             While DateTime.Now.Second mod 2 = 0
                 a = a + """"
             End While
-".WrapInMethod()
+".WrapInVBMethod()
 
-            Await VerifyDiagnosticsAsync(source, GetExpected())
+            Await VerifyBasicDiagnosticAsync(source, GetExpected())
         End Function
 
         <Fact>
@@ -156,7 +156,7 @@ End Namespace"
             While DateTime.Now.Second Mod 2 = 0
                 a = otherString + """"
             End While
-".WrapInMethod
+".WrapInVBMethod
             Await VerifyBasicHasNoDiagnosticsAsync(source)
         End Function
 
@@ -166,7 +166,7 @@ End Namespace"
             While DateTime.Now.Second Mod 2 = 0
                 a += ""a""
             End While
-".WrapInMethod
+".WrapInVBMethod
 
             Dim fix = "Dim a = """"
             Dim builder As New Text.StringBuilder()
@@ -175,7 +175,7 @@ End Namespace"
                 builder.Append(""a"")
             End While
             a = builder.ToString()
-".WrapInMethod()
+".WrapInVBMethod()
             Await VerifyBasicFixAsync(source, fix)
         End Function
 
@@ -226,7 +226,7 @@ End Namespace"
                 ' comment 1
                 a += ""a"" 'comment 2
             End While 'comment 4
-".WrapInMethod
+".WrapInVBMethod
 
             Dim fix = "Dim a = """"
             Dim builder As New Text.StringBuilder()
@@ -237,7 +237,7 @@ End Namespace"
                 builder.Append(""a"") 'comment 2
             End While 'comment 4
             a = builder.ToString()
-".WrapInMethod
+".WrapInVBMethod
 
             Await VerifyBasicFixAsync(source, fix)
         End Function
@@ -251,7 +251,7 @@ End Namespace"
             While (DateTime.Now.Second Mod 2 = 0)
                 a += ""a""
             End While
-".WrapInMethod()
+".WrapInVBMethod()
 
             Dim fix = "Dim a = """"
             While (DateTime.Now.Second Mod 2 = 0)
@@ -263,7 +263,7 @@ End Namespace"
                 builder.Append(""a"")
             End While
             a = builder.ToString()
-".WrapInMethod()
+".WrapInVBMethod()
 
             Await VerifyBasicFixAsync(source, fix)
         End Function
@@ -275,7 +275,7 @@ End Namespace"
             While (DateTime.Now.Second Mod 2 = 0)
                 a += ""a""
             End While
-".WrapInMethod()
+".WrapInVBMethod()
 
             Dim fix = "Dim builder = 1
             Dim a = """"
@@ -285,7 +285,7 @@ End Namespace"
                 builder1.Append(""a"")
             End While
             a = builder1.ToString()
-".WrapInMethod()
+".WrapInVBMethod()
 
             Await VerifyBasicFixAsync(source, fix)
         End Function
@@ -334,7 +334,7 @@ End Namespace"
             Dim source = "Dim a = """"
             For i As Integer = 1 To 10
                 a += ""a""
-            Next".WrapInMethod
+            Next".WrapInVBMethod
 
             Dim fix = "Dim a = """"
             Dim builder As New Text.StringBuilder()
@@ -342,7 +342,7 @@ End Namespace"
             For i As Integer = 1 To 10
                 builder.Append(""a"")
             Next
-            a = builder.ToString()".WrapInMethod
+            a = builder.ToString()".WrapInVBMethod
 
             Await VerifyBasicFixAsync(source, fix)
         End Function
@@ -353,7 +353,7 @@ End Namespace"
             For i As Integer = 1 To 10
                 a += ""b""
                 Exit For
-            Next".WrapInMethod
+            Next".WrapInVBMethod
 
             Dim builder As New System.Text.StringBuilder()
             builder.Append("a")
@@ -365,7 +365,7 @@ End Namespace"
                 builder.Append(""b"")
                 Exit For
             Next
-            a = builder.ToString()".WrapInMethod
+            a = builder.ToString()".WrapInVBMethod
 
             Await VerifyBasicFixAsync(source, fix)
         End Function
@@ -376,7 +376,7 @@ End Namespace"
             Dim a = """"
             For Each i In {1, 2, 3}
                 a += """"
-            Next".WrapInMethod
+            Next".WrapInVBMethod
 
             Dim expected As New DiagnosticResult With
                 {
@@ -385,7 +385,7 @@ End Namespace"
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 9, 17)}
             }
-            Await VerifyDiagnosticsAsync(source, expected)
+            Await VerifyBasicDiagnosticAsync(source, expected)
 
         End Function
 
@@ -394,7 +394,7 @@ End Namespace"
             Dim source = "Dim a = """"
             For Each i In {1, 2, 3}
                 a += ""a""
-            Next".WrapInMethod
+            Next".WrapInVBMethod
 
             Dim fix = "Dim a = """"
             Dim builder As New Text.StringBuilder()
@@ -402,7 +402,7 @@ End Namespace"
             For Each i In {1, 2, 3}
                 builder.Append(""a"")
             Next
-            a = builder.ToString()".WrapInMethod
+            a = builder.ToString()".WrapInVBMethod
 
             Await VerifyBasicFixAsync(source, fix)
         End Function
@@ -414,7 +414,7 @@ End Namespace"
             Do
                 a += """"
             Loop Until DateTime.Now.Second Mod 2 = 0
-".WrapInMethod
+".WrapInVBMethod
 
             Dim expected As New DiagnosticResult With
                 {
@@ -423,7 +423,7 @@ End Namespace"
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 9, 17)}
             }
-            Await VerifyDiagnosticsAsync(source, expected)
+            Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
 
         <Fact>
@@ -432,7 +432,7 @@ End Namespace"
             Do
                 a += ""a""
             Loop Until DateTime.Now.Second Mod 2 = 0
-".WrapInMethod
+".WrapInVBMethod
 
             Dim b As New System.Text.StringBuilder()
 
@@ -443,7 +443,7 @@ End Namespace"
                 builder.Append(""a"")
             Loop Until DateTime.Now.Second Mod 2 = 0
             a = builder.ToString()
-".WrapInMethod
+".WrapInVBMethod
 
             Await VerifyBasicFixAsync(source, fix)
         End Function

@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class PropertyPrivateSetTests : CodeFixTest<PropertyPrivateSetAnalyzer, PropertyPrivateSetCodeFixProvider>
+    public class PropertyPrivateSetTests : CodeFixVerifier<PropertyPrivateSetAnalyzer, PropertyPrivateSetCodeFixProvider>
     {
         [Fact]
         public async Task PropertyPrivateDeclaration()

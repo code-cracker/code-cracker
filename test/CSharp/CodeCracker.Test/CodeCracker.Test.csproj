@@ -10,7 +10,7 @@
     <ProjectGuid>{F7843158-046E-4B22-95D7-CAC7BB01283D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CodeCracker.Test</RootNamespace>
+    <RootNamespace>CodeCracker.Test.CSharp</RootNamespace>
     <AssemblyName>CodeCracker.Test.CSharp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -158,7 +158,6 @@
     <Compile Include="Style\ExistenceOperatorTests.cs" />
     <Compile Include="Performance\MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
     <Compile Include="Design\NameOfTests.cs" />
-    <Compile Include="Helpers\TestHelpers.cs" />
     <Compile Include="Refactoring\InvertForTests.cs" />
     <Compile Include="Usage\UnusedParametersTests.cs" />
     <Compile Include="Usage\IPAddressAnalyzerTests.cs" />
@@ -183,13 +182,6 @@
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsTests.cs" />
     <Compile Include="Style\StringRepresentationTests.cs" />
     <Compile Include="Usage\UriAnalyzerTests.cs" />
-    <Compile Include="Verifiers\CodeFixTest.cs" />
-    <Compile Include="Verifiers\CodeFixVerifier.cs" />
-    <Compile Include="Verifiers\DiagnosticTest.cs" />
-    <Compile Include="Verifiers\DiagnosticVerifier.cs" />
-    <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />
-    <Compile Include="Helpers\DiagnosticResult.cs" />
-    <Compile Include="Helpers\DiagnosticVerifier.Helper.cs" />
     <Compile Include="Usage\RethrowExceptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -197,7 +189,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <Compile Include="Verifiers\DiagnosticVerifier.Extras.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Common\CodeCracker.Common\CodeCracker.Common.csproj">

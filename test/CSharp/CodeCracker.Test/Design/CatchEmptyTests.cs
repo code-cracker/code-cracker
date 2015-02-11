@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class CatchEmptyTests : CodeFixTest<CatchEmptyAnalyzer, CatchEmptyCodeFixProvider>
+    public class CatchEmptyTests : CodeFixVerifier<CatchEmptyAnalyzer, CatchEmptyCodeFixProvider>
     {
 
         [Fact]

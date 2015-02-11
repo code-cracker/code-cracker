@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Refactoring
     Public Class ParameterRefactoryTests
-        Inherits CodeFixTest(Of ParameterRefactoryAnalyzer, ParameterRefactoryCodeFixProvider)
+        Inherits CodeFixVerifier(Of ParameterRefactoryAnalyzer, ParameterRefactoryCodeFixProvider)
 
         <Fact>
         Public Async Function WhenMethodDoesNotThreeParametersNotSuggestNewClass() As Task

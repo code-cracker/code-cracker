@@ -2,9 +2,9 @@
 using Microsoft.CodeAnalysis;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class UseInvokeMethodToFireEventTests : CodeFixTest<UseInvokeMethodToFireEventAnalyzer, UseInvokeMethodToFireEventCodeFixProvider>
+    public class UseInvokeMethodToFireEventTests : CodeFixVerifier<UseInvokeMethodToFireEventAnalyzer, UseInvokeMethodToFireEventCodeFixProvider>
     {
         [Fact]
         public async void WarningIfEventIsFiredDirectly()
@@ -190,7 +190,7 @@ namespace CodeCracker.CSharp.Test.Design
         public async void IgnoreMemberAccess()
         {
             var test = @"var tuple = new Tuple<int, Action>(1, null);
-tuple.Item2();".WrapInMethod();
+tuple.Item2();".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }

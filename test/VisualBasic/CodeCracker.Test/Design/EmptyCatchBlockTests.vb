@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Design
     Public Class EmptyCatchBlockTests
-        Inherits CodeFixTest(Of EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider)
+        Inherits CodeFixVerifier(Of EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider)
 
         Private test = "
 Imports System

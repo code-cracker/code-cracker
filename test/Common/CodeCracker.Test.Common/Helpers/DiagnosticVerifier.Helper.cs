@@ -1,18 +1,24 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
-namespace CodeCracker.CSharp.Test
+namespace CodeCracker.Test
 {
-    public static class TestHelpers
+    /// <summary>
+    /// Class for turning strings into documents and getting the diagnostics on them
+    /// All methods are static
+    /// </summary>
+    public abstract partial class DiagnosticVerifier
     {
         private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromAssembly(typeof(object).Assembly);
         private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromAssembly(typeof(Enumerable).Assembly);
@@ -27,6 +33,63 @@ namespace CodeCracker.CSharp.Test
         internal static string CSharpDefaultFilePath = DefaultFilePathPrefix + 0 + "." + CSharpDefaultFileExt;
         internal static string VisualBasicDefaultFilePath = DefaultFilePathPrefix + 0 + "." + VisualBasicDefaultExt;
         internal static string TestProjectName = "TestProject";
+
+        /// <summary>
+        /// Given classes in the form of strings, their language, and an IDiagnosticAnlayzer to apply to it, return the diagnostics found in the string after converting it to a document.
+        /// </summary>
+        /// <param name="sources">Classes in the form of strings</param>
+        /// <param name="language">The language the soruce classes are in</param>
+        /// <param name="analyzer">The analyzer to be run on the sources</param>
+        /// <returns>An IEnumerable of Diagnostics that surfaced in teh source code, sorted by Location</returns>
+        private static async Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer)
+        {
+            return await GetSortedDiagnosticsFromDocumentsAsync(analyzer, GetDocuments(sources, language));
+        }
+
+        /// <summary>
+        /// Given an analyzer and a document to apply it to, run the analyzer and gather an array of diagnostics found in it.
+        /// The returned diagnostics are then ordered by location in the source document.
+        /// </summary>
+        /// <param name="analyzer">The analyzer to run on the documents</param>
+        /// <param name="documents">The Documents that the analyzer will be run on</param>
+        /// <param name="spans">Optional TextSpan indicating where a Diagnostic will be found</param>
+        /// <returns>An IEnumerable of Diagnostics that surfaced in teh source code, sorted by Location</returns>
+        protected async static Task<Diagnostic[]> GetSortedDiagnosticsFromDocumentsAsync(DiagnosticAnalyzer analyzer, Document[] documents)
+        {
+            var projects = new HashSet<Project>();
+            foreach (var document in documents)
+                projects.Add(document.Project);
+
+            var diagnostics = new List<Diagnostic>();
+            foreach (var project in projects)
+            {
+                var compilation = await project.GetCompilationAsync();
+                var driver = AnalyzerDriver.Create(compilation, ImmutableArray.Create(analyzer), null, out compilation, CancellationToken.None);
+                var discarded = compilation.GetDiagnostics();
+                var diags = await driver.GetDiagnosticsAsync();
+                foreach (var diag in diags)
+                {
+                    if (diag.Location == Location.None || diag.Location.IsInMetadata)
+                    {
+                        diagnostics.Add(diag);
+                    }
+                    else
+                    {
+                        foreach (var document in project.Documents)
+                        {
+                            var tree = await document.GetSyntaxTreeAsync();
+                            if (tree == diag.Location.SourceTree)
+                                diagnostics.Add(diag);
+                        }
+                    }
+                }
+            }
+            var results = SortDiagnostics(diagnostics);
+            return results;
+        }
+
+        private static Diagnostic[] SortDiagnostics(List<Diagnostic> diagnostics) =>
+            diagnostics.OrderBy(d => d.Location.SourceTree.FilePath).ThenBy(d => d.Location.SourceSpan.Start).ToArray();
 
         #region Set up compilation and documents
         /// <summary>
@@ -124,13 +187,6 @@ namespace CodeCracker.CSharp.Test
         }
         #endregion
 
-        public static async Task<string> FormatSourceAsync(string language, string source)
-        {
-            var document = CreateDocument(source, language);
-            var newDoc = await Formatter.FormatAsync(document);
-            return (await newDoc.GetSyntaxRootAsync()).ToFullString();
-        }
-
         /// <summary>
         /// Given a document, turn it into a string based on the syntax root
         /// </summary>
@@ -144,21 +200,12 @@ namespace CodeCracker.CSharp.Test
             return root.GetText().ToString();
         }
 
-        public static string WrapInMethod(this string code, bool isAsync = false)
+        public static async Task<string> FormatSourceAsync(string language, string source)
         {
-            return $@"
-    using System;
-
-    namespace ConsoleApplication1
-    {{
-        class TypeName
-        {{
-            public {(isAsync ? "async " : "")}void Foo()
-            {{
-                {code}
-            }}
-        }}
-    }}";
+            var document = CreateDocument(source, language);
+            var newDoc = await Formatter.FormatAsync(document);
+            return (await newDoc.GetSyntaxRootAsync()).ToFullString();
         }
     }
 }
+

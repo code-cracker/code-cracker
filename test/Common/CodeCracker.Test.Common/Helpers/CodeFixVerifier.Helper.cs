@@ -5,13 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.CSharp.Test
+namespace CodeCracker.Test
 {
     /// <summary>
     /// Diagnostic Producer class with extra methods dealing with applying codefixes
     /// All methods are static
     /// </summary>
-    public abstract partial class CodeFixVerifier : DiagnosticVerifier
+    public abstract partial class CodeFixVerifier
     {
         /// <summary>
         /// Apply the inputted CodeAction to the inputted document.
@@ -75,4 +75,3 @@ namespace CodeCracker.CSharp.Test
         }
     }
 }
-

@@ -6,17 +6,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Refactoring
+namespace CodeCracker.Test.CSharp.Refactoring
 {
     public class BaseAllowMembersOrderingCodeFixProviderTests :
-        CodeFixTest<AllowMembersOrderingAnalyzer, BaseAllowMembersOrderingCodeFixProviderTests.MockCodeFixProvider>
+        CodeFixVerifier<AllowMembersOrderingAnalyzer, BaseAllowMembersOrderingCodeFixProviderTests.MockCodeFixProvider>
     {
         [Theory]
         [InlineData("class", "void B() { };", "void A() { };")]
         [InlineData("struct", "int c = 3, d = 4;", "int a = 1, b = 2;")]
         public async Task BaseAllowMembersOrderingShouldCallIComparerToOrder(string typeDeclaration, string memberA, string memberB)
         {
-            var codeFixProvider = base.GetCSharpCodeFixProvider() as MockCodeFixProvider;
+            var codeFixProvider = base.GetCodeFixProvider() as MockCodeFixProvider;
 
             var source = @"
             public " + typeDeclaration + @" Foo

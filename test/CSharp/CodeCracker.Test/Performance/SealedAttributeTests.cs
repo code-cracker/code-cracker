@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Performance
+namespace CodeCracker.Test.CSharp.Performance
 {
-    public class SealedAttributeTests : CodeFixTest<SealedAttributeAnalyzer, SealedAttributeCodeFixProvider>
+    public class SealedAttributeTests : CodeFixVerifier<SealedAttributeAnalyzer, SealedAttributeCodeFixProvider>
     {
         [Fact]
         public async Task ApplySealedWhenClassInheritsFromSystemAttributeClass()

@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class StringFormatTests : CodeFixTest<StringFormatAnalyzer, StringFormatCodeFixProvider>
+    public class StringFormatTests : CodeFixVerifier<StringFormatAnalyzer, StringFormatCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresRegularStrings()

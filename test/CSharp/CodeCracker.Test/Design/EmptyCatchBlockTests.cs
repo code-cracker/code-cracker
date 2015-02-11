@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class EmptyCatchBlockTests : CodeFixTest<EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider>
+    public class EmptyCatchBlockTests : CodeFixVerifier<EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider>
     {
         readonly string test = @"
     using System;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 
-namespace CodeCracker.CSharp.Test
+namespace CodeCracker.Test
 {
     /// <summary>
     /// Location where the diagnostic appears, as determined by path, line number, and column number.
@@ -19,14 +19,14 @@ namespace CodeCracker.CSharp.Test
                 throw new ArgumentOutOfRangeException("Both line and column must be >= -1");
             }
 
-            this.Path = path;
-            this.Line = line;
-            this.Column = column;
+            Path = path;
+            Line = line;
+            Column = column;
         }
 
-        public readonly string Path;
-        public readonly int Line;
-        public readonly int Column;
+        public string Path { get; set; }
+        public int Line { get; set; }
+        public int Column { get; set; }
     }
 
     /// <summary>
@@ -40,16 +40,16 @@ namespace CodeCracker.CSharp.Test
         {
             get
             {
-                if (this.locations == null)
+                if (locations == null)
                 {
-                    this.locations = new DiagnosticResultLocation[] { };
+                    locations = new DiagnosticResultLocation[] { };
                 }
-                return this.locations;
+                return locations;
             }
 
             set
             {
-                this.locations = value;
+                locations = value;
             }
         }
 
@@ -63,7 +63,7 @@ namespace CodeCracker.CSharp.Test
         {
             get
             {
-                return this.Locations.Length > 0 ? this.Locations[0].Path : "";
+                return Locations.Length > 0 ? Locations[0].Path : "";
             }
         }
 
@@ -71,7 +71,7 @@ namespace CodeCracker.CSharp.Test
         {
             get
             {
-                return this.Locations.Length > 0 ? this.Locations[0].Line : -1;
+                return Locations.Length > 0 ? Locations[0].Line : -1;
             }
         }
 
@@ -79,7 +79,7 @@ namespace CodeCracker.CSharp.Test
         {
             get
             {
-                return this.Locations.Length > 0 ? this.Locations[0].Column : -1;
+                return Locations.Length > 0 ? Locations[0].Column : -1;
             }
         }
     }

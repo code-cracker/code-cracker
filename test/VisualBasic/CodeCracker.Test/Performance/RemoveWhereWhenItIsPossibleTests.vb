@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Performance
     Public Class RemoveWhereWhenItIsPossibleTests
-        Inherits CodeFixTest(Of RemoveWhereWhenItIsPossibleAnalyzer, RemoveWhereWhenItIsPossibleCodeFixProvider)
+        Inherits CodeFixVerifier(Of RemoveWhereWhenItIsPossibleAnalyzer, RemoveWhereWhenItIsPossibleCodeFixProvider)
 
         <Theory>
         <InlineData("First")>
@@ -34,7 +34,7 @@ End Namespace"
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 7, 23)}
             }
 
-            Await VerifyDiagnosticsAsync(test, expected)
+            Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 
         <Theory>

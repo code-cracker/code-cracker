@@ -3,10 +3,10 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class SimplifyRedundantBooleanComparisonsTests
-        : CodeFixTest<SimplifyRedundantBooleanComparisonsAnalyzer, SimplifyRedundantBooleanComparisonsCodeFixProvider>
+        : CodeFixVerifier<SimplifyRedundantBooleanComparisonsAnalyzer, SimplifyRedundantBooleanComparisonsCodeFixProvider>
     {
         [Theory]
         [InlineData("if (foo == true) {}", 21)]
@@ -29,7 +29,7 @@ namespace CodeCracker.CSharp.Test.Usage
         {
             sample = "bool foo; " + sample; // add declaration of foo
             column += 10;                   // adjust column for added declaration
-            var test = sample.WrapInMethod();
+            var test = sample.WrapInCSharpMethod();
 
             var expected = new DiagnosticResult
             {
@@ -61,7 +61,7 @@ namespace CodeCracker.CSharp.Test.Usage
         public async Task IgnoresWhenComparingWithNotBool(string sample)
         {
             sample = "bool foo; " + sample;
-            var test = sample.WrapInMethod();
+            var test = sample.WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -72,7 +72,7 @@ namespace CodeCracker.CSharp.Test.Usage
         public async Task IgnoresIncompleteComparisonExpression(string sample)
         {
             sample = "bool foo; " + sample;
-            var test = sample.WrapInMethod();
+            var test = sample.WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -97,8 +97,8 @@ namespace CodeCracker.CSharp.Test.Usage
         {
             original = "bool foo;" + original;
             result = "bool foo; " + result;
-            var test = original.WrapInMethod();
-            var fixtest = result.WrapInMethod();
+            var test = original.WrapInCSharpMethod();
+            var fixtest = result.WrapInCSharpMethod();
 
             await VerifyCSharpFixAsync(test, fixtest);
         }

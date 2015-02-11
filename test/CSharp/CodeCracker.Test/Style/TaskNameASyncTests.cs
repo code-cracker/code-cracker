@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class TaskNameAsyncTests : CodeFixTest<TaskNameAsyncAnalyzer, TaskNameAsyncCodeFixProvider>
+    public class TaskNameAsyncTests : CodeFixVerifier<TaskNameAsyncAnalyzer, TaskNameAsyncCodeFixProvider>
     {
         [Fact]
         public async Task TaskNameAsyncMethodCorrect()

@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class TernaryOperatorWithAssignmentTests : CodeFixTest<TernaryOperatorAnalyzer, TernaryOperatorWithAssignmentCodeFixProvider>
+    public class TernaryOperatorWithAssignmentTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithAssignmentCodeFixProvider>
     {
         private const string source = @"
     namespace ConsoleApplication1
@@ -265,7 +265,7 @@ namespace CodeCracker.CSharp.Test.Style
         }
     }
 
-    public class TernaryOperatorWithReturnTests : CodeFixTest<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
+    public class TernaryOperatorWithReturnTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
     {
         [Fact]
         public async Task WhenUsingIfAndElseWithDirectReturnChangeToTernaryFix()

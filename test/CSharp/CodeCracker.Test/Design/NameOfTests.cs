@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class NameOfTests : CodeFixTest<NameOfAnalyzer, NameOfCodeFixProvider>
+    public class NameOfTests : CodeFixVerifier<NameOfAnalyzer, NameOfCodeFixProvider>
     {
         [Fact]
         public async Task IgnoreIfStringLiteralIsWhiteSpace()

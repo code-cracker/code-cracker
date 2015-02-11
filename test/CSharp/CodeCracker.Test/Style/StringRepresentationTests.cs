@@ -4,10 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
     public class StringRepresentationTests
-        : CodeFixTest<StringRepresentationAnalyzer, StringRepresentationCodeFixProvider>
+        : CodeFixVerifier<StringRepresentationAnalyzer, StringRepresentationCodeFixProvider>
     {
 
         [Fact]

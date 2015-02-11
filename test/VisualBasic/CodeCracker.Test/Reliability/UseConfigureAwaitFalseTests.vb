@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Reliability
     Public Class UseConfigureAwaitFalseTests
-        Inherits CodeFixTest(Of UseConfigureAwaitFalseAnalyzer, UseConfigureAwaitFalseCodeFixProvider)
+        Inherits CodeFixVerifier(Of UseConfigureAwaitFalseAnalyzer, UseConfigureAwaitFalseCodeFixProvider)
 
         <Theory>
         <InlineData("Dim t As System.Threading.Tasks.Task: Await t", 51)>
@@ -13,14 +13,14 @@ Namespace Reliability
         <InlineData("Await System.Threading.Tasks.Task.Run(Sub() )", 13)>
         <InlineData("Dim f As Func(Of System.Threading.Tasks.Task) : Await f()", 61)>
         Public Async Function WhenAwaitingTaskAnalyzerCreatesDiagnostic(sample As String, column As Integer) As Task
-            Dim test = sample.WrapInMethod(isAsync:=True)
+            Dim test = sample.WrapInVBMethod(isAsync:=True)
             Dim expected = New DiagnosticResult With {
                 .Id = DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId(),
                 .Message = "Consider using ConfigureAwait(False) on the awaited task.",
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 6, column)}
             }
-            Await VerifyDiagnosticsAsync(test, expected)
+            Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 
         <Theory>
@@ -33,7 +33,7 @@ Namespace Reliability
         <InlineData("Await System.Threading.Tasks.Task.Yield()")>
         <InlineData("Await UnknownAsync()")>
         Public Async Function WhenAwaitingANonTaskNoDiagnosticIsCreated(sample As String) As Task
-            Dim test = sample.WrapInMethod(isAsync:=True)
+            Dim test = sample.WrapInVBMethod(isAsync:=True)
             Await VerifyBasicHasNoDiagnosticsAsync(test)
         End Function
 
@@ -57,8 +57,8 @@ Namespace Reliability
             "Dim f As Func(Of System.Threading.Tasks.Task): Await F()",
             "Dim f As Func(Of System.Threading.Tasks.Task): Await F().ConfigureAwait(False)")>
         Public Async Function FixAddsConfigureAwaitFalse(original As String, result As String) As Task
-            Dim test = original.WrapInMethod(isAsync:=True)
-            Dim fix = result.WrapInMethod(isAsync:=True)
+            Dim test = original.WrapInVBMethod(isAsync:=True)
+            Dim fix = result.WrapInVBMethod(isAsync:=True)
 
             Await VerifyBasicFixAsync(test, fix)
         End Function

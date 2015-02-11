@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Reliability
+namespace CodeCracker.Test.CSharp.Reliability
 {
-    public class UseConfigureAwaitFalseTests : CodeFixTest<UseConfigureAwaitFalseAnalyzer, UseConfigureAwaitFalseCodeFixProvider>
+    public class UseConfigureAwaitFalseTests : CodeFixVerifier<UseConfigureAwaitFalseAnalyzer, UseConfigureAwaitFalseCodeFixProvider>
     {
         [Theory]
         [InlineData("System.Threading.Tasks.Task t; await t;", 48)]
@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Test.Reliability
         [InlineData("Func<System.Threading.Tasks.Task> f; await f();", 54)]
         public async Task WhenAwaitingTaskAnalyzerCreatesDiagnostic(string sample, int column)
         {
-            var test = sample.WrapInMethod(isAsync: true);
+            var test = sample.WrapInCSharpMethod(isAsync: true);
 
             var expected = new DiagnosticResult
             {
@@ -40,7 +40,7 @@ namespace CodeCracker.CSharp.Test.Reliability
         [InlineData("await UnknownAsync();")]
         public async Task WhenAwaitingANonTaskNoDiagnosticIsCreated(string sample)
         {
-            var test = sample.WrapInMethod(isAsync: true);
+            var test = sample.WrapInCSharpMethod(isAsync: true);
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -65,8 +65,8 @@ namespace CodeCracker.CSharp.Test.Reliability
             "Func<System.Threading.Tasks.Task> f; await f().ConfigureAwait(false);")]
         public async Task FixAddsConfigureAwaitFalse(string original, string result)
         {
-            var test = original.WrapInMethod(isAsync: true);
-            var fixtest = result.WrapInMethod(isAsync: true);
+            var test = original.WrapInCSharpMethod(isAsync: true);
+            var fixtest = result.WrapInCSharpMethod(isAsync: true);
 
             await VerifyCSharpFixAsync(test, fixtest);
         }

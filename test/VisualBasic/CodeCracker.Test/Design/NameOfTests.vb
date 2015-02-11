@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Design
     Public Class NameOfTests
-        Inherits CodeFixTest(Of NameOfAnalyzer, NameOfCodeFixProvider)
+        Inherits CodeFixVerifier(Of NameOfAnalyzer, NameOfCodeFixProvider)
 
         <Fact>
         Public Async Function IgnoreIfStringLiteralIsWhitespace() As Task
@@ -81,7 +81,7 @@ End Class"
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 4, 24)}
             }
 
-            Await VerifyDiagnosticsAsync(test, expected)
+            Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 
         <Fact>

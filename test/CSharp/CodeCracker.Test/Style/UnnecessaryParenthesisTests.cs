@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class UnnecessaryParenthesisTests : CodeFixTest<UnnecessaryParenthesisAnalyzer, UnnecessaryParenthesisCodeFixProvider>
+    public class UnnecessaryParenthesisTests : CodeFixVerifier<UnnecessaryParenthesisAnalyzer, UnnecessaryParenthesisCodeFixProvider>
     {
         [Fact]
         public async Task ConstructorWithEmptyParenthesisWithInitializerTriggersFix()

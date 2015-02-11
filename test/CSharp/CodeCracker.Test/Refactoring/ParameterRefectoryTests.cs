@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Refactoring
+namespace CodeCracker.Test.CSharp.Refactoring
 {
-    public class ParameterRefectoryTests : CodeFixTest<ParameterRefactoryAnalyzer, ParameterRefactoryCodeFixProvider>
+    public class ParameterRefectoryTests : CodeFixVerifier<ParameterRefactoryAnalyzer, ParameterRefactoryCodeFixProvider>
     {
 
         [Fact]

@@ -3,10 +3,10 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.CSharp.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "CC0065", Justification = "This is the remove trailing whitespace test class.")]
-    public class RemoveTrailingWhitespaceTests : CodeFixTest<RemoveTrailingWhitespaceAnalyzer, RemoveTrailingWhitespaceCodeFixProvider>
+    public class RemoveTrailingWhitespaceTests : CodeFixVerifier<RemoveTrailingWhitespaceAnalyzer, RemoveTrailingWhitespaceCodeFixProvider>
     {
         [Fact]
         public async Task SingleStatementWithTrailingSpaceCreatesDiagnostic()
@@ -88,7 +88,7 @@ namespace Foo
         public async Task StringWithTrailingWhitespaceDoesNotCreateDiagnostic()
         {
             var source = @"var s = @"" 
-"";".WrapInMethod();
+"";".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 

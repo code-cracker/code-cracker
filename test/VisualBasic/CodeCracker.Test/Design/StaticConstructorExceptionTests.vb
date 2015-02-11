@@ -7,7 +7,7 @@ Imports Xunit
 
 Namespace Design
     Public Class StaticConstructorExceptionTests
-        Inherits CodeFixTest(Of StaticConstructorExceptionAnalyzer, StaticConstructorExceptionCodeFixProvider)
+        Inherits CodeFixVerifier(Of StaticConstructorExceptionAnalyzer, StaticConstructorExceptionCodeFixProvider)
 
         <Fact>
         Public Async Function WarningIfExceptionIsThrownInsideStaticConstructor() As Task
@@ -24,7 +24,7 @@ End Class"
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", 4, 9)}
             }
-            Await VerifyDiagnosticsAsync(test, expected)
+            Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 
         <Fact>

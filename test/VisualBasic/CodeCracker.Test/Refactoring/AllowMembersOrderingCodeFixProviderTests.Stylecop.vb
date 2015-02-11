@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Refactoring
     Public Class StyleCopAllowMembersOrderingCodeFixProviderTests
-        Inherits CodeFixTest(Of AllowMembersOrderingAnalyzer, StyleCopAllowMembersOrderingCodeFixProvider)
+        Inherits CodeFixVerifier(Of AllowMembersOrderingAnalyzer, StyleCopAllowMembersOrderingCodeFixProvider)
 
         <Fact>
         Public Async Function StyleCopAllowMembersOrderingShouldAssureMembersOrderingByType() As Task
