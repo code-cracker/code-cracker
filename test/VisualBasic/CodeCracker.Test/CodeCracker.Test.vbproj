@@ -212,6 +212,10 @@
       <Project>{41fa4971-d354-4647-a269-4a886da2ef4c}</Project>
       <Name>CodeCracker</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Common\CodeCracker.Test.Common\CodeCracker.Test.Common.csproj">
+      <Project>{1cd1a3ee-28ce-404b-a59e-aeacf762d938}</Project>
+      <Name>CodeCracker.Test.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0386\tools\analyzers\CodeCracker.VisualBasic.dll" />

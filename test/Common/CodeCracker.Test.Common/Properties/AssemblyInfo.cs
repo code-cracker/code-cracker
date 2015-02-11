@@ -3,7 +3,7 @@ using System.Resources;
 using System.Runtime.InteropServices;
 
 
-[assembly: AssemblyTitle("CodeCracker.Test")]
+[assembly: AssemblyTitle("CodeCracker.Test.Common")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]

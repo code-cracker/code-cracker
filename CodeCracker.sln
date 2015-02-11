@@ -52,6 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C5584F20-6
 		test.ps1 = test.ps1
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Test.Common", "test\Common\CodeCracker.Test.Common\CodeCracker.Test.Common.csproj", "{1CD1A3EE-28CE-404B-A59E-AEACF762D938}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,12 @@ Global
 		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.DebugNoVsix|Any CPU.Build.0 = Debug|Any CPU
 		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.DebugNoVsix|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.DebugNoVsix|Any CPU.Build.0 = Debug|Any CPU
+		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
