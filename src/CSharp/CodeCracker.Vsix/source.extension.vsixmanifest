@@ -19,7 +19,7 @@ This is a community project, free and open source. Everyone is invited to contri
     <InstallationTarget Version="[14.0,15.0)" Id="Microsoft.VisualStudio.Ultimate" />
   </Installation>
   <Dependencies>
-    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,5.0]" />
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="CodeCracker" Path="|CodeCracker|"/>
