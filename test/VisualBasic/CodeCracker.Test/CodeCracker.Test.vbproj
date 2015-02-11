@@ -172,6 +172,7 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Stylecop.vb" />
     <Compile Include="Refactoring\ParameterRefactoryTests.vb" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.vb" />
+    <Compile Include="Style\InterfaceNameTests.vb" />
     <Compile Include="Verifiers\CodeFixTest.vb" />
     <Compile Include="Verifiers\CodeFixVerifier.vb" />
     <Compile Include="Verifiers\DiagnosticVerifier.Extras.vb" />
