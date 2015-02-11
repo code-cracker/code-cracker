@@ -203,7 +203,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0365\tools\analyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0386\tools\analyzers\CodeCracker.CSharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>

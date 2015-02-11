@@ -173,7 +173,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0365\tools\analyzers\CodeCracker.VisualBasic.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0386\tools\analyzers\CodeCracker.VisualBasic.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -45,9 +45,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0365\tools\analyzers\CodeCracker.CSharp.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
@@ -73,6 +70,9 @@
     <Reference Include="System.Reflection.Metadata">
       <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.17-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha3-0386\tools\analyzers\CodeCracker.CSharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
