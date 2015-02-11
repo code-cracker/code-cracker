@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace TestHelper
+namespace CodeCracker.CSharp.Test
 {
     /// <summary>
     /// Superclass of all Unit tests made for diagnostics with codefixes.

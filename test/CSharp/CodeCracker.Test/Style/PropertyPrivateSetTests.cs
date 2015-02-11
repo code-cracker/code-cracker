@@ -1,6 +1,5 @@
 ﻿using CodeCracker.CSharp.Style;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
 namespace CodeCracker.CSharp.Test.Style

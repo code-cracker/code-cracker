@@ -1,7 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 namespace CodeCracker.CSharp.Test.Refactoring
 {

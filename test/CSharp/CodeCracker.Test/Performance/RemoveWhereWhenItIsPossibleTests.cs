@@ -1,8 +1,6 @@
 ﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
 namespace CodeCracker.CSharp.Test.Performance

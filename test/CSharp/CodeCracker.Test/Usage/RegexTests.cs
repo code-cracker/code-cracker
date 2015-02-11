@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
 namespace CodeCracker.CSharp.Test.Usage

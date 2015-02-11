@@ -1,15 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TestHelper
+namespace CodeCracker.CSharp.Test
 {
     /// <summary>
     /// Class for turning strings into documents and getting the diagnostics on them

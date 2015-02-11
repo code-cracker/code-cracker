@@ -1,7 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
 namespace CodeCracker.CSharp.Test.Refactoring
@@ -117,7 +116,7 @@ namespace CodeCracker.CSharp.Test.Refactoring
         public async Task FixReplacesForNTo0With0ToN()
         {
             var test = WrapInMethod(@"for (var i = n - 1; i >= 0; i--){}");
-            var fixtest = WrapInMethod(@"for (var i = 0; i < n; i++){}"); 
+            var fixtest = WrapInMethod(@"for (var i = 0; i < n; i++){}");
             await VerifyCSharpFixAsync(test, fixtest, 0);
         }
 

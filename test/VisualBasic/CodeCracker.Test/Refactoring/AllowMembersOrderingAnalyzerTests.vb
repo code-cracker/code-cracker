@@ -4,7 +4,7 @@ Imports Xunit
 
 Namespace Refactoring
     Public Class AllowMembersOrderingAnalyzerTests
-        Inherits TestHelper.CodeFixVerifier
+        Inherits CodeFixVerifier
 
         Protected Overrides Function GetDiagnosticAnalyzer() As DiagnosticAnalyzer
             Return New AllowMembersOrderingAnalyzer()
@@ -40,14 +40,14 @@ End {0}", typeDeclaration)
         Return 0
     End Function
     Sub car()
-    End Sub    
+    End Sub
 End {0}", typeDeclaration)
 
-            Dim expected = New TestHelper.DiagnosticResult With {
+            Dim expected = New DiagnosticResult With {
                 .Id = AllowMembersOrderingAnalyzer.Id,
                 .Message = AllowMembersOrderingAnalyzer.MessageFormat,
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden,
-                .Locations = {New TestHelper.DiagnosticResultLocation("Test0.vb", 2, 14 + typeDeclaration.Length)}
+                .Locations = {New DiagnosticResultLocation("Test0.vb", 2, 14 + typeDeclaration.Length)}
                 }
             Await VerifyDiagnosticsAsync(test, expected)
         End Function

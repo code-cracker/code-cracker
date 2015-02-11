@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace TestHelper
+namespace CodeCracker.CSharp.Test
 {
     public abstract class CodeFixTest<T, U> : CodeFixVerifier
         where T : DiagnosticAnalyzer, new()

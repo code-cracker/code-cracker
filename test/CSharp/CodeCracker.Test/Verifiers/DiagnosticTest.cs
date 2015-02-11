@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 
 namespace CodeCracker.CSharp.Test.Verifiers
 {

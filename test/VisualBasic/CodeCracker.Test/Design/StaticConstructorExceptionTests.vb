@@ -1,5 +1,4 @@
 ﻿Imports CodeCracker.VisualBasic.Design
-Imports CodeCracker.Test.TestHelper
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax

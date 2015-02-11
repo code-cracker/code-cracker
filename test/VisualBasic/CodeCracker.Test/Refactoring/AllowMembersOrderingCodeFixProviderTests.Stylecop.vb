@@ -1,13 +1,13 @@
 ﻿Imports CodeCracker.VisualBasic.Refactoring
-Imports CodeCracker.Test.TestHelper
 Imports Xunit
 
-Public Class StyleCopAllowMembersOrderingCodeFixProviderTests
-    Inherits CodeFixTest(Of AllowMembersOrderingAnalyzer, StyleCopAllowMembersOrderingCodeFixProvider)
+Namespace Refactoring
+    Public Class StyleCopAllowMembersOrderingCodeFixProviderTests
+        Inherits CodeFixTest(Of AllowMembersOrderingAnalyzer, StyleCopAllowMembersOrderingCodeFixProvider)
 
-    <Fact>
-    Public Async Function StyleCopAllowMembersOrderingShouldAssureMembersOrderingByType() As Task
-        Const source = "
+        <Fact>
+        Public Async Function StyleCopAllowMembersOrderingShouldAssureMembersOrderingByType() As Task
+            Const source = "
 Class Foo
     Public Class Class1
 
@@ -44,7 +44,7 @@ Class Foo
     Public b = 0
 End Class"
 
-        Const expected = "
+            Const expected = "
 Class Foo
     Public b = 0
     Sub New()
@@ -81,12 +81,12 @@ Class Foo
     End Class
 End Class"
 
-        Await VerifyBasicFixAsync(source, expected)
-    End Function
+            Await VerifyBasicFixAsync(source, expected)
+        End Function
 
-    <Fact>
-    Public Async Function StyleCopAllowMembersOrderingShouldAssureMembersOrderByModifiers() As Task
-        Const source = "
+        <Fact>
+        Public Async Function StyleCopAllowMembersOrderingShouldAssureMembersOrderByModifiers() As Task
+            Const source = "
 Public Class Foo1
     Private p = 0
     Protected q = 0
@@ -99,7 +99,7 @@ Public Class Foo1
     Public Const z = 0
 End Class"
 
-        Const expected = "
+            Const expected = "
 Public Class Foo1
     Public Const z = 0
     Public Shared v = 0
@@ -112,12 +112,12 @@ Public Class Foo1
     Private p = 0
 End Class"
 
-        Await VerifyBasicFixAsync(source, expected)
-    End Function
+            Await VerifyBasicFixAsync(source, expected)
+        End Function
 
-    <Fact>
-    Public Async Function StyleCopAllowmembersOrderingShouldAssureMembersOrderByAlphabeticalOrder() As Task
-        Const source = "
+        <Fact>
+        Public Async Function StyleCopAllowmembersOrderingShouldAssureMembersOrderByAlphabeticalOrder() As Task
+            Const source = "
 Public Class Foo2
     Private c = 2, d = 3
     Private a = 0, b = 1
@@ -186,7 +186,7 @@ Public Class Foo2
     End Class
 End Class"
 
-        Const expected = "
+            Const expected = "
 Public Class Foo2
     Private a = 0, b = 1
     Private c = 2, d = 3
@@ -255,14 +255,14 @@ Public Class Foo2
     End Class
 End Class"
 
-        Await VerifyBasicFixAsync(source, expected)
-    End Function
+            Await VerifyBasicFixAsync(source, expected)
+        End Function
 
-    <Theory>
-    <InlineData("Structure")>
-    <InlineData("Class")>
-    Public Async Function StyleCopAllowMembersOrderingShouldAssureMembersOrderByStyleCopPatterns(typeDeclaration As String) As Task
-        Dim source = "
+        <Theory>
+        <InlineData("Structure")>
+        <InlineData("Class")>
+        Public Async Function StyleCopAllowMembersOrderingShouldAssureMembersOrderByStyleCopPatterns(typeDeclaration As String) As Task
+            Dim source = "
 Imports System
 Namespace ConsoleApplication1
     " & typeDeclaration & " Foo3
@@ -322,7 +322,7 @@ Namespace ConsoleApplication1
 
 End Namespace"
 
-        Dim expected = "
+            Dim expected = "
 Imports System
 Namespace ConsoleApplication1
     " & typeDeclaration & " Foo3
@@ -382,6 +382,7 @@ Namespace ConsoleApplication1
 
 End Namespace"
 
-        Await VerifyBasicFixAsync(source, expected)
-    End Function
-End Class
+            Await VerifyBasicFixAsync(source, expected)
+        End Function
+    End Class
+End Namespace

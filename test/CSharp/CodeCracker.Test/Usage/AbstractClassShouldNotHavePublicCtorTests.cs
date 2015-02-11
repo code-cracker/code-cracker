@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
-using TestHelper;
 using Xunit;
 
 namespace CodeCracker.CSharp.Test.Usage

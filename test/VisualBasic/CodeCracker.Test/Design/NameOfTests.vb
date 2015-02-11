@@ -1,5 +1,4 @@
 ﻿Imports CodeCracker.VisualBasic.Design
-Imports CodeCracker.Test.TestHelper
 Imports Xunit
 
 Namespace Design

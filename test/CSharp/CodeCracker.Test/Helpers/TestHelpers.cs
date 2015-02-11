@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace TestHelper
+namespace CodeCracker.CSharp.Test
 {
     public static class TestHelpers
     {

@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CodeCracker.Test</RootNamespace>
+    <RootNamespace>CodeCracker.Test.VisualBasic</RootNamespace>
     <AssemblyName>CodeCracker.Test.VisualBasic</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>

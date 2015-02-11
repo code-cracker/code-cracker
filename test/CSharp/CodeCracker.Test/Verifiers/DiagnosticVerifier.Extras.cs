@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace TestHelper
+namespace CodeCracker.CSharp.Test
 {
     public abstract partial class DiagnosticVerifier
     {

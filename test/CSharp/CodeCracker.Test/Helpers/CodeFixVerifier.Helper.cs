@@ -1,13 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TestHelper
+namespace CodeCracker.CSharp.Test
 {
     /// <summary>
     /// Diagnostic Producer class with extra methods dealing with applying codefixes

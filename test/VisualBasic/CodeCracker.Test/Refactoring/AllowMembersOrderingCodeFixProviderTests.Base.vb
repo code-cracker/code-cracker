@@ -1,13 +1,12 @@
 ﻿Imports System.Threading
 Imports CodeCracker.VisualBasic.Refactoring
-Imports CodeCracker.Test.TestHelper
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports Xunit
 
 Namespace Refactoring
     Public Class BaseAllowMembersOrderingCodeFixProviderTests
-        Inherits CodeFixTest(Of AllowMembersOrderingAnalyzer, BaseAllowMembersOrderingCodeFixProviderTests.MockCodeFixProvider)
+        Inherits CodeFixTest(Of AllowMembersOrderingAnalyzer, MockCodeFixProvider)
 
         <Theory>
         <InlineData("Class", "Property B As String", "Property A As String")>
