@@ -14,10 +14,10 @@ namespace CodeCracker.Usage
     public class RemovePrivateMethodNeverUsedAnalyzer : DiagnosticAnalyzer
     {
 
-        internal const string Title = "Unused method";
-        internal const string Message = "Method '{0}' is not used.";
+        internal const string Title = "Unused Method";
+        internal const string Message = "Method is not used.";
         internal const string Category = SupportedCategories.Usage;
-        const string Description = "When a method declares  does not use it might bring incorrect conclusions.";
+        const string Description = "When a private method declared  does not used might bring incorrect conclusions.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
              DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId(),
@@ -56,7 +56,7 @@ namespace CodeCracker.Usage
         {
             var classDeclaration = (ClassDeclarationSyntax)methodTarget.Parent;
 
-            return (from invocation in classDeclaration.SyntaxTree.GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>()
+            return (from invocation in classDeclaration?.SyntaxTree.GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>()
                     where ((IdentifierNameSyntax)invocation.Expression).Identifier.ValueText.Equals(methodTarget.Identifier.ValueText)
                     select invocation).Any();
         }

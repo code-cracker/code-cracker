@@ -38,7 +38,7 @@ namespace CodeCracker.Usage
 
             var methodNotUsed = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-            context.RegisterFix(CodeAction.Create("Remove method", c => RemoveMethod(context.Document, methodNotUsed, c)), diagnostic);
+            context.RegisterFix(CodeAction.Create($"Remove unused private method : '{methodNotUsed.Identifier.Text}'", c => RemoveMethod(context.Document, methodNotUsed, c)), diagnostic);
         }
 
         private async Task<Document> RemoveMethod(Document document, MethodDeclarationSyntax methodNotUsed, CancellationToken cancellationToken)
@@ -47,8 +47,8 @@ namespace CodeCracker.Usage
 
             var newRoot = root.RemoveNode(methodNotUsed, SyntaxRemoveOptions.KeepNoTrivia);
 
-            var newDocument = document.WithSyntaxRoot(newRoot);
-            return newDocument;
+            return document.WithSyntaxRoot(newRoot);
+
         }
     }
 }
