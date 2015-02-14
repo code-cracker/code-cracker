@@ -159,6 +159,7 @@
     <Compile Include="Performance\MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
     <Compile Include="Design\NameOfTests.cs" />
     <Compile Include="Refactoring\InvertForTests.cs" />
+    <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzerTest.cs" />
     <Compile Include="Usage\UnusedParametersTests.cs" />
     <Compile Include="Usage\IPAddressAnalyzerTests.cs" />
     <Compile Include="Usage\JsonNetAnalyzerTests.cs" />
