@@ -3,7 +3,7 @@ Imports Xunit
 
 Namespace Usage
     Public Class ArgumentExceptionTests
-        Inherits CodeFixVerifier(Of ArgumentExceptionAnalyzer, ArgumentExceptionCodeFixProider)
+        Inherits CodeFixVerifier(Of ArgumentExceptionAnalyzer, ArgumentExceptionCodeFixProvider)
 
         Shared Function Wrap(code As String) As String
             Return "

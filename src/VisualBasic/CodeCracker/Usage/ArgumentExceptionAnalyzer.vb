@@ -33,10 +33,6 @@ It can be either specified directly or using nameof() (VB 14 and above only)."
             context.RegisterSyntaxNodeAction(AddressOf AnalyzeNode, SyntaxKind.ObjectCreationExpression)
         End Sub
 
-        Sub foo()
-            Throw New ArgumentException()
-        End Sub
-
         Private Sub AnalyzeNode(context As SyntaxNodeAnalysisContext)
             Dim objectCreationExpression = DirectCast(context.Node, ObjectCreationExpressionSyntax)
             Dim type = TryCast(objectCreationExpression.Type, IdentifierNameSyntax)
@@ -65,17 +61,13 @@ It can be either specified directly or using nameof() (VB 14 and above only)."
             Return parameters.Contains(paramName)
         End Function
 
-        Sub New()
-
-        End Sub
-
         Friend Shared Function GetParameterNamesFromCreationContext(node As SyntaxNode) As IEnumerable(Of String)
             Dim creationContext = node.FirstAncestorOrSelfOfType(GetType(MultiLineLambdaExpressionSyntax),
                                                                  GetType(LambdaExpressionSyntax),
                                                                  GetType(AccessorBlockSyntax),
                                                                  GetType(MethodBlockSyntax),
                                                                  GetType(ConstructorBlockSyntax))
-            Return getparameternames(creationContext)
+            Return GetParameterNames(creationContext)
         End Function
 
         Friend Shared Function GetParameterNames(node As SyntaxNode) As IEnumerable(Of String)
@@ -106,7 +98,5 @@ It can be either specified directly or using nameof() (VB 14 and above only)."
             Return Nothing
 
         End Function
-
-
     End Class
 End Namespace

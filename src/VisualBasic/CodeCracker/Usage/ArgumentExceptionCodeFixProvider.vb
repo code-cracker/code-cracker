@@ -4,7 +4,6 @@ Imports System.Threading
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeActions
 Imports Microsoft.CodeAnalysis.CodeFixes
-Imports Microsoft.CodeAnalysis.Rename
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
@@ -12,8 +11,16 @@ Namespace Usage
 
     <ExportCodeFixProvider("CodeCrackerArgumentExceptionCodeFixProvider", LanguageNames.VisualBasic)>
     <[Shared]>
-    Public Class ArgumentExceptionCodeFixProider
+    Public Class ArgumentExceptionCodeFixProvider
         Inherits CodeFixProvider
+
+        Public Overrides Function GetFixAllProvider() As FixAllProvider
+            Return WellKnownFixAllProviders.BatchFixer
+        End Function
+
+        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
+            Return ImmutableArray.Create(DiagnosticId.ArgumentException.ToDiagnosticId())
+        End Function
 
         Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
@@ -28,16 +35,8 @@ Namespace Usage
             Next
         End Function
 
-        Public Overrides Function GetFixAllProvider() As FixAllProvider
-            Return WellKnownFixAllProviders.BatchFixer
-        End Function
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.ArgumentException.ToDiagnosticId())
-        End Function
-
         Private Async Function FixParamAsync(document As Document, objectCreation As ObjectCreationExpressionSyntax, newParamName As String, cancellationToken As CancellationToken) As Task(Of Document)
             Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
-            'Dim type = objectCreation.Type
 
             Dim argumentList = objectCreation.ArgumentList
             Dim paramNameLiteral = DirectCast(argumentList.Arguments(1).GetExpression, LiteralExpressionSyntax)

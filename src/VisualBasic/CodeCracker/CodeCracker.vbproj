@@ -120,7 +120,7 @@
     <Compile Include="Style\InterfaceNameAnalyzer.vb" />
     <Compile Include="Style\InterfaceNameCodeFixProvider.vb" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.vb" />
-    <Compile Include="Usage\ArgumentExceptionCodeFixProider.vb" />
+    <Compile Include="Usage\ArgumentExceptionCodeFixProvider.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsAnalyzer.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider.vb" />
   </ItemGroup>
