@@ -56,6 +56,7 @@
         RemovePrivateMethodNeverUsed = 68,
         UseConfigureAwaitFalse = 70,
         IntroduceFieldFromConstructor = 71,
+        RemoveAsyncFromMethod = 72,
         AddBracesToSwitchSections = 73
     }
 }
