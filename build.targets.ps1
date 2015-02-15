@@ -27,6 +27,7 @@ Properties {
     $coverageReportDir = "$logDir\codecoverage\"
     $converallsNetExe = "$packagesDir\coveralls.io.1.1.86\tools\coveralls.net.exe"
     $isRelease = $isAppVeyor -and ($env:APPVEYOR_REPO_BRANCH -eq "release")
+    $isPullRequest = $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null
 }
 
 FormatTaskName (("-"*25) + "[{0}]" + ("-"*25))
@@ -118,6 +119,15 @@ Task Pack-Nuget-CSharp -precondition { return $isAppVeyor } {
 }
 Task Pack-Nuget-VB -precondition { return $isAppVeyor } {
     PackNuget "VB" "$rootDir\src\VisualBasic" $nuspecPathVB $nupkgPathVB
+}
+
+Task Report-PR -precondition { return $isPullRequest } {
+    $body = ConvertTo-Json @{body="Build $buildResult! Details: https://ci.appveyor.com/project/code-cracker/code-cracker/build/1.0.0.$env:APPVEYOR_BUILD_NUMBER"}
+    $headers = @{Authorization="token $env:GITHUB_API_KEY"}
+    $uri = "https://api.github.com/repos/code-cracker/code-cracker/issues/$env:APPVEYOR_PULL_REQUEST_NUMBER/comments"
+    echo $body
+    echo $uri
+    Invoke-RestMethod -Uri $uri -Method POST -Body $body -Headers $headers -ContentType "application/json"
 }
 
 function PackNuget($language, $dir, $nuspecFile, $nupkgFile) {
