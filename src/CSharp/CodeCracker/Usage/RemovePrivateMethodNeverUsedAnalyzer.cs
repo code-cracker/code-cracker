@@ -1,12 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 using System.Linq;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis.Text;
 
 namespace CodeCracker.Usage
 {
@@ -24,17 +21,15 @@ namespace CodeCracker.Usage
             Title,
             Message,
             Category,
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
+            DiagnosticSeverity.Info,
+            isEnabledByDefault: false,
             description: Description,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration);
-        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
