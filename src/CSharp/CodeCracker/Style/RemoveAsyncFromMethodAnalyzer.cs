@@ -42,7 +42,7 @@ namespace CodeCracker.CSharp.Style
                     (returnType.IsGenericType && returnType.ConstructedFrom.ToString() == "System.Threading.Tasks.Task<TResult>"))
                     return;
             }
-            var diagnostic = Diagnostic.Create(Rule, method.GetLocation(), method.Identifier.Text);
+            var diagnostic = Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier.Text);
             context.ReportDiagnostic(diagnostic);
         }
 
