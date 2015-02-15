@@ -147,6 +147,7 @@
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupTests.cs" />
     <Compile Include="Style\RemoveCommentedCodeTests.cs" />
     <Compile Include="Style\TaskNameASyncTests.cs" />
+    <Compile Include="Style\RemoveAsyncFromMethodTests.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorTests.cs" />
     <Compile Include="Usage\ArgumentExceptionTests.cs" />
     <Compile Include="Style\ConvertToSwitchTests.cs" />
