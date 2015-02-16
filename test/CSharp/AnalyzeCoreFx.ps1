@@ -5,7 +5,9 @@ $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\corefx.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
 $gitPath = "https://github.com/dotnet/corefx.git"
-$gitPath = "C:\proj\corefx"
+if (Test-Path "C:\proj\corefx") {
+    $gitPath = "C:\proj\corefx"
+}
 
 echo "Saving to log file $logFile"
 echo "Analyzer dll is $analyzerDll"
