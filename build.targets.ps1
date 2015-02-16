@@ -122,12 +122,9 @@ Task Pack-Nuget-VB -precondition { return $isAppVeyor } {
 }
 
 Task Report-PR -precondition { return $isPullRequest } {
-    $body = ConvertTo-Json @{body="Build $buildResult! Details: https://ci.appveyor.com/project/code-cracker/code-cracker/build/1.0.0.$env:APPVEYOR_BUILD_NUMBER"}
-    $headers = @{Authorization="token $env:GITHUB_API_KEY"}
-    $uri = "https://api.github.com/repos/code-cracker/code-cracker/issues/$env:APPVEYOR_PULL_REQUEST_NUMBER/comments"
-    echo $body
-    echo $uri
-    Invoke-RestMethod -Uri $uri -Method POST -Body $body -Headers $headers -ContentType "application/json"
+    $body = ConvertTo-Json @{issueNumber=$env:APPVEYOR_PULL_REQUEST_NUMBER; body="Build $env:buildResult! Details: https://ci.appveyor.com/project/code-cracker/code-cracker/build/1.0.0.$env:APPVEYOR_BUILD_NUMBER"}
+    $uri = "https://codecrackerbot.herokuapp.com/message"
+    Invoke-RestMethod -Uri $uri -Method POST -Body $body -ContentType "application/json"
 }
 
 function PackNuget($language, $dir, $nuspecFile, $nupkgFile) {
