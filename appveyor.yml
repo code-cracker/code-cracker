@@ -55,6 +55,8 @@ on_failure:
   - ps: >-
       $env:buildResult = "failed"
 
+      . .\build.ps1 Report-Build-Failure
+
 
 on_finish:
   - ps: >-
