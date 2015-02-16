@@ -45,6 +45,22 @@ after_test:
 
       . ".\test\CSharp\AnalyzeCecil.ps1"
 
+
+on_success:
+  - ps: >-
+      $env:buildResult = "passed"
+
+
+on_failure:
+  - ps: >-
+      $env:buildResult = "failed"
+
+
+on_finish:
+  - ps: >-
+      . .\build.ps1 Report-PR
+
+
 artifacts:
   - path: src
     name: src
