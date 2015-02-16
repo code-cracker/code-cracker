@@ -5,7 +5,7 @@ $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\corefx.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
 $gitPath = "https://github.com/dotnet/corefx.git"
-#$gitPath = "C:\proj\corefx"
+$gitPath = "C:\proj\corefx"
 
 echo "Saving to log file $logFile"
 echo "Analyzer dll is $analyzerDll"
@@ -59,7 +59,7 @@ foreach($csproj in $csprojs)
 }
 
 echo "Restoring dependencies"
-msbuild "$projectDir\build.proj" /nologo /maxcpucount /verbosity:minimal /nodeReuse:false /t:_RestoreBuildTools /p:Configuration=""
+msbuild "$projectDir\src\dirs.proj" /nologo /maxcpucount /verbosity:minimal /nodeReuse:false /t:_RestoreBuildToolsWrapper /p:Configuration=""
 if ($LASTEXITCODE -ne 0)
 {
     echo "Not possible to restore build tools, stopping."
