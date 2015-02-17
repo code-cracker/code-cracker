@@ -10,7 +10,7 @@ namespace CodeCracker.CSharp.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DisposableFieldNotDisposedAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Use object initializer";
+        internal const string Title = "Dispose Fields Properly";
         internal const string MessageFormat = "Field {0} should be disposed.";
         internal const string Category = SupportedCategories.Usage;
         const string Description = "This class has a disposable field and is not disposing it.";

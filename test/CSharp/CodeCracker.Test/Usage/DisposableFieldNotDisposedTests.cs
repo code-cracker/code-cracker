@@ -244,7 +244,7 @@ namespace CodeCracker.Test.CSharp.Usage
     using System;
     namespace ConsoleApplication1
     {
-        class partial TypeName : Disposable { }
+        class partial TypeName : IDisposable { }
         class partial TypeName
         {
             private D field = new D();
@@ -275,14 +275,13 @@ namespace CodeCracker.Test.CSharp.Usage
     using System;
     namespace ConsoleApplication1
     {
-        class TypeName : Disposable
+        class TypeName : IDisposable
         {
             private D field = D.Create();
             public void Dispose()
             {
-                field.Dispose(bool value);
+                field.Dispose(true);
             }
-            public void Dispose() { }
         }
         class D : IDisposable
         {
@@ -308,7 +307,7 @@ namespace CodeCracker.Test.CSharp.Usage
     using System;
     namespace ConsoleApplication1
     {
-        class TypeName : Disposable
+        class TypeName : IDisposable
         {
             private D field = D.Create();
             public void Dispose(bool value)
