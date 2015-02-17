@@ -50,17 +50,16 @@ namespace CodeCracker.Usage
         {
             var classDeclaration = (ClassDeclarationSyntax)methodTarget.Parent;
 
-
             var hasIdentifier = (from invocation in classDeclaration?
                                 .SyntaxTree.GetRoot()?
                                 .DescendantNodes()?
                                 .OfType<InvocationExpressionSyntax>()
-                                 where invocation != null 
-                                 select (IdentifierNameSyntax)invocation?.Expression).ToList();
+                                 where invocation != null
+                                 select invocation?.Expression as IdentifierNameSyntax).ToList();
 
             if (hasIdentifier == null || !hasIdentifier.Any()) return false;
 
-            return hasIdentifier.Any(a => a.Identifier.ValueText.Equals(methodTarget?.Identifier.ValueText));
+            return hasIdentifier.Any(a => a != null && a.Identifier.ValueText.Equals(methodTarget?.Identifier.ValueText));
         }
     }
 }
