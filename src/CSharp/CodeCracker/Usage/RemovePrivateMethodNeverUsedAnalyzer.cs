@@ -42,7 +42,6 @@ namespace CodeCracker.Usage
 
             if (!methodDeclaration.Modifiers.Any(a => a.ValueText == SyntaxFactory.Token(SyntaxKind.PrivateKeyword).ValueText)) return;
 
-
             if (IsMethodUsed(methodDeclaration)) return;
 
             if (methodDeclaration.Modifiers.Any(SyntaxKind.ExternKeyword)) return;
@@ -56,9 +55,17 @@ namespace CodeCracker.Usage
         {
             var classDeclaration = (ClassDeclarationSyntax)methodTarget.Parent;
 
-            return (from invocation in classDeclaration?.SyntaxTree.GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>()
-                    where ((IdentifierNameSyntax)invocation.Expression).Identifier.ValueText.Equals(methodTarget.Identifier.ValueText)
-                    select invocation).Any();
+
+            var hasIdentifier = (from invocation in classDeclaration?
+                                .SyntaxTree.GetRoot()?
+                                .DescendantNodes()?
+                                .OfType<InvocationExpressionSyntax>()
+                                 where invocation != null 
+                                 select (IdentifierNameSyntax)invocation?.Expression).ToList();
+
+            if (hasIdentifier == null || !hasIdentifier.Any()) return false;
+
+            return hasIdentifier.Any(a => a.Identifier.ValueText.Equals(methodTarget?.Identifier.ValueText));
         }
     }
 }
