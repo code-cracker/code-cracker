@@ -58,7 +58,7 @@ namespace CodeCracker.Usage
                                  select invocation?.Expression as IdentifierNameSyntax).ToList();
 
             if (hasIdentifier == null || !hasIdentifier.Any()) return false;
-
+            
             return hasIdentifier.Any(a => a != null && a.Identifier.ValueText.Equals(methodTarget?.Identifier.ValueText));
         }
     }
