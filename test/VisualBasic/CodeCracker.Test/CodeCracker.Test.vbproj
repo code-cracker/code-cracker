@@ -169,6 +169,8 @@
     <Compile Include="Refactoring\ParameterRefactoryTests.vb" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.vb" />
     <Compile Include="Style\InterfaceNameTests.vb" />
+    <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeTests.vb" />
+    <Compile Include="Usage\DisposableFieldNotDisposedTests.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
