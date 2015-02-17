@@ -34,7 +34,7 @@ namespace CodeCracker.CSharp.Style
             if (method.Identifier.ToString().EndsWith("Async")) return;
 
             var errorMessage = method.Identifier.ToString() + "Async";
-            var diag = Diagnostic.Create(Rule, method.GetLocation(), errorMessage);
+            var diag = Diagnostic.Create(Rule, method.Identifier.GetLocation(), errorMessage);
 
             if (method.Modifiers.Any(SyntaxKind.AsyncKeyword))
             {

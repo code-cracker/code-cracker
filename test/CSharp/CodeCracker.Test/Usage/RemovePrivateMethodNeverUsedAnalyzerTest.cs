@@ -1,10 +1,4 @@
 ﻿using CodeCracker.Usage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Xunit;
 
 namespace CodeCracker.Test.Usage
@@ -25,16 +19,9 @@ namespace CodeCracker.Test.Usage
     private void PrivateFoo()
     {
        PrivateFoo2();
-        
     }
 
-    private void PrivateFoo2()
-    {
-
-
-    }
-
-
+    private void PrivateFoo2() { }
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
@@ -50,17 +37,10 @@ namespace CodeCracker.Test.Usage
         PrivateFoo();
     }
 
-    private void PrivateFoo()
-    {
-
-
-    }
-
-
+    private void PrivateFoo() { }
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
-
 
         [Fact]
         public async void WhenPrivateMethodDoesNotUsedShouldCreateDiagnostic()
@@ -72,12 +52,10 @@ class Foo
 }";
             const string fixtest = @"
 class Foo
-{ 
+{
 }";
             await VerifyCSharpFixAsync(source, fixtest);
 
         }
-
     }
 }
-

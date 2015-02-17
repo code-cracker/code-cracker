@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Usage
     {
         internal const string Title = "Invalid argument name";
         internal const string MessageFormat = "Type argument '{0}' is not in the argument list.";
-        internal const string Category = SupportedCategories.Naming;
+        internal const string Category = SupportedCategories.Usage;
         const string Description = "The string passed as the 'paramName' argument of ArgumentException constructor "
             + "must be the name of one of the method arguments.\r\n"
             + "It can be either specified directly or using the nameof() operator (C#6 only)";
