@@ -53,6 +53,8 @@
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupAnalyzer.cs" />
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupFixProvider.cs" />
+    <Compile Include="Style\RemoveAsyncFromMethodAnalyzer.cs" />
+    <Compile Include="Style\RemoveAsyncFromMethodCodeFixProvider.cs" />
     <Compile Include="Style\TaskNameAsyncCodeFixProvider.cs" />
     <Compile Include="Style\TaskNameAsyncAnalyzer.cs" />
     <Compile Include="Style\PropertyPrivateSetAnalyzer.cs" />
@@ -92,6 +94,8 @@
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedCodeFixProvider.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedFixAllProvider.cs" />
+    <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzer.cs" />
+    <Compile Include="Usage\RemovePrivateMethodNeverUsedCodeFixProvider.cs" />
     <Compile Include="Usage\UnusedParametersCodeFixProvider.cs" />
     <Compile Include="Usage\UnusedParametersAnalyzer.cs" />
     <Compile Include="Usage\IPAddressAnalyzer.cs" />

@@ -53,8 +53,10 @@
         Uri = 63,
         IPAddress = 64,
         RemoveTrailingWhitespace = 65,
+        RemovePrivateMethodNeverUsed = 68,
         UseConfigureAwaitFalse = 70,
         IntroduceFieldFromConstructor = 71,
+        RemoveAsyncFromMethod = 72,
         AddBracesToSwitchSections = 73
     }
 }

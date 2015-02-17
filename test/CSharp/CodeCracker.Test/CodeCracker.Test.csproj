@@ -147,6 +147,7 @@
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupTests.cs" />
     <Compile Include="Style\RemoveCommentedCodeTests.cs" />
     <Compile Include="Style\TaskNameASyncTests.cs" />
+    <Compile Include="Style\RemoveAsyncFromMethodTests.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorTests.cs" />
     <Compile Include="Usage\ArgumentExceptionTests.cs" />
     <Compile Include="Style\ConvertToSwitchTests.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="Performance\MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
     <Compile Include="Design\NameOfTests.cs" />
     <Compile Include="Refactoring\InvertForTests.cs" />
+    <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzerTest.cs" />
     <Compile Include="Usage\UnusedParametersTests.cs" />
     <Compile Include="Usage\IPAddressAnalyzerTests.cs" />
     <Compile Include="Usage\JsonNetAnalyzerTests.cs" />

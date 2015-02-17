@@ -41,7 +41,7 @@ namespace CodeCracker.Test.CSharp.Style
                 Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
                 Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat,"TestAsync"),
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 18) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
