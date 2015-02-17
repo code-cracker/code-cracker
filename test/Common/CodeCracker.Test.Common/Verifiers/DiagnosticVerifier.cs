@@ -40,10 +40,7 @@ namespace CodeCracker.Test
         /// <summary>
         /// Get the CSharp analyzer being tested - to be implemented in non-abstract class
         /// </summary>
-        protected virtual DiagnosticAnalyzer GetDiagnosticAnalyzer()
-        {
-            return null;
-        }
+        protected virtual DiagnosticAnalyzer GetDiagnosticAnalyzer() => null;
 
         /// <summary>
         /// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
