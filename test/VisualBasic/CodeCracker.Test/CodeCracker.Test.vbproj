@@ -170,6 +170,7 @@
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.vb" />
     <Compile Include="Style\InterfaceNameTests.vb" />
     <Compile Include="Usage\ArgumentExceptionTests.vb" />
+    <Compile Include="Usage\JsonNetTests.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorTests.vb" />
   </ItemGroup>
   <ItemGroup>
