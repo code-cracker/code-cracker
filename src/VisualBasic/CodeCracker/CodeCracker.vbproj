@@ -119,7 +119,6 @@
     <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.vb" />
     <Compile Include="Style\InterfaceNameAnalyzer.vb" />
     <Compile Include="Style\InterfaceNameCodeFixProvider.vb" />
-    <Compile Include="TestSample.vb" />
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.vb" />
     <Compile Include="Usage\DisposableFieldNotDisposedCodeFixProvider.vb" />
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeAnalyzer.vb" />
