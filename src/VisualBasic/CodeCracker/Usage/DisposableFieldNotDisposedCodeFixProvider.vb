@@ -80,32 +80,31 @@ Namespace Usage
                 newType = type.AddMembers(disposeMethod)
             Else
                 Dim existingDisposeMethod = TryCast(disposableMethod.DeclaringSyntaxReferences.FirstOrDefault?.GetSyntax().Parent, MethodBlockSyntax)
-                'If type.Members.Contains(existingDisposeMethod) Then
-                Dim newDisposeMethod = existingDisposeMethod.AddStatements(disposeStatment).
+                If type.Members.Contains(existingDisposeMethod) Then
+                    Dim newDisposeMethod = existingDisposeMethod.AddStatements(disposeStatment).
                     WithAdditionalAnnotations(Formatter.Annotation)
 
-                ' Ensure the dispose method includes the implements clause
-                Dim disposeStatement = newDisposeMethod.Begin
-                Dim disposeStatementTrailingTrivia = disposeStatement.GetTrailingTrivia()
-                If disposeStatement.ImplementsClause Is Nothing Then
-                    disposeStatement = disposeStatement.
+                    ' Ensure the dispose method includes the implements clause
+                    Dim disposeStatement = newDisposeMethod.Begin
+                    Dim disposeStatementTrailingTrivia = disposeStatement.GetTrailingTrivia()
+                    If disposeStatement.ImplementsClause Is Nothing Then
+                        disposeStatement = disposeStatement.
                         WithoutTrailingTrivia().
                         WithImplementsClause(SyntaxFactory.ImplementsClause(SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName("IDisposable"), SyntaxFactory.IdentifierName("Dispose")))).
                         NormalizeWhitespace(" ").
                         WithTrailingTrivia(disposeStatementTrailingTrivia).
                         WithAdditionalAnnotations(Formatter.Annotation)
 
-                    newDisposeMethod = newDisposeMethod.ReplaceNode(newDisposeMethod.Begin, disposeStatement)
+                        newDisposeMethod = newDisposeMethod.ReplaceNode(newDisposeMethod.Begin, disposeStatement)
+                    End If
+                    newType = type.ReplaceNode(existingDisposeMethod, newDisposeMethod)
+                Else
+                    Dim fieldDeclaration = variableDeclarator.Parent
+                    Dim newFieldDeclaration = fieldDeclaration.
+                        WithTrailingTrivia(SyntaxFactory.CommentTrivia("' Add " & disposeStatment.ToString() & " to the Dispose method on the partial file." & vbCrLf))
+
+                    newType = type.ReplaceNode(fieldDeclaration, newFieldDeclaration)
                 End If
-                newType = type.ReplaceNode(existingDisposeMethod, newDisposeMethod)
-                'Else
-                '    Dim fieldDeclaration = variableDeclarator.Parent.Parent
-                '    Dim newFieldDeclaration = fieldDeclaration.
-                '        WithTrailingTrivia(SyntaxFactory.CommentTrivia("' Add " & disposeStatment.ToString() & " to the Dispose method on the partial file.")).
-                '        WithTrailingTrivia(fieldDeclaration.GetTrailingTrivia()).
-                '        WithLeadingTrivia(fieldDeclaration.GetLeadingTrivia())
-                '    newType = type.ReplaceNode(fieldDeclaration, newFieldDeclaration)
-                'End If
             End If
             Return newType
         End Function

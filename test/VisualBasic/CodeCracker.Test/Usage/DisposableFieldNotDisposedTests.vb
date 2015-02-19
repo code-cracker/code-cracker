@@ -500,9 +500,10 @@ End Namespace"
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
+        Implements IDisposable
         Private field As D = D.Create()
         Private field2 As D = D.Create()
-        Public Sub Dispose()
+        Public Sub Dispose() Implements IDisposable.Dispose
             field2.Dispose() ' Comment1
         End Sub
     End Class
@@ -641,7 +642,7 @@ End Namespace"
 Imports System
 Namespace ConsoleApplication1
     Partial Class TypeName
-        Private field As New D()'add field.Dispose() to the Dispose method on another file.
+        Private field As New D()' Add field.Dispose() to the Dispose method on the partial file.
     End Class
     Class TypeName
         Implements IDisposable
@@ -666,7 +667,7 @@ Namespace ConsoleApplication1
     MustInherit Class TypeName
         Implements IDisposable
         Private field As New D()
-        Public MustInherit Sub Dispose() Inherits IDisposable.Dispose
+        Public MustInherit Sub Dispose() Implements IDisposable.Dispose
         End Sub
     End Class
     Class D

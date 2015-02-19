@@ -93,6 +93,7 @@ namespace CodeCracker.Test
                 if (codeFixIndex != null)
                 {
                     document = await ApplyFixAsync(document, actions.ElementAt((int)codeFixIndex));
+                    actual = await GetStringFromDocumentAsync(document);
                     break;
                 }
 
