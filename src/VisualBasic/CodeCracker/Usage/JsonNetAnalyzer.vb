@@ -33,7 +33,6 @@ Namespace Usage
         Public Overrides Sub Initialize(context As AnalysisContext)
             context.RegisterSyntaxNodeAction(Sub(c) Analyze(c, "DeserializeObject", "Public Shared Overloads Function DeserializeObject(Of T)(value As String) As T"), SyntaxKind.InvocationExpression)
             context.RegisterSyntaxNodeAction(Sub(c) Analyze(c, "Parse", "Public Shared Overloads Function Parse(json As String) As Newtonsoft.Json.Linq.JObject"), SyntaxKind.InvocationExpression)
-            'context.RegisterSyntaxNodeAction(Sub(c) Analyze(c, "Parse", "Nwetonsoft.Json.Linq.JArray.Parse(string)"), SyntaxKind.InvocationExpression)
         End Sub
 
         Private Sub Analyze(context As SyntaxNodeAnalysisContext, methodName As String, methodFullDefinition As String)
