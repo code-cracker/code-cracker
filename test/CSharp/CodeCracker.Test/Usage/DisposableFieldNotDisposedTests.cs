@@ -278,7 +278,7 @@ namespace CodeCracker.Test.CSharp.Usage
         class TypeName : IDisposable
         {
             private D field = D.Create();
-            public void Dispose()
+            public void Dispose(bool arg)
             {
                 field.Dispose(true);
             }
