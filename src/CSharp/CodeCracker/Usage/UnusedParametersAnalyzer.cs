@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Title = "Unused parameters";
         internal const string Message = "Parameter '{0}' is not used.";
         internal const string Category = SupportedCategories.Usage;
-        const string Description = "When a method declares a parameter and does not use it might bring incorrect conclusions for anyone reading the code and also demands the parameter when the method is called, unecessarily.\r\n"
+        const string Description = "When a method declares a parameter and does not use it might bring incorrect conclusions for anyone reading the code and also demands the parameter when the method is called, unnecessarily.\r\n"
             + "You should delete the parameter is such cases.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
