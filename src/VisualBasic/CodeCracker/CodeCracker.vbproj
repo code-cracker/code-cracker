@@ -123,6 +123,8 @@
     <Compile Include="Usage\ArgumentExceptionCodeFixProvider.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsAnalyzer.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider.vb" />
+    <Compile Include="Usage\UnusedParametersAnalyzer.vb" />
+    <Compile Include="Usage\UnusedParametersCodeFixProvider.vb" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Globalization\" />
