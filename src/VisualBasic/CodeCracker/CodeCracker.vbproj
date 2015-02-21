@@ -128,6 +128,8 @@
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsAnalyzer.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider.vb" />
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.vb" />
+    <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzer.vb" />
+    <Compile Include="Usage\RemovePrivateMethodNeverUsedCodeFixProvider.vb" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Globalization\" />
