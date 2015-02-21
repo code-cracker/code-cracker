@@ -43,6 +43,24 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async void WhenPrivateMethodUsedInAttributionDoesNotGenerateDiagnostics()
+        {
+            const string test = @"
+using System;
+
+public class Foo
+{
+    public void PublicFoo()
+    {
+        Action method = PrivateFoo;
+    }
+
+    private void PrivateFoo() { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async void WhenPrivateMethodDoesNotUsedShouldCreateDiagnostic()
         {
             const string source = @"
