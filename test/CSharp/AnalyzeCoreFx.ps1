@@ -60,21 +60,9 @@ foreach($csproj in $csprojs)
     $xmlProj.Save($csproj.FullName)
 }
 
-echo "Restoring dependencies"
-msbuild "$projectDir\src\dirs.proj" /nologo /maxcpucount /verbosity:minimal /nodeReuse:false /t:_RestoreBuildToolsWrapper /p:Configuration=""
-if ($LASTEXITCODE -ne 0)
-{
-    echo "Not possible to restore build tools, stopping."
-    return
-}
-
-$slns = ls "$projectDir\*.sln" -Recurse
 echo "Building..."
-foreach($sln in $slns)
-{
-    echo "Building $($sln.FullName)..."
-    msbuild $sln.FullName /t:rebuild /v:detailed /p:Configuration="Debug" >> $logFile
-}
+msbuild "$projectDir\build.proj" /t:build /v:detailed /p:Configuration="Debug" /nologo /maxcpucount /p:SkipTests="True" >> $logFile
+
 $ccBuildErrors = cat $logFile | Select-String "info AnalyzerDriver: The Compiler Analyzer 'CodeCracker"
 if ($ccBuildErrors -ne $null)
 {
