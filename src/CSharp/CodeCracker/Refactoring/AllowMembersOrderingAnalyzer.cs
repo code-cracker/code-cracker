@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
-using System.Linq;
+
 namespace CodeCracker.CSharp.Refactoring
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -30,13 +30,10 @@ namespace CodeCracker.CSharp.Refactoring
         private void Analyze(SyntaxNodeAnalysisContext context)
         {
             var typeDeclarationSyntax = context.Node as TypeDeclarationSyntax;
-
-            if (typeDeclarationSyntax == null) return;
-
-            var currentChildNodesOrder = typeDeclarationSyntax.ChildNodes();
-
-            if (currentChildNodesOrder.Count() > 1)
-                context.ReportDiagnostic(Diagnostic.Create(Rule, typeDeclarationSyntax.Identifier.GetLocation()));
+            if (!CanOrder(typeDeclarationSyntax)) return;
+            context.ReportDiagnostic(Diagnostic.Create(Rule, typeDeclarationSyntax.Identifier.GetLocation()));
         }
+
+        private static bool CanOrder(TypeDeclarationSyntax typeDeclarationSyntax) => typeDeclarationSyntax != null && typeDeclarationSyntax.Members.Count > 1;
     }
 }
