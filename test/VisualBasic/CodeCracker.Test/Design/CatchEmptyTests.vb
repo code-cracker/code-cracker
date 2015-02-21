@@ -29,13 +29,13 @@ End Namespace"
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
-        Public Async Function Foo() As Task
+        Public Sub Foo()
             Try
                 ' Do something
             Catch
                 Dim x = 0
             End Try
-        End Function
+        End Sub
     End Class
 End Namespace"
 
@@ -43,13 +43,13 @@ End Namespace"
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
-        Public Async Function Foo() As Task
+        Public Sub Foo()
             Try
                 ' Do something
             Catch ex As Exception
                 Dim x = 0
             End Try
-        End Function
+        End Sub
     End Class
 End Namespace"
             Await VerifyBasicFixAsync(source, fix, 0)

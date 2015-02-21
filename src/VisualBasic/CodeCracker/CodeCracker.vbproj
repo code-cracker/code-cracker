@@ -119,11 +119,16 @@
     <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.vb" />
     <Compile Include="Style\InterfaceNameAnalyzer.vb" />
     <Compile Include="Style\InterfaceNameCodeFixProvider.vb" />
+    <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.vb" />
+    <Compile Include="Usage\DisposableFieldNotDisposedCodeFixProvider.vb" />
+    <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeAnalyzer.vb" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.vb" />
     <Compile Include="Usage\ArgumentExceptionCodeFixProvider.vb" />
+    <Compile Include="Usage\JsonNetAnalyzer.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsAnalyzer.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider.vb" />
     <Compile Include="Usage\UnusedParametersAnalyzer.vb" />
+    <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.vb" />
     <Compile Include="Usage\UnusedParametersCodeFixProvider.vb" />
   </ItemGroup>
   <ItemGroup>

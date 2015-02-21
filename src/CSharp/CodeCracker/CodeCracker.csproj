@@ -93,8 +93,10 @@
     <Compile Include="Style\StringFormatAnalyzer.cs" />
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedCodeFixProvider.cs" />
+    <Compile Include="Usage\RemoveUnreachableCodeFixAllProvider.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedFixAllProvider.cs" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzer.cs" />
+    <Compile Include="Usage\RemoveUnreachableCodeCodeFixProvider.cs" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedCodeFixProvider.cs" />
     <Compile Include="Usage\UnusedParametersCodeFixProvider.cs" />
     <Compile Include="Usage\UnusedParametersAnalyzer.cs" />

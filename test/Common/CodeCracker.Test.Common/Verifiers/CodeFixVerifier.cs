@@ -41,7 +41,16 @@ namespace CodeCracker.Test
                 oldSource = await FormatSourceAsync(LanguageNames.CSharp, oldSource);
                 newSource = await FormatSourceAsync(LanguageNames.CSharp, newSource);
             }
-            await VerifyFixAsync(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+            var diagnosticAnalyzer = GetDiagnosticAnalyzer();
+            if (diagnosticAnalyzer != null)
+            {
+                await VerifyFixAsync(LanguageNames.CSharp, diagnosticAnalyzer, codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+            }
+            else
+            {
+                codeFixProvider = codeFixProvider ?? GetCodeFixProvider();
+                await VerifyFixAsync(LanguageNames.CSharp, codeFixProvider.GetFixableDiagnosticIds(), codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+            }
         }
 
         /// <summary>
@@ -58,7 +67,16 @@ namespace CodeCracker.Test
                 oldSource = await FormatSourceAsync(LanguageNames.VisualBasic, oldSource);
                 newSource = await FormatSourceAsync(LanguageNames.VisualBasic, newSource);
             }
-            await VerifyFixAsync(LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+            var diagnosticAnalyzer = GetDiagnosticAnalyzer();
+            if (diagnosticAnalyzer != null)
+            {
+                await VerifyFixAsync(LanguageNames.VisualBasic, diagnosticAnalyzer, codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+            }
+            else
+            {
+                codeFixProvider = codeFixProvider ?? GetCodeFixProvider();
+                await VerifyFixAsync(LanguageNames.VisualBasic, codeFixProvider.GetFixableDiagnosticIds(), codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+            }
         }
 
         /// <summary>
@@ -100,6 +118,7 @@ namespace CodeCracker.Test
 
                 var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
 
+
                 //check if applying the code fix introduced any new compiler diagnostics
                 if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
                 {
@@ -111,10 +130,53 @@ namespace CodeCracker.Test
                 }
 
                 //check if there are analyzer diagnostics left after the code fix
-                if (!analyzerDiagnostics.Any())
+                if (!analyzerDiagnostics.Any()) break;
+            }
+
+            //after applying all of the code fixes, compare the resulting string to the inputted one
+            var actual = await GetStringFromDocumentAsync(document);
+            Assert.Equal(newSource, actual);
+        }
+
+        private async Task VerifyFixAsync(string language, ImmutableArray<string> diagnosticIds, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
+        {
+            var document = CreateDocument(oldSource, language);
+            var compilerDiagnostics = (await GetCompilerDiagnosticsAsync(document)).ToList();
+            var analyzerDiagnostics = compilerDiagnostics.Where(c => diagnosticIds.Contains(c.Id)).ToList();
+            var attempts = analyzerDiagnostics.Count();
+
+            for (int i = 0; i < attempts; ++i)
+            {
+                var actions = new List<CodeAction>();
+                var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
+                await codeFixProvider.ComputeFixesAsync(context);
+
+                if (!actions.Any()) break;
+
+                if (codeFixIndex != null)
                 {
+                    document = await ApplyFixAsync(document, actions.ElementAt((int)codeFixIndex));
                     break;
                 }
+
+                document = await ApplyFixAsync(document, actions.ElementAt(0));
+
+                var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
+                compilerDiagnostics = (await GetCompilerDiagnosticsAsync(document)).ToList();
+                analyzerDiagnostics = compilerDiagnostics.Where(c => diagnosticIds.Contains(c.Id)).ToList();
+
+                //check if applying the code fix introduced any new compiler diagnostics
+                if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
+                {
+                    // Format and get the compiler diagnostics again so that the locations make sense in the output
+                    document = document.WithSyntaxRoot(Formatter.Format(await document.GetSyntaxRootAsync(), Formatter.Annotation, document.Project.Solution.Workspace));
+                    newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
+
+                    Assert.True(false, $"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString()))}\r\n\r\nNew document:\r\n{(await document.GetSyntaxRootAsync()).ToFullString()}\r\n");
+                }
+
+                //check if there are analyzer diagnostics left after the code fix
+                if (!analyzerDiagnostics.Any()) break;
             }
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
@@ -129,7 +191,11 @@ namespace CodeCracker.Test
                 oldSources = await Task.WhenAll(oldSources.Select(s => FormatSourceAsync(LanguageNames.CSharp, s)));
                 newSources = await Task.WhenAll(newSources.Select(s => FormatSourceAsync(LanguageNames.CSharp, s)));
             }
-            await VerifyFixAllAsync(GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics);
+            var diagnosticAnalyzer = GetDiagnosticAnalyzer();
+            if (diagnosticAnalyzer != null)
+                await VerifyFixAllAsync(diagnosticAnalyzer, codeFixProvider ?? GetCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics);
+            else
+                await VerifyFixAllAsync(codeFixProvider ?? GetCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics);
         }
 
         private async Task VerifyFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics)
@@ -141,7 +207,7 @@ namespace CodeCracker.Test
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
             var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Project,
                 null,//code action ids in codecracker are always null
-                analyzerDiagnostics.Select(a => a.Id),
+                codeFixProvider.GetFixableDiagnosticIds(),
                 (theProject, doc, diagnosticIds, cancelationToken) => Task.FromResult(analyzerDiagnostics.Where(d => d.Location.SourceTree.FilePath == doc.Name)),
                 CancellationToken.None);
 
@@ -164,6 +230,41 @@ namespace CodeCracker.Test
             }
         }
 
+        private async Task VerifyFixAllAsync(CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics)
+        {
+            var diagnosticIds = codeFixProvider.GetFixableDiagnosticIds();
+            var project = CreateProject(oldSources, LanguageNames.CSharp);
+            var compilerDiagnostics = (await Task.WhenAll(project.Documents.Select(d => GetCompilerDiagnosticsAsync(d)))).SelectMany(d => d);
+            Func<Document, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync = async doc =>
+            {
+                var compilerDiags = await GetCompilerDiagnosticsAsync(doc);
+                return compilerDiags.Where(d => diagnosticIds.Contains(d.Id));
+            };
+            var fixAllProvider = codeFixProvider.GetFixAllProvider();
+            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Project,
+                null,//code action ids in codecracker are always null
+                diagnosticIds,
+                (theProject, doc, diagIds, cancelationToken) => getDocumentDiagnosticsAsync(doc),
+                CancellationToken.None);
+
+            var action = await fixAllProvider.GetFixAsync(fixAllContext);
+            if (action == null) throw new Exception("No action supplied for the code fix.");
+
+            project = await ApplyFixAsync(project, action);
+
+            //check if applying the code fix introduced any new compiler diagnostics
+            var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, (await Task.WhenAll(project.Documents.Select(d => GetCompilerDiagnosticsAsync(d)))).SelectMany(d => d));
+            if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
+                Assert.True(false, $"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString()))}\r\n");
+
+            var docs = project.Documents.ToArray();
+            for (int i = 0; i < docs.Length; i++)
+            {
+                var document = docs[i];
+                var actual = await GetStringFromDocumentAsync(document);
+                Assert.Equal(newSources[i], actual);
+            }
+        }
 
         protected async Task VerifyFixAllAsync(string oldSource, string newSource, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null)
         {
@@ -172,20 +273,61 @@ namespace CodeCracker.Test
                 oldSource = await FormatSourceAsync(LanguageNames.CSharp, oldSource);
                 newSource = await FormatSourceAsync(LanguageNames.CSharp, newSource);
             }
-            await VerifyFixAllAsync(GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
+            var diagnosticAnalyzer = GetDiagnosticAnalyzer();
+            if (diagnosticAnalyzer != null)
+                await VerifyFixAllAsync(diagnosticAnalyzer, codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
+            else
+                await VerifyFixAllAsync(codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
         }
 
         private async Task VerifyFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics)
         {
             var document = CreateDocument(oldSource, LanguageNames.CSharp);
-            var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
+            Func<Document, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync = async doc =>
+                await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { doc });
 
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
             var fixAllContext = NewFixAllContext(document, document.Project, codeFixProvider, FixAllScope.Document,
                 null,//code action ids in codecracker are always null
-                analyzerDiagnostics.Select(a => a.Id),
-                (project, doc, diagnosticIds, cancelationToken) => Task.FromResult<IEnumerable<Diagnostic>>(analyzerDiagnostics),
+                codeFixProvider.GetFixableDiagnosticIds(),
+                (project, doc, diagIds, cancelationToken) => getDocumentDiagnosticsAsync(doc),
+                CancellationToken.None);
+
+            var action = await fixAllProvider.GetFixAsync(fixAllContext);
+            if (action == null) throw new Exception("No action supplied for the code fix.");
+
+            document = await ApplyFixAsync(document, action);
+
+            //check if applying the code fix introduced any new compiler diagnostics
+            var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
+            if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
+            {
+                // Format and get the compiler diagnostics again so that the locations make sense in the output
+                document = document.WithSyntaxRoot(Formatter.Format(await document.GetSyntaxRootAsync(), Formatter.Annotation, document.Project.Solution.Workspace));
+                newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
+                Assert.True(false, $"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString()))}\r\n\r\nNew document:\r\n{(await document.GetSyntaxRootAsync()).ToFullString()}\r\n");
+            }
+
+            var actual = await GetStringFromDocumentAsync(document);
+            Assert.Equal(newSource, actual);
+        }
+
+        private async Task VerifyFixAllAsync(CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics)
+        {
+            var diagnosticIds = codeFixProvider.GetFixableDiagnosticIds();
+            var document = CreateDocument(oldSource, LanguageNames.CSharp);
+            var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
+            Func<Document, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync = async doc =>
+            {
+                var compilerDiags = await GetCompilerDiagnosticsAsync(doc);
+                return compilerDiags.Where(d => diagnosticIds.Contains(d.Id));
+            };
+            var fixAllProvider = codeFixProvider.GetFixAllProvider();
+            var fixAllContext = NewFixAllContext(document, document.Project, codeFixProvider, FixAllScope.Document,
+                null,//code action ids in codecracker are always null
+                diagnosticIds,
+                (project, doc, diagIds, cancelationToken) => getDocumentDiagnosticsAsync(doc),
                 CancellationToken.None);
 
             var action = await fixAllProvider.GetFixAsync(fixAllContext);
