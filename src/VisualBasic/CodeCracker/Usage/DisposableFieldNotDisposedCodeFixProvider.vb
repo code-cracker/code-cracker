@@ -21,7 +21,7 @@ Namespace Usage
             Dim span = diagnostic.Location.SourceSpan
             Dim variableDeclarator = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of VariableDeclaratorSyntax)()
             context.RegisterFix(CodeAction.Create("Dispose field '" & variableDeclarator.Names.First().ToString(),
-                                              Function(c) MakeThrowAsInnerAsync(context.Document, variableDeclarator, c)),
+                                              Function(c) DisposeField(context.Document, variableDeclarator, c)),
                             diagnostic)
 
         End Function
@@ -34,7 +34,7 @@ Namespace Usage
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Private Async Function MakeThrowAsInnerAsync(document As Document, variableDeclarator As VariableDeclaratorSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+        Private Async Function DisposeField(document As Document, variableDeclarator As VariableDeclaratorSyntax, cancellationToken As CancellationToken) As Task(Of Document)
             Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
             Dim type = variableDeclarator.FirstAncestorOrSelf(Of ClassBlockSyntax)
             Dim typeSymbol = semanticModel.GetDeclaredSymbol(type)

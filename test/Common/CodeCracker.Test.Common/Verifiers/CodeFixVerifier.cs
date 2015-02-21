@@ -98,7 +98,6 @@ namespace CodeCracker.Test
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
             var attempts = analyzerDiagnostics.Length;
-            var actual = "";
 
             for (int i = 0; i < attempts; ++i)
             {
@@ -111,7 +110,6 @@ namespace CodeCracker.Test
                 if (codeFixIndex != null)
                 {
                     document = await ApplyFixAsync(document, actions.ElementAt((int)codeFixIndex));
-                    actual = await GetStringFromDocumentAsync(document);
                     break;
                 }
 
@@ -120,8 +118,6 @@ namespace CodeCracker.Test
 
                 var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document));
 
-                // Moved to facilitate debugging
-                actual = await GetStringFromDocumentAsync(document);
 
                 //check if applying the code fix introduced any new compiler diagnostics
                 if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
@@ -184,6 +180,7 @@ namespace CodeCracker.Test
             }
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
+            var actual = await GetStringFromDocumentAsync(document);
             Assert.Equal(newSource, actual);
         }
 
