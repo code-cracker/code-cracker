@@ -29,25 +29,23 @@ namespace CodeCracker.CSharp.Refactoring
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var @switch = (SwitchStatementSyntax) context.Node;
+            var @switch = (SwitchStatementSyntax)context.Node;
             if (!@switch.Sections.All(HasBraces))
                 context.ReportDiagnostic(Diagnostic.Create(Rule, @switch.GetLocation()));
         }
 
         internal static bool HasBraces(SwitchSectionSyntax section)
         {
-            if (section.Statements.Count == 1)
+            switch (section.Statements.Count)
             {
-                var firstStatement = section.Statements.First();
-                if (firstStatement is BlockSyntax)
-                    return true;
-            }
-            else if (section.Statements.Count == 2)
-            {
-                var firstStatement = section.Statements.First();
-                var lastStatement = section.Statements.Last();
-                if (firstStatement is BlockSyntax && lastStatement is BreakStatementSyntax)
-                    return true;
+                case 1:
+                    if (section.Statements.First() is BlockSyntax)
+                        return true;
+                    break;
+                case 2:
+                    if (section.Statements.First() is BlockSyntax && section.Statements.Last() is BreakStatementSyntax)
+                        return true;
+                    break;
             }
             return false;
         }
