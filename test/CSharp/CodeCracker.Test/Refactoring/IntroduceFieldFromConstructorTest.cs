@@ -128,11 +128,12 @@ namespace CodeCracker.Test.CSharp.Refactoring
     {
         class TypeName
         {
+            private readonly int par1;
             private readonly int par;
 
             public TypeName(int par)
             {
-               this.par = par;
+               this.par1 = par;
             }
         }
     }";
