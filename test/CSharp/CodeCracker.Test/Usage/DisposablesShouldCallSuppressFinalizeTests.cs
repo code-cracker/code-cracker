@@ -6,6 +6,21 @@ namespace CodeCracker.Test.CSharp.Usage
 {
     public class DisposablesShouldCallSuppressFinalizeTests : CodeFixVerifier<DisposablesShouldCallSuppressFinalizeAnalyzer, DisposablesShouldCallSuppressFinalizeCodeFixProvider>
     {
+
+        [Fact]
+        public async void AlreadyCallsSuppressFinalize()
+        {
+            const string source = @"
+                public class MyType : System.IDisposable
+                {
+                    public void Dispose()
+                    {
+                        GC.SuppressFinalize(this);
+                    }
+                }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
         [Fact]
         public async void WarningIfStructImplmentsIDisposableWithNoSuppressFinalizeCall()
         {

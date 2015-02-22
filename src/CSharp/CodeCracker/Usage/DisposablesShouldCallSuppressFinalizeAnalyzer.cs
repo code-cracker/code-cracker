@@ -33,40 +33,23 @@ namespace CodeCracker.CSharp.Usage
         private async void AnalyzeAsync(SymbolAnalysisContext context)
         {
             var symbol = (INamedTypeSymbol)context.Symbol;
-
             if (symbol.TypeKind != TypeKind.Class && symbol.TypeKind != TypeKind.Struct) return;
-
             if (!symbol.Interfaces.Any(i => i.SpecialType == SpecialType.System_IDisposable)) return;
-
             var disposeMethod = FindDisposeMethod(symbol);
-
             if (disposeMethod == null) return;
-
             var syntaxTree = await disposeMethod.DeclaringSyntaxReferences[0]?.GetSyntaxAsync(context.CancellationToken);
 
             var statements = ((MethodDeclarationSyntax)syntaxTree)?.Body?.Statements.OfType<ExpressionStatementSyntax>();
-
             if (statements != null)
             {
                 foreach (var statement in statements)
                 {
                     var invocation = statement.Expression as InvocationExpressionSyntax;
-
-                    if (invocation != null)
-                    {
-                        var method = invocation.Expression as MemberAccessExpressionSyntax;
-
-                        if (method != null)
-                        {
-                            if (((IdentifierNameSyntax)method.Expression).Identifier.ToString() == "GC" && method.Name.ToString() == "SuppressFinalize")
-                            {
-                                return;
-                            }
-                        }
-                    }
+                    var method = invocation?.Expression as MemberAccessExpressionSyntax;
+                    if (method != null && ((IdentifierNameSyntax)method.Expression).Identifier.ToString() == "GC" && method.Name.ToString() == "SuppressFinalize")
+                        return;
                 }
             }
-
             context.ReportDiagnostic(Diagnostic.Create(Rule, disposeMethod.Locations[0], symbol.Name));
         }
 
@@ -74,7 +57,6 @@ namespace CodeCracker.CSharp.Usage
         {
             var methods = symbol.GetMembers().Where(x => x.ToString().Contains($"{x.ContainingType.Name}.Dispose(")).Cast<IMethodSymbol>();
             var disposeWithDisposedParameter = methods.FirstOrDefault(m => m.Parameters.FirstOrDefault()?.Type.SpecialType == SpecialType.System_Boolean);
-
             return disposeWithDisposedParameter != null ? disposeWithDisposedParameter : methods.FirstOrDefault(m => !m.Parameters.Any());
         }
     }
