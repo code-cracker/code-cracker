@@ -29,10 +29,10 @@ namespace CodeCracker.CSharp.Usage
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var variableDeclarators = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<VariableDeclaratorSyntax>();
             foreach (var variableDeclarator in variableDeclarators)
-                context.RegisterFix(CodeAction.Create($"Dispose field '{variableDeclarator.Identifier.Value}'", c => DisposeField(context.Document, variableDeclarator, c)), diagnostic);
+                context.RegisterFix(CodeAction.Create($"Dispose field '{variableDeclarator.Identifier.Value}'", c => DisposeFieldAsync(context.Document, variableDeclarator, c)), diagnostic);
         }
 
-        private async Task<Document> DisposeField(Document document, VariableDeclaratorSyntax variableDeclarator, CancellationToken cancellationToken)
+        private async Task<Document> DisposeFieldAsync(Document document, VariableDeclaratorSyntax variableDeclarator, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var type = variableDeclarator.FirstAncestorOrSelf<TypeDeclarationSyntax>();

@@ -182,7 +182,7 @@
     <Compile Include="Design\UseInvokeMethodToFireEventTests.cs" />
     <Compile Include="Usage\DisposableFieldNotDisposedTests.cs" />
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsTests.cs" />
-    <Compile Include="Style\StringRepresentationTests.cs" />
+    <Compile Include="Refactoring\StringRepresentationTests.cs" />
     <Compile Include="Usage\UriAnalyzerTests.cs" />
     <Compile Include="Usage\RethrowExceptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

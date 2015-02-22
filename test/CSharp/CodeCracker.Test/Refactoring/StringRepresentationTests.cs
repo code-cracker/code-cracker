@@ -1,10 +1,10 @@
-﻿using CodeCracker.CSharp.Style;
+﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.Test.CSharp.Style
+namespace CodeCracker.Test.CSharp.Refactoring
 {
     public class StringRepresentationTests
         : CodeFixVerifier<StringRepresentationAnalyzer, StringRepresentationCodeFixProvider>
