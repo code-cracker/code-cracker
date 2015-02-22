@@ -46,5 +46,19 @@ Class Foo
 End Class"
             Await VerifyBasicFixAsync(test, fix)
         End Function
+
+        <Fact>
+        Public Async Function WhenPrivateMethodUsedInAttributionDoesNotGenerateDiagnostics() As Task
+            Const test = "
+Imports System
+Class Foo
+    Public Sub PublicFoo()
+        Dim method As Action = AddressOf PrivateFoo
+    End Sub
+    Private Sub PrivateFoo()
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
     End Class
 End Namespace

@@ -44,11 +44,7 @@ Namespace Usage
         Private Function IsMethodUsed(methodTarget As MethodStatementSyntax) As Boolean
             Dim typeDeclaration = TryCast(methodTarget.Parent.Parent, ClassBlockSyntax)
             If typeDeclaration Is Nothing Then Return True
-
-            Dim hasIdentifier = (From invocation In typeDeclaration.DescendantNodes()?.OfType(Of InvocationExpressionSyntax)
-                                 Where invocation IsNot Nothing
-                                 Select TryCast(invocation?.Expression, IdentifierNameSyntax)).
-                                 ToList()
+            Dim hasIdentifier = typeDeclaration.DescendantNodes()?.OfType(Of IdentifierNameSyntax)()
             If hasIdentifier Is Nothing OrElse Not hasIdentifier.Any Then Return False
             Return hasIdentifier.Any(Function(a) a IsNot Nothing AndAlso a.Identifier.ValueText.Equals(methodTarget?.Identifier.ValueText))
         End Function
