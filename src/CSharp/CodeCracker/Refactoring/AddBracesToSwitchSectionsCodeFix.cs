@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -16,32 +15,25 @@ namespace CodeCracker.CSharp.Refactoring
     [ExportCodeFixProvider("AddBracesToSwitchCaseCodeFixCodeFixProvider", LanguageNames.CSharp), Shared]
     public class AddBracesToSwitchSectionsCodeFix : CodeFixProvider
     {
-        public override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId());
-        }
+        public override ImmutableArray<string> GetFixableDiagnosticIds() =>
+            ImmutableArray.Create(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public override Task ComputeFixesAsync(CodeFixContext context)
+        public override async Task ComputeFixesAsync(CodeFixContext context)
         {
+            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            context.RegisterFix(CodeAction.Create("Add braces to each switch section", ct => AddBracesAsync(context, ct)), diagnostic);
-            return Task.FromResult(0);
-        }
-
-        private static async Task<Document> AddBracesAsync(CodeFixContext context, CancellationToken cancellationToken)
-        {
-            var diagnostic = context.Diagnostics.First();
-            var root = await context.Document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var @switch = (SwitchStatementSyntax) root.FindNode(diagnostic.Location.SourceSpan);
+            var newDoc = AddBracesAsync(context.Document, root, @switch);
+            context.RegisterFix(CodeAction.Create("Add braces to each switch section", newDoc), diagnostic);
+        }
+
+        private static Document AddBracesAsync(Document document, SyntaxNode root, SwitchStatementSyntax @switch)
+        {
             var sections = new List<SwitchSectionSyntax>();
             foreach (var section in @switch.Sections)
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 if (!AddBracesToSwitchSectionsAnalyzer.HasBraces(section))
                 {
                     var newSection = AddBraces(section);
@@ -54,7 +46,7 @@ namespace CodeCracker.CSharp.Refactoring
             }
             var newSwitch = @switch.WithSections(SyntaxFactory.List(sections)).WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = root.ReplaceNode(@switch, newSwitch);
-            var newDocument = context.Document.WithSyntaxRoot(newRoot);
+            var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
 
