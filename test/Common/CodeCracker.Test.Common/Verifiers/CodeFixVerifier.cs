@@ -94,6 +94,9 @@ namespace CodeCracker.Test
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
         private async Task VerifyFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
         {
+            var supportedDiagnostics = analyzer.SupportedDiagnostics.Select(d => d.Id);
+            var codeFixFixableDiagnostics = codeFixProvider.GetFixableDiagnosticIds();
+            Assert.True(codeFixFixableDiagnostics.Any(d => supportedDiagnostics.Contains(d)));
             var document = CreateDocument(oldSource, language);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
