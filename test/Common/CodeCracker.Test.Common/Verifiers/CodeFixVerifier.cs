@@ -208,7 +208,7 @@ namespace CodeCracker.Test
             var compilerDiagnostics = (await Task.WhenAll(project.Documents.Select(d => GetCompilerDiagnosticsAsync(d)))).SelectMany(d => d);
 
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
-            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Project,
+            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Solution,
                 null,//code action ids in codecracker are always null
                 codeFixProvider.GetFixableDiagnosticIds(),
                 (theProject, doc, diagnosticIds, cancelationToken) => Task.FromResult(analyzerDiagnostics.Where(d => d.Location.SourceTree.FilePath == doc.Name)),
@@ -244,7 +244,7 @@ namespace CodeCracker.Test
                 return compilerDiags.Where(d => diagnosticIds.Contains(d.Id));
             };
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
-            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Project,
+            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Solution,
                 null,//code action ids in codecracker are always null
                 diagnosticIds,
                 (theProject, doc, diagIds, cancelationToken) => getDocumentDiagnosticsAsync(doc),
