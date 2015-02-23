@@ -149,6 +149,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeneratedCodeAnalysisExtensionsTests.vb" />
     <Compile Include="Design\CatchEmptyTests.vb" />
     <Compile Include="Design\EmptyCatchBlockTests.vb" />
     <Compile Include="Design\NameOfTests.vb" />

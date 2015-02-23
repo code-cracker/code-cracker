@@ -206,4 +206,3 @@ namespace CodeCracker.Test
         }
     }
 }
-

@@ -1,5 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,9 @@ namespace CodeCracker
                 .WithTrailingTrivia(source.GetTrailingTrivia());
         }
 
+        public static T FirstAncestorOrSelfOfType<T>(this SyntaxNode node) where T : SyntaxNode =>
+            (T)node.FirstAncestorOrSelfOfType(typeof(T));
+
         public static SyntaxNode FirstAncestorOrSelfOfType(this SyntaxNode node, params Type[] types)
         {
             var currentNode = node;
@@ -33,10 +38,8 @@ namespace CodeCracker
             return null;
         }
 
-        public static T FirstAncestorOfType<T>(this SyntaxNode node) where T : SyntaxNode
-        {
-            return (T)node.FirstAncestorOfType(typeof(T));
-        }
+        public static T FirstAncestorOfType<T>(this SyntaxNode node) where T : SyntaxNode =>
+            (T)node.FirstAncestorOfType(typeof(T));
 
         public static SyntaxNode FirstAncestorOfType(this SyntaxNode node, params Type[] types)
         {
@@ -80,5 +83,56 @@ namespace CodeCracker
                 typeSymbol = typeSymbol.BaseType;
             }
         }
+
+        public static bool HasAttributeOnAncestorOrSelf(this SyntaxNode node, string attributeName)
+        {
+            var csharpNode = node as CSharpSyntaxNode;
+            if (csharpNode != null)
+                return csharpNode.HasAttributeOnAncestorOrSelf(attributeName);
+            return ((Microsoft.CodeAnalysis.VisualBasic.VisualBasicSyntaxNode)node).HasAttributeOnAncestorOrSelf(attributeName);
+        }
+
+        public static bool HasAttributeOnAncestorOrSelf(this CSharpSyntaxNode node, string attributeName)
+        {
+            var parentMethod = (BaseMethodDeclarationSyntax)node.FirstAncestorOrSelfOfType(typeof(MethodDeclarationSyntax), typeof(ConstructorDeclarationSyntax));
+            if (parentMethod?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            var type = (TypeDeclarationSyntax)node.FirstAncestorOrSelfOfType(typeof(ClassDeclarationSyntax), typeof(StructDeclarationSyntax));
+            while (type != null)
+            {
+                if (type.AttributeLists.HasAttribute(attributeName))
+                    return true;
+                type = (TypeDeclarationSyntax)type.FirstAncestorOfType(typeof(ClassDeclarationSyntax), typeof(StructDeclarationSyntax));
+            }
+            var property = node.FirstAncestorOrSelfOfType<PropertyDeclarationSyntax>();
+            if (property?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            var accessor = node.FirstAncestorOrSelfOfType<AccessorDeclarationSyntax>();
+            if (accessor?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            var anInterface = node.FirstAncestorOrSelfOfType<InterfaceDeclarationSyntax>();
+            if (anInterface?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            var anEvent = node.FirstAncestorOrSelfOfType<EventDeclarationSyntax>();
+            if (anEvent?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            var anEnum = node.FirstAncestorOrSelfOfType<EnumDeclarationSyntax>();
+            if (anEnum?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            var field = node as BaseFieldDeclarationSyntax;
+            if (field?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            var parameter = node as ParameterSyntax;
+            if (parameter?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            var aDelegate = node as DelegateDeclarationSyntax;
+            if (aDelegate?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            return false;
+        }
+
+        public static bool HasAttribute(this SyntaxList<AttributeListSyntax> attributeLists, string attributeName) =>
+            attributeLists.SelectMany(a => a.Attributes).Any(a => a.Name.ToString().EndsWith(attributeName, StringComparison.OrdinalIgnoreCase));
+
     }
 }
