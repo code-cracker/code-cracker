@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Style
     [ExportCodeFixProvider("CodeCrackerEmptyObjectInitializerCodeFixProvider", LanguageNames.CSharp), Shared]
     public class EmptyObjectInitializerCodeFixProvider : CodeFixProvider
     {
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
@@ -24,10 +24,10 @@ namespace CodeCracker.CSharp.Style
                 newDeclaration = newDeclaration.WithoutTrailingTrivia().WithArgumentList(SyntaxFactory.ArgumentList());
             root = root.ReplaceNode(oldDeclaration, newDeclaration);
             var newDocument = context.Document.WithSyntaxRoot(root);
-            context.RegisterFix(CodeAction.Create("Remove empty object initializer", newDocument), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove empty object initializer", ct => Task.FromResult(newDocument)), diagnostic);
         }
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.EmptyObjectInitializer.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

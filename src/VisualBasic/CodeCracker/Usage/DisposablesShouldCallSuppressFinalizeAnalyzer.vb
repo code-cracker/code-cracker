@@ -23,7 +23,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         DiagnosticSeverity.Warning,
         isEnabledByDefault:=False,
         description:=Description,
-        helpLink:=HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize))
+        helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get

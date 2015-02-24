@@ -18,20 +18,20 @@ namespace CodeCracker.CSharp.Usage
     [ExportCodeFixProvider("CodeCrackerCodeCrackerIfReturnTrueCodeFixProvider", LanguageNames.CSharp), Shared]
     public class DisposableVariableNotDisposedCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId());
         public readonly static string MessageFormat = "Dispose object: '{0}'";
 
         public sealed override FixAllProvider GetFixAllProvider() => DisposableVariableNotDisposedFixAllProvider.Instance;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
             if (objectCreation != null)
-                context.RegisterFix(CodeAction.Create(string.Format(MessageFormat, objectCreation.Type.ToString()), c => CreateUsingAsync(context.Document, objectCreation, c)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(string.Format(MessageFormat, objectCreation.Type.ToString()), c => CreateUsingAsync(context.Document, objectCreation, c)), diagnostic);
         }
 
         private static async Task<Document> CreateUsingAsync(Document document, ObjectCreationExpressionSyntax objectCreation, CancellationToken cancellationToken)

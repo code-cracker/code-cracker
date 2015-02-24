@@ -14,7 +14,7 @@ Namespace Refactoring
     Public Class ParameterRefactoryCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
 
             Dim diagnostic = context.Diagnostics.First()
@@ -23,12 +23,11 @@ Namespace Refactoring
             Dim declarationNamespace = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of NamespaceBlockSyntax)
             Dim declarationMethod = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of MethodBlockSyntax)
 
-            context.RegisterFix(CodeAction.Create("Change to new Class", Function(c) NewClassAsync(context.Document, declarationNamespace, declarationClass, declarationMethod, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Change to new Class", Function(c) NewClassAsync(context.Document, declarationNamespace, declarationClass, declarationMethod, c)), diagnostic)
         End Function
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.ParameterRefactory.ToDiagnosticId())
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.ParameterRefactory.ToDiagnosticId())
+
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
@@ -48,7 +47,7 @@ Namespace Refactoring
 
         Private Shared Function NewPropertyClassFactory(methodOld As MethodBlockSyntax) As List(Of PropertyStatementSyntax)
             Dim properties = New List(Of PropertyStatementSyntax)
-            For Each param In methodOld.Begin.ParameterList.Parameters
+            For Each param In methodOld.SubOrFunctionStatement.ParameterList.Parameters
                 Dim newProperty = SyntaxFactory.PropertyStatement(FirstLetterToUpper(param.Identifier.GetText().ToString())).
                     WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword))).
                     WithAsClause(param.AsClause).
@@ -71,7 +70,7 @@ Namespace Refactoring
 
         Private Shared Function NewNamespaceFactory(oldNamespace As NamespaceBlockSyntax, oldClass As ClassBlockSyntax, oldMethod As MethodBlockSyntax) As NamespaceBlockSyntax
             Dim newNamespace = oldNamespace
-            Dim className = "NewClass" & oldMethod.Begin.Identifier.Text
+            Dim className = "NewClass" & oldMethod.SubOrFunctionStatement.Identifier.Text
             Dim memberNamespaceOld = oldNamespace.Members.FirstOrDefault(Function(member) member.Equals(oldClass))
             newNamespace = oldNamespace.ReplaceNode(memberNamespaceOld, NewClassFactory(className, oldClass, oldMethod))
             Dim newParameterClass = NewClassParameterFactory(className, NewPropertyClassFactory(oldMethod))
@@ -90,22 +89,22 @@ Namespace Refactoring
                 WithAdditionalAnnotations(Formatter.Annotation)
 
             Dim methodStatement As MethodStatementSyntax
-            If oldMethod.VBKind = SyntaxKind.SubBlock Then
-                methodStatement = SyntaxFactory.SubStatement(oldMethod.Begin.Identifier.Text).
-                    WithModifiers(oldMethod.Begin.Modifiers).
+            If oldMethod.Kind = SyntaxKind.SubBlock Then
+                methodStatement = SyntaxFactory.SubStatement(oldMethod.SubOrFunctionStatement.Identifier.Text).
+                    WithModifiers(oldMethod.SubOrFunctionStatement.Modifiers).
                     WithParameterList(parameters).
                     WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed).
                     WithAdditionalAnnotations(Formatter.Annotation)
             Else
-                methodStatement = SyntaxFactory.FunctionStatement(oldMethod.Begin.Identifier.Text).
-                    WithModifiers(oldMethod.Begin.Modifiers).
+                methodStatement = SyntaxFactory.FunctionStatement(oldMethod.SubOrFunctionStatement.Identifier.Text).
+                    WithModifiers(oldMethod.SubOrFunctionStatement.Modifiers).
                     WithParameterList(parameters).
-                    WithAsClause(oldMethod.Begin.AsClause).
+                    WithAsClause(oldMethod.SubOrFunctionStatement.AsClause).
                     WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed).
                     WithAdditionalAnnotations(Formatter.Annotation)
             End If
 
-            Dim newMethod = SyntaxFactory.MethodBlock(oldMethod.VBKind, methodStatement, oldMethod.Statements, oldMethod.End).
+            Dim newMethod = SyntaxFactory.MethodBlock(oldMethod.Kind, methodStatement, oldMethod.Statements, oldMethod.EndSubOrFunctionStatement).
                 WithAdditionalAnnotations(Formatter.Annotation)
             Dim newClass = oldClass.ReplaceNode(oldMethod, newMethod)
             Return newClass
@@ -121,7 +120,7 @@ Namespace Refactoring
 
         Private Shared Function NewCompilationFactory(oldCompilation As CompilationUnitSyntax, oldClass As ClassBlockSyntax, oldMethod As MethodBlockSyntax) As CompilationUnitSyntax
             Dim newNamespace = oldCompilation
-            Dim className = "NewClass" & oldMethod.Begin.Identifier.Text
+            Dim className = "NewClass" & oldMethod.SubOrFunctionStatement.Identifier.Text
             Dim oldMemberNamespace = oldCompilation.Members.FirstOrDefault(Function(member) member.Equals(oldClass))
             newNamespace = oldCompilation.ReplaceNode(oldMemberNamespace, NewClassFactory(className, oldClass, oldMethod))
             Dim newParameterClass = NewClassParameterFactory(className, NewPropertyClassFactory(oldMethod))

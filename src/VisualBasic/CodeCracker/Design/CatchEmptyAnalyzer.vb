@@ -19,7 +19,7 @@ Namespace Design
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.CatchEmpty))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.CatchEmpty))
 
         Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
 

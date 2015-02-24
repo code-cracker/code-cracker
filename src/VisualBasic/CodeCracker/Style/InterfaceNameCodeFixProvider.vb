@@ -12,20 +12,18 @@ Namespace Style
     Public Class InterfaceNameCodeFixProvider
         Inherits CodeFixProvider
 
-        Public NotOverridable Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.InterfaceName.ToDiagnosticId())
-        End Function
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.InterfaceName.ToDiagnosticId())
 
         Public NotOverridable Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public NotOverridable Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public NotOverridable Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First()
             Dim diagnosticSpan = diagnostic.Location.SourceSpan
             Dim declaration = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOrSelfOfType(GetType(InterfaceStatementSyntax))
-            context.RegisterFix(CodeAction.Create("Consider start Interface name with letter 'I'.",
+            context.RegisterCodeFix(CodeAction.Create("Consider start Interface name with letter 'I'.",
                                               Function(c) ChangeInterfaceNameAsync(context.Document, DirectCast(declaration, InterfaceStatementSyntax), c)), diagnostic)
 
         End Function

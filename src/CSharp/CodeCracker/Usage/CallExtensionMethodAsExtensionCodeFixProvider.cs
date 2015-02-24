@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Usage
     [ExportCodeFixProvider("CodeCrackerCallExtensionMethodAsExtensionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class CallExtensionMethodAsExtensionCodeFixProvider : CodeFixProvider
     {
-        public override async Task ComputeFixesAsync(CodeFixContext context)
+        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
@@ -27,15 +27,14 @@ namespace CodeCracker.CSharp.Usage
                 .OfType<InvocationExpressionSyntax>()
                 .First();
 
-            context.RegisterFix(
+            context.RegisterCodeFix(
                 CodeAction.Create(
                     "Use extension method as an extension",
                     cancellationToken => CallAsExtensionAsync(context.Document, staticInvocationExpression, cancellationToken)),
                     diagnostic);
         }
 
-        public override ImmutableArray<string> GetFixableDiagnosticIds() =>
-            ImmutableArray.Create(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId());
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId());
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

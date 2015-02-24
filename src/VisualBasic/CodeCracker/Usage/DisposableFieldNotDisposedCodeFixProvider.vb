@@ -15,21 +15,19 @@ Namespace Usage
     Public Class DisposableFieldNotDisposedCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
             Dim span = diagnostic.Location.SourceSpan
             Dim variableDeclarator = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of VariableDeclaratorSyntax)()
-            context.RegisterFix(CodeAction.Create("Dispose field '" & variableDeclarator.Names.First().ToString(),
+            context.RegisterCodeFix(CodeAction.Create("Dispose field '" & variableDeclarator.Names.First().ToString(),
                                               Function(c) DisposeField(context.Document, variableDeclarator, c)),
                             diagnostic)
 
         End Function
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
-                                     DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId())
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(), DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId())
+
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
@@ -85,7 +83,7 @@ Namespace Usage
                     WithAdditionalAnnotations(Formatter.Annotation)
 
                     ' Ensure the dispose method includes the implements clause
-                    Dim disposeStatement = newDisposeMethod.Begin
+                    Dim disposeStatement = newDisposeMethod.SubOrFunctionStatement
                     Dim disposeStatementTrailingTrivia = disposeStatement.GetTrailingTrivia()
                     If disposeStatement.ImplementsClause Is Nothing Then
                         disposeStatement = disposeStatement.
@@ -95,7 +93,7 @@ Namespace Usage
                         WithTrailingTrivia(disposeStatementTrailingTrivia).
                         WithAdditionalAnnotations(Formatter.Annotation)
 
-                        newDisposeMethod = newDisposeMethod.ReplaceNode(newDisposeMethod.Begin, disposeStatement)
+                        newDisposeMethod = newDisposeMethod.ReplaceNode(newDisposeMethod.SubOrFunctionStatement, disposeStatement)
                     End If
                     newType = type.ReplaceNode(existingDisposeMethod, newDisposeMethod)
                 Else

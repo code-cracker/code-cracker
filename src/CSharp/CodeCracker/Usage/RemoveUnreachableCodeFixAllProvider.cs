@@ -12,19 +12,19 @@ namespace CodeCracker.CSharp.Usage
         private static readonly SyntaxAnnotation removeUnreachableCodeAnnotation = new SyntaxAnnotation("RemoveUnreachableCodeFixAllProvider");
         private RemoveUnreachableCodeFixAllProvider() { }
         public static RemoveUnreachableCodeFixAllProvider Instance = new RemoveUnreachableCodeFixAllProvider();
-        public override async Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
+        public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {
             switch (fixAllContext.Scope)
             {
                 case FixAllScope.Document:
-                    return CodeAction.Create(RemoveUnreachableCodeCodeFixProvider.Message,
-                        fixAllContext.Document.WithSyntaxRoot(await GetFixedDocumentAsync(fixAllContext, fixAllContext.Document).ConfigureAwait(false)));
+                    return Task.FromResult(CodeAction.Create(RemoveUnreachableCodeCodeFixProvider.Message,
+                        async ct => fixAllContext.Document.WithSyntaxRoot(await GetFixedDocumentAsync(fixAllContext, fixAllContext.Document).ConfigureAwait(false))));
                 case FixAllScope.Project:
-                    return CodeAction.Create(RemoveUnreachableCodeCodeFixProvider.Message,
-                        await GetFixedProjectAsync(fixAllContext, fixAllContext.Project).ConfigureAwait(false));
+                    return Task.FromResult(CodeAction.Create(RemoveUnreachableCodeCodeFixProvider.Message,
+                        ct => GetFixedProjectAsync(fixAllContext, fixAllContext.Project)));
                 case FixAllScope.Solution:
-                    return CodeAction.Create(RemoveUnreachableCodeCodeFixProvider.Message,
-                        await GetFixedSolutionAsync(fixAllContext).ConfigureAwait(false));
+                    return Task.FromResult(CodeAction.Create(RemoveUnreachableCodeCodeFixProvider.Message,
+                        ct => GetFixedSolutionAsync(fixAllContext)));
             }
             return null;
         }
@@ -49,7 +49,7 @@ namespace CodeCracker.CSharp.Usage
 
         private async Task<SyntaxNode> GetFixedDocumentAsync(FixAllContext fixAllContext, Document document)
         {
-            var diagnostics = await fixAllContext.GetDiagnosticsAsync(document).ConfigureAwait(false);
+            var diagnostics = await fixAllContext.GetDocumentDiagnosticsAsync(document).ConfigureAwait(false);
             var root = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
             var nodes = diagnostics.Select(d => root.FindNode(d.Location.SourceSpan)).Where(n => !n.IsMissing).ToList();
             var newRoot = root;
@@ -64,7 +64,7 @@ namespace CodeCracker.CSharp.Usage
                     newRoot = RemoveUnreachableCodeCodeFixProvider.RemoveUnreachableStatement(newRoot, node);
                 }
                 var newDoc = document.WithSyntaxRoot(newRoot);
-                diagnostics = await fixAllContext.GetDiagnosticsAsync(newDoc).ConfigureAwait(false);
+                diagnostics = await fixAllContext.GetDocumentDiagnosticsAsync(newDoc).ConfigureAwait(false);
                 newRoot = await newDoc.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
                 nodes = diagnostics.Select(d => newRoot.FindNode(d.Location.SourceSpan)).Where(n => !n.IsMissing).ToList();
             }

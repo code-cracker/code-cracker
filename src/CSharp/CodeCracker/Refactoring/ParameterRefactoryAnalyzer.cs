@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Refactoring
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ParameterRefactory));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ParameterRefactory));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
         public override void Initialize(AnalysisContext context) =>

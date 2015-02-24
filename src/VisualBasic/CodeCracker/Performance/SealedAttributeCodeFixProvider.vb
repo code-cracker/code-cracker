@@ -10,20 +10,18 @@ Namespace Performance
     Public Class SealedAttributeCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(SealedAttributeAnalyzer.Id)
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(SealedAttributeAnalyzer.Id)
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diag = context.Diagnostics.First()
             Dim sourceSpan = diag.Location.SourceSpan
             Dim type = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType(Of Microsoft.CodeAnalysis.VisualBasic.Syntax.ClassStatementSyntax)().First()
-            context.RegisterFix(CodeAction.Create("Mark as NotInheritable", Function(ct) MarkClassAsSealed(context.Document, type, ct)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Mark as NotInheritable", Function(ct) MarkClassAsSealed(context.Document, type, ct)), diag)
         End Function
 
         Private Async Function MarkClassAsSealed(document As Document, type As ClassStatementSyntax, cancellationToken As Threading.CancellationToken) As Task(Of Document)

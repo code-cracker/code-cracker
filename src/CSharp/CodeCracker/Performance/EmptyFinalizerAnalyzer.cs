@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Performance
             true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.EmptyFinalizer));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.EmptyFinalizer));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

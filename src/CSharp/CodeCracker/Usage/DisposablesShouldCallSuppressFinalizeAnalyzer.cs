@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             DiagnosticSeverity.Warning,
             isEnabledByDefault: false,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

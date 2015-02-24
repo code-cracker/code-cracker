@@ -21,7 +21,7 @@ It can be either specified directly or using nameof() (VB 14 and above only)."
         DiagnosticSeverity.Warning,
         isEnabledByDefault:=True,
         description:=Description,
-        helpLink:=HelpLink.ForDiagnostic(DiagnosticId.ArgumentException))
+        helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.ArgumentException))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get
@@ -75,12 +75,12 @@ It can be either specified directly or using nameof() (VB 14 and above only)."
 
             Dim method = TryCast(node, MethodBlockSyntax)
             If method IsNot Nothing Then
-                Return method.Begin.ParameterList.Parameters.Select(Function(p) p.Identifier.ToString())
+                Return method.SubOrFunctionStatement.ParameterList.Parameters.Select(Function(p) p.Identifier.ToString())
             End If
 
             Dim simpleLambda = TryCast(node, LambdaExpressionSyntax)
             If simpleLambda IsNot Nothing Then
-                Return simpleLambda.Begin.ParameterList.Parameters.Select(Function(p) p.Identifier.ToString())
+                Return simpleLambda.SubOrFunctionHeader.ParameterList.Parameters.Select(Function(p) p.Identifier.ToString())
             End If
 
             Dim accessor = TryCast(node, AccessorBlockSyntax)
@@ -92,7 +92,7 @@ It can be either specified directly or using nameof() (VB 14 and above only)."
 
             Dim constructor = TryCast(node, ConstructorBlockSyntax)
             If constructor IsNot Nothing Then
-                Return constructor.Begin.ParameterList.Parameters.Select(Function(p) p.Identifier.ToString())
+                Return constructor.SubNewStatement.ParameterList.Parameters.Select(Function(p) p.Identifier.ToString())
             End If
 
             Return Nothing

@@ -22,7 +22,7 @@ Namespace Usage
             DiagnosticSeverity.Error,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.JsonNet))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.JsonNet))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get
