@@ -80,8 +80,8 @@
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.cs" />
     <Compile Include="Style\ExistenceOperatorAnalyzer.cs" />
     <Compile Include="Style\ExistenceOperatorCodeFixProvider.cs" />
-    <Compile Include="Style\StringRepresentationCodeFixProvider.cs" />
-    <Compile Include="Style\StringRepresentationAnalyzer.cs" />
+    <Compile Include="Refactoring\StringRepresentationCodeFixProvider.cs" />
+    <Compile Include="Refactoring\StringRepresentationAnalyzer.cs" />
     <Compile Include="Performance\EmptyFinalizerAnalyzer.cs" />
     <Compile Include="Performance\EmptyFinalizerCodeFixProvider.cs" />
     <Compile Include="Performance\MakeLocalVariableConstWhenItIsPossibleAnalyzer.cs" />
@@ -127,7 +127,6 @@
     <Compile Include="Performance\SealedAttributeCodeFixProvider.cs" />
     <Compile Include="Design\StaticConstructorExceptionAnalyzer.cs" />
     <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.cs" />
-    <Compile Include="Refactoring\StringTypeCodeRefactoringProvider.cs" />
     <Compile Include="Style\ConvertToExpressionBodiedMemberCodeFixProvider.cs" />
     <Compile Include="Style\TernaryOperatorCodeFixProvider.cs" />
     <Compile Include="Style\TernaryOperatorAnalyzer.cs" />

@@ -1,7 +1,7 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class RemovePrivateMethodNeverUsedAnalyzerTest : CodeFixVerifier<RemovePrivateMethodNeverUsedAnalyzer, RemovePrivateMethodNeverUsedCodeFixProvider>
     {
@@ -35,6 +35,24 @@ namespace CodeCracker.Test.Usage
     public void PublicFoo()
     {
         PrivateFoo();
+    }
+
+    private void PrivateFoo() { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void WhenPrivateMethodUsedInAttributionDoesNotGenerateDiagnostics()
+        {
+            const string test = @"
+using System;
+
+public class Foo
+{
+    public void PublicFoo()
+    {
+        Action method = PrivateFoo;
     }
 
     private void PrivateFoo() { }

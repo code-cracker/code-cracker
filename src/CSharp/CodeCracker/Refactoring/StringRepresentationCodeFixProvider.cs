@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Composition;
 
-namespace CodeCracker.CSharp.Style
+namespace CodeCracker.CSharp.Refactoring
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp), Shared]
     public class StringRepresentationCodeFixProvider : CodeFixProvider

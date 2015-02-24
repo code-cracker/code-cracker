@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RemovePrivateMethodNeverUsedAnalyzer : DiagnosticAnalyzer
@@ -46,11 +46,7 @@ namespace CodeCracker.Usage
             var typeDeclaration = methodTarget.Parent as TypeDeclarationSyntax;
             if (typeDeclaration == null) return true;
 
-            var hasIdentifier = (from invocation in typeDeclaration
-                                .DescendantNodes()?.OfType<InvocationExpressionSyntax>()
-                                 where invocation != null
-                                 select invocation?.Expression as IdentifierNameSyntax).ToList();
-
+            var hasIdentifier = typeDeclaration.DescendantNodes()?.OfType<IdentifierNameSyntax>();
             if (hasIdentifier == null || !hasIdentifier.Any()) return false;
             return hasIdentifier.Any(a => a != null && a.Identifier.ValueText.Equals(methodTarget?.Identifier.ValueText));
         }

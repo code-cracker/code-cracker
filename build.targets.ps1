@@ -15,17 +15,17 @@ Properties {
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
     $nupkgPathJoint = "$rootDir\CodeCracker.{0}.nupkg"
-    $xunitConsoleExe  = "$packagesDir\xunit.runners.2.0.0-rc1-build2826\tools\xunit.console.x86.exe"
-    $openCoverExe = "$packagesDir\OpenCover.4.5.3702-rc47\OpenCover.Console.exe"
+    $xunitConsoleExe = "$packagesDir\xunit.runners.2.0.0-rc2-build2857\tools\xunit.console.x86.exe"
+    $openCoverExe = "$packagesDir\OpenCover.4.5.3711-rc52\OpenCover.Console.exe"
     $testDllCS = "CodeCracker.Test.CSharp.dll"
     $testDllVB = "CodeCracker.Test.VisualBasic.dll"
     $testDirCS = "$testDir\CSharp\CodeCracker.Test\bin\Debug"
     $testDirVB = "$testDir\VisualBasic\CodeCracker.Test\bin\Debug"
     $logDir = "$rootDir\log"
     $outputXml = "$logDir\CodeCoverageResults.xml"
-    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.1.0.0\ReportGenerator.exe"
+    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.1.1.0\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
-    $converallsNetExe = "$packagesDir\coveralls.io.1.1.86\tools\coveralls.net.exe"
+    $converallsNetExe = "$packagesDir\coveralls.io.1.1.91\tools\coveralls.net.exe"
     $isRelease = $isAppVeyor -and ($env:APPVEYOR_REPO_BRANCH -eq "release")
     $isPullRequest = $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null
 }
@@ -165,9 +165,9 @@ function TestPath($paths) {
 
 function RunTest($fullTestDllPath) {
     if ($isAppVeyor) {
-        . $xunitConsoleExe $fullTestDllPath -appveyor
+        . $xunitConsoleExe $fullTestDllPath -appveyor -nologo -quiet
     } else {
-        . $xunitConsoleExe $fullTestDllPath
+        . $xunitConsoleExe $fullTestDllPath -nologo -quiet
     }
 }
 
@@ -189,7 +189,7 @@ function RunTestWithCoverage($fullTestDllPaths) {
     if ($isAppVeyor) {
         $appVeyor = " -appveyor"
     }
-    $arguments = '-register:user', "`"-target:$xunitConsoleExe`"", "`"-targetargs:$targetArgs $appVeyor -noshadow`"", "`"-filter:+[CodeCracker*]* -[CodeCracker.Test*]*`"", "`"-output:$outputXml`"", '-coverbytest:*.Test.*.dll', '-log:All', '-returntargetcode'
+    $arguments = '-register:user', "`"-target:$xunitConsoleExe`"", "`"-targetargs:$targetArgs $appVeyor -noshadow -nologo -quiet`"", "`"-filter:+[CodeCracker*]* -[CodeCracker.Test*]*`"", "`"-output:$outputXml`"", '-coverbytest:*.Test.*.dll', '-log:All', '-returntargetcode'
     Exec { . $openCoverExe $arguments }
     Write-Host -ForegroundColor DarkBlue "Exporting code coverage report"
     Exec { . $reportGeneratorExe -verbosity:Info -reports:$outputXml -targetdir:$coverageReportDir }

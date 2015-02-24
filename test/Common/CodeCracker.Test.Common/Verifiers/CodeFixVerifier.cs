@@ -94,6 +94,9 @@ namespace CodeCracker.Test
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
         private async Task VerifyFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
         {
+            var supportedDiagnostics = analyzer.SupportedDiagnostics.Select(d => d.Id);
+            var codeFixFixableDiagnostics = codeFixProvider.GetFixableDiagnosticIds();
+            Assert.True(codeFixFixableDiagnostics.Any(d => supportedDiagnostics.Contains(d)));
             var document = CreateDocument(oldSource, language);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
@@ -205,7 +208,7 @@ namespace CodeCracker.Test
             var compilerDiagnostics = (await Task.WhenAll(project.Documents.Select(d => GetCompilerDiagnosticsAsync(d)))).SelectMany(d => d);
 
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
-            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Project,
+            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Solution,
                 null,//code action ids in codecracker are always null
                 codeFixProvider.GetFixableDiagnosticIds(),
                 (theProject, doc, diagnosticIds, cancelationToken) => Task.FromResult(analyzerDiagnostics.Where(d => d.Location.SourceTree.FilePath == doc.Name)),
@@ -241,7 +244,7 @@ namespace CodeCracker.Test
                 return compilerDiags.Where(d => diagnosticIds.Contains(d.Id));
             };
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
-            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Project,
+            var fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Solution,
                 null,//code action ids in codecracker are always null
                 diagnosticIds,
                 (theProject, doc, diagIds, cancelationToken) => getDocumentDiagnosticsAsync(doc),

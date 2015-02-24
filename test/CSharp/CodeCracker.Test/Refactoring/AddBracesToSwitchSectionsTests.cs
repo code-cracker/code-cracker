@@ -192,5 +192,43 @@ namespace CodeCracker.Test.CSharp.Refactoring
 }";
             await VerifyCSharpFixAsync(test.WrapInCSharpMethod(), expected.WrapInCSharpMethod());
         }
+
+        [Fact]
+        public async Task FixAddsBracesWhenSomeCasesHaveBraces()
+        {
+            var test = @"switch(x)
+{
+    case 0:
+    {
+        Foo();
+        break;
+    }
+    case 1:
+        Bar();
+        break;
+    default:
+        Baz();
+        break;
+}".WrapInCSharpMethod();
+            var expected = @"switch(x)
+{
+    case 0:
+    {
+        Foo();
+        break;
+    }
+    case 1:
+    {
+        Bar();
+        break;
+    }
+    default:
+    {
+        Baz();
+        break;
+    }
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(test, expected);
+        }
     }
 }

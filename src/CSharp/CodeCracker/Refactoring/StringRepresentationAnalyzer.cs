@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.CSharp.Style
+namespace CodeCracker.CSharp.Refactoring
 {
     /// <summary>
     /// This analyzer produce 2 different hidden diagnostics one for regular string literals like
@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Style
             DiagnosticId.StringRepresentation_RegularString.ToDiagnosticId(),
             "Regular string",
             "Change to regular string",
-            SupportedCategories.Style,
+            SupportedCategories.Refactoring,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_RegularString));
@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Style
             DiagnosticId.StringRepresentation_VerbatimString.ToDiagnosticId(),
             "Verbatim string",
             "Change to verbatim string",
-            SupportedCategories.Style,
+            SupportedCategories.Refactoring,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             helpLink: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_VerbatimString));

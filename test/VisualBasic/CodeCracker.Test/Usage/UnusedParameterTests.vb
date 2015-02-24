@@ -1,0 +1,373 @@
+﻿Imports CodeCracker.VisualBasic.Usage
+Imports Xunit
+
+Namespace Usage
+    Public Class UnusedParameterTests
+        Inherits CodeFixVerifier(Of UnusedParametersAnalyzer, UnusedParametersCodeFixProvider)
+        <Fact>
+        Public Async Function MethodWithoutParametersDoesNotCreateDiagnostic() As Task
+            Const source = "
+Class TypeName
+    Public Sub Foo()
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function UnusedParametersDoesNotCreateDiagnostic() As Task
+            Const source = "
+Class TypeName
+    Public Function Foo(a As Integer) as Integer
+        Return a
+    End Function
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function MethodWithoutStatementsCreatesDiagnostic() As Task
+            Const source = "
+Class TypeName
+    Public Sub Foo(a As Integer)
+    End Sub
+End Class"
+            Await VerifyBasicDiagnosticAsync(source, CreateDiagnosticResult("a", 3, 20))
+        End Function
+
+        <Fact>
+        Public Async Function IgnorePartialMethods() As Task
+            Const source = "
+Partial Class TypeName
+    Public Partial Sub Foo(a As Integer)
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function FixUnusedParameter() As Task
+            Const source = "
+Class TypeName
+    Public Sub Foo(a As Integer)
+    End Sub
+End Class"
+            Const fix = "
+Class TypeName
+    Public Sub Foo()
+    End Sub
+End Class"
+
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        <Fact>
+        Public Async Function With2ParametersCreatesDiagnostic() As Task
+            Const source = "
+Class TypeName
+    Public Function Foo(a As Integer, b As Integer) As Integer
+        Return a
+    End Function
+End Class"
+            Await VerifyBasicDiagnosticAsync(source, CreateDiagnosticResult("b", 3, 39))
+        End Function
+
+        <Fact>
+        Public Async Function FixUnusedParameterWith2Parameters() As Task
+            Const source = "
+Class TypeName
+    Public Function Foo(a As Integer, b As Integer) As Integer
+        Return a
+    End Function
+End Class"
+            Const fix = "
+Class TypeName
+    Public Function Foo(a As Integer) As Integer
+        Return a
+    End Function
+End Class"
+
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        <Fact>
+        Public Async Function IgnoreOverrides() As Task
+            Const source = "
+Class Base
+    Public Overridable Function Foo(a As Integer) As Integer
+        Return a
+    End Sub
+End Class
+Class TypeName
+    Inherits Base
+    Public Overrides Function Foo(a As Integer) As Integer
+        Throw New System.Exception()
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function IgnoreMethodsThatImplementAnInterfaceMember() As Task
+            Const source = "
+Interface IBase
+    Function Foo(a As Integer) As Integer
+End Interface
+Class TypeName
+    Implements IBase
+    Public Function Foo(a As Integer) As Integer Implements IBase.Foo
+        Throw New System.Exception()
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function IgnoreMethodsThatMatchEventHandlerPattern() As Task
+            Const source = "
+Imports System
+Class TypeName
+    Public Sub Foo(sender As Object, args As EventArgs)
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function IgnoreMethodsThatMatchEventHandlerPatternWithDerivedEventArgs() As Task
+            Const source = "
+Imports System
+Class MyArgs
+    Inherits EventArgs
+End Class
+Class TypeName
+    Public Sub Foo(sender As Object, args As MyArgs)
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function DoNotIgnoreMethodsThatMatchEventHandlerPatternButDoesNotReturnVoid() As Task
+            Const source = "
+Imports System
+Class TypeName
+    Public Function Foo(sender As Object, args As EventArgs) As Integer
+        Throw New Exception()
+    End Function
+End Class"
+            Await VerifyBasicDiagnosticAsync(source,
+                                              CreateDiagnosticResult("sender", 4, 25),
+                                              CreateDiagnosticResult("args", 4, 43))
+        End Function
+        <Fact>
+        Public Async Function ConstructorWithoutStatementsCreatesDiagnostic() As Task
+            Const source = "
+Class TypeName
+    Public Sub New(a As Integer)
+    End Sub
+End Class"
+            Await VerifyBasicDiagnosticAsync(source, CreateDiagnosticResult("a", 3, 20))
+        End Function
+
+        <Fact>
+        Public Async Function IgnoreSerializableConstructor() As Task
+            Const source = "
+Imports System
+Imports System.Runtime.Serialization
+<Serializable>
+Class TypeName
+    Implements ISerializable
+
+    Protected Sub New(info As SerializationInfo, context As StreamingContext)
+    End Sub
+    Public Overridable Sub GetObjectData(info As SerializationInfo, context As StreamingContext) Implements ISerializable.GetObjectData
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function DoNotIgnoreSerializableConstructorIfTypeDoesNotImplementISerializable() As Task
+            Const source = "
+Imports System
+Imports System.Runtime.Serialization
+<Serializable>
+Class TypeName
+
+    Protected Sub New(info As SerializationInfo, context As StreamingContext)
+    End Sub
+End Class"
+            Await VerifyBasicDiagnosticAsync(source, CreateDiagnosticResult("info", 7, 23), CreateDiagnosticResult("context", 7, 50))
+        End Function
+
+        <Fact>
+        Public Async Function DoNotIgnoreSerializableConstructorIfTypeDoesNotHaveSerializableAttribute() As Task
+            Const source = "
+Imports System
+Imports System.Runtime.Serialization
+Class TypeName
+    Implements ISerializable
+    Protected Sub New(info As SerializationInfo, context As StreamingContext)
+    End Sub
+    Public Overridable Sub GetObjectData(info As SerializationInfo, context As StreamingContext) Implements ISerializable.GetObjectData
+    End Sub
+End Class"
+            Await VerifyBasicDiagnosticAsync(source, CreateDiagnosticResult("info", 6, 23), CreateDiagnosticResult("context", 6, 50))
+        End Function
+
+        <Fact>
+        Public Async Function FixWhenTheParametersHasReferenceOnSameClass() As Task
+            Const source = "
+Class TypeName
+    Public Sub IsReferencing()
+        Foo(1, 2)
+    End Sub
+    Public Function Foo(a As Integer, b As Integer) as Integer
+        Return a
+    End Function
+End Class"
+            Const fix = "
+Class TypeName
+    Public Sub IsReferencing()
+        Foo(1)
+    End Sub
+    Public Function Foo(a As Integer) as Integer
+        Return a
+    End Function
+End Class"
+
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        <Fact>
+        Public Async Function FixWhenTheParametersHasReferenceOnDifferentClass() As Task
+            Const source = "
+Class HasRef
+    Public Sub IsReferencing()
+        Dim x = New TypeName().Foo(1, 2)
+    End Sub
+End Class
+Class TypeName 
+    Public Function Foo(a As Integer, b As Integer) as Integer
+        Return a
+    End Function
+End Class"
+            Const fix = "
+Class HasRef
+    Public Sub IsReferencing()
+        Dim x = New TypeName().Foo(1)
+    End Sub
+End Class
+Class TypeName 
+    Public Function Foo(a As Integer) as Integer
+        Return a
+    End Function
+End Class"
+
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        <Fact>
+        Public Async Function FixWhenTheParametersHasReferenceOnDifferentClassOnSharedMethod() As Task
+            Const source = "
+Class HasRef
+    Public Sub IsReferencing()
+        TypeName.Foo(1, 2)
+    End Sub
+End Class
+Class TypeName 
+    Public Shared Function Foo(a As Integer, b As Integer) as Integer
+        Return a
+    End Function
+End Class"
+            Const fix = "
+Class HasRef
+    Public Sub IsReferencing()
+        TypeName.Foo(1)
+    End Sub
+End Class
+Class TypeName 
+    Public Shared Function Foo(a As Integer) as Integer
+        Return a
+    End Function
+End Class"
+
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        <Fact>
+        Public Async Function FixWhenTheParametersHasReferenceOnConstructor() As Task
+            Const source = "
+Class HasRef
+    Public Sub IsReferencing()
+        Dim x = New TypeName(1, 2)
+    End Sub
+End Class
+Class TypeName 
+    Public Sub New(a As Integer, b As Integer)
+        Dim x = a
+    End Sub
+End Class"
+            Const fix = "
+Class HasRef
+    Public Sub IsReferencing()
+        Dim x = New TypeName(1)
+    End Sub
+End Class
+Class TypeName 
+    Public Sub New(a As Integer)
+        Dim x = a
+    End Sub
+End Class"
+
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+
+        <Fact>
+        Public Async Function CallToBaseDoesNotCreateDiagnostic() As Task
+            Const source = "
+Class Base
+    Protected Sub New(a As Integer)
+        Dim x = a
+    End Sub
+End Class
+Class Derived
+    Inherits Base
+    Public Sub New(a As Integer)
+        MyBase.New(a)
+    End Sub
+End Class
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function CallToBaseWithExpressionDoesNotCreateDiagnostic() As Task
+            Const source = "
+Class Base
+    Protected Sub New(a As Integer)
+        dim x = a
+    End Sub
+End Class
+Class Derived
+    Inherits Base
+    Public Sub New(a As Integer)
+        MyBase.New(a + 1)
+    End Sub
+End Class
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        Private Function CreateDiagnosticResult(parameterName As String, line As Integer, column As Integer) As DiagnosticResult
+            Return New DiagnosticResult With {
+                .Id = DiagnosticId.UnusedParameters.ToDiagnosticId(),
+                .Message = String.Format(UnusedParametersAnalyzer.Message, parameterName),
+                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
+                .Locations = {New DiagnosticResultLocation("Test0.vb", line, column)}
+                }
+        End Function
+    End Class
+End Namespace

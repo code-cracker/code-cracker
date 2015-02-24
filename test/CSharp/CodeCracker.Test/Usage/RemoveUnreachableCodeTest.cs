@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CodeFixes;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class RemoveUnreachableCodeTest : CodeFixVerifier
     {
@@ -307,6 +307,48 @@ class Foo
     }
 }";
             await VerifyFixAllAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async void FixAllProjectUnreacheableCode()
+        {
+            const string source1 = @"
+class Foo
+{
+    void Method()
+    {
+        return;
+        var a = 1;
+        var b = 1;
+    }
+}";
+            const string source2 = @"
+class Foo2
+{
+    void Method()
+    {
+        return;
+        var a = 1;
+        var b = 1;
+    }
+}";
+            const string fixtest1 = @"
+class Foo
+{
+    void Method()
+    {
+        return;
+    }
+}";
+            const string fixtest2 = @"
+class Foo2
+{
+    void Method()
+    {
+        return;
+    }
+}";
+            await VerifyFixAllAsync(new[] { source1, source2 }, new[] { fixtest1, fixtest2 });
         }
     }
 }
