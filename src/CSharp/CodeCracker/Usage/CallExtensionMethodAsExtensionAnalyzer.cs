@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.CallExtensionMethodAsExtension));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.CallExtensionMethodAsExtension));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

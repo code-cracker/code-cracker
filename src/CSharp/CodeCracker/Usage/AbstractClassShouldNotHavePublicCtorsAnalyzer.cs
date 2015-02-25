@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Usage
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.AbstractClassShouldNotHavePublicCtors));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AbstractClassShouldNotHavePublicCtors));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

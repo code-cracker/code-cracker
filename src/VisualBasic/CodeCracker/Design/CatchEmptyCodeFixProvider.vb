@@ -12,20 +12,18 @@ Namespace Design
     Public Class CatchEmptyCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(CatchEmptyAnalyzer.Id)
-        End Function
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(CatchEmptyAnalyzer.Id)
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diag = context.Diagnostics.First()
             Dim diagSpan = diag.Location.SourceSpan
             Dim declaration = root.FindToken(diagSpan.Start).Parent.AncestorsAndSelf.OfType(Of CatchBlockSyntax).First()
-            context.RegisterFix(CodeAction.Create("Add an Exception class", Function(c) MakeCatchEmptyAsync(context.Document, declaration, c)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Add an Exception class", Function(c) MakeCatchEmptyAsync(context.Document, declaration, c)), diag)
 
         End Function
 

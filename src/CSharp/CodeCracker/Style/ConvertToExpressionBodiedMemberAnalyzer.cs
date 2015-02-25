@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Style
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: false,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ConvertToExpressionBodiedMember));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ConvertToExpressionBodiedMember));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

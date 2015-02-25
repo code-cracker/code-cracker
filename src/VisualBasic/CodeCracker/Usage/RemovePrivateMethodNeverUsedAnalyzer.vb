@@ -21,7 +21,7 @@ Namespace Usage
             DiagnosticSeverity.Info,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get

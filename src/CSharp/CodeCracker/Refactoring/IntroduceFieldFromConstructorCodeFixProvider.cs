@@ -15,19 +15,19 @@ namespace CodeCracker.CSharp.Refactoring
     [ExportCodeFixProvider("CodeCrackerIntroduceFieldFromConstructorCodeFixProvider", LanguageNames.CSharp), Shared]
     public class IntroduceFieldFromConstructorCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(DiagnosticId.IntroduceFieldFromConstructor.ToDiagnosticId());
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.IntroduceFieldFromConstructor.ToDiagnosticId());
         public readonly static string MessageFormat = "Introduce field: {0} from constructor.";
 
         public sealed override FixAllProvider GetFixAllProvider() => IntroduceFieldFromConstructorCodeFixAllProvider.Instance;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
-            context.RegisterFix(CodeAction.Create(string.Format(MessageFormat, parameter), c => IntroduceFieldFromConstructorDocumentAsync(context.Document, declaration, parameter, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(string.Format(MessageFormat, parameter), c => IntroduceFieldFromConstructorDocumentAsync(context.Document, declaration, parameter, c)), diagnostic);
         }
         public async Task<Document> IntroduceFieldFromConstructorDocumentAsync(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
         {

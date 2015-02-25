@@ -12,32 +12,30 @@ Namespace Design
     Public Class NameOfCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(NameOfAnalyzer.Id)
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(NameOfAnalyzer.Id)
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
             Dim diagnosticspan = diagnostic.Location.SourceSpan
             Dim stringLiteral = root.FindToken(diagnosticspan.Start).Parent.AncestorsAndSelf.OfType(Of LiteralExpressionSyntax).FirstOrDefault
             If stringLiteral IsNot Nothing Then
-                context.RegisterFix(CodeAction.Create("use NameOf()", Function(c) MakeNameOfAsync(context.Document, stringLiteral, c)), diagnostic)
+                context.RegisterCodeFix(CodeAction.Create("use NameOf()", Function(c) MakeNameOfAsync(context.Document, stringLiteral, c)), diagnostic)
             End If
         End Function
 
         Private Async Function MakeNameOfAsync(document As Document, stringLiteral As LiteralExpressionSyntax, cancellationToken As CancellationToken) As Task(Of Document)
             Dim methodDeclaration = stringLiteral.AncestorsAndSelf().OfType(Of MethodBlockSyntax).FirstOrDefault
             If methodDeclaration IsNot Nothing Then
-                Dim methodParam = methodDeclaration.Begin.ParameterList.Parameters.First
+                Dim methodParam = methodDeclaration.SubOrFunctionStatement.ParameterList.Parameters.First
                 Return Await NewDocument(document, stringLiteral, methodParam)
             Else
                 Dim constructorDeclaration = stringLiteral.AncestorsAndSelf.OfType(Of ConstructorBlockSyntax).FirstOrDefault
-                Dim constructorParam = constructorDeclaration.Begin.ParameterList.Parameters.First
+                Dim constructorParam = constructorDeclaration.SubNewStatement.ParameterList.Parameters.First
 
                 Return Await NewDocument(document, stringLiteral, constructorParam)
             End If

@@ -22,7 +22,7 @@ Namespace Reliability
         Category,
         DiagnosticSeverity.Hidden,
         isEnabledByDefault:=True,
-        helpLink:=HelpLink.ForDiagnostic(DiagnosticId.UseConfigureAwaitFalse))
+        helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.UseConfigureAwaitFalse))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get

@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Refactoring
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.AddBracesToSwitchSections));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AddBracesToSwitchSections));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

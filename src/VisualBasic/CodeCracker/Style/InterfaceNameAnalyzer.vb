@@ -22,7 +22,7 @@ Namespace Style
             DiagnosticSeverity.Info,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.InterfaceName)
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.InterfaceName)
         )
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)

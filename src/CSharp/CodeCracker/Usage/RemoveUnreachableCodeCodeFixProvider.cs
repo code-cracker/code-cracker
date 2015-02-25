@@ -15,17 +15,17 @@ namespace CodeCracker.CSharp.Usage
     {
         public const string Message = "Remove unreacheable code";
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create("CS0162");
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create("CS0162");
 
         public sealed override FixAllProvider GetFixAllProvider() => RemoveUnreachableCodeFixAllProvider.Instance;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var node = root.FindNode(diagnostic.Location.SourceSpan);
             var newDoc = RemoveUnreachableCode(root, context.Document, node);
-            context.RegisterFix(CodeAction.Create(Message, newDoc), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(Message, ct => Task.FromResult(newDoc)), diagnostic);
         }
 
         private static Document RemoveUnreachableCode(SyntaxNode root, Document document, SyntaxNode node) =>

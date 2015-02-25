@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Usage
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

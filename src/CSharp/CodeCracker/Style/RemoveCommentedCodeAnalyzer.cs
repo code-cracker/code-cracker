@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Style
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.RemoveCommentedCode));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveCommentedCode));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -12,19 +12,19 @@ namespace CodeCracker.CSharp.Usage
         private static readonly SyntaxAnnotation disposeAnnotation = new SyntaxAnnotation("DisposableVariableNotDisposedFixAllProvider");
         private DisposableVariableNotDisposedFixAllProvider() { }
         public static DisposableVariableNotDisposedFixAllProvider Instance = new DisposableVariableNotDisposedFixAllProvider();
-        public override async Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
+        public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {
             switch (fixAllContext.Scope)
             {
                 case FixAllScope.Document:
-                    return CodeAction.Create(DisposableVariableNotDisposedCodeFixProvider.MessageFormat,
-                        fixAllContext.Document.WithSyntaxRoot(await GetFixedDocumentAsync(fixAllContext, fixAllContext.Document).ConfigureAwait(false)));
+                    return Task.FromResult(CodeAction.Create(DisposableVariableNotDisposedCodeFixProvider.MessageFormat,
+                        async ct => fixAllContext.Document.WithSyntaxRoot(await GetFixedDocumentAsync(fixAllContext, fixAllContext.Document).ConfigureAwait(false))));
                 case FixAllScope.Project:
-                    return CodeAction.Create(DisposableVariableNotDisposedCodeFixProvider.MessageFormat,
-                        await GetFixedProjectAsync(fixAllContext, fixAllContext.Project).ConfigureAwait(false));
+                    return Task.FromResult(CodeAction.Create(DisposableVariableNotDisposedCodeFixProvider.MessageFormat,
+                        ct => GetFixedProjectAsync(fixAllContext, fixAllContext.Project)));
                 case FixAllScope.Solution:
-                    return CodeAction.Create(DisposableVariableNotDisposedCodeFixProvider.MessageFormat,
-                        await GetFixedSolutionAsync(fixAllContext).ConfigureAwait(false));
+                    return Task.FromResult(CodeAction.Create(DisposableVariableNotDisposedCodeFixProvider.MessageFormat,
+                        ct => GetFixedSolutionAsync(fixAllContext)));
             }
             return null;
         }
@@ -49,7 +49,7 @@ namespace CodeCracker.CSharp.Usage
 
         private async Task<SyntaxNode> GetFixedDocumentAsync(FixAllContext fixAllContext, Document document)
         {
-            var diagnostics = await fixAllContext.GetDiagnosticsAsync(document).ConfigureAwait(false);
+            var diagnostics = await fixAllContext.GetDocumentDiagnosticsAsync(document).ConfigureAwait(false);
             var root = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
             var nodes = diagnostics.Select(d => root.FindNode(d.Location.SourceSpan)).Where(n => !n.IsMissing);
             var newRoot = root.ReplaceNodes(nodes, (original, rewritten) => original.WithAdditionalAnnotations(disposeAnnotation));

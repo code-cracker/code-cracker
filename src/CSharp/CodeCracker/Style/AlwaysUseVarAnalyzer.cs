@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Style
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description:Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.AlwaysUseVar));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AlwaysUseVar));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Design
             DiagnosticSeverity.Warning,
             true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.StaticConstructorException));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StaticConstructorException));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

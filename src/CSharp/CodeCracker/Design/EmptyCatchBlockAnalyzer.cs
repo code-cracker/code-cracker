@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Design
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.EmptyCatchBlock));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.EmptyCatchBlock));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

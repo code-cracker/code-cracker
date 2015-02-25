@@ -477,7 +477,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, expected);
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
         }
 
         [Fact]

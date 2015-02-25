@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Refactoring
             SupportedCategories.Refactoring,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_RegularString));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_RegularString));
 
         internal static DiagnosticDescriptor VerbatimStringRule = new DiagnosticDescriptor(
             DiagnosticId.StringRepresentation_VerbatimString.ToDiagnosticId(),
@@ -29,7 +29,7 @@ namespace CodeCracker.CSharp.Refactoring
             SupportedCategories.Refactoring,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_VerbatimString));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_VerbatimString));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(RegularStringRule, VerbatimStringRule);
 

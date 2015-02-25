@@ -15,19 +15,19 @@ namespace CodeCracker.CSharp.Usage
     [ExportCodeFixProvider("CodeCrackerIfReturnTrueCodeFixProvider ", LanguageNames.CSharp), Shared]
     public class IfReturnTrueCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.IfReturnTrue.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var statement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().FirstOrDefault();
             if (statement != null)
-                context.RegisterFix(CodeAction.Create("Return directly", c => ReturnConditionDirectlyAsync(context.Document, statement, c)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create("Return directly", c => ReturnConditionDirectlyAsync(context.Document, statement, c)), diagnostic);
         }
 
         private async Task<Document> ReturnConditionDirectlyAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)

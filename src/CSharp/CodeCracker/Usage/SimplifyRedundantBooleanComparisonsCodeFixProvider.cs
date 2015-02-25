@@ -15,19 +15,19 @@ namespace CodeCracker.CSharp.Usage
     [ExportCodeFixProvider("CodeCrackerArgumentExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class SimplifyRedundantBooleanComparisonsCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.SimplifyRedundantBooleanComparisons.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var comparison = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<BinaryExpressionSyntax>().First();
 
-            context.RegisterFix(CodeAction.Create("Removes redundant comparision", c => RemoveRedundantComparisonAsync(context.Document, comparison, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Removes redundant comparision", c => RemoveRedundantComparisonAsync(context.Document, comparison, c)), diagnostic);
         }
 
         private static async Task<Document> RemoveRedundantComparisonAsync(Document document, BinaryExpressionSyntax comparison, CancellationToken cancellationToken)

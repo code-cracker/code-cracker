@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Returned));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Returned));
         internal static DiagnosticDescriptor RuleForCreated = new DiagnosticDescriptor(
             DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
             Title,
@@ -32,7 +32,7 @@ namespace CodeCracker.CSharp.Usage
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Created));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Created));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(RuleForCreated, RuleForReturned);
 

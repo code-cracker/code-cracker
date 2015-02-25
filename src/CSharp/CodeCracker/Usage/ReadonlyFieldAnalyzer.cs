@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Usage
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ReadonlyField));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ReadonlyField));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -13,13 +13,13 @@ Namespace Usage
     Public Class MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diag = context.Diagnostics.First()
             Dim span = diag.Location.SourceSpan
 
             Dim constructor = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of SubNewStatementSyntax)
-            context.RegisterFix(CodeAction.Create("Use 'Protected' in stead of 'Public'", Function(c) ReplacePublicWithProtectedAsync(context.Document, constructor, c)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Use 'Protected' in stead of 'Public'", Function(c) ReplacePublicWithProtectedAsync(context.Document, constructor, c)), diag)
         End Function
 
 
@@ -27,9 +27,7 @@ Namespace Usage
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId())
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId())
 
         Private Async Function ReplacePublicWithProtectedAsync(document As Document, constructor As SubNewStatementSyntax, cancellationToken As CancellationToken) As Task(Of Document)
             Dim [public] = constructor.Modifiers.First(Function(m) m.IsKind(SyntaxKind.PublicKeyword))

@@ -23,7 +23,7 @@ If the error is expected, consider logging it or changing the control flow such 
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.EmptyCatchBlock))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.EmptyCatchBlock))
 
         Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
 

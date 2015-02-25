@@ -16,18 +16,18 @@ namespace CodeCracker.CSharp.Usage
     [ExportCodeFixProvider("StringBuilderInLoopCodeFixProvider", LanguageNames.CSharp), Shared]
     public class StringBuilderInLoopCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.StringBuilderInLoop.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => null; //todo: allow for a fixall but only if we can fix the clash on the builder name in a nice way
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var assignmentExpression = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<AssignmentExpressionSyntax>().First();
-            context.RegisterFix(CodeAction.Create($"Use StringBuilder to create a value for '{assignmentExpression.Left.ToString()}'", c => UseStringBuilderAsync(context.Document, assignmentExpression, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create($"Use StringBuilder to create a value for '{assignmentExpression.Left.ToString()}'", c => UseStringBuilderAsync(context.Document, assignmentExpression, c)), diagnostic);
         }
 
         private async Task<Document> UseStringBuilderAsync(Document document, AssignmentExpressionSyntax assignmentExpression, CancellationToken cancellationToken)

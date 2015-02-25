@@ -20,12 +20,12 @@ namespace CodeCracker.CSharp.Refactoring
         public const string ToRegularId = Id + "ToRegularString";
         public const string ToVerbatimId = Id + "ToVerbatimString";
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.StringRepresentation_RegularString.ToDiagnosticId(), DiagnosticId.StringRepresentation_VerbatimString.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
 
@@ -59,7 +59,7 @@ namespace CodeCracker.CSharp.Refactoring
                         ct => createChangedDocument(ToVerbatimStringLiteral(literalExpression)),
                         ToVerbatimId);
 
-                context.RegisterFix(codeAction, diagnostic);
+                context.RegisterCodeFix(codeAction, diagnostic);
             }
         }
 

@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Style
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ConvertLambdaExpressionToMethodGroup));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ConvertLambdaExpressionToMethodGroup));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -46,7 +46,7 @@ namespace CodeCracker.CSharp.Style
             var semanticNode = GetNodeRootForAnalysis(lambda);
             var newSemanticNode = newRoot.DescendantNodesAndSelf()
                 .Where(x => x.SpanStart == semanticNode.SpanStart && x.Span.OverlapsWith(context.Node.Span))
-                .LastOrDefault(x => x.CSharpKind() == semanticNode.CSharpKind());
+                .LastOrDefault(x => x.Kind() == semanticNode.Kind());
 
             if (newSemanticNode == null || ReplacementChangesSemantics(semanticNode, newSemanticNode, context.SemanticModel)) return;
 
@@ -108,20 +108,20 @@ namespace CodeCracker.CSharp.Style
             var parentNodeToSpeculate = expression
                 .Ancestors(ascendOutOfTrivia: false)
                 .FirstOrDefault(node =>
-                node.CSharpKind() != SyntaxKind.Argument &&
-                node.CSharpKind() != SyntaxKind.ArgumentList);
+                node.Kind() != SyntaxKind.Argument &&
+                node.Kind() != SyntaxKind.ArgumentList);
             return parentNodeToSpeculate ?? expression;
         }
 
         public static bool CanSpeculateOnNode(SyntaxNode node)
         {
-            return (node is StatementSyntax && node.CSharpKind() != SyntaxKind.Block) ||
+            return (node is StatementSyntax && node.Kind() != SyntaxKind.Block) ||
                 node is CrefSyntax ||
-                node.CSharpKind() == SyntaxKind.Attribute ||
-                node.CSharpKind() == SyntaxKind.ThisConstructorInitializer ||
-                node.CSharpKind() == SyntaxKind.BaseConstructorInitializer ||
-                node.CSharpKind() == SyntaxKind.EqualsValueClause ||
-                node.CSharpKind() == SyntaxKind.ArrowExpressionClause;
+                node.Kind() == SyntaxKind.Attribute ||
+                node.Kind() == SyntaxKind.ThisConstructorInitializer ||
+                node.Kind() == SyntaxKind.BaseConstructorInitializer ||
+                node.Kind() == SyntaxKind.EqualsValueClause ||
+                node.Kind() == SyntaxKind.ArrowExpressionClause;
         }
 
         private bool ReplacementChangesSemantics(SyntaxNode originalExpression, SyntaxNode replacedExpression, SemanticModel semanticModel)

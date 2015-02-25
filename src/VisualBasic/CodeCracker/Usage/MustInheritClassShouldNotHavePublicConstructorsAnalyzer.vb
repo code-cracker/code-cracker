@@ -19,7 +19,7 @@ Namespace Usage
             SupportedCategories.Usage,
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.AbstractClassShouldNotHavePublicCtors))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.AbstractClassShouldNotHavePublicCtors))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get
@@ -36,7 +36,7 @@ Namespace Usage
 
             Dim classDeclaration = constructor.FirstAncestorOfType(Of ClassBlockSyntax)
             If classDeclaration Is Nothing Then Exit Sub
-            If Not classDeclaration.Begin.Modifiers.Any(Function(m) m.IsKind(SyntaxKind.MustInheritKeyword)) Then Exit Sub
+            If Not classDeclaration.ClassStatement.Modifiers.Any(Function(m) m.IsKind(SyntaxKind.MustInheritKeyword)) Then Exit Sub
 
             Dim diag = Diagnostic.Create(Rule, constructor.GetLocation())
             context.ReportDiagnostic(diag)

@@ -34,16 +34,16 @@ Namespace Refactoring
 
         Public Sub AnalyzeNode(context As SyntaxNodeAnalysisContext)
             Dim method = DirectCast(context.Node, MethodBlockSyntax)
-            If method.Begin.Modifiers.Any(SyntaxKind.FriendKeyword) Then Exit Sub
+            If method.SubOrFunctionStatement.Modifiers.Any(SyntaxKind.FriendKeyword) Then Exit Sub
 
             ' Check for extension method
-            For Each attributeList In method.Begin.AttributeLists
+            For Each attributeList In method.SubOrFunctionStatement.AttributeLists
                 For Each attribute In attributeList.Attributes
                     If attribute.Name.ToString().Contains("Extension") Then Exit Sub
                 Next
             Next
 
-            Dim contentParameter = method.Begin.ParameterList
+            Dim contentParameter = method.SubOrFunctionStatement.ParameterList
             If contentParameter.Parameters.Count <= 3 Then Exit Sub
             If method.Statements.Any() Then Exit Sub
 
