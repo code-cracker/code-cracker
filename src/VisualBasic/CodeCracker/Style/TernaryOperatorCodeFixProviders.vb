@@ -13,18 +13,17 @@ Namespace Style
     Public Class TernaryOperatorWithReturnCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
             Dim span = diagnostic.Location.SourceSpan
             Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MultiLineIfBlockSyntax)
             If declaration Is Nothing Then Exit Function
-            context.RegisterFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
         End Function
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.TernaryOperator_Return.ToDiagnosticId())
-        End Function
+        Public Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.TernaryOperator_Return.ToDiagnosticId())
+
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
@@ -52,18 +51,18 @@ Namespace Style
     Public Class TernaryOperatorWithAssignmentCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
             Dim span = diagnostic.Location.SourceSpan
             Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MultiLineIfBlockSyntax)
             If declaration Is Nothing Then Exit Function
-            context.RegisterFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
         End Function
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId())
-        End Function
+        Public Overrides ReadOnly Property FixableDiagnosticIds() As ImmutableArray(Of String) =
+            ImmutableArray.Create(DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId())
+
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
@@ -95,18 +94,18 @@ Namespace Style
     Public Class TernaryOperatorFromIifCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
             Dim span = diagnostic.Location.SourceSpan
             Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of InvocationExpressionSyntax)
             If declaration Is Nothing Then Exit Function
-            context.RegisterFix(CodeAction.Create("Change IIF to If to short circuit evaulations", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Change IIF to If to short circuit evaulations", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
         End Function
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.TernaryOperator_Iif.ToDiagnosticId())
-        End Function
+        Public Overrides ReadOnly Property FixableDiagnosticIds() As ImmutableArray(Of String) =
+            ImmutableArray.Create(DiagnosticId.TernaryOperator_Iif.ToDiagnosticId())
+
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function

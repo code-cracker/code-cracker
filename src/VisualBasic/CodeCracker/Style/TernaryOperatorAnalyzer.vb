@@ -19,7 +19,7 @@ Namespace Style
             SupportedCategories.Style,
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return))
 
         Friend Shared RuleForIfWithAssignment As New DiagnosticDescriptor(
             DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
@@ -28,7 +28,7 @@ Namespace Style
             SupportedCategories.Style,
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Assignment))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Assignment))
 
         Friend Shared RuleForIif As New DiagnosticDescriptor(
             DiagnosticId.TernaryOperator_Iif.ToDiagnosticId(),
@@ -37,7 +37,7 @@ Namespace Style
             SupportedCategories.Style,
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Iif))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Iif))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get
