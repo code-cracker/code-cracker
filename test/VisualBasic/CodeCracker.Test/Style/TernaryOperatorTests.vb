@@ -18,6 +18,8 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
         Await VerifyBasicHasNoDiagnosticsAsync(sourceWithoutElse)
+
+        Dim x = IIf(True, 1, 2)
     End Function
 
     <Fact>
@@ -123,7 +125,7 @@ End Namespace"
     <Fact>
     Public Async Function WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic() As Task
         Dim expected As New DiagnosticResult With {
-            .Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
+            .Id = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
             .Message = "You can use a ternary operator.",
             .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
             .Locations = {New DiagnosticResultLocation("Test0.vb", 8, 13)}

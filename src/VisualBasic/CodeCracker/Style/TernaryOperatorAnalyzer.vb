@@ -22,7 +22,7 @@ Namespace Style
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return))
 
         Friend Shared RuleForIfWithAssignment As New DiagnosticDescriptor(
-            DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
+            DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
             Title,
             MessageFormat,
             SupportedCategories.Style,
@@ -41,7 +41,7 @@ Namespace Style
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get
-                Return ImmutableArray.Create(RuleForIfWithAssignment, RuleForIfWithReturn)
+                Return ImmutableArray.Create(RuleForIfWithAssignment, RuleForIfWithReturn, RuleForIif)
             End Get
         End Property
 

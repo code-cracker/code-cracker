@@ -22,7 +22,8 @@ Namespace Style
             context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
         End Function
 
-        Public Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.TernaryOperator_Return.ToDiagnosticId())
+        Public Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) =
+            ImmutableArray.Create(DiagnosticId.TernaryOperator_Return.ToDiagnosticId())
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer

@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyTrademark("")>
 <Assembly: AssemblyCulture("")>
 <Assembly: ComVisible(False)>
-<Assembly: NeutralResourcesLanguage("en")>
+<Assembly: NeutralResourcesLanguage("en-us")>
 <Assembly: AssemblyVersion("1.0.*")>
 <Assembly: AssemblyFileVersion("1.0.0.0")>
 <Assembly: InternalsVisibleTo("CodeCracker.Test.VisualBasic")>
