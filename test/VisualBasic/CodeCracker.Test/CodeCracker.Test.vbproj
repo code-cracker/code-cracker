@@ -182,6 +182,7 @@
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeTests.vb" />
     <Compile Include="Usage\DisposableFieldNotDisposedTests.vb" />
     <Compile Include="Usage\ArgumentExceptionTests.vb" />
+    <Compile Include="Usage\IPAddressAnalyzerTests.vb" />
     <Compile Include="Usage\UnusedParameterTests.vb" />
     <Compile Include="Usage\JsonNetTests.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorTests.vb" />
