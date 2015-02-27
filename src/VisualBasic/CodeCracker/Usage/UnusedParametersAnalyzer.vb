@@ -20,7 +20,7 @@ You should delete the parameter in such cases."
         Message,
         SupportedCategories.Usage,
         DiagnosticSeverity.Warning,
-        True,
+        False,
         Description,
         HelpLink.ForDiagnostic(DiagnosticId.UnusedParameters),
         WellKnownDiagnosticTags.Unnecessary)
