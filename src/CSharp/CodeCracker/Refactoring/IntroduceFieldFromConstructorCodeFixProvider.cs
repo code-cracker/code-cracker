@@ -43,16 +43,20 @@ namespace CodeCracker.CSharp.Refactoring
             var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
             var newClass = oldClass;
             var fieldName = parameter.Identifier.ValueText;
+            var fieldType = parameter.Type;
             var members = ExtractMembersFromClass(oldClass.Members);
 
-            var identifierPostFix = 0;
-            while (members.Contains(fieldName))
-                fieldName = parameter.Identifier.ValueText + ++identifierPostFix;
-            var newField = SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(parameter.Type)
-                                .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(fieldName)))))
-                                .WithModifiers(SyntaxFactory.TokenList(new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword) }))
-                                .WithAdditionalAnnotations(Formatter.Annotation);
-            newClass = newClass.WithMembers(newClass.Members.Insert(0, newField)).WithoutAnnotations(Formatter.Annotation);
+            if (!members.Any(p => p.Key == fieldName && p.Value == fieldType))
+            {
+                var identifierPostFix = 0;
+                while (members.Any(p => p.Key == fieldName))
+                    fieldName = fieldName+ ++identifierPostFix;
+                var newField = SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(parameter.Type)
+                                    .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(fieldName)))))
+                                    .WithModifiers(SyntaxFactory.TokenList(new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword) }))
+                                    .WithAdditionalAnnotations(Formatter.Annotation);
+                newClass = newClass.WithMembers(newClass.Members.Insert(0, newField)).WithoutAnnotations(Formatter.Annotation);
+            }
             var assignmentField = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
                                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(),
                                                SyntaxFactory.IdentifierName(fieldName)), SyntaxFactory.IdentifierName(parameter.Identifier.ValueText)));
@@ -62,9 +66,9 @@ namespace CodeCracker.CSharp.Refactoring
             return newRoot;
         }
 
-        private static List<string> ExtractMembersFromClass(SyntaxList<MemberDeclarationSyntax> classMembers)
+        private static Dictionary<string,TypeSyntax> ExtractMembersFromClass(SyntaxList<MemberDeclarationSyntax> classMembers)
         {
-            var members = new List<string>();
+            var members = new Dictionary<string, TypeSyntax>();
             foreach (var m in classMembers)
             {
                 var name = "";
@@ -77,13 +81,14 @@ namespace CodeCracker.CSharp.Refactoring
                 {
                     var eve = m as EventDeclarationSyntax;
                     name = eve.Identifier.Text;
+                   
                 }
                 if (m.GetType().Name == "EventFieldDeclarationSyntax")
                 {
                     var eve = m as EventFieldDeclarationSyntax;
                     foreach (var v in eve.Declaration.Variables)
                     {
-                        members.Add(v.Identifier.Text);
+                        members.Add(v.Identifier.Text,eve.Declaration.Type);
                     }
                 }
                 if (m.GetType().Name == "FieldDeclarationSyntax")
@@ -91,7 +96,7 @@ namespace CodeCracker.CSharp.Refactoring
                     var eve = m as FieldDeclarationSyntax;
                     foreach (var v in eve.Declaration.Variables)
                     {
-                        members.Add(v.Identifier.Text);
+                        members.Add(v.Identifier.Text, eve.Declaration.Type);
                     }
                 }
                 if (m.GetType().Name == "PropertyDeclarationSyntax")
@@ -101,7 +106,7 @@ namespace CodeCracker.CSharp.Refactoring
                 }
                 if (name != "")
                 {
-                    members.Add(name);
+                    members.Add(name,null);
                 }
             }
             return members;

@@ -104,6 +104,44 @@ namespace CodeCracker.Test.CSharp.Refactoring
         }
 
         [Fact]
+        public async Task FieldAlreadyExistsAndMatchesType()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private readonly int par;
+
+            public TypeName(int par)
+            {
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private readonly int par1;
+            private readonly int par;
+
+            public TypeName(int par)
+            {
+               this.par1 = par;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
+
+
+        [Fact]
         public async Task ConstructorParameterWithPrivateFieldWhenFieldParameterNameAlreadyExists()
         {
             const string test = @"
