@@ -29,8 +29,6 @@ namespace CodeCracker
         private static void RunIfCSharpVersionOrGreater(this Compilation compilation, Action action, LanguageVersion languageVersion) =>
             (compilation as CSharpCompilation)?.LanguageVersion.RunIfCSharpVersionGreater(action, languageVersion);
 
-        private static void RunIfCSharp6Greater(this LanguageVersion languageVersion, Action action) =>
-            languageVersion.RunIfCSharpVersionGreater(action, LanguageVersion.CSharp6);
 
         private static void RunIfCSharpVersionGreater(this LanguageVersion languageVersion, Action action, LanguageVersion greaterOrEqualThanLanguageVersion)
         {
