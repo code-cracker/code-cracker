@@ -125,7 +125,10 @@
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeAnalyzer.vb" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.vb" />
     <Compile Include="Usage\ArgumentExceptionCodeFixProvider.vb" />
+    <Compile Include="Usage\IPAddressAnalyzer.vb" />
     <Compile Include="Usage\JsonNetAnalyzer.vb" />
+    <Compile Include="Usage\MethodAnalyzers\MethodChecker.vb" />
+    <Compile Include="Usage\MethodAnalyzers\MethodInformation.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsAnalyzer.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider.vb" />
     <Compile Include="Usage\UnusedParametersAnalyzer.vb" />
