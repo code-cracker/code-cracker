@@ -13,21 +13,19 @@ Namespace Usage
     Public Class DisposablesShouldCallSuppressFinalizeCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
             Dim span = diagnostic.Location.SourceSpan
             Dim method = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MethodBlockSyntax)()
-            context.RegisterFix(CodeAction.Create("Call GC.SuppressFinalize", Function(ct) AddSuppressFinalizeAsync(context.Document, method, ct)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Call GC.SuppressFinalize", Function(ct) AddSuppressFinalizeAsync(context.Document, method, ct)), diagnostic)
         End Function
 
         Public NotOverridable Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId())
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId())
 
         Public Async Function AddSuppressFinalizeAsync(document As Document, method As MethodBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
             Dim suppressInvocation =
@@ -39,7 +37,7 @@ Namespace Usage
                             WithArgumentList(SyntaxFactory.ArgumentList().AddArguments(SyntaxFactory.SimpleArgument(SyntaxFactory.MeExpression)))).
                             WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)
 
-            Dim newMethod = SyntaxFactory.SubBlock(method.Begin).
+            Dim newMethod = SyntaxFactory.SubBlock(method.SubOrFunctionStatement).
                 WithStatements(method.Statements.Add(suppressInvocation)).
                 WithAdditionalAnnotations(Formatter.Annotation)
 

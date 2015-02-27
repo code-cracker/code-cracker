@@ -16,19 +16,19 @@ namespace CodeCracker.CSharp.Performance
 
     public class MakeLocalVariableConstWhenItIsPossibleCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
             const string message = "Make constant";
-            context.RegisterFix(CodeAction.Create(message, c => MakeConstantAsync(context.Document, localDeclaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(message, c => MakeConstantAsync(context.Document, localDeclaration, c)), diagnostic);
         }
 
         private async Task<Document> MakeConstantAsync(Document document, LocalDeclarationStatementSyntax localDeclaration, CancellationToken cancellationToken)

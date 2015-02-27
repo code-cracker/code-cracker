@@ -13,20 +13,18 @@ Namespace Performance
     Public Class StringBuilderInLoopCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(StringBuilderInLoopAnalyzer.Id)
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(StringBuilderInLoopAnalyzer.Id)
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return Nothing
         End Function
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
             Dim diagosticSpan = diagnostic.Location.SourceSpan
             Dim assignmentExpression = root.FindToken(diagosticSpan.Start).Parent.AncestorsAndSelf.OfType(Of AssignmentStatementSyntax).First
-            context.RegisterFix(CodeAction.Create("Use StringBuilder to create a value for " & assignmentExpression.Left.ToString(), Function(c) UseStringBuilder(context.Document, assignmentExpression, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Use StringBuilder to create a value for " & assignmentExpression.Left.ToString(), Function(c) UseStringBuilder(context.Document, assignmentExpression, c)), diagnostic)
 
         End Function
 

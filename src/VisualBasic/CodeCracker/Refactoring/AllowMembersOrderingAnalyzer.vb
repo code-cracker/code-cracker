@@ -21,7 +21,7 @@ Namespace Refactoring
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault:=True,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.AllowMembersOrdering))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.AllowMembersOrdering))
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
             Get

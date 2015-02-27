@@ -15,12 +15,12 @@ namespace CodeCracker.CSharp.Style
     [ExportCodeFixProvider("CodeCrackerConvertToExpressionBodiedMemberCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ConvertToExpressionBodiedMemberCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
@@ -30,12 +30,12 @@ namespace CodeCracker.CSharp.Style
             var methodDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
             if (methodDeclaration != null)
             {
-                context.RegisterFix(CodeAction.Create(message, c => ConvertToExpressionBodiedMemberAsync(context.Document, methodDeclaration, c)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(message, c => ConvertToExpressionBodiedMemberAsync(context.Document, methodDeclaration, c)), diagnostic);
             }
             else
             {
                 var basePropertyDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<BasePropertyDeclarationSyntax>().First();
-                context.RegisterFix(CodeAction.Create(message, c => ConvertToExpressionBodiedMemberAsync(context.Document, basePropertyDeclaration, c)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(message, c => ConvertToExpressionBodiedMemberAsync(context.Document, basePropertyDeclaration, c)), diagnostic);
             }
         }
 

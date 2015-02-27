@@ -17,15 +17,13 @@ Namespace Reliability
     Public Class UseConfigureAwaitFalseCodeFixProvider
         Inherits CodeFixProvider
 
-        Public NotOverridable Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId())
-        End Function
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId())
 
         Public NotOverridable Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public NotOverridable Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public NotOverridable Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First()
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim awaitExpression = root.FindNode(diagnostic.Location.SourceSpan).ChildNodes.OfType(Of AwaitExpressionSyntax).First()
@@ -44,8 +42,9 @@ Namespace Reliability
             Dim newRoot = root.ReplaceNode(awaitExpression.Expression, newExpression)
             Dim newDocument = context.Document.WithSyntaxRoot(newRoot)
 
-            context.RegisterFix(CodeAction.Create("Use ConfigureAwait(False)", newDocument),
-                                diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Use ConfigureAwait(False)", Function(ct)
+                                                                                       Return Task.FromResult(newDocument)
+                                                                                   End Function), diagnostic)
         End Function
     End Class
 End Namespace

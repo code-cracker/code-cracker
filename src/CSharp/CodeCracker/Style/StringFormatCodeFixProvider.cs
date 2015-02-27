@@ -15,18 +15,18 @@ namespace CodeCracker.CSharp.Style
     [ExportCodeFixProvider("CodeCrackerStringFormatCodeFixProvider ", LanguageNames.CSharp), Shared]
     public class StringFormatCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.StringFormat.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var invocation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Change to string interpolation", c => MakeStringInterpolationAsync(context.Document, invocation, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change to string interpolation", c => MakeStringInterpolationAsync(context.Document, invocation, c)), diagnostic);
         }
 
         private async Task<Document> MakeStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
@@ -36,16 +36,16 @@ namespace CodeCracker.CSharp.Style
             var argumentList = invocationExpression.ArgumentList;
             var arguments = argumentList.Arguments;
             var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;
-            var analyzingInterpolation = (InterpolatedStringSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
+            var analyzingInterpolation = (InterpolatedStringExpressionSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
             var interpolationArgs = arguments.Skip(1).ToArray();
             var expressionsToReplace = new Dictionary<ExpressionSyntax, ExpressionSyntax>();
-            foreach (var insert in analyzingInterpolation.InterpolatedInserts)
+            foreach (var interpolation in analyzingInterpolation.Contents.OfType<InterpolationSyntax>())
             {
-                var index = (int)((LiteralExpressionSyntax)insert.Expression).Token.Value;
+                var index = (int)((LiteralExpressionSyntax)interpolation.Expression).Token.Value;
                 var expression = interpolationArgs[index].Expression;
                 var conditional = expression as ConditionalExpressionSyntax;
                 if (conditional != null) expression = SyntaxFactory.ParenthesizedExpression(expression);
-                expressionsToReplace.Add(insert.Expression, expression);
+                expressionsToReplace.Add(interpolation.Expression, expression);
             }
             var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
             var root = await document.GetSyntaxRootAsync(cancellationToken);

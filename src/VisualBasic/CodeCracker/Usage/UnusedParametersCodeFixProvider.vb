@@ -12,18 +12,15 @@ Namespace Usage
     Public Class UnusedParametersCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
             Dim span = diagnostic.Location.SourceSpan
             Dim parameter = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of ParameterSyntax)
-            context.RegisterFix(CodeAction.Create(String.Format("Remove unused parameter: '{0}'", parameter.Identifier.GetText()), Function(c) RemovePArameterAsync(root, context.Document, parameter, c)), diagnostic)
-
+            context.RegisterCodeFix(CodeAction.Create(String.Format("Remove unused parameter: '{0}'", parameter.Identifier.GetText()), Function(c) RemovePArameterAsync(root, context.Document, parameter, c)), diagnostic)
         End Function
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId())
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId())
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer

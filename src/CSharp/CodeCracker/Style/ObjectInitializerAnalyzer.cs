@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Style
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_Assignment));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_Assignment));
 
         internal static DiagnosticDescriptor RuleLocalDeclaration = new DiagnosticDescriptor(
             DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(),
@@ -36,7 +36,7 @@ namespace CodeCracker.CSharp.Style
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_LocalDeclaration));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_LocalDeclaration));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(RuleLocalDeclaration, RuleAssignment);

@@ -64,9 +64,8 @@ namespace CodeCracker.Test
             foreach (var project in projects)
             {
                 var compilation = await project.GetCompilationAsync();
-                var driver = AnalyzerDriver.Create(compilation, ImmutableArray.Create(analyzer), null, out compilation, CancellationToken.None);
-                var discarded = compilation.GetDiagnostics();
-                var diags = await driver.GetDiagnosticsAsync();
+                var compilationWithAnalyzers = compilation.WithAnalyzers(ImmutableArray.Create(analyzer));
+                var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync();
                 foreach (var diag in diags)
                 {
                     if (diag.Location == Location.None || diag.Location.IsInMetadata)
@@ -78,8 +77,7 @@ namespace CodeCracker.Test
                         foreach (var document in project.Documents)
                         {
                             var tree = await document.GetSyntaxTreeAsync();
-                            if (tree == diag.Location.SourceTree)
-                                diagnostics.Add(diag);
+                            if (tree == diag.Location.SourceTree) diagnostics.Add(diag);
                         }
                     }
                 }
@@ -140,14 +138,14 @@ namespace CodeCracker.Test
         /// <param name="solution">The created workspace containing the project</param>
         /// <returns>A Project created out of the Douments created from the source strings</returns>
         public static Project CreateProject(string[] sources,
-            out CustomWorkspace workspace, string language = LanguageNames.CSharp)
+            out AdhocWorkspace workspace, string language = LanguageNames.CSharp)
         {
             var fileNamePrefix = DefaultFilePathPrefix;
             var fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
 
             var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
-            workspace = new CustomWorkspace();
+            workspace = new AdhocWorkspace();
 
             var projectInfo = ProjectInfo.Create(projectId, VersionStamp.Create(), TestProjectName,
                 TestProjectName, language,
@@ -172,7 +170,7 @@ namespace CodeCracker.Test
             return newProject;
         }
 
-        private static readonly Dictionary<string, ReportDiagnostic> diagOptions = Enumerable.Range(1, 1000).Select(i => $"CC{i :D4}").ToDictionary(id => id, id => ReportDiagnostic.Default);
+        private static readonly Dictionary<string, ReportDiagnostic> diagOptions = Enumerable.Range(1, 1000).Select(i => $"CC{i:D4}").ToDictionary(id => id, id => ReportDiagnostic.Default);
 
         /// <summary>
         /// Create a project using the inputted strings as sources.
@@ -182,7 +180,7 @@ namespace CodeCracker.Test
         /// <returns>A Project created out of the Douments created from the source strings</returns>
         public static Project CreateProject(string[] sources, string language = LanguageNames.CSharp)
         {
-            CustomWorkspace workspace;
+            AdhocWorkspace workspace;
             return CreateProject(sources, out workspace, language);
         }
         #endregion

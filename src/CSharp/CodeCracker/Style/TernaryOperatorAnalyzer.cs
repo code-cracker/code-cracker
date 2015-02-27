@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Style
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return));
 
         internal static DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(
             DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Style
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Assignment));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Assignment));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(RuleForIfWithReturn, RuleForIfWithAssignment);
 

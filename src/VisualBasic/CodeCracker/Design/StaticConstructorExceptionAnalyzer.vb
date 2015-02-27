@@ -22,7 +22,7 @@ Exception thrown in this context forces callers to use 'try' block around any us
                 DiagnosticSeverity.Warning,
                 isEnabledByDefault:=True,
                 description:=Description,
-                helpLink:=HelpLink.ForDiagnostic(DiagnosticId.StaticConstructorException))
+                helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.StaticConstructorException))
 
         Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
 

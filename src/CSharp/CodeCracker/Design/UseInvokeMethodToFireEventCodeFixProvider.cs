@@ -15,19 +15,19 @@ namespace CodeCracker.CSharp.Design
     [ExportCodeFixProvider("CodeCrackerUseInvokeMethodToFireEventCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UseInvokeMethodToFireEventCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var sourceSpan = diagnostic.Location.SourceSpan;
             var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
-            context.RegisterFix(
+            context.RegisterCodeFix(
                 CodeAction.Create("Use ?.Invoke operator and method to fire an event.", ct => UseInvokeAsync(context.Document, invocation, ct)), diagnostic);
         }
 

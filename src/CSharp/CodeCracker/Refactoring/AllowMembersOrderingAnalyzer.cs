@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Refactoring
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.AllowMembersOrdering));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AllowMembersOrdering));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -23,7 +23,7 @@ Namespace Design
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.NameOf))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.NameOf))
 
         Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
 
@@ -38,7 +38,7 @@ Namespace Design
             If Not parameters.Any() Then Return
             Dim attribute = stringLiteral.FirstAncestorOfType(Of AttributeSyntax)()
             Dim method = TryCast(stringLiteral.FirstAncestorOfType(GetType(MethodBlockSyntax), GetType(ConstructorBlockSyntax)), MethodBlockBaseSyntax)
-            If attribute IsNot Nothing AndAlso method.Begin.AttributeLists.Any(Function(a) a.Attributes.Contains(attribute)) Then Return
+            If attribute IsNot Nothing AndAlso method.BlockStatement.AttributeLists.Any(Function(a) a.Attributes.Contains(attribute)) Then Return
             If Not AreEqual(stringLiteral, parameters) Then Return
             Dim diag = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value)
             context.ReportDiagnostic(diag)
@@ -52,11 +52,11 @@ Namespace Design
             Dim methodDeclaration = node.FirstAncestorOfType(Of MethodBlockSyntax)()
             Dim parameters As SeparatedSyntaxList(Of ParameterSyntax)
             If methodDeclaration IsNot Nothing Then
-                parameters = methodDeclaration.Begin.ParameterList.Parameters
+                parameters = methodDeclaration.SubOrFunctionStatement.ParameterList.Parameters
             Else
                 Dim constructorDeclaration = node.FirstAncestorOfType(Of ConstructorBlockSyntax)()
                 If constructorDeclaration IsNot Nothing Then
-                    parameters = constructorDeclaration.Begin.ParameterList.Parameters
+                    parameters = constructorDeclaration.SubNewStatement.ParameterList.Parameters
                 Else
                     Return New SeparatedSyntaxList(Of ParameterSyntax)()
                 End If

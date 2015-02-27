@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Performance
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.MakeLocalVariableConstWhenItIsPossible));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.MakeLocalVariableConstWhenItIsPossible));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -50,7 +50,7 @@ namespace CodeCracker.CSharp.Performance
             foreach (var variable in declaration.Declaration.Variables)
             {
                 if (variable.Initializer == null) return false;
-                if (variable.Initializer.Value is InterpolatedStringSyntax) return false;
+                if (variable.Initializer.Value is InterpolatedStringExpressionSyntax) return false;
 
                 // is constant
                 var constantValue = semanticModel.GetConstantValue(variable.Initializer.Value);

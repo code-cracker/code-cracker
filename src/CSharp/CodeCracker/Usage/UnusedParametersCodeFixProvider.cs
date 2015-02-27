@@ -16,18 +16,18 @@ namespace CodeCracker.CSharp.Usage
     [ExportCodeFixProvider("CodeCrackerUnusedParametersCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UnusedParametersCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
-            context.RegisterFix(CodeAction.Create($"Remove unused parameter: '{parameter.Identifier.ValueText}'", c => RemoveParameterAsync(root, context.Document, parameter, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create($"Remove unused parameter: '{parameter.Identifier.ValueText}'", c => RemoveParameterAsync(root, context.Document, parameter, c)), diagnostic);
         }
 
         private async Task<Solution> RemoveParameterAsync(SyntaxNode root, Document document, ParameterSyntax parameter, CancellationToken cancellationToken)

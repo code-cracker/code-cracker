@@ -80,7 +80,7 @@ Namespace Refactoring
 
             Private Function GetModifiers(node As DeclarationStatementSyntax) As SyntaxTokenList
                 If TypeOf node Is MethodBlockBaseSyntax Then
-                    Return DirectCast(node, MethodBlockBaseSyntax).Begin.Modifiers
+                    Return DirectCast(node, MethodBlockBaseSyntax).BlockStatement.Modifiers
                 End If
                 If TypeOf node Is FieldDeclarationSyntax Then
                     Return DirectCast(node, FieldDeclarationSyntax).Modifiers
@@ -110,7 +110,7 @@ Namespace Refactoring
             End Function
 
             Private Function SumRankPoints(tokens As SyntaxTokenList, rank As Dictionary(Of SyntaxKind, Integer), defaultSumValue As Integer) As Integer
-                Dim points = tokens.Sum(Function(t) If(rank.ContainsKey(t.VBKind), rank(t.VBKind), 0))
+                Dim points = tokens.Sum(Function(t) If(rank.ContainsKey(t.Kind), rank(t.Kind), 0))
 
                 Return If(points = 0, defaultSumValue, points)
             End Function
@@ -126,7 +126,7 @@ Namespace Refactoring
                     Return GetName(DirectCast(node, PropertyBlockSyntax).PropertyStatement)
                 End If
                 If TypeOf node Is MethodBlockSyntax Then
-                    Return DirectCast(node, MethodBlockSyntax).Begin.Identifier.Text
+                    Return DirectCast(node, MethodBlockSyntax).SubOrFunctionStatement.Identifier.Text
                 End If
                 If TypeOf node Is SubNewStatementSyntax Then
                     Return "New"
@@ -135,7 +135,7 @@ Namespace Refactoring
                     Return DirectCast(node, EnumBlockSyntax).EnumStatement.Identifier.Text
                 End If
                 If TypeOf node Is InterfaceBlockSyntax Then
-                    Return DirectCast(node, InterfaceBlockSyntax).Begin.Identifier.Text
+                    Return DirectCast(node, InterfaceBlockSyntax).InterfaceStatement.Identifier.Text
                 End If
                 If TypeOf node Is EventStatementSyntax Then
                     Return DirectCast(node, EventStatementSyntax).Identifier.Text
@@ -144,16 +144,16 @@ Namespace Refactoring
                     Return GetName(DirectCast(node, EventBlockSyntax).EventStatement)
                 End If
                 If TypeOf node Is OperatorBlockSyntax Then
-                    Return DirectCast(node, OperatorBlockSyntax).Begin.OperatorToken.Text
+                    Return DirectCast(node, OperatorBlockSyntax).OperatorStatement.OperatorToken.Text
                 End If
                 If TypeOf node Is DelegateStatementSyntax Then
                     Return DirectCast(node, DelegateStatementSyntax).Identifier.Text
                 End If
                 If TypeOf node Is ClassBlockSyntax Then
-                    Return DirectCast(node, ClassBlockSyntax).Begin.Identifier.Text
+                    Return DirectCast(node, ClassBlockSyntax).ClassStatement.Identifier.Text
                 End If
                 If TypeOf node Is StructureBlockSyntax Then
-                    Return DirectCast(node, StructureBlockSyntax).Begin.Identifier.Text
+                    Return DirectCast(node, StructureBlockSyntax).StructureStatement.Identifier.Text
                 End If
                 Return ""
             End Function

@@ -14,17 +14,17 @@ namespace CodeCracker.CSharp.Style
     [ExportCodeFixProvider("CodeCrackerRemoveTrailingWhitespaceCodeFixProvider", LanguageNames.CSharp), Shared]
     public class RemoveTrailingWhitespaceCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() => ImmutableArray.Create(DiagnosticId.RemoveTrailingWhitespace.ToDiagnosticId());
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.RemoveTrailingWhitespace.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var trivia = root.FindTrivia(diagnostic.Location.SourceSpan.End - 1);
             var newRoot = RemoveTrailingWhiteSpace(root, trivia);
-            context.RegisterFix(CodeAction.Create("Remove trailing whitespace", context.Document.WithSyntaxRoot(newRoot)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove trailing whitespace", ct => Task.FromResult(context.Document.WithSyntaxRoot(newRoot))), diagnostic);
         }
 
         private static SyntaxNode RemoveTrailingWhiteSpace(SyntaxNode root, SyntaxTrivia trivia)

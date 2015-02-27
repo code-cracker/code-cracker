@@ -112,7 +112,7 @@ namespace CodeCracker.CSharp.Refactoring
             private int SumRankPoints(SyntaxTokenList tokenList, Dictionary<SyntaxKind, int> rank, int defaultSumValue)
             {
                 var points = tokenList
-                        .Select(s => s.CSharpKind())
+                        .Select(s => s.Kind())
                         .Sum(tokenKind => rank.ContainsKey(tokenKind) ? rank[tokenKind] : 0);
                 return points == 0 ? defaultSumValue : points;
             }

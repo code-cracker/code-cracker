@@ -15,18 +15,18 @@ namespace CodeCracker.CSharp.Style
     [ExportCodeFixProvider("CodeCrackerForInArrayCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ForInArrayCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.ForInArray.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ForStatementSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Change to foreach", c => MakeForeachAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change to foreach", c => MakeForeachAsync(context.Document, declaration, c)), diagnostic);
         }
 
         private async Task<Document> MakeForeachAsync(Document document, ForStatementSyntax forStatement, CancellationToken cancellationToken)

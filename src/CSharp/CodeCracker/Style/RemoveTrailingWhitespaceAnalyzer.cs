@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Style
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.RemoveTrailingWhitespace));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveTrailingWhitespace));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Reliability
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.UseConfigureAwaitFalse));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UseConfigureAwaitFalse));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

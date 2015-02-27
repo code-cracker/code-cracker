@@ -12,21 +12,19 @@ Namespace Performance
     Public Class MakeLocalVariableConstWhenPossibleCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(MakeLocalVariableConstWhenPossibleAnalyzer.Id)
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(MakeLocalVariableConstWhenPossibleAnalyzer.Id)
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First()
             Dim diagnosticSpan = diagnostic.Location.SourceSpan
             Dim localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType(Of LocalDeclarationStatementSyntax).First()
             Const message = "Make constant"
-            context.RegisterFix(CodeAction.Create(message, Function(c) MakeConstantAsync(context.Document, localDeclaration, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create(message, Function(c) MakeConstantAsync(context.Document, localDeclaration, c)), diagnostic)
 
         End Function
 

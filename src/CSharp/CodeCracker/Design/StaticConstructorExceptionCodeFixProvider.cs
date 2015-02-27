@@ -14,19 +14,19 @@ namespace CodeCracker.CSharp.Design
     [ExportCodeFixProvider("CodeCrackerStaticConstructorExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class StaticConstructorExceptionCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.StaticConstructorException.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var sourceSpan = diagnostic.Location.SourceSpan;
             var @throw = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
 
-            context.RegisterFix(
+            context.RegisterCodeFix(
                 CodeAction.Create("Remove this exception", ct => RemoveThrowAsync(context.Document, @throw, ct)), diagnostic);
         }
 

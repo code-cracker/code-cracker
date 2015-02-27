@@ -11,22 +11,20 @@ Namespace Performance
     Public Class RemoveWhereWhenItIsPossibleCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(RemoveWhereWhenItIsPossibleAnalyzer.Id)
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(RemoveWhereWhenItIsPossibleAnalyzer.Id)
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
             Dim diagnosticSpan = diagnostic.Location.SourceSpan
             Dim whereInvoke = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType(Of InvocationExpressionSyntax)().First()
             Dim nextMethodInvoke = whereInvoke.Parent.FirstAncestorOrSelf(Of InvocationExpressionSyntax)()
             Dim message = "Remove 'Where' moving predicate to '" + RemoveWhereWhenItIsPossibleAnalyzer.GetNameOfTheInvokeMethod(nextMethodInvoke) + "'"
-            context.RegisterFix(CodeAction.Create(message, Function(c) RemoveWhere(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create(message, Function(c) RemoveWhere(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic)
         End Function
 
         Private Async Function RemoveWhere(document As Document, whereInvoke As InvocationExpressionSyntax, nextMethodInvoke As InvocationExpressionSyntax, cancellationToken As CancellationToken) As Task(Of Document)

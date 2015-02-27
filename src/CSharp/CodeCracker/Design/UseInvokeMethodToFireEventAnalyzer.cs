@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Design
             DiagnosticSeverity.Warning,
             true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.UseInvokeMethodToFireEvent));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UseInvokeMethodToFireEvent));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

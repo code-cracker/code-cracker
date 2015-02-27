@@ -21,7 +21,7 @@ Namespace Usage
             DiagnosticSeverity.Info,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Returned))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Returned))
 
         Friend Shared RuleForCreated As New DiagnosticDescriptor(
             DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
@@ -31,7 +31,7 @@ Namespace Usage
             DiagnosticSeverity.Warning,
             isEnabledByDefault:=True,
             description:=Description,
-            helpLink:=HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Created))
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Created))
 
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
@@ -52,7 +52,7 @@ Namespace Usage
             Dim variableDeclarator = TryCast(fieldSyntaxRef.GetSyntax().Parent, VariableDeclaratorSyntax)
             If variableDeclarator Is Nothing Then Exit Sub
             If ContainingTypeImplementsIDisposableAndCallsItOnTheField(context, fieldSymbol, fieldSymbol.ContainingType) Then Exit Sub
-            If variableDeclarator.AsClause.VBKind = SyntaxKind.AsNewClause Then
+            If variableDeclarator.AsClause.Kind = SyntaxKind.AsNewClause Then
                 context.ReportDiagnostic(Diagnostic.Create(RuleForCreated, variableDeclarator.GetLocation(), fieldSymbol.Name))
             ElseIf TypeOf (variableDeclarator.Initializer?.Value) Is InvocationExpressionSyntax Then
                 context.ReportDiagnostic(Diagnostic.Create(RuleForReturned, variableDeclarator.GetLocation(), fieldSymbol.Name))
@@ -72,7 +72,7 @@ Namespace Usage
 
             Dim disposeMethod = TryCast(disposeMethodSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().Parent, MethodBlockSyntax)
             If disposeMethod Is Nothing Then Return False
-            If disposeMethod.Begin.Modifiers.Any(SyntaxKind.MustInheritKeyword) Then Return True
+            If disposeMethod.SubOrFunctionStatement.Modifiers.Any(SyntaxKind.MustInheritKeyword) Then Return True
             Dim typeDeclaration = DirectCast(typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().Parent, TypeBlockSyntax)
             Dim semanticModel = context.Compilation.GetSemanticModel(typeDeclaration.SyntaxTree)
             If callsDisposeOnField(fieldSymbol, disposeMethod, semanticModel) Then Return True

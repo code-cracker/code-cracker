@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Usage
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId.SimplifyRedundantBooleanComparisons));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.SimplifyRedundantBooleanComparisons));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

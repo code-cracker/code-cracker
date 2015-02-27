@@ -17,12 +17,12 @@ namespace CodeCracker.CSharp.Refactoring
     [ExportCodeFixProvider("ParameterRefactoryCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ParameterRefactoryCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.ParameterRefactory.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
@@ -39,7 +39,7 @@ namespace CodeCracker.CSharp.Refactoring
             var diagnosticSpanMethod = diagnosticMethod.Location.SourceSpan;
             var declarationMethod = root.FindToken(diagnosticSpanClass.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-            context.RegisterFix(CodeAction.Create("Change to new CLass", c => NewClassAsync(context.Document, declarationNameSpace, declarationClass, declarationMethod, c)), diagnosticClass);
+            context.RegisterCodeFix(CodeAction.Create("Change to new CLass", c => NewClassAsync(context.Document, declarationNameSpace, declarationClass, declarationMethod, c)), diagnosticClass);
 
         }
 

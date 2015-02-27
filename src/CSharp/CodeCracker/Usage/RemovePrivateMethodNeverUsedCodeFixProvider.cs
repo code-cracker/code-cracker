@@ -14,12 +14,12 @@ namespace CodeCracker.CSharp.Usage
     [ExportCodeFixProvider("RemovePrivateMethodNeverUsedCodeFixProvider", LanguageNames.CSharp), Shared]
     public class RemovePrivateMethodNeverUsedCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds() =>
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
@@ -29,7 +29,7 @@ namespace CodeCracker.CSharp.Usage
 
             var methodNotUsed = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-            context.RegisterFix(CodeAction.Create($"Remove unused private method : '{methodNotUsed.Identifier.Text}'", c => RemoveMethodAsync(context.Document, methodNotUsed, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create($"Remove unused private method : '{methodNotUsed.Identifier.Text}'", c => RemoveMethodAsync(context.Document, methodNotUsed, c)), diagnostic);
         }
 
         private async Task<Document> RemoveMethodAsync(Document document, MethodDeclarationSyntax methodNotUsed, CancellationToken cancellationToken)

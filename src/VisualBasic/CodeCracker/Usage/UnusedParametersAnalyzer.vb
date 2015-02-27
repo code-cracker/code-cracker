@@ -40,7 +40,7 @@ You should delete the parameter in such cases."
             If methodOrConstructor Is Nothing Then Exit Sub
             Dim model = context.SemanticModel
             If Not IsCandidateForRemoval(methodOrConstructor, model) Then Exit Sub
-            Dim parameters = methodOrConstructor.Begin.ParameterList.Parameters.ToDictionary(Function(p) p, Function(p) model.GetDeclaredSymbol(p))
+            Dim parameters = methodOrConstructor.BlockStatement.ParameterList.Parameters.ToDictionary(Function(p) p, Function(p) model.GetDeclaredSymbol(p))
             Dim ctor = TryCast(methodOrConstructor, ConstructorBlockSyntax)
             ' TODO: Check if used in MyBase
             If methodOrConstructor.Statements.Any() Then
@@ -61,12 +61,12 @@ You should delete the parameter in such cases."
         End Sub
 
         Private Shared Function IsCandidateForRemoval(methodOrConstructor As MethodBlockBaseSyntax, semanticModel As SemanticModel) As Boolean
-            If methodOrConstructor.Begin.Modifiers.Any(Function(m) m.ValueText = "Partial" OrElse m.ValueText = "Overrides") OrElse
-            Not methodOrConstructor.Begin.ParameterList?.Parameters.Any() Then Return False
+            If methodOrConstructor.BlockStatement.Modifiers.Any(Function(m) m.ValueText = "Partial" OrElse m.ValueText = "Overrides") OrElse
+            Not methodOrConstructor.BlockStatement.ParameterList?.Parameters.Any() Then Return False
 
             Dim method = TryCast(methodOrConstructor, MethodBlockSyntax)
             If method IsNot Nothing Then
-                If method.Begin.ImplementsClause IsNot Nothing Then Return False
+                If method.SubOrFunctionStatement.ImplementsClause IsNot Nothing Then Return False
                 Dim methodSymbol = semanticModel.GetDeclaredSymbol(method)
                 If methodSymbol Is Nothing Then Return False
                 Dim typeSymbol = methodSymbol.ContainingType
@@ -86,28 +86,28 @@ You should delete the parameter in such cases."
         End Function
 
         Private Shared Function IsSerializationConstructor(constructor As ConstructorBlockSyntax, model As SemanticModel) As Boolean
-            If constructor.Begin.ParameterList.Parameters.Count <> 2 Then Return False
+            If constructor.SubNewStatement.ParameterList.Parameters.Count <> 2 Then Return False
             Dim constructorSymbol = model.GetDeclaredSymbol(constructor)
             Dim typeSymbol = constructorSymbol?.ContainingType
             If If(Not typeSymbol?.Interfaces.Any(Function(i) i.ToString() = "System.Runtime.Serialization.ISerializable"), True) Then Return False
             If Not typeSymbol.GetAttributes().Any(Function(a) a.AttributeClass.ToString() = "System.SerializableAttribute") Then Return False
-            Dim serializationInfoType = TryCast(model.GetTypeInfo(constructor.Begin.ParameterList.Parameters(0).AsClause.Type).Type, INamedTypeSymbol)
+            Dim serializationInfoType = TryCast(model.GetTypeInfo(constructor.SubNewStatement.ParameterList.Parameters(0).AsClause.Type).Type, INamedTypeSymbol)
             If serializationInfoType Is Nothing Then Return False
             If Not serializationInfoType.AllBaseTypesAndSelf().Any(Function(type) type.ToString() = "System.Runtime.Serialization.SerializationInfo") Then Return False
 
-            Dim streamContextType = TryCast(model.GetTypeInfo(constructor.Begin.ParameterList.Parameters(1).AsClause.Type).Type, INamedTypeSymbol)
+            Dim streamContextType = TryCast(model.GetTypeInfo(constructor.SubNewStatement.ParameterList.Parameters(1).AsClause.Type).Type, INamedTypeSymbol)
             If streamContextType Is Nothing Then Return False
             Return streamContextType.AllBaseTypesAndSelf().Any(Function(type) type.ToString() = "System.Runtime.Serialization.StreamingContext")
         End Function
 
         Private Shared Function IsEventHandlerLike(method As MethodBlockSyntax, model As SemanticModel) As Boolean
 
-            If method.Begin.ParameterList.Parameters.Count <> 2 OrElse
+            If method.SubOrFunctionStatement.ParameterList.Parameters.Count <> 2 OrElse
             method.IsKind(SyntaxKind.FunctionBlock) Then Return False
 
-            Dim senderType = model.GetTypeInfo(method.Begin.ParameterList.Parameters(0).AsClause.Type).Type
+            Dim senderType = model.GetTypeInfo(method.SubOrFunctionStatement.ParameterList.Parameters(0).AsClause.Type).Type
             If senderType.SpecialType <> SpecialType.System_Object Then Return False
-            Dim eventArgsType = TryCast(model.GetTypeInfo(method.Begin.ParameterList.Parameters(1).AsClause.Type).Type, INamedTypeSymbol)
+            Dim eventArgsType = TryCast(model.GetTypeInfo(method.SubOrFunctionStatement.ParameterList.Parameters(1).AsClause.Type).Type, INamedTypeSymbol)
             If eventArgsType Is Nothing Then Return False
             Return eventArgsType.AllBaseTypesAndSelf().Any(Function(type) type.ToString() = "System.EventArgs")
         End Function

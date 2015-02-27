@@ -16,15 +16,13 @@ Namespace Refactoring
             Me.CodeActionDescription = codeActionDescription
         End Sub
 
-        Public Overrides Function GetFixableDiagnosticIds() As ImmutableArray(Of String)
-            Return ImmutableArray.Create(AllowMembersOrderingAnalyzer.Id)
-        End Function
+        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(AllowMembersOrderingAnalyzer.Id)
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function ComputeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First()
             Dim diagnosticSpan = diagnostic.Location.SourceSpan
@@ -32,7 +30,9 @@ Namespace Refactoring
             Dim typeBlock = DirectCast(root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOrSelfOfType(GetType(ClassBlockSyntax), GetType(StructureBlockSyntax)), TypeBlockSyntax)
             Dim newDocument = Await AllowMembersOrderingAsync(context.Document, typeBlock, context.CancellationToken)
             If newDocument IsNot Nothing Then
-                context.RegisterFix(CodeAction.Create(String.Format(CodeActionDescription, typeBlock), newDocument), diagnostic)
+                context.RegisterCodeFix(CodeAction.Create(String.Format(CodeActionDescription, typeBlock), Function(ct)
+                                                                                                               Return Task.FromResult(newDocument)
+                                                                                                           End Function), diagnostic)
             End If
         End Function
 
