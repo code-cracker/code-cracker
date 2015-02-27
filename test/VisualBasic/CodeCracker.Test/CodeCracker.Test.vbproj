@@ -14,6 +14,7 @@
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <NuGetPackageImportStamp>0f52fb8f</NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -181,6 +182,7 @@
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeTests.vb" />
     <Compile Include="Usage\DisposableFieldNotDisposedTests.vb" />
     <Compile Include="Usage\ArgumentExceptionTests.vb" />
+    <Compile Include="Usage\IPAddressAnalyzerTests.vb" />
     <Compile Include="Usage\UnusedParameterTests.vb" />
     <Compile Include="Usage\JsonNetTests.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorTests.vb" />
@@ -195,7 +197,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
