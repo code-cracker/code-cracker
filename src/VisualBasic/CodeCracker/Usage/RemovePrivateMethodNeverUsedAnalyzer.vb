@@ -19,7 +19,7 @@ Namespace Usage
             Message,
             SupportedCategories.Usage,
             DiagnosticSeverity.Info,
-            isEnabledByDefault:=True,
+            isEnabledByDefault:=False,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed))
 

@@ -125,7 +125,10 @@
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeAnalyzer.vb" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.vb" />
     <Compile Include="Usage\ArgumentExceptionCodeFixProvider.vb" />
+    <Compile Include="Usage\IPAddressAnalyzer.vb" />
     <Compile Include="Usage\JsonNetAnalyzer.vb" />
+    <Compile Include="Usage\MethodAnalyzers\MethodChecker.vb" />
+    <Compile Include="Usage\MethodAnalyzers\MethodInformation.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsAnalyzer.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider.vb" />
     <Compile Include="Usage\UnusedParametersAnalyzer.vb" />
@@ -150,8 +153,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0448\tools\analyzers\CodeCracker.VisualBasic.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc1\tools\analyzers\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc1\tools\analyzers\VB.NET\Microsoft.CodeAnalysis.VisualBasic.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

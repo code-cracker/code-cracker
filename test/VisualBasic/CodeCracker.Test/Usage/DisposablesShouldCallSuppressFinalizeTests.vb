@@ -64,7 +64,7 @@ End {0}", type)
 
         <Fact>
         Public Async Function WhenClassHasParameterizedDisposeMethod() As Task
-            Dim source = "
+            Const source = "
 Imports System
 Public Class MyType
     Implements System.IDisposable
@@ -75,7 +75,7 @@ Public Class MyType
     End Sub
 End Class"
 
-            Dim fix = "
+            Const fix = "
 Imports System
 Public Class MyType
     Implements System.IDisposable

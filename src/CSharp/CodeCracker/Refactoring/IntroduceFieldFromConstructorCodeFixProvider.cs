@@ -33,12 +33,12 @@ namespace CodeCracker.CSharp.Refactoring
         public async Task<Document> IntroduceFieldFromConstructorDocumentAsync(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var newRoot = IntroduceFieldFromConstructorAsync(root, constructorStatement, parameter);
+            var newRoot = IntroduceFieldFromConstructor(root, constructorStatement, parameter);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return document.WithSyntaxRoot(newRoot);
         }
 
-        public static SyntaxNode IntroduceFieldFromConstructorAsync(SyntaxNode root, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter)
+        public static SyntaxNode IntroduceFieldFromConstructor(SyntaxNode root, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter)
         {
             var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
             var newClass = oldClass;

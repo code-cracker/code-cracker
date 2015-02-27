@@ -28,7 +28,7 @@ Namespace Performance
         End Function
 
         Private Async Function RemoveWhere(document As Document, whereInvoke As InvocationExpressionSyntax, nextMethodInvoke As InvocationExpressionSyntax, cancellationToken As CancellationToken) As Task(Of Document)
-            Dim root = Await document.GetSyntaxRootAsync()
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
             Dim whereMemberAccess = whereInvoke.ChildNodes.OfType(Of MemberAccessExpressionSyntax)().FirstOrDefault()
             Dim nextMethodMemberAccess = nextMethodInvoke.ChildNodes.OfType(Of MemberAccessExpressionSyntax)().FirstOrDefault()
 

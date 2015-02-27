@@ -118,7 +118,7 @@ End Sub
 
         <Fact>
         Public Async Function IgnoresAgrumentExceptionObjectsInFields() As Task
-            Dim test = "Dim ex As New ArgumentException(""message"", ""paramName"")"
+            Const test = "Dim ex As New ArgumentException(""message"", ""paramName"")"
             Await VerifyBasicHasNoDiagnosticsAsync(test)
         End Function
 
@@ -210,7 +210,7 @@ End Sub
 
         <Fact>
         Public Async Function IgnoresArgumentExceptionObjectsInInitializerOfAutoProperties() As Task
-            Dim test = "
+            Const test = "
 ReadOnly Property Test = New ArgumentException(""message"", ""paramName"")
 "
             Await VerifyBasicHasNoDiagnosticsAsync(test)
