@@ -38,7 +38,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Common", "src\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Test.Common", "test\Common\CodeCracker.Test.Common\CodeCracker.Test.Common.csproj", "{1CD1A3EE-28CE-404B-A59E-AEACF762D938}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Vsix", "src\VisualBasic\CodeCracker.Vsix\CodeCracker.Vsix.csproj", "{6BAC4057-7239-485E-A04B-02E687A83BAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Vsix", "src\VisualBasic\CodeCracker.Vsix\CodeCracker.Vsix.csproj", "{B7B513B4-0317-4F32-B560-4BFC4FAEC239}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,11 +71,11 @@ Global
 		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.DebugNoVsix|Any CPU.Build.0 = Debug|Any CPU
 		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6BAC4057-7239-485E-A04B-02E687A83BAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BAC4057-7239-485E-A04B-02E687A83BAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6BAC4057-7239-485E-A04B-02E687A83BAA}.DebugNoVsix|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BAC4057-7239-485E-A04B-02E687A83BAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6BAC4057-7239-485E-A04B-02E687A83BAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.DebugNoVsix|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
