@@ -11,24 +11,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Refactoring
+namespace CodeCracker.CSharp.Refactoring
 {
 
     [ExportCodeFixProvider("ParameterRefactoryCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ParameterRefactoryCodeFixProvider : CodeFixProvider
     {
-        public string nome = "";
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(ParameterRefactoryAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.ParameterRefactory.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
@@ -45,13 +39,13 @@ namespace CodeCracker.Refactoring
             var diagnosticSpanMethod = diagnosticMethod.Location.SourceSpan;
             var declarationMethod = root.FindToken(diagnosticSpanClass.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-            context.RegisterFix(CodeAction.Create("Change to new CLass", c => NewClassAsync(context.Document, declarationNameSpace, declarationClass, declarationMethod, c)), diagnosticClass);
+            context.RegisterCodeFix(CodeAction.Create("Change to new CLass", c => NewClassAsync(context.Document, declarationNameSpace, declarationClass, declarationMethod, c)), diagnosticClass);
 
         }
 
         private async Task<Document> NewClassAsync(Document document, NamespaceDeclarationSyntax OldNameSpace, ClassDeclarationSyntax oldClass, MethodDeclarationSyntax oldMethod, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode newRootParameter = null;
 
 
@@ -184,12 +178,10 @@ namespace CodeCracker.Refactoring
         {
             return string.Concat(text.Replace(text[0].ToString(), text[0].ToString().ToUpper()));
         }
+
         private static string FirstLetteToLower(string text)
         {
             return string.Concat(text.Replace(text[0].ToString(), text[0].ToString().ToLower()));
         }
-
     }
-
 }
-

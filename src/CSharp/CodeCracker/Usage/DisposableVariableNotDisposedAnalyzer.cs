@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DisposableVariableNotDisposedAnalyzer : DiagnosticAnalyzer
@@ -13,26 +13,22 @@ namespace CodeCracker.Usage
         internal const string Title = "Should dispose object";
         internal const string MessageFormat = "{0} should be disposed.";
         internal const string Category = SupportedCategories.Usage;
-        public const string DiagnosticId = "CC0022";
         const string Description = "When a disposable object is created it should be disposed as soon as possible.\n" +
             "This warning will appear if you create a disposable object and don't store, return or dispose it.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposableVariableNotDisposed));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(AnalyzeObjectCreation, SyntaxKind.ObjectCreationExpression);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeObjectCreation, SyntaxKind.ObjectCreationExpression);
 
         private static void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
         {

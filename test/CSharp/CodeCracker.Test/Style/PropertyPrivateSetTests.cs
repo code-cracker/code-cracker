@@ -1,12 +1,10 @@
-﻿using CodeCracker.Style;
-using Microsoft.CodeAnalysis;
+﻿using CodeCracker.CSharp.Style;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class PropertyPrivateSetTests : CodeFixTest<PropertyPrivateSetAnalyzer, PropertyPrivateSetCodeFixProvider>
+    public class PropertyPrivateSetTests : CodeFixVerifier<PropertyPrivateSetAnalyzer, PropertyPrivateSetCodeFixProvider>
     {
         [Fact]
         public async Task PropertyPrivateDeclaration()
@@ -114,7 +112,7 @@ namespace CodeCracker.Test.Style
         }
     }";
 
-            await VerifyCSharpFixAsync(test, expected,1);
+            await VerifyCSharpFixAsync(test, expected, 1);
         }
 
         [Fact]
@@ -152,7 +150,7 @@ namespace CodeCracker.Test.Style
         }
     }";
 
-            await VerifyCSharpFixAsync(test, expected,0);
+            await VerifyCSharpFixAsync(test, expected, 0);
         }
 
 

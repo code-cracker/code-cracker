@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class UnnecessaryParenthesisTests : CodeFixTest<UnnecessaryParenthesisAnalyzer, UnnecessaryParenthesisCodeFixProvider>
+    public class UnnecessaryParenthesisTests : CodeFixVerifier<UnnecessaryParenthesisAnalyzer, UnnecessaryParenthesisCodeFixProvider>
     {
         [Fact]
         public async Task ConstructorWithEmptyParenthesisWithInitializerTriggersFix()
@@ -14,7 +13,7 @@ namespace CodeCracker.Test.Style
             const string source = @"var a = new B() { X = 1 };";
             var expected = new DiagnosticResult
             {
-                Id = UnnecessaryParenthesisAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UnnecessaryParenthesis.ToDiagnosticId(),
                 Message = "Remove unnecessary parenthesis.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 14) }

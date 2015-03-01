@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class ForInArrayTests : CodeFixTest<ForInArrayAnalyzer, ForInArrayCodeFixProvider>
+    public class ForInArrayTests : CodeFixVerifier<ForInArrayAnalyzer, ForInArrayCodeFixProvider>
     {
 
         [Fact]
@@ -370,7 +369,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ForInArrayAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
                 Message = "You can use foreach instead of for.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
@@ -403,7 +402,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ForInArrayAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
                 Message = "You can use foreach instead of for.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 17) }

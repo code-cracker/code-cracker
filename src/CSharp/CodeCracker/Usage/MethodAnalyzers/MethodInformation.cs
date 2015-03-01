@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CodeCracker.Usage.MethodAnalyzers
+namespace CodeCracker.CSharp.Usage.MethodAnalyzers
 {
     public class MethodInformation
     {

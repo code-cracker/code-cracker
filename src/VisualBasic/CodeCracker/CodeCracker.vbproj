@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{41FA4971-D354-4647-A269-4A886DA2EF4C}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CodeCracker</RootNamespace>
+    <RootNamespace>CodeCracker.VisualBasic</RootNamespace>
     <AssemblyName>CodeCracker.VisualBasic</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <ProjectTypeGuids>{14182A97-F7F0-4C62-8B27-98AA8AE2109A};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
@@ -26,6 +26,7 @@
     <NoWarn>40057</NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <CodeAnalysisRuleSet>..\..\..\codecrackerandall.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,6 +39,7 @@
     <DocumentationFile>CodeCracker.VisualBasic.xml</DocumentationFile>
     <NoWarn>40057</NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -53,6 +55,8 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework and Windows SDK is automatically included -->
+    <None Include="app.config" />
+    <None Include="CodeCracker.nuspec" />
     <None Include="packages.config" />
     <None Include="tools\install.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -89,44 +93,113 @@
     <Import Include="Windows.UI.Xaml.Media.Imaging" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\AnalyzerExtensions.vb" />
-    <Compile Include="HelpLink.vb" />
+    <Compile Include="Design\CatchEmptyAnalyzer.vb" />
+    <Compile Include="Design\CatchEmptyCodeFixProvider.vb" />
+    <Compile Include="Design\EmptyCatchBlockAnalyzer.vb" />
+    <Compile Include="Design\EmptyCatchBlockCodeFixProvider.vb" />
+    <Compile Include="Design\NameOfAnalyzer.vb" />
+    <Compile Include="Design\NameOfCodeFixProvider.vb" />
+    <Compile Include="Design\StaticConstructorExceptionAnalyzer.vb" />
+    <Compile Include="Design\StaticConstructorExceptionCodeFixProvider.vb" />
+    <Compile Include="Extensions\VBAnalyzerExtensions.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenPossibleAnalyzer.vb" />
+    <Compile Include="Performance\MakeLocalVariableConstWhenPossibleCodeFixProvider.vb" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleAnalyzer.vb" />
+    <Compile Include="Performance\RemoveWhereWhenItIsPossibleCodeFixProvider.vb" />
+    <Compile Include="Performance\SealedAttributeAnalyzer.vb" />
+    <Compile Include="Performance\SealedAttributeCodeFixProvider.vb" />
+    <Compile Include="Performance\StringBuilderInLoopAnalyzer.vb" />
+    <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.vb" />
+    <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.vb" />
+    <Compile Include="Refactoring\ParameterRefactoryAnalyzer.vb" />
+    <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.vb" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.vb" />
+    <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.vb" />
+    <Compile Include="Style\InterfaceNameAnalyzer.vb" />
+    <Compile Include="Style\InterfaceNameCodeFixProvider.vb" />
+    <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.vb" />
+    <Compile Include="Usage\DisposableFieldNotDisposedCodeFixProvider.vb" />
+    <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeAnalyzer.vb" />
+    <Compile Include="Usage\ArgumentExceptionAnalyzer.vb" />
+    <Compile Include="Usage\ArgumentExceptionCodeFixProvider.vb" />
+    <Compile Include="Usage\IPAddressAnalyzer.vb" />
+    <Compile Include="Usage\JsonNetAnalyzer.vb" />
+    <Compile Include="Usage\MethodAnalyzers\MethodChecker.vb" />
+    <Compile Include="Usage\MethodAnalyzers\MethodInformation.vb" />
+    <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsAnalyzer.vb" />
+    <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider.vb" />
+    <Compile Include="Usage\UnusedParametersAnalyzer.vb" />
+    <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.vb" />
+    <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzer.vb" />
+    <Compile Include="Usage\RemovePrivateMethodNeverUsedCodeFixProvider.vb" />
+    <Compile Include="Usage\UnusedParametersCodeFixProvider.vb" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Design\" />
     <Folder Include="Globalization\" />
     <Folder Include="Interoperability\" />
     <Folder Include="Maintainability\" />
     <Folder Include="Mobility\" />
     <Folder Include="Naming\" />
-    <Folder Include="Performance\" />
     <Folder Include="Portability\" />
-    <Folder Include="Refactoring\" />
-    <Folder Include="Reliability\" />
     <Folder Include="Security\" />
-    <Folder Include="Style\" />
-    <Folder Include="Usage\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.VisualBasic">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0.0-beta2\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    <ProjectReference Include="..\..\Common\CodeCracker.Common\CodeCracker.Common.csproj">
+      <Project>{753d4757-fcba-43ba-b1be-89201acda192}</Project>
+      <Name>CodeCracker.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha3-0448\tools\analyzers\CodeCracker.VisualBasic.dll" />
+    <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc1\tools\analyzers\Microsoft.CodeAnalysis.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc1\lib\portable-net45+win8\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.17-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.1.0.0-rc1\lib\portable-net45+win8\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.1.0.0-rc1\lib\portable-net45+win8\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc1\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.1.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Convention, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Hosting, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Runtime, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata, Version=1.0.18.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.VisualBasic.targets" />

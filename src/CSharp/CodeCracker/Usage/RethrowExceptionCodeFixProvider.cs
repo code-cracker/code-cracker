@@ -11,29 +11,24 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [ExportCodeFixProvider("CodeCrackerRethrowExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class RethrowExceptionCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(RethrowExceptionAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.RethrowException.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Rethrow as inner exception", c => MakeThrowAsInnerAsync(context.Document, declaration, c)), diagnostic);
-            context.RegisterFix(CodeAction.Create("Throw original exception", c => MakeThrowAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Rethrow as inner exception", c => MakeThrowAsInnerAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Throw original exception", c => MakeThrowAsync(context.Document, declaration, c)), diagnostic);
         }
 
         private async Task<Document> MakeThrowAsync(Document document, ThrowStatementSyntax throwStatement, CancellationToken cancellationToken)

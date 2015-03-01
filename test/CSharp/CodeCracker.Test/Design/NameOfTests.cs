@@ -1,12 +1,11 @@
-﻿using CodeCracker.Design;
+﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class NameOfTests : CodeFixTest<NameOfAnalyzer, NameOfCodeFixProvider>
+    public class NameOfTests : CodeFixVerifier<NameOfAnalyzer, NameOfCodeFixProvider>
     {
         [Fact]
         public async Task IgnoreIfStringLiteralIsWhiteSpace()
@@ -19,7 +18,6 @@ public class TypeName
         var whatever = """";
     }
 }";
-
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -96,7 +94,7 @@ public class TypeName
 }";
             var expected = new DiagnosticResult
             {
-                Id = NameOfAnalyzer.DiagnosticId,
+                Id = DiagnosticId.NameOf.ToDiagnosticId(),
                 Message = "Use 'nameof(b)' instead of specifying the parameter name.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 27) }
@@ -230,7 +228,47 @@ public class TypeName
     }
 }";
 
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAll()
+        {
+            const string source = @"
+public class TypeName
+{
+    void Foo(string a, string b)
+    {
+        var whatever = ""a"";
+        var whatever2 = ""b"";
+    }
+}";
+
+            const string fixtest = @"
+public class TypeName
+{
+    void Foo(string a, string b)
+    {
+        var whatever = nameof(a);
+        var whatever2 = nameof(b);
+    }
+}";
+
+            await VerifyFixAllAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task IgnoreAttributes()
+        {
+            const string test = @"
+public class TypeName
+{
+    [Whatever(""a"")]
+    void Foo(string a)
+    {
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }
 }

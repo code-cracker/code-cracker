@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class ObjectInitializerWithLocalDeclarationTests : CodeFixTest<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
+    public class ObjectInitializerWithLocalDeclarationTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
     {
 
         [Fact]
@@ -116,7 +115,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ObjectInitializerAnalyzer.DiagnosticIdLocalDeclaration,
+                Id = DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(),
                 Message = "You can use initializers in here.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 17) }
@@ -168,7 +167,7 @@ namespace CodeCracker.Test.Style
         }
     }
 
-    public class ObjectInitializerWithAssingmentTests : CodeFixTest<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
+    public class ObjectInitializerWithAssingmentTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
     {
 
         [Fact]
@@ -208,7 +207,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ObjectInitializerAnalyzer.DiagnosticIdAssignment,
+                Id = DiagnosticId.ObjectInitializer_Assignment.ToDiagnosticId(),
                 Message = "You can use initializers in here.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }

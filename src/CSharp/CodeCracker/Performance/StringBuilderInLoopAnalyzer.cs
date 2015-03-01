@@ -4,12 +4,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StringBuilderInLoopAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0039";
         internal const string Title = "Don't concatenate strings in loops";
         internal const string MessageFormat = "Don't concatenate '{0}' in a loop";
         internal const string Category = SupportedCategories.Performance;
@@ -17,21 +16,19 @@ namespace CodeCracker.Usage
             + "Use a StringBuilder instead. It will will require less allocation, less garbage collector work, less CPU cycles, and less overall time.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringBuilderInLoop));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeAssignment, SyntaxKind.AddAssignmentExpression, SyntaxKind.SimpleAssignmentExpression);
-        }
 
         private void AnalyzeAssignment(SyntaxNodeAnalysisContext context)
         {

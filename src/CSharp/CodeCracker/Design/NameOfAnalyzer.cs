@@ -5,12 +5,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Design
+namespace CodeCracker.CSharp.Design
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class NameOfAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0021";
         internal const string Title = "You should use nameof instead of the parameter string";
         internal const string MessageFormat = "Use 'nameof({0})' instead of specifying the parameter name.";
         internal const string Category = SupportedCategories.Design;
@@ -18,50 +17,53 @@ namespace CodeCracker.Design
             + "a string literal as it produce code that is easier to refactor.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.NameOf.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.NameOf));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.StringLiteralExpression);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
             var stringLiteral = context.Node as LiteralExpressionSyntax;
             if (string.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText)) return;
-            var methodDeclaration = stringLiteral.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-
-            if (methodDeclaration != null)
-            {
-                var methodParameters = methodDeclaration.ParameterList.Parameters;
-                if (!AreEqual(stringLiteral, methodParameters)) return;
-            }
-            else
-            {
-                var constructorDeclaration = stringLiteral.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
-                if (constructorDeclaration != null)
-                {
-                    var constructorParameters = constructorDeclaration.ParameterList.Parameters;
-                    if (!AreEqual(stringLiteral, constructorParameters)) return;
-                }
-                else return;
-            }
+            var parameters = GetParameters(stringLiteral);
+            if (!parameters.Any()) return;
+            var attribute = stringLiteral.FirstAncestorOfType<AttributeSyntax>();
+            var method = stringLiteral.FirstAncestorOfType(typeof(MethodDeclarationSyntax), typeof(ConstructorDeclarationSyntax)) as BaseMethodDeclarationSyntax;
+            if (attribute != null && method.AttributeLists.Any(a => a.Attributes.Contains(attribute))) return;
+            if (!AreEqual(stringLiteral, parameters)) return;
             var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value);
             context.ReportDiagnostic(diagnostic);
         }
 
-        private bool AreEqual(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters)
+        public SeparatedSyntaxList<ParameterSyntax> GetParameters(SyntaxNode node)
         {
-            return parameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString());
+            var methodDeclaration = node.FirstAncestorOfType<MethodDeclarationSyntax>();
+            SeparatedSyntaxList<ParameterSyntax> parameters;
+            if (methodDeclaration != null)
+            {
+                parameters = methodDeclaration.ParameterList.Parameters;
+            }
+            else
+            {
+                var constructorDeclaration = node.FirstAncestorOfType<ConstructorDeclarationSyntax>();
+                if (constructorDeclaration != null)
+                    parameters = constructorDeclaration.ParameterList.Parameters;
+                else return new SeparatedSyntaxList<ParameterSyntax>();
+            }
+            return parameters;
         }
+
+        private bool AreEqual(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters) =>
+            parameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString());
     }
 }

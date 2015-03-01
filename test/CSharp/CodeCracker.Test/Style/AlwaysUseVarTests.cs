@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class AlwaysUseVarTests : CodeFixTest<AlwaysUseVarAnalyzer, AlwaysUseVarCodeFixProvider>
+    public class AlwaysUseVarTests : CodeFixVerifier<AlwaysUseVarAnalyzer, AlwaysUseVarCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresConstantDeclarations()
@@ -112,7 +111,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = AlwaysUseVarAnalyzer.DiagnosticId,
+                Id = DiagnosticId.AlwaysUseVar.ToDiagnosticId(),
                 Message = "Use 'var' instead of specifying the type name.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }

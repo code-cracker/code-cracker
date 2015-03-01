@@ -1,13 +1,12 @@
-﻿using CodeCracker.Design;
+﻿using CodeCracker.CSharp.Design;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class EmptyCatchBlockTests : CodeFixTest<EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider>
+    public class EmptyCatchBlockTests : CodeFixVerifier<EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider>
     {
-        string test = @"
+        readonly string test = @"
     using System;
 
     namespace ConsoleApplication1

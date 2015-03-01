@@ -1,17 +1,16 @@
-﻿using CodeCracker.Performance;
+﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Performance
+namespace CodeCracker.Test.CSharp.Performance
 {
-    public class MakeLocalVariablesConstWhenItIsPossibleTests : CodeFixTest<MakeLocalVariableConstWhenItIsPossibleAnalyzer, MakeLocalVariableConstWhenItIsPossibleCodeFixProvider>
+    public class MakeLocalVariablesConstWhenItIsPossibleTests : CodeFixVerifier<MakeLocalVariableConstWhenItIsPossibleAnalyzer, MakeLocalVariableConstWhenItIsPossibleCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresConstantDeclarations()
         {
-            var test = @"const int a = 10;".WrapInMethod();
+            var test = @"const int a = 10;".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
 
         }
@@ -19,21 +18,21 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task IgnoresDeclarationsWithNoInitializers()
         {
-            var test = @"int a;".WrapInMethod();
+            var test = @"int a;".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresDeclarationsWithNonConstants()
         {
-            var test = @"int a = GetValue();".WrapInMethod();
+            var test = @"int a = GetValue();".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresDeclarationsWithReferenceTypes()
         {
-            var test = @"Foo a = new Foo();".WrapInMethod();
+            var test = @"Foo a = new Foo();".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -41,14 +40,14 @@ namespace CodeCracker.Test.Performance
         public async Task IgnoresStringInterpolations()
         {
             var test = @"
-            var s = $""a value is {""a""}"";".WrapInMethod();
+            var s = $""a value is {""a""}"";".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresVariablesThatChangesValueOutsideDeclaration()
         {
-            var test = @"int a = 10;a = 20;".WrapInMethod();
+            var test = @"int a = 10;a = 20;".WrapInCSharpMethod();
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
@@ -56,10 +55,10 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstant()
         {
-            var test = @"int a = 10;".WrapInMethod();
+            var test = @"int a = 10;".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
-                Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
+                Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
                 Message = "This variables can be made const.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -70,11 +69,11 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstantInAVarDeclaration()
         {
-            var test = @"var a = 10;".WrapInMethod();
-            
+            var test = @"var a = 10;".WrapInCSharpMethod();
+
             var expected = new DiagnosticResult
             {
-                Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
+                Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
                 Message = "This variables can be made const.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -85,11 +84,11 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningNullToAReferenceType()
         {
-            var test = @"Foo a = null;".WrapInMethod();
-            
+            var test = @"Foo a = null;".WrapInCSharpMethod();
+
             var expected = new DiagnosticResult
             {
-                Id = MakeLocalVariableConstWhenItIsPossibleAnalyzer.DiagnosticId,
+                Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
                 Message = "This variables can be made const.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -100,7 +99,7 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task IgnoresNullableVariables()
         {
-            var test = "int? a = 1;".WrapInMethod();
+            var test = "int? a = 1;".WrapInCSharpMethod();
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
@@ -108,24 +107,24 @@ namespace CodeCracker.Test.Performance
         [Fact]
         public async Task FixMakesAVariableConstWhenDeclarationSpecifiesTypeName()
         {
-            var test = @"int a = 10;".WrapInMethod();
-            var expected = @"const int a = 10;".WrapInMethod();
+            var test = @"int a = 10;".WrapInCSharpMethod();
+            var expected = @"const int a = 10;".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(test, expected);
         }
 
         [Fact]
         public async Task FixMakesAVariableConstWhenDeclarationUsesVar()
         {
-            var test = @"var a = 10;".WrapInMethod();
-            var expected = @"const int a = 10;".WrapInMethod();
+            var test = @"var a = 10;".WrapInCSharpMethod();
+            var expected = @"const int a = 10;".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(test, expected);
         }
 
         [Fact]
         public async Task FixMakesAVariableConstWhenDeclarationUsesVarWithString()
         {
-            var test = @"var a = """"".WrapInMethod();
-            var expected = @"const string a = """"".WrapInMethod();
+            var test = @"var a = """"".WrapInCSharpMethod();
+            var expected = @"const string a = """"".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(test, expected);
         }
 
@@ -242,7 +241,5 @@ namespace CodeCracker.Test.Performance
     }";
             await VerifyCSharpFixAsync(test, expected);
         }
-
-        
     }
 }

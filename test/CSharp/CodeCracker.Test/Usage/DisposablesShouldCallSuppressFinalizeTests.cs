@@ -1,12 +1,26 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
-    public class DisposablesShouldCallSuppressFinalizeTests : CodeFixTest<DisposablesShouldCallSuppressFinalizeAnalyzer, DisposablesShouldCallSuppressFinalizeCodeFixProvider>
+    public class DisposablesShouldCallSuppressFinalizeTests : CodeFixVerifier<DisposablesShouldCallSuppressFinalizeAnalyzer, DisposablesShouldCallSuppressFinalizeCodeFixProvider>
     {
+
+        [Fact]
+        public async void AlreadyCallsSuppressFinalize()
+        {
+            const string source = @"
+                public class MyType : System.IDisposable
+                {
+                    public void Dispose()
+                    {
+                        GC.SuppressFinalize(this);
+                    }
+                }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
         [Fact]
         public async void WarningIfStructImplmentsIDisposableWithNoSuppressFinalizeCall()
         {
@@ -20,7 +34,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = DisposablesShouldCallSuppressFinalizeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
                 Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 33) }
@@ -42,7 +56,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = DisposablesShouldCallSuppressFinalizeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
                 Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 33) }
@@ -144,6 +158,65 @@ namespace CodeCracker.Test.Usage
                     public class MyType : System.IDisposable
                     { 
                         public void Dispose() 
+                        { 
+                            Dispose(true);
+                        } 
+
+                        protected virtual void Dispose(bool disposing)
+                        {
+                            GC.SuppressFinalize(this);
+                        }
+                    }";
+
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async void WhenClassExplicitImplementsOfIDisposableCallSuppressFinalize()
+        {
+            const string source = @"
+                    public class MyType : System.IDisposable
+                    { 
+                        public void IDisposable.Dispose() 
+                        { 
+                            var x = 123;
+                        } 
+                    }";
+
+            const string fixtest = @"
+                    public class MyType : System.IDisposable
+                    { 
+                        public void IDisposable.Dispose() 
+                        { 
+                            var x = 123;
+                            GC.SuppressFinalize(this);
+                        } 
+                    }";
+
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async void WhenClassHasParametrizedDisposeMethodAndExplicitlyImplementsIDisposable()
+        {
+            const string source = @"
+                    public class MyType : System.IDisposable
+                    { 
+                        public void IDisposable.Dispose() 
+                        { 
+                            Dispose(true);
+                        } 
+
+                        protected virtual void Dispose(bool disposing)
+                        {
+                            
+                        }
+                    }";
+
+            const string fixtest = @"
+                    public class MyType : System.IDisposable
+                    { 
+                        public void IDisposable.Dispose() 
                         { 
                             Dispose(true);
                         } 

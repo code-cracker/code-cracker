@@ -1,12 +1,11 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Performance
+namespace CodeCracker.Test.CSharp.Performance
 {
-    public class StringBuilderInLoopTests : CodeFixTest<StringBuilderInLoopAnalyzer, StringBuilderInLoopCodeFixProvider>
+    public class StringBuilderInLoopTests : CodeFixVerifier<StringBuilderInLoopAnalyzer, StringBuilderInLoopCodeFixProvider>
     {
 
         [Fact]
@@ -39,22 +38,22 @@ namespace CodeCracker.Test.Performance
                 while (a < 10)
                 {
                     a += 1;
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
-        public async Task WhileWithtStringConcatOnLocalVariableCreatesDiagnostic()
+        public async Task WhileWithStringConcatOnLocalVariableCreatesDiagnostic()
         {
             var source = @"
                 var myString = """";
                 while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += """";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -63,7 +62,7 @@ namespace CodeCracker.Test.Performance
         }
 
         [Fact]
-        public async Task WhileWithtStringConcatOnFieldVariableCreatesDiagnostic()
+        public async Task WhileWithStringConcatOnFieldVariableCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -82,7 +81,7 @@ namespace CodeCracker.Test.Performance
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
@@ -92,7 +91,7 @@ namespace CodeCracker.Test.Performance
 
 
         [Fact]
-        public async Task WhileWithtStringConcatOnPropertyVariableCreatesDiagnostic()
+        public async Task WhileWithStringConcatOnPropertyVariableCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -111,7 +110,7 @@ namespace CodeCracker.Test.Performance
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "MyString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
@@ -120,7 +119,7 @@ namespace CodeCracker.Test.Performance
         }
 
         [Fact]
-        public async Task WhileWithtStringConcatWithSeveralConcatsOnDifferentVarsCreatesSeveralDiagnostics()
+        public async Task WhileWithStringConcatWithSeveralConcatsOnDifferentVarsCreatesSeveralDiagnostics()
         {
             var source = @"
                 var myString1 = """";
@@ -129,17 +128,17 @@ namespace CodeCracker.Test.Performance
                 {
                     myString1 += """";
                     myString2 += """";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var expected1 = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString1"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 21) }
             };
             var expected2 = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString2"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
@@ -148,17 +147,17 @@ namespace CodeCracker.Test.Performance
         }
 
         [Fact]
-        public async Task WhileWithtStringConcatWithSimpleAssignmentCreatesDiagnostic()
+        public async Task WhileWithStringConcatWithSimpleAssignmentCreatesDiagnostic()
         {
             var source = @"
                 var myString = """";
                 while (DateTime.Now.Second % 2 == 0)
                 {
                     myString = myString + """";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -167,7 +166,7 @@ namespace CodeCracker.Test.Performance
         }
 
         [Fact]
-        public async Task WhileWithtStringConcatWithSimpleAssignmentOnDifferentVarDoesNotCreateDiagnostic()
+        public async Task WhileWithStringConcatWithSimpleAssignmentOnDifferentVarDoesNotCreateDiagnostic()
         {
             var source = @"
                 var myString = """";
@@ -175,7 +174,7 @@ namespace CodeCracker.Test.Performance
                 while (DateTime.Now.Second % 2 == 0)
                 {
                     myString = otherString + """";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
@@ -187,7 +186,7 @@ namespace CodeCracker.Test.Performance
                 while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += ""a"";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
@@ -196,7 +195,7 @@ namespace CodeCracker.Test.Performance
                 {
                     builder.Append(""a"");
                 }
-                myString = builder.ToString();".WrapInMethod();
+                myString = builder.ToString();".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
@@ -206,14 +205,14 @@ namespace CodeCracker.Test.Performance
             var source = @"
                 var myString = """";
                 while (DateTime.Now.Second % 2 == 0)
-                    myString += ""a"";".WrapInMethod();
+                    myString += ""a"";".WrapInCSharpMethod();
             var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
                 builder.Append(myString);
                 while (DateTime.Now.Second % 2 == 0)
                     builder.Append(""a"");
-                myString = builder.ToString();".WrapInMethod();
+                myString = builder.ToString();".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
@@ -268,7 +267,7 @@ namespace CodeCracker.Test.Performance
                 {
                     //comment 1
                     myString = myString + ""a"";//comment 2
-                }//comment 4".WrapInMethod();
+                }//comment 4".WrapInCSharpMethod();
             var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
@@ -279,7 +278,7 @@ namespace CodeCracker.Test.Performance
                     //comment 1
                     builder.Append(""a"");//comment 2
                 }//comment 4
-                myString = builder.ToString();".WrapInMethod();
+                myString = builder.ToString();".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
@@ -295,7 +294,7 @@ namespace CodeCracker.Test.Performance
                 while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += ""a"";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var fixtest = @"
                 var myString = """";
                 while (DateTime.Now.Second % 2 == 1)
@@ -308,7 +307,7 @@ namespace CodeCracker.Test.Performance
                 {
                     builder.Append(""a"");
                 }
-                myString = builder.ToString();".WrapInMethod();
+                myString = builder.ToString();".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
@@ -321,7 +320,7 @@ namespace CodeCracker.Test.Performance
                 while (DateTime.Now.Second % 2 == 0)
                 {
                     myString += ""a"";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var fixtest = @"
                 var builder = 1;
                 var myString = """";
@@ -331,7 +330,7 @@ namespace CodeCracker.Test.Performance
                 {
                     builder1.Append(""a"");
                 }
-                myString = builder1.ToString();".WrapInMethod();
+                myString = builder1.ToString();".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
@@ -386,10 +385,10 @@ namespace CodeCracker.Test.Performance
                 for (;;)
                 {
                     myString += """";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -406,7 +405,7 @@ namespace CodeCracker.Test.Performance
                 {
                     myString += ""a"";
                     break;
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
@@ -416,7 +415,7 @@ namespace CodeCracker.Test.Performance
                     builder.Append(""a"");
                     break;
                 }
-                myString = builder.ToString();".WrapInMethod();
+                myString = builder.ToString();".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
@@ -428,10 +427,10 @@ namespace CodeCracker.Test.Performance
                 foreach (var i in new [] {1,2,3})
                 {
                     myString += """";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -447,7 +446,7 @@ namespace CodeCracker.Test.Performance
                 foreach (var i in new [] {1,2,3})
                 {
                     myString += ""a"";
-                }".WrapInMethod();
+                }".WrapInCSharpMethod();
             var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
@@ -456,7 +455,7 @@ namespace CodeCracker.Test.Performance
                 {
                     builder.Append(""a"");
                 }
-                myString = builder.ToString();".WrapInMethod();
+                myString = builder.ToString();".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
@@ -468,10 +467,10 @@ namespace CodeCracker.Test.Performance
                 do
                 {
                     myString += """";
-                } while (DateTime.Now.Second % 2 == 0);".WrapInMethod();
+                } while (DateTime.Now.Second % 2 == 0);".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
@@ -487,7 +486,7 @@ namespace CodeCracker.Test.Performance
                 do
                 {
                     myString += ""a"";
-                } while (DateTime.Now.Second % 2 == 0);".WrapInMethod();
+                } while (DateTime.Now.Second % 2 == 0);".WrapInCSharpMethod();
             var fixtest = @"
                 var myString = """";
                 var builder = new System.Text.StringBuilder();
@@ -496,12 +495,12 @@ namespace CodeCracker.Test.Performance
                 {
                     builder.Append(""a"");
                 } while (DateTime.Now.Second % 2 == 0);
-                myString = builder.ToString();".WrapInMethod();
+                myString = builder.ToString();".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
-        public async Task WhileWithtStringConcatOnFieldWithAccessCreatesDiagnostic()
+        public async Task WhileWithStringConcatOnFieldWithAccessCreatesDiagnostic()
         {
             const string source = @"
     using System;
@@ -525,7 +524,7 @@ namespace CodeCracker.Test.Performance
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
@@ -534,7 +533,7 @@ namespace CodeCracker.Test.Performance
         }
 
         [Fact]
-        public async Task WhileWithtStringConcatOnFieldWithAccessOnArrayCreatesDiagnostic()
+        public async Task WhileWithStringConcatOnFieldWithAccessOnArrayCreatesDiagnostic()
         {
             const string source = @"
     using System;
@@ -558,7 +557,7 @@ namespace CodeCracker.Test.Performance
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringBuilderInLoopAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
                 Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A[DateTime.Now.Second]"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }

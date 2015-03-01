@@ -1,11 +1,10 @@
-﻿using CodeCracker.Design;
+﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class UseInvokeMethodToFireEventTests : CodeFixTest<UseInvokeMethodToFireEventAnalyzer, UseInvokeMethodToFireEventCodeFixProvider>
+    public class UseInvokeMethodToFireEventTests : CodeFixVerifier<UseInvokeMethodToFireEventAnalyzer, UseInvokeMethodToFireEventCodeFixProvider>
     {
         [Fact]
         public async void WarningIfEventIsFiredDirectly()
@@ -23,7 +22,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = UseInvokeMethodToFireEventAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
                 Message = "Use ?.Invoke operator and method to fire 'MyEvent' event.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
@@ -53,7 +52,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = UseInvokeMethodToFireEventAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
                 Message = "Use ?.Invoke operator and method to fire 'MyEvent' event.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
@@ -85,7 +84,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = UseInvokeMethodToFireEventAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
                 Message = "Use ?.Invoke operator and method to fire 'MyEvent' event.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 25) }
@@ -191,7 +190,7 @@ namespace CodeCracker.Test.Design
         public async void IgnoreMemberAccess()
         {
             var test = @"var tuple = new Tuple<int, Action>(1, null);
-tuple.Item2();".WrapInMethod();
+tuple.Item2();".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }

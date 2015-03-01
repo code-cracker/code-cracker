@@ -5,12 +5,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RethrowExceptionAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0012";
         internal const string Title = "Your throw does nothing";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Naming;
@@ -19,21 +18,19 @@ namespace CodeCracker.Usage
             + "The correct way to rethrow an exception without changing it is by using 'throw' without any parameter.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.RethrowException.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.Regex));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.ThrowStatement);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
@@ -42,7 +39,8 @@ namespace CodeCracker.Usage
             if (ident == null) return;
             var exSymbol = context.SemanticModel.GetSymbolInfo(ident).Symbol as ILocalSymbol;
             if (exSymbol == null) return;
-            var catchClause = context.Node.Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().First();
+            var catchClause = context.Node.Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().FirstOrDefault();
+            if (catchClause == null) return;
             var catchExSymbol = context.SemanticModel.GetDeclaredSymbol(catchClause.Declaration);
             if (!catchExSymbol.Equals(exSymbol)) return;
             var diagnostic = Diagnostic.Create(Rule, throwStatement.GetLocation(), "Don't throw the same exception you caught, you lose the original stack trace.");

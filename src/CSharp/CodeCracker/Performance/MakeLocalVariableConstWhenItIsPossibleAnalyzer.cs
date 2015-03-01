@@ -5,33 +5,30 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Performance
+namespace CodeCracker.CSharp.Performance
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class MakeLocalVariableConstWhenItIsPossibleAnalyzer :
         DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0030";
         internal const string Title = "Make Local Variable Constant.";
         internal const string MessageFormat = "This variables can be made const.";
         internal const string Category = SupportedCategories.Performance;
         const string Description = "This variable is assigned a constant value and never changed it can be made 'const'";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.MakeLocalVariableConstWhenItIsPossible));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LocalDeclarationStatement);
-        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
@@ -53,7 +50,7 @@ namespace CodeCracker.Performance
             foreach (var variable in declaration.Declaration.Variables)
             {
                 if (variable.Initializer == null) return false;
-                if (variable.Initializer.Value is InterpolatedStringSyntax) return false;
+                if (variable.Initializer.Value is InterpolatedStringExpressionSyntax) return false;
 
                 // is constant
                 var constantValue = semanticModel.GetConstantValue(variable.Initializer.Value);

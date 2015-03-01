@@ -4,30 +4,27 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Design
+namespace CodeCracker.CSharp.Design
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class CatchEmptyAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0003";
         internal const string Title = "Your catch maybe include some Exception";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Design;
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.CatchEmpty.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.CatchEmpty));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.CatchClause);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

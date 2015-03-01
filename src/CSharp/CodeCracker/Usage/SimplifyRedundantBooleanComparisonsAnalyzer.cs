@@ -1,48 +1,56 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class SimplifyRedundantBooleanComparisonsAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0049";
         internal const string Title = "Simplify expression";
         internal const string MessageFormat = "You can remove this comparison.";
         internal const string Category = SupportedCategories.Usage;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.SimplifyRedundantBooleanComparisons.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.SimplifyRedundantBooleanComparisons));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.EqualsExpression, SyntaxKind.NotEqualsExpression);
-        }
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             var comparison = (BinaryExpressionSyntax)context.Node;
-            var semanticModel = context.SemanticModel;
 
-            var right = context.SemanticModel.GetConstantValue(comparison.Right);
-            if (!right.HasValue) return;
+            // Only handle the case where both operands of type bool; other cases involve
+            // too much complexity to be able to deliver an accurate diagnostic confidently.
+            var leftType = context.SemanticModel.GetTypeInfo(comparison.Left).Type;
+            var rightType = context.SemanticModel.GetTypeInfo(comparison.Right).Type;
+            if (!IsBoolean(leftType) || !IsBoolean(rightType))
+                return;
 
-            if (!(right.Value is bool)) return;
+            var leftConstant = context.SemanticModel.GetConstantValue(comparison.Left);
+            var rightConstant = context.SemanticModel.GetConstantValue(comparison.Right);
+            if (!leftConstant.HasValue && !rightConstant.HasValue)
+                return;
 
             var diagnostic = Diagnostic.Create(Rule, comparison.GetLocation());
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static bool IsBoolean(ITypeSymbol symbol)
+        {
+            return symbol != null && symbol.SpecialType == SpecialType.System_Boolean;
         }
     }
 }

@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Immutable;
-using CodeCracker.Usage.MethodAnalyzers;
+﻿using CodeCracker.CSharp.Usage.MethodAnalyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
+using System.Collections.Immutable;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UriAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0063";
         internal const string Title = "Your Uri syntax is wrong.";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Usage;
@@ -19,38 +18,37 @@ namespace CodeCracker.Usage
                                            + "by throwing an exception.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.Uri.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.Uri));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get { return ImmutableArray.Create(Rule); }
         }
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.ObjectCreationExpression);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.ObjectCreationExpression);
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
             var mainConstrutor = new MethodInformation(
                 "Uri",
                 "System.Uri.Uri(string)",
-                args => {
+                args =>
+                {
                     {
                         if (args[0] == null)
                         {
                             return;
                         }
                         new Uri(args[0].ToString());
-                    } }
+                    }
+                }
             );
             var constructorWithUriKind = new MethodInformation(
                 "Uri",

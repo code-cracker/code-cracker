@@ -4,32 +4,28 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ExistenceOperatorAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0018";
         internal const string Title = "Use the existence operator";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Style;
         const string Description = "The null-propagating operator allow for terse code to handle potentially null variables.";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.ExistenceOperator.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ExistenceOperator));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.IfStatement);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.IfStatement);
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

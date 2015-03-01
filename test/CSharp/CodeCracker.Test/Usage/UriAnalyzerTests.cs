@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CodeCracker.Usage;
+using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class UriAnalyzerTests : CodeFixVerifier
     {
@@ -96,7 +95,7 @@ namespace ConsoleApplication1
         {
             return new DiagnosticResult
             {
-                Id = UriAnalyzer.DiagnosticId,
+                Id = DiagnosticId.Uri.ToDiagnosticId(),
                 Message = GetErrorMessage(getErrorMessageAction),
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
@@ -116,7 +115,7 @@ namespace ConsoleApplication1
             return "";
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
         {
             return new UriAnalyzer();
         }

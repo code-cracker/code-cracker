@@ -10,28 +10,23 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("CodeCrackerTernaryOperatorWithReturnCodeFixProvider", LanguageNames.CSharp), Shared]
     public class TernaryOperatorWithReturnCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(TernaryOperatorAnalyzer.DiagnosticIdForIfWithReturn);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.TernaryOperator_Return.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Change to ternary operator", c => MakeTernaryAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", c => MakeTernaryAsync(context.Document, declaration, c)), diagnostic);
         }
 
         private async Task<Document> MakeTernaryAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)
@@ -43,7 +38,7 @@ namespace CodeCracker.Style
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ifStatement, ternary);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
@@ -53,23 +48,18 @@ namespace CodeCracker.Style
     [ExportCodeFixProvider("CodeCrackerTernaryOperatorWithAssignmentCodeFixProvider", LanguageNames.CSharp), Shared]
     public class TernaryOperatorWithAssignmentCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(TernaryOperatorAnalyzer.DiagnosticIdForIfWithAssignment);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Change to ternary operator", c => MakeTernaryAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", c => MakeTernaryAsync(context.Document, declaration, c)), diagnostic);
         }
 
         private async Task<Document> MakeTernaryAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)
@@ -85,7 +75,7 @@ namespace CodeCracker.Style
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ifStatement, ternary);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

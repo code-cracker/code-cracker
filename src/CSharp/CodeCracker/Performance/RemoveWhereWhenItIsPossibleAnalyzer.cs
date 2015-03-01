@@ -5,12 +5,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Performance
+namespace CodeCracker.CSharp.Performance
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RemoveWhereWhenItIsPossibleAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0011";
         internal const string Title = "You should remove the 'Where' invocation when it is possible.";
         internal const string MessageFormat = "You can remove 'Where' moving the predicate to '{0}'.";
         internal const string Category = SupportedCategories.Performance;
@@ -28,21 +27,19 @@ namespace CodeCracker.Performance
             "Count"
         };
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveWhereWhenItIsPossible));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
-        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
@@ -56,7 +53,7 @@ namespace CodeCracker.Performance
             if (!supportedMethods.Contains(candidate)) return;
 
             if (nextMethodInvoke.ArgumentList.Arguments.Any()) return;
-            
+
             var diagnostic = Diagnostic.Create(Rule, GetNameExpressionOfTheInvokedMethod(whereInvoke).GetLocation(), candidate);
             context.ReportDiagnostic(diagnostic);
         }

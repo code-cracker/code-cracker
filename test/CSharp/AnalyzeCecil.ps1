@@ -5,7 +5,9 @@ $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\cecil.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
 $gitPath = "https://github.com/jbevain/cecil.git"
-#$gitPath = "c:\proj\cecil"
+if (Test-Path "C:\proj\cecil") {
+    $gitPath = "c:\proj\cecil"
+}
 
 echo "Saving to log file $logFile"
 echo "Analyzer dll is $analyzerDll"
@@ -37,7 +39,7 @@ if ($itemsInProj -eq $null -or $itemsInProj.Length -eq 0)
     echo "Unable to clone, exiting."
     exit 2
 }
-git checkout d3cd20772c4f2cc3c7997357dfdf43417c063005
+#git --git-dir=$projectDir\.git --work-tree=$projectDir checkout d3cd20772c4f2cc3c7997357dfdf43417c063005
 
 echo "Adding Code Cracker to projects..."
 $csprojs = ls "$projectDir\*.csproj" -Recurse
@@ -69,9 +71,10 @@ foreach($sln in $slns)
 $ccBuildErrors = cat $logFile | Select-String "info AnalyzerDriver: The Compiler Analyzer 'CodeCracker"
 if ($ccBuildErrors -ne $null)
 {
-    echo "Errors found (see $logFile):"
+    write-host "Errors found (see $logFile):"
     foreach($ccBuildError in $ccBuildErrors)
     {
         Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)" 
     }
+    throw "Errors found on the cecil analysis"
 }

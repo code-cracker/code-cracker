@@ -11,22 +11,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("CodeCrackerRethrowExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ObjectInitializerCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(ObjectInitializerAnalyzer.DiagnosticIdAssignment, ObjectInitializerAnalyzer.DiagnosticIdLocalDeclaration);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.ObjectInitializer_Assignment.ToDiagnosticId(), DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
@@ -34,9 +29,9 @@ namespace CodeCracker.Style
             var expressionStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ExpressionStatementSyntax>().FirstOrDefault();
             var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().FirstOrDefault();
             if (expressionStatement != null)
-                context.RegisterFix(CodeAction.Create("Use object initializer", c => MakeObjectInitializerAsync(context.Document, expressionStatement, c)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create("Use object initializer", c => MakeObjectInitializerAsync(context.Document, expressionStatement, c)), diagnostic);
             else if (localDeclaration != null)
-                context.RegisterFix(CodeAction.Create("Use object initializer", c => MakeObjectInitializerAsync(context.Document, localDeclaration, c)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create("Use object initializer", c => MakeObjectInitializerAsync(context.Document, localDeclaration, c)), diagnostic);
         }
 
         private async Task<Document> MakeObjectInitializerAsync(Document document, LocalDeclarationStatementSyntax localDeclarationStatement, CancellationToken cancellationToken)

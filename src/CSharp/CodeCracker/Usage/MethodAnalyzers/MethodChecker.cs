@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace CodeCracker.Usage.MethodAnalyzers
+namespace CodeCracker.CSharp.Usage.MethodAnalyzers
 {
     public class MethodChecker
     {

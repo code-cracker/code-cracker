@@ -1,12 +1,11 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
-    public class IfReturnTrueTests : CodeFixTest<IfReturnTrueAnalyzer, IfReturnTrueCodeFixProvider>
+    public class IfReturnTrueTests : CodeFixVerifier<IfReturnTrueAnalyzer, IfReturnTrueCodeFixProvider>
     {
 
         [Fact]
@@ -156,7 +155,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = IfReturnTrueAnalyzer.DiagnosticId,
+                Id = DiagnosticId.IfReturnTrue.ToDiagnosticId(),
                 Message = "You should return directly.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
@@ -189,7 +188,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = IfReturnTrueAnalyzer.DiagnosticId,
+                Id = DiagnosticId.IfReturnTrue.ToDiagnosticId(),
                 Message = "You should return directly.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }

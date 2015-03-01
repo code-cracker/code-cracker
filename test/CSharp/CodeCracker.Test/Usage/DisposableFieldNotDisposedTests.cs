@@ -1,12 +1,11 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
-    public class DisposableFieldNotDisposedTests : CodeFixTest<DisposableFieldNotDisposedAnalyzer, DisposableFieldNotDisposedCodeFixProvider>
+    public class DisposableFieldNotDisposedTests : CodeFixVerifier<DisposableFieldNotDisposedAnalyzer, DisposableFieldNotDisposedCodeFixProvider>
     {
 
         [Fact]
@@ -42,7 +41,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -88,14 +87,14 @@ namespace CodeCracker.Test.Usage
     }";
             var expected1 = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdCreated,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field1"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
             };
             var expected2 = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field2"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 41) }
@@ -126,7 +125,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -156,7 +155,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -230,7 +229,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdCreated,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -245,7 +244,7 @@ namespace CodeCracker.Test.Usage
     using System;
     namespace ConsoleApplication1
     {
-        class partial TypeName : Disposable { }
+        class partial TypeName : IDisposable { }
         class partial TypeName
         {
             private D field = new D();
@@ -261,7 +260,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdCreated,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 23) }
@@ -276,14 +275,13 @@ namespace CodeCracker.Test.Usage
     using System;
     namespace ConsoleApplication1
     {
-        class TypeName : Disposable
+        class TypeName : IDisposable
         {
             private D field = D.Create();
-            public void Dispose()
+            public void Dispose(bool arg)
             {
-                field.Dispose(bool value);
+                field.Dispose(true);
             }
-            public void Dispose() { }
         }
         class D : IDisposable
         {
@@ -294,7 +292,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -309,7 +307,7 @@ namespace CodeCracker.Test.Usage
     using System;
     namespace ConsoleApplication1
     {
-        class TypeName : Disposable
+        class TypeName : IDisposable
         {
             private D field = D.Create();
             public void Dispose(bool value)
@@ -326,7 +324,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -352,7 +350,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdCreated,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 23) }
@@ -379,7 +377,7 @@ namespace CodeCracker.Test.Usage
     }";
             var expected = new DiagnosticResult
             {
-                Id = DisposableFieldNotDisposedAnalyzer.DiagnosticIdReturned,
+                Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
                 Message = string.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 33) }
@@ -718,6 +716,27 @@ namespace CodeCracker.Test.Usage
         }
     }";
             await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task DisposableFieldOnAbstractClassWithAbstractDisposableDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        abstract class TypeName : IDisposable
+        {
+            private D field = D.Create();
+            public abstract void Dispose();
+        }
+        class D : IDisposable
+        {
+            public static D Create() => new D();
+            public void Dispose() { }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }

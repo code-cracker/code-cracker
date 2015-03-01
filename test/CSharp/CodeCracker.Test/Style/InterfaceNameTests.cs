@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class InterfaceNameTests : CodeFixTest<InterfaceNameAnalyzer, InterfaceNameCodeFixProvider>
+    public class InterfaceNameTests : CodeFixVerifier<InterfaceNameAnalyzer, InterfaceNameCodeFixProvider>
     {
         [Fact]
         public async Task InterfaceNameStartsWithLetterI()
@@ -35,7 +34,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = InterfaceNameAnalyzer.DiagnosticId,
+                Id = DiagnosticId.InterfaceName.ToDiagnosticId(),
                 Message = InterfaceNameAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 9) }

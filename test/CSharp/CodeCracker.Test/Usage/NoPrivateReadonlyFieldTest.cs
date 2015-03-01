@@ -1,17 +1,16 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
-	public class NoPrivateReadonlyFieldTests : CodeFixTest<NoPrivateReadonlyFieldAnalyzer, ReadonlyFieldCodeFixProvider>
+	public class NoPrivateReadonlyFieldTests : CodeFixVerifier<NoPrivateReadonlyFieldAnalyzer, ReadonlyFieldCodeFixProvider>
 	{
 		DiagnosticResult CreateExpectedDiagnosticResult(int line, int column, string fieldName = "i") =>
 			new DiagnosticResult
 			{
-				Id = NoPrivateReadonlyFieldAnalyzer.DiagnosticId,
+				Id = DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(),
 				Message = string.Format(NoPrivateReadonlyFieldAnalyzer.Message, fieldName),
 				Severity = DiagnosticSeverity.Info,
 				Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }

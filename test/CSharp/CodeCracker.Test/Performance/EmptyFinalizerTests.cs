@@ -1,12 +1,11 @@
-﻿using CodeCracker.Performance;
+﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Performance
+namespace CodeCracker.Test.CSharp.Performance
 {
-    public class EmptyFinalizerTests : CodeFixTest<EmptyFinalizerAnalyzer, EmptyFinalizerCodeFixProvider>
+    public class EmptyFinalizerTests : CodeFixVerifier<EmptyFinalizerAnalyzer, EmptyFinalizerCodeFixProvider>
     {
         [Fact]
         public async Task RemoveEmptyFinalizerWhenIsEmpty()
@@ -22,7 +21,7 @@ namespace CodeCracker.Test.Performance
 
             var expected = new DiagnosticResult
             {
-                Id = EmptyFinalizerAnalyzer.DiagnosticId,
+                Id = DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
@@ -45,7 +44,7 @@ namespace CodeCracker.Test.Performance
 
             var expected = new DiagnosticResult
             {
-                Id = EmptyFinalizerAnalyzer.DiagnosticId,
+                Id = DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
@@ -71,7 +70,7 @@ namespace CodeCracker.Test.Performance
 
             var expected = new DiagnosticResult
             {
-                Id = EmptyFinalizerAnalyzer.DiagnosticId,
+                Id = DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
                 Message = "Remove Empty Finalizers",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }

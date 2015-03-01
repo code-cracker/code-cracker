@@ -10,28 +10,23 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Design
+namespace CodeCracker.CSharp.Design
 {
     [ExportCodeFixProvider("CodeCrackerRethrowExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
     public class NameOfCodeFixProvider : CodeFixProvider
     {
-        public override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(NameOfAnalyzer.DiagnosticId);
-        }
-        public override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.NameOf.ToDiagnosticId());
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var stringLiteral = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LiteralExpressionSyntax>().FirstOrDefault();
             if (stringLiteral != null)
-                context.RegisterFix(CodeAction.Create("Use nameof()", c => MakeNameOfAsync(context.Document, stringLiteral, c)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create("Use nameof()", c => MakeNameOfAsync(context.Document, stringLiteral, c)), diagnostic);
         }
 
         private async Task<Document> MakeNameOfAsync(Document document, LiteralExpressionSyntax stringLiteral, CancellationToken cancelationToken)
@@ -41,7 +36,7 @@ namespace CodeCracker.Design
                                     .WithTrailingTrivia(stringLiteral.GetTrailingTrivia())
                                     .WithAdditionalAnnotations(Formatter.Annotation);
 
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancelationToken);
             var newRoot = root.ReplaceNode(stringLiteral, newNameof);
             return document.WithSyntaxRoot(newRoot);
         }

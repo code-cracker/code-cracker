@@ -6,33 +6,29 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StringFormatAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0048";
         internal const string Title = "Use string interpolation instead of String.Format";
         internal const string MessageFormat = "Use string interpolation";
         internal const string Category = SupportedCategories.Style;
         const string Description = "String interpolation allows for better reading of the resulting string when compared to String.Format. You should use String.Format only when another method is supplying the format string.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.StringFormat.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringFormat));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

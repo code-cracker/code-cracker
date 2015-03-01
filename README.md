@@ -8,8 +8,9 @@ our task board, definition of done, definition of ready, etc.
 [![Build status](https://ci.appveyor.com/api/projects/status/h21sli3jkumuswyi?svg=true)](https://ci.appveyor.com/project/code-cracker/code-cracker)
 [![Nuget count](http://img.shields.io/nuget/v/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
 [![Nuget downloads](http://img.shields.io/nuget/dt/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
-[![Issues open](http://img.shields.io/github/issues/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker)
-[![Coverage Status](https://coveralls.io/repos/code-cracker/code-cracker/badge.png?branch=master)](https://coveralls.io/r/code-cracker/code-cracker?branch=master)
+[![Issues open](http://img.shields.io/github/issues-raw/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker)
+[![Coverage Status](https://img.shields.io/coveralls/code-cracker/code-cracker/master.svg)](https://coveralls.io/r/code-cracker/code-cracker?branch=master)
+[![Source Browser](https://img.shields.io/badge/Browse-Source-green.svg)](http://sourcebrowser.io/Browse/code-cracker/code-cracker)
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this
 software, nor it will be. Ever.
@@ -20,7 +21,8 @@ You may use CodeCracker in two ways: as an analyzer library that you install wit
 The way you want to use it depends on the scenario you are working on. You most likely want the Nuget package.
 
 If you want the analyzers to work during your build, and generate warnings and errors during the build, also on build servers, then you want
-to use the Nuget package. The package is available on nuget at [nuget.org/packages/codecracker](https://www.nuget.org/packages/codecracker).
+to use the Nuget package. The package is available on nuget ([C#](https://www.nuget.org/packages/codecracker.CSharp),
+[VB](https://www.nuget.org/packages/codecracker.VisualBasic)).
 If you want to be able to configure which analyzers are being used in your project, and which ones you will ignore, and commit those
 changes to source control and share with your team, then you also want the Nuget package.
 
@@ -44,7 +46,8 @@ If you want the alpha builds that build on each push to the repo, add https://ww
 We are now only pushing complete alpha releases to Nuget.org, and commit builds go to Myget.org.
 
 If you want global analyzers that will work on every project you open in Visual Studio, then you want the Extension.
-Grab the extension at the [Visual Studio Extensions Gallery](https://visualstudiogallery.msdn.microsoft.com/ab588981-91a5-478c-8e65-74d0ff450862).
+Grab the extension at the Visual Studio Extensions Gallery ([C#](https://visualstudiogallery.msdn.microsoft.com/ab588981-91a5-478c-8e65-74d0ff450862),
+[VB](https://visualstudiogallery.msdn.microsoft.com/1a5f9551-e831-4812-abd0-ac48603fc2c1)).
 
 To build from source:
 

@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class StringFormatTests : CodeFixTest<StringFormatAnalyzer, StringFormatCodeFixProvider>
+    public class StringFormatTests : CodeFixVerifier<StringFormatAnalyzer, StringFormatCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresRegularStrings()
@@ -177,7 +176,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringFormatAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
                 Message = StringFormatAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
@@ -203,7 +202,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringFormatAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
                 Message = StringFormatAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
@@ -407,7 +406,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = StringFormatAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
                 Message = StringFormatAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
@@ -478,7 +477,77 @@ namespace CodeCracker.Test.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, expected);
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
+        }
+
+        [Fact]
+        public async Task StringFormatChangesToStringInterpolationWithInvertedIndexes()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                //comment before
+                var s = string.Format(""This {1} is {0}"", noun, adjective);//comment right after
+                //comment after
+            }
+        }
+    }";
+            const string expected = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                //comment before
+                var s = $""This {adjective} is {noun}"";//comment right after
+                //comment after
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
+        }
+
+        [Fact]
+        public async Task StringFormatWithTernaryOperatorFixesWithParenthesis()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = string.Format(""This {0} is {1}"", noun, true ? adjective : noun);
+            }
+        }
+    }";
+            const string expected = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var noun = ""Giovanni"";
+                var adjective = ""smart"";
+                var s = $""This {noun} is {(true ? adjective : noun)}"";
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
         }
     }
 }

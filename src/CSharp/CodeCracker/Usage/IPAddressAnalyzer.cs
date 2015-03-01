@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Reflection;
-using CodeCracker.Usage.MethodAnalyzers;
+using CodeCracker.CSharp.Usage.MethodAnalyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IPAddressAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0064";
         internal const string Title = "Your IP Address syntax is wrong.";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Usage;
@@ -21,24 +20,21 @@ namespace CodeCracker.Usage
             + "by throwing an exception.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.IPAddress.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.IPAddress));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get { return ImmutableArray.Create(Rule); }
         }
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
@@ -47,16 +43,16 @@ namespace CodeCracker.Usage
                 "System.Net.IPAddress.Parse(string)",
                 args =>
                 {
-                    parseMethodInfo.Value.Invoke(null, new[] {args[0].ToString()});
+                    parseMethodInfo.Value.Invoke(null, new[] { args[0].ToString() });
                 }
                 );
             var checker = new MethodChecker(context, Rule);
             checker.AnalyzeMethod(method);
         }
 
-        private static Lazy<Type> objectType = new Lazy<Type>(() => Type.GetType("System.Net.IPAddress, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+        private static readonly Lazy<Type> objectType = new Lazy<Type>(() => Type.GetType("System.Net.IPAddress, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 
-        private static Lazy<MethodInfo> parseMethodInfo =
-            new Lazy<MethodInfo>(() => objectType.Value.GetRuntimeMethod("Parse", new[] {typeof (string)}));
+        private static readonly Lazy<MethodInfo> parseMethodInfo =
+            new Lazy<MethodInfo>(() => objectType.Value.GetRuntimeMethod("Parse", new[] { typeof(string) }));
     }
 }

@@ -5,39 +5,35 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Design
+namespace CodeCracker.CSharp.Design
 {
-    [ExportCodeFixProvider("CodeCrackerCopyEventToVariableBeforeFireCodeFixProvider", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("CodeCrackerCopyEventToVariableBeforeFireCodeFixProvider", LanguageNames.CSharp), Shared]
     public class CopyEventToVariableBeforeFireCodeFixProvider : CodeFixProvider
     {
         private const string SyntaxAnnotatinKind = "CC-CopyEvent";
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(CopyEventToVariableBeforeFireAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var sourceSpan = diagnostic.Location.SourceSpan;
             var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
-            context.RegisterFix(
-                CodeAction.Create("Copy event reference to a variable", ct => CreateVariable(context.Document, invocation, ct)), diagnostic);
+            context.RegisterCodeFix(
+                CodeAction.Create("Copy event reference to a variable", ct => CreateVariableAsync(context.Document, invocation, ct)), diagnostic);
         }
 
-        private async Task<Document> CreateVariable(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
+        private async Task<Document> CreateVariableAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
         {
             const string handlerName = "handler";
 
@@ -51,8 +47,9 @@ namespace CodeCracker.Design
                                     SyntaxFactory.VariableDeclarator(
                                         SyntaxFactory.Identifier(handlerName),
                                         null,
-                                        SyntaxFactory.EqualsValueClause(invocation.Expression))
-                                })));
+                                        SyntaxFactory.EqualsValueClause(invocation.Expression.WithoutLeadingTrivia().WithoutTrailingTrivia()))
+                                })))
+                    .WithLeadingTrivia(invocation.Parent.GetLeadingTrivia());
 
             var newInvocation =
                     SyntaxFactory.IfStatement(
@@ -71,20 +68,15 @@ namespace CodeCracker.Design
             var newNode = invocation.Parent.WithAdditionalAnnotations(new SyntaxAnnotation(SyntaxAnnotatinKind));
 
             if (oldNode.Parent.IsEmbeddedStatementOwner())
-            {
                 newNode = SyntaxFactory.Block((StatementSyntax)newNode);
-            }
 
             var newRoot = root.ReplaceNode(oldNode, newNode);
-            newRoot = newRoot.InsertNodesAfter(GetMark(newRoot), new[] { variable as SyntaxNode, newInvocation as SyntaxNode });
+            newRoot = newRoot.InsertNodesAfter(GetMark(newRoot), new SyntaxNode[] { variable, newInvocation });
             newRoot = newRoot.RemoveNode(GetMark(newRoot), SyntaxRemoveOptions.KeepNoTrivia);
-
             return document.WithSyntaxRoot(newRoot.WithAdditionalAnnotations(Formatter.Annotation));
         }
 
-        private static SyntaxNode GetMark(SyntaxNode node)
-        {
-            return node.DescendantNodes().First(n => n.GetAnnotations(SyntaxAnnotatinKind).Any());
-        }
+        private static SyntaxNode GetMark(SyntaxNode node) =>
+            node.DescendantNodes().First(n => n.GetAnnotations(SyntaxAnnotatinKind).Any());
     }
 }

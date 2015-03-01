@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -11,47 +10,45 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [ExportCodeFixProvider("CodeCrackerStringFormatCodeFixProvider ", LanguageNames.CSharp), Shared]
     public class StringFormatCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(StringFormatAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.StringFormat.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var invocation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-            context.RegisterFix(CodeAction.Create("Change to string interpolation", c => MakeStringInterpolationAsync(context.Document, invocation, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change to string interpolation", c => MakeStringInterpolationAsync(context.Document, invocation, c)), diagnostic);
         }
 
         private async Task<Document> MakeStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
         {
-            var semanticModel = await document.GetSemanticModelAsync();
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var memberSymbol = semanticModel.GetSymbolInfo(invocationExpression.Expression).Symbol;
             var argumentList = invocationExpression.ArgumentList;
             var arguments = argumentList.Arguments;
             var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;
-            var analyzingInterpolation = (InterpolatedStringSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
+            var analyzingInterpolation = (InterpolatedStringExpressionSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
             var interpolationArgs = arguments.Skip(1).ToArray();
             var expressionsToReplace = new Dictionary<ExpressionSyntax, ExpressionSyntax>();
-            for (int i = 0; i < analyzingInterpolation.InterpolatedInserts.Count; i++)
+            foreach (var interpolation in analyzingInterpolation.Contents.OfType<InterpolationSyntax>())
             {
-                var insert = analyzingInterpolation.InterpolatedInserts[i];
-                expressionsToReplace.Add(insert.Expression,interpolationArgs[i].Expression);
+                var index = (int)((LiteralExpressionSyntax)interpolation.Expression).Token.Value;
+                var expression = interpolationArgs[index].Expression;
+                var conditional = expression as ConditionalExpressionSyntax;
+                if (conditional != null) expression = SyntaxFactory.ParenthesizedExpression(expression);
+                expressionsToReplace.Add(interpolation.Expression, expression);
             }
             var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(invocationExpression, newStringInterpolation);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

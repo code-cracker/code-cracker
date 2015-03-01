@@ -1,35 +1,33 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class RemoveCommentedCodeTests : CodeFixTest<RemoveCommentedCodeAnalyzer, RemoveCommentedCodeCodeFixProvider>
+    public class RemoveCommentedCodeTests : CodeFixVerifier<RemoveCommentedCodeAnalyzer, RemoveCommentedCodeCodeFixProvider>
     {
-
         [Fact]
         public async Task IgnoresSingleWordComment()
         {
-            var test = @"//comment".WrapInMethod();
+            var test = @"//comment".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task IgnoresRegularComments()
         {
-            var test = @"// this is a regular comment".WrapInMethod();
+            var test = @"// this is a regular comment".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
         public async Task CreateDiagnosticForSingleLineCommentedCode()
         {
-            var test = @"// a = 10;".WrapInMethod();
+            var test = @"// a = 10;".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
-                Id = RemoveCommentedCodeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.RemoveCommentedCode.ToDiagnosticId(),
                 Message = RemoveCommentedCodeAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -44,10 +42,10 @@ namespace CodeCracker.Test.Style
             var test = @"
             // this comment will be preserved
             // var a = ""this comment will be removed"";
-            ".WrapInMethod();
+            ".WrapInCSharpMethod();
             var fixtest = @"
             // this comment will be preserved
-            ".WrapInMethod();
+            ".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
@@ -58,10 +56,10 @@ namespace CodeCracker.Test.Style
             // if (something)
             // {
             //   DoStuff();
-            // }".WrapInMethod();
+            // }".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
-                Id = RemoveCommentedCodeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.RemoveCommentedCode.ToDiagnosticId(),
                 Message = RemoveCommentedCodeAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 13) }
@@ -79,10 +77,10 @@ namespace CodeCracker.Test.Style
             // {
             //   DoStuff();
             // }
-            ".WrapInMethod();
+            ".WrapInCSharpMethod();
             var fixtest = @"
             // this comment will be preserved
-            ".WrapInMethod();
+            ".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
@@ -95,13 +93,13 @@ namespace CodeCracker.Test.Style
             class Foo
             {
             }
-            ".WrapInMethod();
+            ".WrapInCSharpMethod();
             var fixtest = @"
             // this comment will be preserved
             class Foo
             {
             }
-            ".WrapInMethod();
+            ".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
@@ -114,16 +112,15 @@ namespace CodeCracker.Test.Style
             if (a > 3)
             {
             }
-            ".WrapInMethod();
+            ".WrapInCSharpMethod();
 
             var fixtest = @"
             // this comment will be preserved
             if (a > 3)
             {
             }
-            ".WrapInMethod();
+            ".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
-
     }
 }

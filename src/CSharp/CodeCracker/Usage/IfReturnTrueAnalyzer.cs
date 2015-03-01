@@ -4,12 +4,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IfReturnTrueAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0007";
         internal const string Title = "Return Condition directly";
         internal const string Message = "{0}";
         internal const string Category = SupportedCategories.Usage;
@@ -17,21 +16,19 @@ namespace CodeCracker.Usage
             + "As the condition is already a boolean it can be returned directly";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.IfReturnTrue.ToDiagnosticId(),
             Title,
             Message,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.IfReturnTrue));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.IfStatement);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

@@ -6,34 +6,31 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ArgumentExceptionAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0002";
         internal const string Title = "Invalid argument name";
         internal const string MessageFormat = "Type argument '{0}' is not in the argument list.";
-        internal const string Category = SupportedCategories.Naming;
+        internal const string Category = SupportedCategories.Usage;
         const string Description = "The string passed as the 'paramName' argument of ArgumentException constructor "
             + "must be the name of one of the method arguments.\r\n"
             + "It can be either specified directly or using the nameof() operator (C#6 only)";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.ArgumentException.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description:Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            description: Description,
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ArgumentException));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ObjectCreationExpression);
-        }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
@@ -90,7 +87,7 @@ namespace CodeCracker.Usage
             if (method != null)
             {
                 var parameterList = method.ParameterList;
-                return (parameterList == null) 
+                return (parameterList == null)
                     ? Enumerable.Empty<string>()
                     : parameterList.Parameters.Select(p => p.Identifier.ToString());
             }
@@ -113,14 +110,14 @@ namespace CodeCracker.Usage
                     var result = indexer.ParameterList.Parameters.Select(p => p.Identifier.ToString());
                     if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
                     {
-                        result = result.Concat(new [] { "value" });
+                        result = result.Concat(new[] { "value" });
                     }
                     return result;
                 }
 
                 if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
                 {
-                    return new[] { "value" } ;
+                    return new[] { "value" };
                 }
             }
 

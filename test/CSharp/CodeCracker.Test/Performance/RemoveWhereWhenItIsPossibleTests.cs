@@ -1,12 +1,11 @@
-﻿using CodeCracker.Performance;
+﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Performance
+namespace CodeCracker.Test.CSharp.Performance
 {
-    public class RemoveWhereWhenItIsPossibleTests : CodeFixTest<RemoveWhereWhenItIsPossibleAnalyzer, RemoveWhereWhenItIsPossibleCodeFixProvider>
+    public class RemoveWhereWhenItIsPossibleTests : CodeFixVerifier<RemoveWhereWhenItIsPossibleAnalyzer, RemoveWhereWhenItIsPossibleCodeFixProvider>
     {
         [Theory]
         [InlineData("First")]
@@ -33,10 +32,9 @@ namespace Sample
         }
     }
 }";
-
             var expected = new DiagnosticResult
             {
-                Id = RemoveWhereWhenItIsPossibleAnalyzer.DiagnosticId,
+                Id = DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId(),
                 Message = "You can remove 'Where' moving the predicate to '" + method + "'.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 23) }

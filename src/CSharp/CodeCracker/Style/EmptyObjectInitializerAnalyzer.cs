@@ -4,12 +4,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyObjectInitializerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0005";
         internal const string Title = "Empty Object Initializer";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Style;
@@ -17,7 +16,7 @@ namespace CodeCracker.Style
             + "If there is no member to initialize, prefer using the standard constructor syntax.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.EmptyObjectInitializer.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
@@ -25,14 +24,12 @@ namespace CodeCracker.Style
             isEnabledByDefault: true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.EmptyObjectInitializer));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.ObjectCreationExpression);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

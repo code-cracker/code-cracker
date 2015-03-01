@@ -1,11 +1,10 @@
-﻿using CodeCracker.Design;
+﻿using CodeCracker.CSharp.Design;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class CatchEmptyTests : CodeFixTest<CatchEmptyAnalyzer, CatchEmptyCodeFixProvider>
+    public class CatchEmptyTests : CodeFixVerifier<CatchEmptyAnalyzer, CatchEmptyCodeFixProvider>
     {
 
         [Fact]

@@ -4,44 +4,39 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
-using System;
-namespace CodeCracker.Usage
+
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DisposableFieldNotDisposedAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticIdReturned = "CC0032";
-        internal const string Title = "Use object initializer";
+        internal const string Title = "Dispose Fields Properly";
         internal const string MessageFormat = "Field {0} should be disposed.";
         internal const string Category = SupportedCategories.Usage;
-        public const string DiagnosticIdCreated = "CC0033";
         const string Description = "This class has a disposable field and is not disposing it.";
 
         internal static DiagnosticDescriptor RuleForReturned = new DiagnosticDescriptor(
-            DiagnosticIdReturned,
+            DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticIdReturned));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Returned));
         internal static DiagnosticDescriptor RuleForCreated = new DiagnosticDescriptor(
-            DiagnosticIdCreated,
+            DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticIdCreated));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Created));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForCreated, RuleForReturned); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(RuleForCreated, RuleForReturned);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSymbolAction(AnalyzeField, SymbolKind.Field);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSymbolAction(AnalyzeField, SymbolKind.Field);
 
         private void AnalyzeField(SymbolAnalysisContext context)
         {
@@ -69,6 +64,7 @@ namespace CodeCracker.Usage
                 {
                     var disposeMethod = (MethodDeclarationSyntax)disposeMethodSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
                     if (disposeMethod == null) return false;
+                    if (disposeMethod.Modifiers.Any(SyntaxKind.AbstractKeyword)) return true;
                     var typeDeclaration = (TypeDeclarationSyntax)typeSymbol.DeclaringSyntaxReferences.FirstOrDefault().GetSyntax();
                     var semanticModel = context.Compilation.GetSemanticModel(typeDeclaration.SyntaxTree);
                     if (CallsDisposeOnField(fieldSymbol, disposeMethod, semanticModel)) return true;

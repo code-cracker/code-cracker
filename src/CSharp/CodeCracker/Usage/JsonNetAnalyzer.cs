@@ -6,12 +6,11 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class JsonNetAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0054";
         internal const string Title = "Your Json syntax is wrong";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Usage;
@@ -19,16 +18,16 @@ namespace CodeCracker.Usage
             + "by throwing an exception.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.JsonNet.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.JsonNet));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -73,7 +72,7 @@ namespace CodeCracker.Usage
             }
         }
 
-        private static Lazy<Type> jObjectType = new Lazy<Type>(() => Type.GetType("Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"));
-        private static Lazy<MethodInfo> parseMethodInfo = new Lazy<MethodInfo>(() => jObjectType.Value.GetRuntimeMethod("Parse", new[] { typeof(string) }));
+        private static readonly Lazy<Type> jObjectType = new Lazy<Type>(() => Type.GetType("Newtonsoft.Json.Linq.JObject, Newtonsoft.Json"));
+        private static readonly Lazy<MethodInfo> parseMethodInfo = new Lazy<MethodInfo>(() => jObjectType.Value.GetRuntimeMethod("Parse", new[] { typeof(string) }));
     }
 }

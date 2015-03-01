@@ -5,12 +5,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Design
+namespace CodeCracker.CSharp.Design
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class CopyEventToVariableBeforeFireAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0016";
         internal const string Title = "Copy Event To Variable Before Fire";
         internal const string MessageFormat = "Copy the '{0}' event to a variable before fire it.";
         internal const string Category = SupportedCategories.Design;
@@ -19,21 +18,18 @@ namespace CodeCracker.Design
             + "the moment where it is checked to be non-null and the moment it is raised the event must "
             + "be copied to a temporary variable before the check.";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
             true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.CopyEventToVariableBeforeFire));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
-        }
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

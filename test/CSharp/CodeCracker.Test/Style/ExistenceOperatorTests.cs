@@ -1,14 +1,12 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class ExistenceOperatorWithReturnTests : CodeFixTest<ExistenceOperatorAnalyzer, ExistenceOperatorCodeFixProvider>
+    public class ExistenceOperatorWithReturnTests : CodeFixVerifier<ExistenceOperatorAnalyzer, ExistenceOperatorCodeFixProvider>
     {
-
         [Fact]
         public async Task WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic()
         {
@@ -256,7 +254,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ExistenceOperatorAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ExistenceOperator.ToDiagnosticId(),
                 Message = "You can use the existence operator.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
@@ -297,7 +295,7 @@ namespace CodeCracker.Test.Style
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
     }
-    public class ExistenceOperatorTestsWithAssignment : CodeFixTest<ExistenceOperatorAnalyzer, ExistenceOperatorCodeFixProvider>
+    public class ExistenceOperatorTestsWithAssignment : CodeFixVerifier<ExistenceOperatorAnalyzer, ExistenceOperatorCodeFixProvider>
     {
 
         [Fact]
@@ -641,7 +639,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ExistenceOperatorAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ExistenceOperator.ToDiagnosticId(),
                 Message = "You can use the existence operator.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using CodeCracker.Usage;
+using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class IPAddressAnalyzerTests : CodeFixVerifier
     {
@@ -51,14 +50,14 @@ namespace ConsoleApplication1
         [Fact]
         public async Task IfAbbreviateParseIdentifierFoundAndIPAddressTextIsCorrectDoesNotCreatesDiagnostic()
         {
-            var test = string.Format(TestCode, @"Parse(""127.0.0.1"")");
+            var test = string.Format(TestCode, @"IPAddress.Parse(""127.0.0.1"")");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
 
         private static DiagnosticResult CreateDiagnosticResult(int line, int column, Action getErrorMessageAction) {
             return new DiagnosticResult {
-                Id = IPAddressAnalyzer.DiagnosticId,
+                Id = DiagnosticId.IPAddress.ToDiagnosticId(),
                 Message = GetErrorMessage(getErrorMessageAction),
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] {new DiagnosticResultLocation("Test0.cs", line, column)}
@@ -79,7 +78,7 @@ namespace ConsoleApplication1
         }
 
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
         {
             return new IPAddressAnalyzer();
         }

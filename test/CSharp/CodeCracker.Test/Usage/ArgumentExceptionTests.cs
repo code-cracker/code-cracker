@@ -1,18 +1,16 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
-using System;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
-    public class ArgumentExceptionTests : CodeFixTest<ArgumentExceptionAnalyzer, ArgumentExceptionCodeFixProvider>
+    public class ArgumentExceptionTests : CodeFixVerifier<ArgumentExceptionAnalyzer, ArgumentExceptionCodeFixProvider>
     {
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentAnalyzerCreatesDiagnostic()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public async Task Foo(int a, int b)
             {
                 throw new ArgumentException(""message"", ""c"");
@@ -20,7 +18,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'c' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 56) }
@@ -32,7 +30,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionInCtorWithInvalidArgumentAnalyzerCreatesDiagnostic()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public TypeName(int a, int b)
             {
                 throw new ArgumentException(""message"", ""c"");
@@ -40,7 +38,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'c' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 56) }
@@ -52,13 +50,13 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentAndApplyingFirstFixUsesFirstParameter()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public async Task Foo(int a, int b)
             {
                 throw new ArgumentException(""message"", ""c"");
             }");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             public async Task Foo(int a, int b)
             {
                 throw new ArgumentException(""message"", ""a"");
@@ -69,13 +67,13 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentAndApplyingSecondFixUsesSecondParameter()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public async Task Foo(int a, int b)
             {
                 throw new ArgumentException(""message"", ""c"");
             }");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             public async Task Foo(int a, int b)
             {
                 throw new ArgumentException(""message"", ""b"");
@@ -86,13 +84,13 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInCtorAndApplyingFirstFixUsesFirstParameter()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public TypeName(int a, int b)
             {
                 throw new ArgumentException(""message"", ""c"");
             }");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             public TypeName(int a, int b)
             {
                 throw new ArgumentException(""message"", ""a"");
@@ -103,13 +101,13 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInCtorAndApplyingSecondFixUsesSecondParameter()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public TypeName(int a, int b)
             {
                 throw new ArgumentException(""message"", ""c"");
             }");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             public TypeName(int a, int b)
             {
                 throw new ArgumentException(""message"", ""b"");
@@ -120,7 +118,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task IgnoresArgumentExceptionObjectsInFields()
         {
-            var test = _(@"
+            var test = Wrap(@"
             ArgumentException ex = new ArgumentException(""message"", ""paramName"");
             ");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
@@ -129,7 +127,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task IgnoresArgumentExceptionObjectsInGetAccessors()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public string StrangePropertyThatThrowsArgumentExceptionInsideGet
             { get { throw ArgumentException(""message"", ""paramName""); } }
             ");
@@ -139,7 +137,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionInSetPropertyArgumentNameShouldBeValue()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public string RejectsEverythingProperty
             {
                 get { return null; } 
@@ -149,7 +147,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'c' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 62) }
@@ -161,7 +159,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInSetAccessorAndApplyingFixUsesParameter()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public string RejectsEverythingProperty
             {
                 get { return null; } 
@@ -169,7 +167,7 @@ namespace CodeCracker.Test.Usage
             }
             ");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             public string RejectsEverythingProperty
             {
                 get { return null; } 
@@ -182,7 +180,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionInGetPropertyWithIndexersArgumentNameShouldBeInParameterList()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public string this[int a, int b]
             {
                 get { throw new ArgumentException(""message"", ""c""); } 
@@ -191,7 +189,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'c' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 62) }
@@ -203,14 +201,14 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInIndexerGetAccessorAndApplyingFirstFixUsesFirstParameter()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public string this[int a, int b]
             {
                 get { throw new ArgumentException(""message"", ""c""); } 
             }
             ");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             public string this[int a, int b]
             {
                 get { throw new ArgumentException(""message"", ""a""); } 
@@ -223,13 +221,13 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionInLambdaArgumentNameShouldBeInParameterList()
         {
-            var test = _(@"
+            var test = Wrap(@"
             Action<int> action = (p) => { throw new ArgumentException(""message"", ""paramName""); };
             ");
 
             var expected = new DiagnosticResult
             {
-                Id = ArgumentExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
                 Message = "Type argument 'paramName' is not in the argument list.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 82) }
@@ -241,11 +239,11 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInLambdasAndApplyingFixUsesLambdaParameter()
         {
-            var test = _(@"
+            var test = Wrap(@"
             Action<int> action = (p) => { throw new ArgumentException(""message"", ""paramName""); };
             ");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             Action<int> action = (p) => { throw new ArgumentException(""message"", ""p""); };
             ");
             await VerifyCSharpFixAsync(test, fixtest);
@@ -255,7 +253,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInSimpleLambdasAndApplyingFixUsesLambdaParameter()
         {
-            var test = _(@"
+            var test = Wrap(@"
             Action<int> action = p => { throw new ArgumentException(""message"", ""paramName""); };
 
             void Foo(string a)
@@ -264,7 +262,7 @@ namespace CodeCracker.Test.Usage
             } 
             ");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             Action<int> action = p => { throw new ArgumentException(""message"", ""p""); };
 
             void Foo(string a)
@@ -278,14 +276,14 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInIndexerGetAccessorAndApplyingSecondFixUsesSecondParameter()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public string this[int a, int b]
             {
                 get { throw new ArgumentException(""message"", ""c""); } 
             }
             ");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             public string this[int a, int b]
             {
                 get { throw new ArgumentException(""message"", ""b""); } 
@@ -297,7 +295,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task WhenThrowingArgumentExceptionWithInvalidArgumentInIndexerSetAccessorAndApplyingThirdFixUsesValue()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public string this[int a, int b]
             {
                 get { return null; }
@@ -305,7 +303,7 @@ namespace CodeCracker.Test.Usage
             }
             ");
 
-            var fixtest = _(@"
+            var fixtest = Wrap(@"
             public string this[int a, int b]
             {
                 get { return null; }
@@ -318,7 +316,7 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task IgnoresArgumentExceptionObjectsInSetAccessorsOfIndexersThatUsesValue()
         {
-            var test = _(@"
+            var test = Wrap(@"
             public string this[int a, int b]
             {
                 get { return null; }
@@ -332,15 +330,14 @@ namespace CodeCracker.Test.Usage
         [Fact]
         public async Task IgnoresArgumentExceptionObjectsInInitializerOfAutoProperties()
         {
-            var test = _(@"
+            var test = Wrap(@"
             ArgumentException Exception { get; } = new ArgumentException(""message"", ""paramName"");
             ");
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        
-        static string _(string code)
+        static string Wrap(string code)
         {
             return @"
     using System;

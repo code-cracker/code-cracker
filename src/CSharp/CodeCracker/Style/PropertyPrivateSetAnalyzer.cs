@@ -2,38 +2,32 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class PropertyPrivateSetAnalyzer
-        : DiagnosticAnalyzer
+    public class PropertyPrivateSetAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0047 ";
         internal const string Title = "You should change to 'private set' whenever possible.";
         internal const string MessageFormat = "Consider use a 'private set'.";
-        internal const string Category = "Style";
+        internal const string Category = SupportedCategories.Style;
         const string Description = "Use private set for automatic properties.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.PropertyPrivateSet.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.PropertyPrivateSet));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
-            context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.PropertyDeclaration);
-        }
-       
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.PropertyDeclaration);
+
         private static void AnalyzeClass(SyntaxNodeAnalysisContext context)
         {
             var invocationExpression = (PropertyDeclarationSyntax)context.Node;

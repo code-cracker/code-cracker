@@ -10,34 +10,31 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [ExportCodeFixProvider("CodeCrackerReadonlyFieldCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ReadonlyFieldCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(ReadonlyFieldAnalyzer.DiagnosticId, NoPrivateReadonlyFieldAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(
+				DiagnosticId.ReadonlyField.ToDiagnosticId(),
+				DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var variableDeclarator = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<VariableDeclaratorSyntax>().FirstOrDefault();
             if (variableDeclarator != null)
-                context.RegisterFix(CodeAction.Create($"Make readonly: '{variableDeclarator.Identifier.Text}'", c => MakeFieldReadonly(context.Document, variableDeclarator, c)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create($"Make readonly: '{variableDeclarator.Identifier.Text}'", c => MakeFieldReadonlyAsync(context.Document, variableDeclarator, c)), diagnostic);
         }
 
-        private async Task<Document> MakeFieldReadonly(Document document, VariableDeclaratorSyntax variable, CancellationToken cancellationToken)
+        private async Task<Document> MakeFieldReadonlyAsync(Document document, VariableDeclaratorSyntax variable, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var fieldDeclaration = (FieldDeclarationSyntax)variable.Parent.Parent;
             var newRoot = fieldDeclaration.Declaration.Variables.Count == 1
                 ? MakeSingleFieldReadonly(root, fieldDeclaration)

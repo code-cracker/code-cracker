@@ -1,12 +1,11 @@
-﻿using CodeCracker.Design;
+﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class StaticConstructorExceptionTests : CodeFixTest<StaticConstructorExceptionAnalyzer, StaticConstructorExceptionCodeFixProvider>
+    public class StaticConstructorExceptionTests : CodeFixVerifier<StaticConstructorExceptionAnalyzer, StaticConstructorExceptionCodeFixProvider>
     {
         [Fact]
         public async Task WarningIfExceptionIsThrowInsideStaticConstructor()
@@ -22,7 +21,7 @@ namespace CodeCracker.Test.Design
 
             var expected = new DiagnosticResult
             {
-                Id = StaticConstructorExceptionAnalyzer.DiagnosticId,
+                Id = DiagnosticId.StaticConstructorException.ToDiagnosticId(),
                 Message = "Don't throw exception inside static constructors.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }

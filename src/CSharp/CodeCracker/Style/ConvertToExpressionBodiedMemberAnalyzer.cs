@@ -4,28 +4,27 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertToExpressionBodiedMemberAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0038";
         internal const string Title = "You should use expression bodied members whenever possible.";
         internal const string MessageFormat = "Use an expression bodied member.";
         internal const string Category = SupportedCategories.Style;
         const string Description = "Usage of an expression bodied members improve readability of the code.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ConvertToExpressionBodiedMember));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context)
         {

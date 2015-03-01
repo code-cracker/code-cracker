@@ -1,12 +1,11 @@
-﻿using CodeCracker.Performance;
+﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Performance
+namespace CodeCracker.Test.CSharp.Performance
 {
-    public class SealedAttributeTests : CodeFixTest<SealedAttributeAnalyzer, SealedAttributeCodeFixProvider>
+    public class SealedAttributeTests : CodeFixVerifier<SealedAttributeAnalyzer, SealedAttributeCodeFixProvider>
     {
         [Fact]
         public async Task ApplySealedWhenClassInheritsFromSystemAttributeClass()
@@ -19,7 +18,7 @@ namespace CodeCracker.Test.Performance
 
             var expected = new DiagnosticResult
             {
-                Id = SealedAttributeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.SealedAttribute.ToDiagnosticId(),
                 Message = "Mark 'MyAttribute' as sealed.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 30) }
@@ -44,7 +43,7 @@ namespace CodeCracker.Test.Performance
 
             var expected = new DiagnosticResult
             {
-                Id = SealedAttributeAnalyzer.DiagnosticId,
+                Id = DiagnosticId.SealedAttribute.ToDiagnosticId(),
                 Message = "Mark 'OtherAttribute' as sealed.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 30) }

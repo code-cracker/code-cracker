@@ -1,23 +1,22 @@
-﻿using CodeCracker.Refactoring;
+﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Refactoring
+namespace CodeCracker.Test.CSharp.Refactoring
 {
     public class BaseAllowMembersOrderingCodeFixProviderTests :
-        CodeFixTest<AllowMembersOrderingAnalyzer, BaseAllowMembersOrderingCodeFixProviderTests.MockCodeFixProvider>
+        CodeFixVerifier<AllowMembersOrderingAnalyzer, BaseAllowMembersOrderingCodeFixProviderTests.MockCodeFixProvider>
     {
         [Theory]
         [InlineData("class", "void B() { };", "void A() { };")]
         [InlineData("struct", "int c = 3, d = 4;", "int a = 1, b = 2;")]
         public async Task BaseAllowMembersOrderingShouldCallIComparerToOrder(string typeDeclaration, string memberA, string memberB)
         {
-            var codeFixProvider = base.GetCSharpCodeFixProvider() as MockCodeFixProvider;
+            var codeFixProvider = base.GetCodeFixProvider() as MockCodeFixProvider;
 
             var source = @"
             public " + typeDeclaration + @" Foo
@@ -40,13 +39,12 @@ namespace CodeCracker.Test.Refactoring
         [Fact]
         public async Task BaseAllowMembersOrderingShouldNotRegisterFixIfIsAlreadySorted()
         {
-            var source = @"
+            const string source = @"
             public class Foo
             {
                 int a;
                 void B() { }
             }";
-
             await VerifyCSharpHasNoFixAsync(source);
         }
 

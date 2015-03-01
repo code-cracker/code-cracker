@@ -9,22 +9,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Performance
+namespace CodeCracker.CSharp.Performance
 {
     [ExportCodeFixProvider("CodeCrackerRemoveWhereWhenItIsPossibleCodeFixProvider", LanguageNames.CSharp), Shared]
     public class RemoveWhereWhenItIsPossibleCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(RemoveWhereWhenItIsPossibleAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
@@ -32,12 +27,12 @@ namespace CodeCracker.Performance
             var whereInvoke = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
             var nextMethodInvoke = whereInvoke.Parent.FirstAncestorOrSelf<InvocationExpressionSyntax>();
             var message = "Remove 'Where' moving predicate to '" + RemoveWhereWhenItIsPossibleAnalyzer.GetNameOfTheInvokedMethod(nextMethodInvoke) + "'";
-            context.RegisterFix(CodeAction.Create(message, c => RemoveWhere(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(message, c => RemoveWhereAsync(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic);
         }
 
-        private async Task<Document> RemoveWhere(Document document, InvocationExpressionSyntax whereInvoke, InvocationExpressionSyntax nextMethodInvoke, CancellationToken cancellationToken)
+        private async Task<Document> RemoveWhereAsync(Document document, InvocationExpressionSyntax whereInvoke, InvocationExpressionSyntax nextMethodInvoke, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var whereMemberAccess = whereInvoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             var nextMethodMemberAccess = nextMethodInvoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             var newNextMethodInvoke = SyntaxFactory.InvocationExpression(

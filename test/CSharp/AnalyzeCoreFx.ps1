@@ -5,7 +5,9 @@ $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\corefx.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
 $gitPath = "https://github.com/dotnet/corefx.git"
-#$gitPath = "C:\proj\corefx"
+if (Test-Path "C:\proj\corefx") {
+    $gitPath = "C:\proj\corefx"
+}
 
 echo "Saving to log file $logFile"
 echo "Analyzer dll is $analyzerDll"
@@ -58,27 +60,16 @@ foreach($csproj in $csprojs)
     $xmlProj.Save($csproj.FullName)
 }
 
-echo "Restoring dependencies"
-msbuild "$projectDir\build.proj" /nologo /maxcpucount /verbosity:minimal /nodeReuse:false /t:_RestoreBuildTools /p:Configuration=""
-if ($LASTEXITCODE -ne 0)
-{
-    echo "Not possible to restore build tools, stopping."
-    return
-}
-
-$slns = ls "$projectDir\*.sln" -Recurse
 echo "Building..."
-foreach($sln in $slns)
-{
-    echo "Building $($sln.FullName)..."
-    msbuild $sln.FullName /t:rebuild /v:detailed /p:Configuration="Debug" >> $logFile
-}
+msbuild "$projectDir\build.proj" /t:build /v:detailed /p:Configuration="Debug" /nologo /maxcpucount /p:SkipTests="True" >> $logFile
+
 $ccBuildErrors = cat $logFile | Select-String "info AnalyzerDriver: The Compiler Analyzer 'CodeCracker"
 if ($ccBuildErrors -ne $null)
 {
-    echo "Errors found (see $logFile):"
+    Write-Host "Errors found (see $logFile):"
     foreach($ccBuildError in $ccBuildErrors)
     {
         Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)" 
     }
+    throw "Errors found on the corefx analysis"
 }

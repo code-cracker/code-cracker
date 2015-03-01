@@ -5,28 +5,26 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NoPrivateReadonlyFieldAnalyzer : DiagnosticAnalyzer
 	{
-		public const string DiagnosticId = "CC0074";
 		internal const string Title = "Make field readonly";
 		internal const string Message = "Make '{0}' readonly";
 		internal const string Category = SupportedCategories.Usage;
 		const string Description = "A field that is only assigned on the constructor can be made readonly.";
 
 		internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-			DiagnosticId,
+			DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(),
 			Title,
 			Message,
 			Category,
 			DiagnosticSeverity.Info,
 			isEnabledByDefault: true,
 			description: Description,
-			helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+			helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.NoPrivateReadonlyField));
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -133,11 +131,6 @@ namespace CodeCracker.Usage
 
 		private bool SkipNestedTypes(TypeDeclarationSyntax typeDeclaration, SyntaxNode node) =>
 			node is TypeDeclarationSyntax ? node == typeDeclaration : true;
-
-		private bool SkipFieldsFromItsOwnConstructor(TypeDeclarationWithSymbol typeDeclarationWithSymbol, ExpressionSyntax p)
-		{
-			throw new NotImplementedException();
-		}
 
 		private bool SkipFieldsFromItsOwnConstructor(TypeDeclarationWithSymbol type, ExpressionSyntax assignmentExpression, ISymbol assignmentSymbol)
 		{

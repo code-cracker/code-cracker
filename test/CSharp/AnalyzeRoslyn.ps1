@@ -4,15 +4,24 @@ $projectDir =  "$baseDir\roslyn"
 $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\roslyn.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
+$analyzerDllVB = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\VisualBasic\CodeCracker\bin\Debug\CodeCracker.VisualBasic.dll")
 $gitPath = "https://github.com/dotnet/roslyn.git"
-$gitPath = "d:\proj\roslyn"
+if (Test-Path "c:\proj\roslyn") {
+    $gitPath = "c:\proj\roslyn"
+}
 
 echo "Saving to log file $logFile"
-echo "Analyzer dll is $analyzerDll"
+echo "Analyzer C# dll is $analyzerDll"
+echo "Analyzer VB dll is $analyzerDllVB"
 
 if ($analyzerDll -eq $null)
 {
-    echo "Analyzer dll not found"
+    echo "Analyzer C# dll not found"
+    exit 1
+}
+if ($analyzerDllVB -eq $null)
+{
+    echo "Analyzer VB dll not found"
     exit 1
 }
 
@@ -30,21 +39,26 @@ if ((Test-Path $projectDir) -eq $false)
 }
 
 echo "Cloning roslyn"
-git clone -q $gitPath $projectDir
+git clone --depth 5 -q $gitPath $projectDir
 $itemsInProj = ls $projectDir
 if ($itemsInProj -eq $null -or $itemsInProj.Length -eq 0)
 {
     echo "Unable to clone, exiting."
-    exit 2
+    exit 1
 }
-git checkout 0dca10d517b4c43972ef124e2dc1a82ef0021da1
 
 echo "Adding Code Cracker to projects..."
 $csprojs = ls "$projectDir\*.csproj" -Recurse
 if ($csprojs -eq $null)
 {
-    echo "Analyzer dll not found"
-    exit 1
+    echo "csprojs not found"
+    exit 2
+}
+$vbprojs = ls "$projectDir\*.vbproj" -Recurse
+if ($vbprojs -eq $null)
+{
+    echo "vbprojs not found"
+    exit 3
 }
 
 foreach($csproj in $csprojs)
@@ -58,6 +72,17 @@ foreach($csproj in $csprojs)
     $xmlProj.DocumentElement.AppendChild($itemGroup) | Out-Null
     $xmlProj.Save($csproj.FullName)
 }
+foreach($proj in $vbprojs)
+{
+    echo "Adding analyzer to $($proj.Name)"
+    [xml]$xmlProj = cat $proj
+    $itemGroup = $xmlProj.CreateElement("ItemGroup", $xmlProj.Project.xmlns)
+    $analyzer = $xmlProj.CreateElement("Analyzer", $xmlProj.Project.xmlns)
+    $analyzer.SetAttribute("Include", $analyzerDllVB)
+    $itemGroup.AppendChild($analyzer) | Out-Null
+    $xmlProj.DocumentElement.AppendChild($itemGroup) | Out-Null
+    $xmlProj.Save($proj.FullName)
+}
 
 echo "Restoring dependencies"
 msbuild "$projectDir\BuildAndTest.proj" /nologo /maxcpucount /verbosity:minimal /nodeReuse:false /t:RestorePackages /p:Configuration=""
@@ -67,19 +92,16 @@ if ($LASTEXITCODE -ne 0)
     return
 }
 
-$slns = ls "$projectDir\*.sln" -Recurse
 echo "Building..."
-foreach($sln in $slns)
-{
-    echo "Building $($sln.FullName)..."
-    msbuild $sln.FullName /t:rebuild /v:detailed /p:Configuration="Debug" >> $logFile
-}
+msbuild "$projectDir\src\RoslynLight.sln" /t:rebuild /v:detailed /p:Configuration="Debug" >> $logFile
+
 $ccBuildErrors = cat $logFile | Select-String "info AnalyzerDriver: The Compiler Analyzer 'CodeCracker"
 if ($ccBuildErrors -ne $null)
 {
-    echo "Errors found (see $logFile):"
+    Write-Host "Errors found (see $logFile):"
     foreach($ccBuildError in $ccBuildErrors)
     {
         Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)" 
     }
+    throw "Errors found on the roslyn analysis"
 }

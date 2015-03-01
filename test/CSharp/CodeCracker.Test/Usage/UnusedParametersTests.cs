@@ -1,12 +1,11 @@
-﻿using CodeCracker.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
-    public class UnusedParametersTests : CodeFixTest<UnusedParametersAnalyzer, UnusedParametersCodeFixProvider>
+    public class UnusedParametersTests : CodeFixVerifier<UnusedParametersAnalyzer, UnusedParametersCodeFixProvider>
     {
         [Fact]
         public async Task MethodWithoutParametersDoesNotCreateDiagnostic()
@@ -276,7 +275,7 @@ namespace CodeCracker.Test.Usage
         {
             return new DiagnosticResult
             {
-                Id = UnusedParametersAnalyzer.DiagnosticId,
+                Id = DiagnosticId.UnusedParameters.ToDiagnosticId(),
                 Message = string.Format(UnusedParametersAnalyzer.Message, parameterName),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
@@ -419,6 +418,36 @@ class TypeName
     }
 }";
             await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task CallToBaseDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Base
+{
+  protected Base(int a) { a = 1; }
+}
+class Derived : Base
+{
+  Derived(int a) : base(a) { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task CallToBaseWithExpressionDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Base
+{
+  protected Base(int a) { a = 1; }
+}
+class Derived : Base
+{
+  Derived(int a) : base(a + 1) { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }

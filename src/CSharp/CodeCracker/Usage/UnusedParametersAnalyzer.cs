@@ -2,38 +2,36 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UnusedParametersAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0057";
         internal const string Title = "Unused parameters";
         internal const string Message = "Parameter '{0}' is not used.";
         internal const string Category = SupportedCategories.Usage;
-        const string Description = "When a method declares a parameter and does not use it might bring incorrect conclusions for anyone reading the code and also demands the parameter when the method is called, unecessarily.\r\n"
-            + "You should delete the parameter is such cases.";
+        const string Description = "When a method declares a parameter and does not use it might bring incorrect conclusions for anyone reading the code and also demands the parameter when the method is called, unnecessarily.\r\n"
+            + "You should delete the parameter in such cases.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.UnusedParameters.ToDiagnosticId(),
             Title,
             Message,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: Description,
             customTags: WellKnownDiagnosticTags.Unnecessary,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UnusedParameters));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.MethodDeclaration, SyntaxKind.ConstructorDeclaration);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
@@ -41,21 +39,37 @@ namespace CodeCracker.Usage
             if (methodOrConstructor == null) return;
             var semanticModel = context.SemanticModel;
             if (!IsCandidateForRemoval(methodOrConstructor, semanticModel)) return;
+            var parameters = methodOrConstructor.ParameterList.Parameters.ToDictionary(p => p, p => semanticModel.GetDeclaredSymbol(p));
+            var ctor = methodOrConstructor as ConstructorDeclarationSyntax;
+            if (ctor?.Initializer != null)
+            {
+                var symbolsTouched = new List<ISymbol>();
+                foreach (var arg in ctor.Initializer.ArgumentList.Arguments)
+                {
+                    var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(arg.Expression);
+                    if (!dataFlowAnalysis.Succeeded) continue;
+                    symbolsTouched.AddRange(dataFlowAnalysis.ReadInside);
+                    symbolsTouched.AddRange(dataFlowAnalysis.WrittenInside);
+                }
+                var parametersToRemove = parameters.Where(p => symbolsTouched.Contains(p.Value)).ToList();
+                foreach (var parameter in parametersToRemove)
+                    parameters.Remove(parameter.Key);
+            }
             if (methodOrConstructor.Body.Statements.Any())
             {
                 var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(methodOrConstructor.Body.Statements.First(), methodOrConstructor.Body.Statements.Last());
                 if (!dataFlowAnalysis.Succeeded) return;
-                foreach (var parameter in methodOrConstructor.ParameterList.Parameters)
+                foreach (var parameter in parameters)
                 {
-                    var parameterSymbol = semanticModel.GetDeclaredSymbol(parameter);
+                    var parameterSymbol = parameter.Value;
                     if (parameterSymbol == null) continue;
                     if (!dataFlowAnalysis.ReadInside.Contains(parameterSymbol) && !dataFlowAnalysis.WrittenInside.Contains(parameterSymbol))
-                        context = ReportDiagnostic(context, parameter);
+                        context = ReportDiagnostic(context, parameter.Key);
                 }
             }
             else
             {
-                foreach (var parameter in methodOrConstructor.ParameterList.Parameters)
+                foreach (var parameter in parameters.Keys)
                     context = ReportDiagnostic(context, parameter);
             }
         }

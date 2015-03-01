@@ -1,12 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using CodeCracker.Usage;
+﻿using System.Threading.Tasks;
+using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class JsonNetTests : CodeFixVerifier
     {
@@ -97,7 +95,7 @@ namespace ConsoleApplication1
 
         private static DiagnosticResult CreateDiagnosticResult(int line, int column) {
             return new DiagnosticResult {
-                Id = JsonNetAnalyzer.DiagnosticId,
+                Id = DiagnosticId.JsonNet.ToDiagnosticId(),
                 Message = "Error parsing boolean value. Path '', line 0, position 0.",
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] {new DiagnosticResultLocation("Test0.cs", line, column)}
@@ -105,7 +103,7 @@ namespace ConsoleApplication1
         }
 
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
         {
             return new JsonNetAnalyzer();
         }

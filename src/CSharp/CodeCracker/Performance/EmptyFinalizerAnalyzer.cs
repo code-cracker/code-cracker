@@ -5,12 +5,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace CodeCracker.Performance
+namespace CodeCracker.CSharp.Performance
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EmptyFinalizerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "CC0025";
         internal const string Title = "Remove Empty Finalizers";
         internal const string MessageFormat = "Remove Empty Finalizers";
         internal const string Category = SupportedCategories.Performance;
@@ -19,7 +18,7 @@ namespace CodeCracker.Performance
             + "It will instead be placed in the finalizer queue needlessly using resources.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+            DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
@@ -27,14 +26,12 @@ namespace CodeCracker.Performance
             true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             description: Description,
-            helpLink: HelpLink.ForDiagnostic(DiagnosticId));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.EmptyFinalizer));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context)
-        {
+        public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.DestructorDeclaration);
-        }
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {

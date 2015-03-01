@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class EmptyObjectInitializerTests : CodeFixTest<EmptyObjectInitializerAnalyzer, EmptyObjectInitializerCodeFixProvider>
+    public class EmptyObjectInitializerTests : CodeFixVerifier<EmptyObjectInitializerAnalyzer, EmptyObjectInitializerCodeFixProvider>
     {
         [Fact]
         public async Task EmptyObjectInitializerTriggersFix()
@@ -14,7 +13,7 @@ namespace CodeCracker.Test.Style
             const string code = @"var a = new A {};";
             var expected = new DiagnosticResult
             {
-                Id = EmptyObjectInitializerAnalyzer.DiagnosticId,
+                Id = DiagnosticId.EmptyObjectInitializer.ToDiagnosticId(),
                 Message = "Remove empty object initializer.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 15) }

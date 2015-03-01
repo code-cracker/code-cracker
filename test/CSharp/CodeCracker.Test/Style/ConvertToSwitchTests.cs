@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class ConvertToSwitchTests : CodeFixTest<ConvertToSwitchAnalyzer, ConvertToSwitchCodeFixProvider>
+    public class ConvertToSwitchTests : CodeFixVerifier<ConvertToSwitchAnalyzer, ConvertToSwitchCodeFixProvider>
     {
         [Fact]
         public async Task CreateDiagnosticsWhenYouHaveThreeNestedIfsAndElse()
@@ -41,7 +40,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToSwitchAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToSwitch.ToDiagnosticId(),
                 Message = "You could use 'switch' instead of 'if'.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
@@ -79,7 +78,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToSwitchAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToSwitch.ToDiagnosticId(),
                 Message = "You could use 'switch' instead of 'if'.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }

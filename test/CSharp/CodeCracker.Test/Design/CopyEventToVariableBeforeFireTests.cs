@@ -1,29 +1,28 @@
-﻿using CodeCracker.Design;
+﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Design
+namespace CodeCracker.Test.CSharp.Design
 {
-    public class CopyEventToVariableBeforeFireTests : CodeFixTest<CopyEventToVariableBeforeFireAnalyzer, CopyEventToVariableBeforeFireCodeFixProvider>
+    public class CopyEventToVariableBeforeFireTests : CodeFixVerifier<CopyEventToVariableBeforeFireAnalyzer, CopyEventToVariableBeforeFireCodeFixProvider>
     {
         [Fact]
         public async void WarningIfEventIsFiredDirectly()
         {
             const string test = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent(this, System.EventArgs.Empty);
-                    } 
+                    }
                 }";
 
             var expected = new DiagnosticResult
             {
-                Id = CopyEventToVariableBeforeFireAnalyzer.DiagnosticId,
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
                 Message = "Copy the 'MyEvent' event to a variable before fire it.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
@@ -41,19 +40,19 @@ namespace CodeCracker.Test.Design
                     public string Info { get; set; }
                 }
 
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler<MyArgs> MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent(this, new MyArgs() { Info = ""ping"" });
-                    } 
+                    }
                 }";
 
             var expected = new DiagnosticResult
             {
-                Id = CopyEventToVariableBeforeFireAnalyzer.DiagnosticId,
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
                 Message = "Copy the 'MyEvent' event to a variable before fire it.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
@@ -73,19 +72,19 @@ namespace CodeCracker.Test.Design
 
                 public delegate void Executed (object sender, MyArgs args);
 
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event Executed MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent(this, new MyArgs() { Info = ""ping"" });
-                    } 
+                    }
                 }";
 
             var expected = new DiagnosticResult
             {
-                Id = CopyEventToVariableBeforeFireAnalyzer.DiagnosticId,
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
                 Message = "Copy the 'MyEvent' event to a variable before fire it.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 25) }
@@ -98,16 +97,16 @@ namespace CodeCracker.Test.Design
         public async void NotWarningIfEventIsCopiedToLocalVariableBeforeFire()
         {
             const string test = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         var handler = MyEvent;
                         if (handler != null)
                             handler(this, System.EventArgs.Empty);
-                    } 
+                    }
                 }";
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
@@ -117,15 +116,15 @@ namespace CodeCracker.Test.Design
         public async void NotWarningIfIsNotAnEvent()
         {
             const string test = @"
-                public class MyClass 
-                { 
-                    public void Execute() 
-                    { 
+                public class MyClass
+                {
+                    public void Execute()
+                    {
                         MyClass.Run(null);
-                    } 
+                    }
 
-                    public static void Run(object obj) 
-                    { 
+                    public static void Run(object obj)
+                    {
 
                     }
                 }";
@@ -136,7 +135,7 @@ namespace CodeCracker.Test.Design
         [Fact]
         public async void NotWarningIfIsAParameter()
         {
-            var test = @"
+            const string test = @"
                 public class MyClass
                 {
                     public void Execute(Action action)
@@ -152,27 +151,27 @@ namespace CodeCracker.Test.Design
         public async void WhenEventIsFiredDirectlyShouldCopyItToVariable()
         {
             const string source = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent(this, System.EventArgs.Empty);
-                    } 
+                    }
                 }";
 
             const string fixtest = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         var handler = MyEvent;
                         if (handler != null)
                             handler(this, System.EventArgs.Empty);
-                    } 
+                    }
                 }";
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
@@ -182,27 +181,29 @@ namespace CodeCracker.Test.Design
         public async void KeepCommentsWhenReplacedWithCodeFix()
         {
             const string source = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
+                        //comment
                         MyEvent(this, System.EventArgs.Empty); //Some Comment
-                    } 
+                    }
                 }";
 
             const string fixtest = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
+                        //comment
                         var handler = MyEvent;
                         if (handler != null)
                             handler(this, System.EventArgs.Empty); //Some Comment
-                    } 
+                    }
                 }";
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
@@ -223,7 +224,7 @@ namespace CodeCracker.Test.Design
                 }";
 
             const string fixtest = @"
-                public class MyClass 
+                public class MyClass
                 {
                     public event System.EventHandler MyEvent;
 
@@ -245,7 +246,7 @@ namespace CodeCracker.Test.Design
         public async void IgnoreMemberAccess()
         {
             var test = @"var tuple = new Tuple<int, Action>(1, null);
-tuple.Item2();".WrapInMethod();
+tuple.Item2();".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }

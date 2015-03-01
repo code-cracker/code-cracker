@@ -11,30 +11,25 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.Style
+namespace CodeCracker.CSharp.Style
 {
 
     [ExportCodeFixProvider("ConvertToSwitchCodeFixProvider", LanguageNames.CSharp), Shared]
     public class ConvertToSwitchCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(ConvertToSwitchAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.ConvertToSwitch.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var ifStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().First();
             const string message = "Convert to 'switch'";
-            context.RegisterFix(CodeAction.Create(message, c => ConvertToSwitchAsync(context.Document, ifStatement, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(message, c => ConvertToSwitchAsync(context.Document, ifStatement, c)), diagnostic);
         }
 
         private async Task<Document> ConvertToSwitchAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)
@@ -51,7 +46,7 @@ namespace CodeCracker.Style
                 {
                     label = label.WithLeadingTrivia(nestedIf.Parent.GetLeadingTrivia());
                 }
-                    
+
                 sections.Add(CreateSection(label, nestedIf.Statement));
             }
 
@@ -73,7 +68,7 @@ namespace CodeCracker.Style
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
-            var root = await document.GetSyntaxRootAsync();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ifStatement, switchStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

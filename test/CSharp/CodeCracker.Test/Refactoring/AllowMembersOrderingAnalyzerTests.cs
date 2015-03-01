@@ -1,13 +1,12 @@
-﻿using CodeCracker.Refactoring;
+﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
-namespace CodeCracker.Test.Refactoring
+namespace CodeCracker.Test.CSharp.Refactoring
 {
     public class AllowMembersOrderingAnalyzerTests : CodeFixVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
         {
             return new AllowMembersOrderingAnalyzer();
         }
@@ -53,7 +52,7 @@ namespace CodeCracker.Test.Refactoring
 
             var expected = new DiagnosticResult
             {
-                Id = AllowMembersOrderingAnalyzer.DiagnosticId,
+                Id = DiagnosticId.AllowMembersOrdering.ToDiagnosticId(),
                 Message = AllowMembersOrderingAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 14 + typeDeclaration.Length) }

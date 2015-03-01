@@ -9,23 +9,18 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace CodeCracker.Usage
+namespace CodeCracker.CSharp.Usage
 {
     [ExportCodeFixProvider("CodeCrackerAbstractClassShouldNotHavePublicCtorsCodeFixProvider", LanguageNames.CSharp), Shared]
 
     public class AbstractClassShouldNotHavePublicCtorsCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return ImmutableArray.Create(AbstractClassShouldNotHavePublicCtorsAnalyzer.DiagnosticId);
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+            ImmutableArray.Create(DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task ComputeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
@@ -33,7 +28,7 @@ namespace CodeCracker.Usage
 
             var ctor = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
 
-            context.RegisterFix(CodeAction.Create("Use 'protected' instead of 'public'" , c => ReplacePublicWithProtectedAsync(context.Document, ctor, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use 'protected' instead of 'public'", c => ReplacePublicWithProtectedAsync(context.Document, ctor, c)), diagnostic);
         }
 
         private async Task<Document> ReplacePublicWithProtectedAsync(Document document, ConstructorDeclarationSyntax ctor, CancellationToken cancellationToken)
@@ -44,7 +39,7 @@ namespace CodeCracker.Usage
 
             var newModifiers = ctor.Modifiers.Replace(@public, @protected);
             var newCtor = ctor.WithModifiers(newModifiers);
-            
+
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ctor, newCtor);
             var newDocument = document.WithSyntaxRoot(newRoot);

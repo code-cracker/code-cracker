@@ -1,13 +1,12 @@
 ﻿using System.Threading.Tasks;
-using CodeCracker.Usage;
+using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Usage
+namespace CodeCracker.Test.CSharp.Usage
 {
     public class AbstractClassShouldNotHavePublicCtorTests :
-        CodeFixTest<AbstractClassShouldNotHavePublicCtorsAnalyzer, AbstractClassShouldNotHavePublicCtorsCodeFixProvider>
+        CodeFixVerifier<AbstractClassShouldNotHavePublicCtorsAnalyzer, AbstractClassShouldNotHavePublicCtorsCodeFixProvider>
 
     {
         [Fact]
@@ -21,7 +20,7 @@ namespace CodeCracker.Test.Usage
 
             var expected = new DiagnosticResult
             {
-                Id = AbstractClassShouldNotHavePublicCtorsAnalyzer.DiagnosticId,
+                Id = DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId(),
                 Message = "Constructor should not be public.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }

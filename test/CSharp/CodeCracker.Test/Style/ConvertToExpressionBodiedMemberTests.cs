@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class ConvertToExpressionBodiedMemberTests : CodeFixTest<ConvertToExpressionBodiedMemberAnalyzer, ConvertToExpressionBodiedMemberCodeFixProvider>
+    public class ConvertToExpressionBodiedMemberTests : CodeFixVerifier<ConvertToExpressionBodiedMemberAnalyzer, ConvertToExpressionBodiedMemberCodeFixProvider>
     {
         [Fact]
         public async Task FixReplacesMethodConventionalBodyWithArrowExpression()
@@ -180,7 +179,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
@@ -207,7 +206,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
@@ -234,7 +233,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
@@ -261,7 +260,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
@@ -288,7 +287,7 @@ using System;
     }";
             var expected = new DiagnosticResult
             {
-                Id = ConvertToExpressionBodiedMemberAnalyzer.DiagnosticId,
+                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
                 Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }

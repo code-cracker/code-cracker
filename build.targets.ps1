@@ -15,18 +15,19 @@ Properties {
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
     $nupkgPathJoint = "$rootDir\CodeCracker.{0}.nupkg"
-    $xunitConsoleExe  = "$packagesDir\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe"
-    $openCoverExe = "$packagesDir\OpenCover.4.5.3607-rc27\OpenCover.Console.exe"
-    $xunitConsoleExe = "$packagesDir\xunit.runners.2.0.0-beta5-build2785\tools\xunit.console.x86.exe"
+    $xunitConsoleExe = "$packagesDir\xunit.runners.2.0.0-rc3-build2880\tools\xunit.console.x86.exe"
+    $openCoverExe = "$packagesDir\OpenCover.4.5.3711-rc52\OpenCover.Console.exe"
     $testDllCS = "CodeCracker.Test.CSharp.dll"
     $testDllVB = "CodeCracker.Test.VisualBasic.dll"
     $testDirCS = "$testDir\CSharp\CodeCracker.Test\bin\Debug"
     $testDirVB = "$testDir\VisualBasic\CodeCracker.Test\bin\Debug"
     $logDir = "$rootDir\log"
     $outputXml = "$logDir\CodeCoverageResults.xml"
-    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.0.4.0\ReportGenerator.exe"
+    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.1.1.0\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
-    $converallsNetExe = "$packagesDir\coveralls.io.1.1.73-beta\tools\coveralls.net.exe"
+    $converallsNetExe = "$packagesDir\coveralls.io.1.1.91\tools\coveralls.net.exe"
+    $isRelease = $isAppVeyor -and ($env:APPVEYOR_REPO_BRANCH -eq "release")
+    $isPullRequest = $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null
 }
 
 FormatTaskName (("-"*25) + "[{0}]" + ("-"*25))
@@ -81,10 +82,10 @@ Task Test-Acceptance -depends Test {
 }
 
 Task Test -depends Set-Log {
-    RunTestWithCoverage  "$testDirCS\$testDllCS", "$testDirVB\$testDllVB"
+    RunTestWithCoverage "$testDirCS\$testDllCS", "$testDirVB\$testDllVB"
 }
 Task Test-VB -depends Set-Log {
-    RunTestWithCoverage  "$testDirVB\$testDllVB"
+    RunTestWithCoverage "$testDirVB\$testDllVB"
 }
 Task Test-CSharp -depends Set-Log {
     RunTestWithCoverage "$testDirCS\$testDllCS"
@@ -98,14 +99,14 @@ Task Test-No-Coverage-CSharp {
     RunTest "$testDirCS\$testDllCS"
 }
 
-Task Update-Nuspec -precondition { return $isAppVeyor } -depends Update-Nuspec-Joint
-Task Update-Nuspec-Joint -precondition { return $isAppVeyor } -depends Update-Nuspec-CSharp, Update-Nuspec-VB {
+Task Update-Nuspec -precondition { return $isAppVeyor -and ($isRelease -ne $true) } -depends Update-Nuspec-Joint
+Task Update-Nuspec-Joint -precondition { return $isAppVeyor -and ($isRelease -ne $true) } -depends Update-Nuspec-CSharp, Update-Nuspec-VB {
     UpdateNuspec $nuspecPathJoint "joint package"
 }
-Task Update-Nuspec-CSharp -precondition { return $isAppVeyor } {
+Task Update-Nuspec-CSharp -precondition { return $isAppVeyor -and ($isRelease -ne $true) } {
     UpdateNuspec $nuspecPathCS "C#"
 }
-Task Update-Nuspec-VB -precondition { return $isAppVeyor } {
+Task Update-Nuspec-VB -precondition { return $isAppVeyor -and ($isRelease -ne $true) } {
     UpdateNuspec $nuspecPathVB "VB"
 }
 
@@ -164,9 +165,9 @@ function TestPath($paths) {
 
 function RunTest($fullTestDllPath) {
     if ($isAppVeyor) {
-        . $xunitConsoleExe $fullTestDllPath -appveyor
+        . $xunitConsoleExe $fullTestDllPath -appveyor -nologo -quiet
     } else {
-        . $xunitConsoleExe $fullTestDllPath
+        . $xunitConsoleExe $fullTestDllPath -nologo -quiet
     }
 }
 
@@ -188,7 +189,7 @@ function RunTestWithCoverage($fullTestDllPaths) {
     if ($isAppVeyor) {
         $appVeyor = " -appveyor"
     }
-    $arguments = '-register:user', "`"-target:$xunitConsoleExe`"", "`"-targetargs:$targetArgs $appVeyor -noshadow`"", "`"-filter:+[CodeCracker*]* -[CodeCracker.Test*]*`"", "`"-output:$outputXml`"", '-coverbytest:*.Test.*.dll', '-log:All', '-returntargetcode'
+    $arguments = '-register:user', "`"-target:$xunitConsoleExe`"", "`"-targetargs:$targetArgs $appVeyor -noshadow -nologo -quiet`"", "`"-filter:+[CodeCracker*]* -[CodeCracker.Test*]*`"", "`"-output:$outputXml`"", '-coverbytest:*.Test.*.dll', '-log:All', '-returntargetcode'
     Exec { . $openCoverExe $arguments }
     Write-Host -ForegroundColor DarkBlue "Exporting code coverage report"
     Exec { . $reportGeneratorExe -verbosity:Info -reports:$outputXml -targetdir:$coverageReportDir }

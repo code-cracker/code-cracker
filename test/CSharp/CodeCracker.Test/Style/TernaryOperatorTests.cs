@@ -1,12 +1,11 @@
-﻿using CodeCracker.Style;
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
-using TestHelper;
 using Xunit;
 
-namespace CodeCracker.Test.Style
+namespace CodeCracker.Test.CSharp.Style
 {
-    public class TernaryOperatorWithAssignmentTests : CodeFixTest<TernaryOperatorAnalyzer, TernaryOperatorWithAssignmentCodeFixProvider>
+    public class TernaryOperatorWithAssignmentTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithAssignmentCodeFixProvider>
     {
         private const string source = @"
     namespace ConsoleApplication1
@@ -177,7 +176,7 @@ namespace CodeCracker.Test.Style
         {
             var expected = new DiagnosticResult
             {
-                Id = TernaryOperatorAnalyzer.DiagnosticIdForIfWithReturn,
+                Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
                 Message = "You can use a ternary operator.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
@@ -266,7 +265,7 @@ namespace CodeCracker.Test.Style
         }
     }
 
-    public class TernaryOperatorWithReturnTests : CodeFixTest<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
+    public class TernaryOperatorWithReturnTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
     {
         [Fact]
         public async Task WhenUsingIfAndElseWithDirectReturnChangeToTernaryFix()
@@ -327,7 +326,7 @@ namespace CodeCracker.Test.Style
     }";
             var expected = new DiagnosticResult
             {
-                Id = TernaryOperatorAnalyzer.DiagnosticIdForIfWithAssignment,
+                Id = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
                 Message = "You can use a ternary operator.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
