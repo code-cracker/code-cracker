@@ -165,6 +165,7 @@
     <Compile Include="Refactoring\InvertForTests.cs" />
     <Compile Include="Usage\RemoveUnreachableCodeTest.cs" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzerTest.cs" />
+    <Compile Include="Usage\NoPrivateReadonlyFieldTest.cs" />
     <Compile Include="Usage\UnusedParametersTests.cs" />
     <Compile Include="Usage\IPAddressAnalyzerTests.cs" />
     <Compile Include="Usage\JsonNetAnalyzerTests.cs" />
