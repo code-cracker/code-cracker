@@ -8,157 +8,166 @@ using System.Linq;
 
 namespace CodeCracker.CSharp.Usage
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NoPrivateReadonlyFieldAnalyzer : DiagnosticAnalyzer
-	{
-		internal const string Title = "Make field readonly";
-		internal const string Message = "Make '{0}' readonly";
-		internal const string Category = SupportedCategories.Usage;
-		const string Description = "A field that is only assigned on the constructor can be made readonly.";
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class NoPrivateReadonlyFieldAnalyzer : DiagnosticAnalyzer
+    {
+        internal const string Title = "Make field readonly";
+        internal const string Message = "Make '{0}' readonly";
+        internal const string Category = SupportedCategories.Usage;
+        const string Description = "A field that is only assigned on the constructor can be made readonly.";
 
-		internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-			DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(),
-			Title,
-			Message,
-			Category,
-			DiagnosticSeverity.Info,
-			isEnabledByDefault: true,
-			description: Description,
-			helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.NoPrivateReadonlyField));
+        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+            DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(),
+            Title,
+            Message,
+            Category,
+            DiagnosticSeverity.Info,
+            isEnabledByDefault: false,
+            description: Description,
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.NoPrivateReadonlyField));
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		public override void Initialize(AnalysisContext analysisContext)
-		{
-			var candidateFields = new List<FieldCandidate>();
-			var assignedFields = new List<ISymbol>();
+        public override void Initialize(AnalysisContext analysisContext)
+        {
+            analysisContext.RegisterCompilationStartAction(compilationStartContext =>
+            {
+                var candidateFields = new List<FieldCandidate>();
+                var assignedFields = new List<ISymbol>();
 
-			analysisContext.RegisterCompilationStartAction(compilationStartContext =>
-			{
-				foreach (var tree in compilationStartContext.Compilation.SyntaxTrees)
-					CaptureCandidateAssignedFieldsFromTree(tree, compilationStartContext, candidateFields, assignedFields);
-			});
+                compilationStartContext.RegisterSyntaxNodeAction(
+                    syntaxNodeAnalysisContext => CaptureCandidateFields(syntaxNodeAnalysisContext.Node as FieldDeclarationSyntax, syntaxNodeAnalysisContext.SemanticModel, candidateFields),
+                    SyntaxKind.FieldDeclaration);
 
-			analysisContext.RegisterCompilationEndAction(compilationEndContext =>
-			{
-				foreach (var candidateField in candidateFields.Where(field => HasNoAssignment(field, assignedFields)))
-					compilationEndContext.ReportDiagnostic(Diagnostic.Create(
-						Rule,
-						candidateField.Variable.Identifier.GetLocation(),
-						candidateField.Variable.Identifier.Text));
-			});
-		}
+                compilationStartContext.RegisterSyntaxNodeAction(
+                    syntaxNodeAnalysisContext => CaptureAssignedFields(syntaxNodeAnalysisContext.Node as TypeDeclarationSyntax, syntaxNodeAnalysisContext.SemanticModel, assignedFields),
+                    SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
 
-		private void CaptureCandidateAssignedFieldsFromTree(SyntaxTree tree, CompilationStartAnalysisContext compilationStartContext, List<FieldCandidate> candidateFields, List<ISymbol> assignedFields)
-		{
-			if (!compilationStartContext.Compilation.SyntaxTrees.Contains(tree))
-				return;
+                compilationStartContext.RegisterCompilationEndAction(compilationEndContext =>
+                {
+                    var fieldsWithoutAssignment = candidateFields.Distinct().Where(field => HasNoAssignment(field, assignedFields));
+                    foreach (var candidateField in fieldsWithoutAssignment)
+                        compilationEndContext.ReportDiagnostic(Diagnostic.Create(
+                            Rule,
+                            candidateField.Variable.Identifier.GetLocation(),
+                            candidateField.Variable.Identifier.Text));
+                });
+            });
+        }
 
-			SyntaxNode root;
-			if (!tree.TryGetRoot(out root))
-				return;
+        private void CaptureAssignedFields(TypeDeclarationSyntax typeDeclaration, SemanticModel semanticModel, List<ISymbol> assignedFields)
+        {
+            var t = new TypeDeclarationWithSymbol { TypeDeclaration = typeDeclaration, NamedTypeSymbol = semanticModel.GetDeclaredSymbol(typeDeclaration) };
+            var fields = GetAssignedFieldsFromType(t, semanticModel);
+            assignedFields.AddRange(fields);
+        }
+        private void CaptureCandidateFields(FieldDeclarationSyntax field, SemanticModel semanticModel, List<FieldCandidate> candidateFields)
+        {
 
-			var semanticModel = compilationStartContext.Compilation.GetSemanticModel(tree);
+            if (!CanBecameReadOnlyField(field)) return;
+            var variables = field.Declaration.Variables;
+            var currentAnalysisCandidateFields = variables.Select(s => new FieldCandidate { Variable = s, FieldSymbol = semanticModel.GetDeclaredSymbol(s) as IFieldSymbol })
+                .Where(p => p.FieldSymbol != null && p.FieldSymbol.ContainingType != null);
 
-			candidateFields.AddRange(GetCandidateFields(root, semanticModel));
+            if (!currentAnalysisCandidateFields.Any()) return;
+            candidateFields.AddRange(currentAnalysisCandidateFields);
+        }
 
-			if (candidateFields.Count() == 0)
-				return;
+        #region GetCandidateFields
 
-			assignedFields.AddRange(GetAssignedField(root, semanticModel));
-		}
+        private IEnumerable<FieldCandidate> GetCandidateFields(SyntaxNode root, SemanticModel semanticModel)
+        {
+            return root
+                    .DescendantNodesAndSelf()
+                    .OfType<FieldDeclarationSyntax>()
+                    .Where(CanBecameReadOnlyField)
+                    .SelectMany(s => s.Declaration.Variables)
+                    .Select(s => new FieldCandidate { Variable = s, FieldSymbol = semanticModel.GetDeclaredSymbol(s) as IFieldSymbol })
+                    .Where(p => p.FieldSymbol != null && p.FieldSymbol.ContainingType != null);
+        }
 
-		#region GetCandidateFields
+        private bool CanBecameReadOnlyField(FieldDeclarationSyntax field)
+        {
+            var noPrivate = field.Modifiers.Any(p => p.IsKind(SyntaxKind.PublicKeyword) || p.IsKind(SyntaxKind.ProtectedKeyword) || p.IsKind(SyntaxKind.InternalKeyword));
+            return noPrivate ? !field.Modifiers.Any(p => p.IsKind(SyntaxKind.ConstKeyword) || p.IsKind(SyntaxKind.ReadOnlyKeyword)) : false;
+        }
 
-		private IEnumerable<FieldCandidate> GetCandidateFields(SyntaxNode root, SemanticModel semanticModel)
-		{
-			return root
-					.DescendantNodesAndSelf()
-					.OfType<FieldDeclarationSyntax>()
-					.Where(CanBecameReadOnlyField)
-					.SelectMany(s => s.Declaration.Variables)
-					.Select(s => new FieldCandidate { Variable = s, FieldSymbol = semanticModel.GetDeclaredSymbol(s) as IFieldSymbol })
-					.Where(p => p.FieldSymbol != null && p.FieldSymbol.ContainingType != null);
-		}
+        #endregion
 
-		private bool CanBecameReadOnlyField(FieldDeclarationSyntax field)
-		{
-			var noPrivate = field.Modifiers.Any(p => p.IsKind(SyntaxKind.PublicKeyword) || p.IsKind(SyntaxKind.ProtectedKeyword) || p.IsKind(SyntaxKind.InternalKeyword));
-			return noPrivate ? !field.Modifiers.Any(p => p.IsKind(SyntaxKind.ConstKeyword) || p.IsKind(SyntaxKind.ReadOnlyKeyword)) : false;
-		}
+        #region GetAssignedField
 
-		#endregion
+        private IEnumerable<ISymbol> GetAssignedFieldsFromType(TypeDeclarationWithSymbol typeDeclarationWithSymbol, SemanticModel model)
+        {
+            var typeDeclaration = typeDeclarationWithSymbol.TypeDeclaration;
+            var descendants = typeDeclaration.DescendantNodes(p => SkipNestedTypes(typeDeclaration, p));
+            return descendants
+                .OfType<AssignmentExpressionSyntax>()
+                .Select(s => s.Left)
+                .Union(
+                    descendants
+                        .OfType<PostfixUnaryExpressionSyntax>()
+                        .Select(s => s.Operand))
+                .Union(
+                    descendants
+                        .OfType<PrefixUnaryExpressionSyntax>()
+                        .Select(s => s.Operand)
+                )
+                .Union(
+                    descendants
+                        .OfType<InvocationExpressionSyntax>()
+                        .SelectMany(s => s.ArgumentList.Arguments.Where(p => !p.RefOrOutKeyword.IsKind(SyntaxKind.None)))
+                        .Select(s => s.Expression)
+                )
+                .Select(s => new { Symbol = model.GetSymbolInfo(s).Symbol, Expression = s })
+                .Where(p => p.Symbol != null)
+                .Where(p => SkipFieldsFromItsOwnConstructor(typeDeclarationWithSymbol, p.Expression, p.Symbol))
+                .Select(s => s.Symbol);
+        }
 
-		#region GetAssignedField
+        private bool SkipNestedTypes(TypeDeclarationSyntax typeDeclaration, SyntaxNode node) =>
+            node is TypeDeclarationSyntax ? node == typeDeclaration : true;
 
-		private IEnumerable<ISymbol> GetAssignedField(SyntaxNode root, SemanticModel semanticModel) =>
-			GetClassAndStructTypeDeclaration(root)
-				.Select(s => new TypeDeclarationWithSymbol { TypeDeclaration = s, NamedTypeSymbol = semanticModel.GetDeclaredSymbol(s) })
-				.SelectMany(type => GetAssignedFieldFromType(type, semanticModel));
+        private bool SkipFieldsFromItsOwnConstructor(TypeDeclarationWithSymbol type, ExpressionSyntax assignmentExpression, ISymbol assignmentSymbol)
+        {
+            var parentConstructor = assignmentExpression.Ancestors().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
 
-		private IEnumerable<TypeDeclarationSyntax> GetClassAndStructTypeDeclaration(SyntaxNode root) =>
-			root.DescendantNodesAndSelf()
-				.OfType<TypeDeclarationSyntax>()
-				.Where(p => p.GetType() != typeof(InterfaceDeclarationSyntax));
+            if (parentConstructor == null)
+                return true;
 
-		private IEnumerable<ISymbol> GetAssignedFieldFromType(TypeDeclarationWithSymbol typeDeclarationWithSymbol, SemanticModel model)
-		{
-			var typeDeclaration = typeDeclarationWithSymbol.TypeDeclaration;
-			var descendants = typeDeclaration.DescendantNodes(p => SkipNestedTypes(typeDeclaration, p));
-			return descendants
-				.OfType<AssignmentExpressionSyntax>()
-				.Select(s => s.Left)
-				.Union(
-					descendants
-						.OfType<PostfixUnaryExpressionSyntax>()
-						.Select(s => s.Operand))
-				.Union(
-					descendants
-						.OfType<PrefixUnaryExpressionSyntax>()
-						.Select(s => s.Operand)
-				)
-				.Union(
-					descendants
-						.OfType<InvocationExpressionSyntax>()
-						.SelectMany(s => s.ArgumentList.Arguments.Where(p => !p.RefOrOutKeyword.IsKind(SyntaxKind.None)))
-						.Select(s => s.Expression)
-				)
-				.Select(s => new { Symbol = model.GetSymbolInfo(s).Symbol, Expression = s })
-				.Where(p => p.Symbol != null)
-				.Where(p => SkipFieldsFromItsOwnConstructor(typeDeclarationWithSymbol, p.Expression, p.Symbol))
-				.Select(s => s.Symbol);
-		}
+            return
+                assignmentSymbol.ContainingType != type.NamedTypeSymbol ||
+                assignmentSymbol.IsStatic != parentConstructor.Modifiers.Any(p => p.IsKind(SyntaxKind.StaticKeyword));
+        }
 
-		private bool SkipNestedTypes(TypeDeclarationSyntax typeDeclaration, SyntaxNode node) =>
-			node is TypeDeclarationSyntax ? node == typeDeclaration : true;
+        #endregion
 
-		private bool SkipFieldsFromItsOwnConstructor(TypeDeclarationWithSymbol type, ExpressionSyntax assignmentExpression, ISymbol assignmentSymbol)
-		{
-			var parentConstructor = assignmentExpression.Ancestors().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
+        private bool HasNoAssignment(FieldCandidate field, List<ISymbol> assignedFields) =>
+            !assignedFields.Any(assignedField => assignedField == field.FieldSymbol);
 
-			if (parentConstructor == null)
-				return true;
+        private sealed class FieldCandidate
+        {
+            internal VariableDeclaratorSyntax Variable { get; set; }
+            internal IFieldSymbol FieldSymbol { get; set; }
 
-			return
-				assignmentSymbol.ContainingType != type.NamedTypeSymbol ||
-				assignmentSymbol.IsStatic != parentConstructor.Modifiers.Any(p => p.IsKind(SyntaxKind.StaticKeyword));
-		}
+            public override bool Equals(object obj)
+            {
+                if (object.Equals(obj, null)) return false;
+                if (GetType() != obj.GetType()) return false;
+                return ((FieldCandidate)obj).FieldSymbol.Equals(FieldSymbol);
+            }
+            public override int GetHashCode()
+            {
+                var hash = 13;
+                hash = (hash * 7) + FieldSymbol.GetHashCode();
+                return hash;
+            }
 
-		#endregion
+        }
 
-		private bool HasNoAssignment(FieldCandidate field, List<ISymbol> assignedFields) =>
-			!assignedFields.Any(assignedField => assignedField == field.FieldSymbol);
-
-		private class FieldCandidate
-		{
-			internal VariableDeclaratorSyntax Variable { get; set; }
-			internal IFieldSymbol FieldSymbol { get; set; }
-		}
-
-		private class TypeDeclarationWithSymbol
-		{
-			internal TypeDeclarationSyntax TypeDeclaration { get; set; }
-			internal INamedTypeSymbol NamedTypeSymbol { get; set; }
-		}
-	}
+        private class TypeDeclarationWithSymbol
+        {
+            internal TypeDeclarationSyntax TypeDeclaration { get; set; }
+            internal INamedTypeSymbol NamedTypeSymbol { get; set; }
+        }
+    }
 }

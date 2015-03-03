@@ -5,103 +5,103 @@ using Xunit;
 
 namespace CodeCracker.Test.CSharp.Usage
 {
-	public class NoPrivateReadonlyFieldTests : CodeFixVerifier<NoPrivateReadonlyFieldAnalyzer, ReadonlyFieldCodeFixProvider>
-	{
-		DiagnosticResult CreateExpectedDiagnosticResult(int line, int column, string fieldName = "i") =>
-			new DiagnosticResult
-			{
-				Id = DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(),
-				Message = string.Format(NoPrivateReadonlyFieldAnalyzer.Message, fieldName),
-				Severity = DiagnosticSeverity.Info,
-				Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-			};
+    public class NoPrivateReadonlyFieldTests : CodeFixVerifier<NoPrivateReadonlyFieldAnalyzer, ReadonlyFieldCodeFixProvider>
+    {
+        DiagnosticResult CreateExpectedDiagnosticResult(int line, int column, string fieldName = "i") =>
+            new DiagnosticResult
+            {
+                Id = DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(),
+                Message = string.Format(NoPrivateReadonlyFieldAnalyzer.Message, fieldName),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
+            };
 
-		[Fact]
-		public async Task PrivateFieldWithAssignmentOnDeclarationCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task PrivateFieldWithAssignmentOnDeclarationCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				private int i = 1;
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task ReadonlyFieldCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task ReadonlyFieldCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				internal readonly int i = 1;
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task ConstFieldCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task ConstFieldCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				protected const int i = 1;
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task NoPrivateFieldWithAssignmentOnDeclarationCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task NoPrivateFieldWithAssignmentOnDeclarationCreatesDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				protected int i = 1;
 			}";
 
-			await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 19));
-		}
+            await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 19));
+        }
 
-		[Fact]
-		public async Task FieldWithoutAcessModifierCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task FieldWithoutAcessModifierCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				int i = 1;
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task NoPrivateFieldsInAStructCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task NoPrivateFieldsInAStructCreatesDiagnostic()
+        {
+            const string source = @"
 			public struct TypeName
 			{
 				public int i = 1;
 				internal int j = 1;
 			}";
-			await VerifyCSharpDiagnosticAsync(
-				source,
-				CreateExpectedDiagnosticResult(line: 4, column: 16),
-				CreateExpectedDiagnosticResult(line: 5, column: 18, fieldName: "j"));
-		}
+            await VerifyCSharpDiagnosticAsync(
+                source,
+                CreateExpectedDiagnosticResult(line: 4, column: 16),
+                CreateExpectedDiagnosticResult(line: 5, column: 18, fieldName: "j"));
+        }
 
-		[Fact]
-		public async Task StaticFieldCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task StaticFieldCreatesDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				protected static int i = 1;
 			}";
-			await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 26));
-		}
+            await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 26));
+        }
 
-		[Fact]
-		public async Task StaticFieldAssignmentOnStaticConstructorCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task StaticFieldAssignmentOnStaticConstructorCreatesDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				protected static int i;
@@ -110,13 +110,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					i = 0;
 				}
 			}";
-			await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 26));
-		}
+            await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 26));
+        }
 
-		[Fact]
-		public async Task StaticFieldAssignmentOnAInstanceConstructorCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task StaticFieldAssignmentOnAInstanceConstructorCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				protected static int i;
@@ -125,13 +125,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					i = 0;
 				}
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task FieldWithAssignmentCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task FieldWithAssignmentCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				public int i;
@@ -140,13 +140,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					i = 0;
 				}        
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task FieldWithAssignmentOnConstructorCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task FieldWithAssignmentOnConstructorCreatesDiagnostic()
+        {
+            const string source = @"
 			namespace ConsoleApplication1
 			{
 				public class TypeName
@@ -158,13 +158,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					}
 				}
 			}";
-			await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 6, column: 20));
-		}
+            await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 6, column: 20));
+        }
 
-		[Fact]
-		public async Task FieldWithPostfixUnaryAssignmentOnMethodCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task FieldWithPostfixUnaryAssignmentOnMethodCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				protected int i = 0;
@@ -173,13 +173,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					i++;
 				}
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task FieldWithPrefixUnaryAssignmentOnMethodCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task FieldWithPrefixUnaryAssignmentOnMethodCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				protected int i = 0;
@@ -188,13 +188,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					--i;
 				}
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task FieldWithPostfixUnaryAssignmentOnConstructorCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task FieldWithPostfixUnaryAssignmentOnConstructorCreatesDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				protected int i = 0;
@@ -203,13 +203,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					i++;
 				}
 			}";
-			await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 19));
-		}
+            await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 19));
+        }
 
-		[Fact]
-		public async Task FieldWithPrefixUnaryAssignmentOnConstructorCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task FieldWithPrefixUnaryAssignmentOnConstructorCreatesDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				protected int i = 0;
@@ -218,13 +218,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					--i;
 				}
 			}";
-			await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 19));
-		}
+            await VerifyCSharpDiagnosticAsync(source, CreateExpectedDiagnosticResult(line: 4, column: 19));
+        }
 
-		[Fact]
-		public async Task TwoClassesWithNoPrivateFieldsCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task TwoClassesWithNoPrivateFieldsCreatesDiagnostic()
+        {
+            const string source = @"
 			namespace ConsoleApplication1
 			{
 				public class TypeName1
@@ -238,17 +238,17 @@ namespace CodeCracker.Test.CSharp.Usage
 					internal int l = 1;
 				}
 			}";
-			await VerifyCSharpDiagnosticAsync(source,
-				CreateExpectedDiagnosticResult(line: 6, column: 17, fieldName: "i"),
-				CreateExpectedDiagnosticResult(line: 7, column: 17, fieldName: "j"),
-				CreateExpectedDiagnosticResult(line: 11, column: 19, fieldName: "k"),
-				CreateExpectedDiagnosticResult(line: 12, column: 19, fieldName: "l"));
-		}
+            await VerifyCSharpDiagnosticAsync(source,
+                CreateExpectedDiagnosticResult(line: 6, column: 17, fieldName: "i"),
+                CreateExpectedDiagnosticResult(line: 7, column: 17, fieldName: "j"),
+                CreateExpectedDiagnosticResult(line: 11, column: 19, fieldName: "k"),
+                CreateExpectedDiagnosticResult(line: 12, column: 19, fieldName: "l"));
+        }
 
-		[Fact]
-		public async Task ReadFieldFieldFromOtherTypeCreatesDiagnostic()
-		{
-			const string source1 = @"
+        [Fact]
+        public async Task ReadFieldFieldFromOtherTypeCreatesDiagnostic()
+        {
+            const string source1 = @"
 			namespace ConsoleApplication1
 			{
 				public class TypeName1
@@ -257,7 +257,7 @@ namespace CodeCracker.Test.CSharp.Usage
 				}
 			}";
 
-			const string source2 = @"
+            const string source2 = @"
 			namespace ConsoleApplication1
 			{
 				public class TypeName2
@@ -268,13 +268,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					}
 				}
 			}";
-			await VerifyCSharpDiagnosticAsync(new[] { source1, source2 }, CreateExpectedDiagnosticResult(line: 6, column: 17));
-		}
+            await VerifyCSharpDiagnosticAsync(new[] { source1, source2 }, CreateExpectedDiagnosticResult(line: 6, column: 17));
+        }
 
-		[Fact]
-		public async Task SetFieldFieldFromOtherTypeCreatesNoDiagnostic()
-		{
-			const string source1 = @"
+        [Fact]
+        public async Task SetFieldFieldFromOtherTypeCreatesNoDiagnostic()
+        {
+            const string source1 = @"
 			namespace ConsoleApplication1
 			{
 				public class TypeName1
@@ -283,7 +283,7 @@ namespace CodeCracker.Test.CSharp.Usage
 				}
 			}";
 
-			const string source2 = @"
+            const string source2 = @"
 			namespace ConsoleApplication1
 			{
 				public class TypeName2
@@ -294,13 +294,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					}
 				}
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source1, source2);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source1, source2);
+        }
 
-		[Fact]
-		public async Task ReadFieldFieldFromNestedTypeCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task ReadFieldFieldFromNestedTypeCreatesDiagnostic()
+        {
+            const string source = @"
 			public class TypeName1
 			{
 				protected int j = 0;
@@ -319,15 +319,15 @@ namespace CodeCracker.Test.CSharp.Usage
 					}
 				}
 			}";
-			await VerifyCSharpDiagnosticAsync(source,
-				CreateExpectedDiagnosticResult(line: 04, column: 19, fieldName: "j"),
-				CreateExpectedDiagnosticResult(line: 12, column: 19, fieldName: "i"));
-		}
+            await VerifyCSharpDiagnosticAsync(source,
+                CreateExpectedDiagnosticResult(line: 04, column: 19, fieldName: "j"),
+                CreateExpectedDiagnosticResult(line: 12, column: 19, fieldName: "i"));
+        }
 
-		[Fact]
-		public async Task SetFieldFieldFromNestedTypeCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task SetFieldFieldFromNestedTypeCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName1
 			{
 				TypeName1()
@@ -340,13 +340,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					internal int i;
 				}
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task FieldWithAssignmentOnMethodByRefOrOutParameterCreatesNoDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task FieldWithAssignmentOnMethodByRefOrOutParameterCreatesNoDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				public int i;
@@ -364,13 +364,13 @@ namespace CodeCracker.Test.CSharp.Usage
 					m = 0;
 				}
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
-		[Fact]
-		public async Task FieldWithAssignmentOnConstructorByRefOrOutParameterCreatesDiagnostic()
-		{
-			const string source = @"
+        [Fact]
+        public async Task FieldWithAssignmentOnConstructorByRefOrOutParameterCreatesDiagnostic()
+        {
+            const string source = @"
 			public class TypeName
 			{
 				public int i;
@@ -388,21 +388,21 @@ namespace CodeCracker.Test.CSharp.Usage
 					m = 0;
 				}
 			}";
-			await VerifyCSharpDiagnosticAsync(source, 
-				CreateExpectedDiagnosticResult(line: 4, column: 16, fieldName: "i"),
-				CreateExpectedDiagnosticResult(line: 5, column: 16, fieldName: "k"));
-		}
+            await VerifyCSharpDiagnosticAsync(source,
+                CreateExpectedDiagnosticResult(line: 4, column: 16, fieldName: "i"),
+                CreateExpectedDiagnosticResult(line: 5, column: 16, fieldName: "k"));
+        }
 
-		[Fact]
-		public async Task FieldInPartialClassWithAssignmentOnConstructorInOtherTreeCreatesDiagnostic()
-		{
-			const string source1 = @"
+        [Fact]
+        public async Task FieldInPartialClassWithAssignmentOnConstructorInOtherTreeCreatesDiagnostic()
+        {
+            const string source1 = @"
 			public partial class TypeName
 			{
 				public int i;
 			}";
 
-			const string source2 = @"
+            const string source2 = @"
 			public partial class TypeName
 			{
 				TypeName()
@@ -411,21 +411,21 @@ namespace CodeCracker.Test.CSharp.Usage
 				};
 			}";
 
-			await VerifyCSharpDiagnosticAsync(
-				sources: new string [] { source1, source2 },
-				expected: CreateExpectedDiagnosticResult(line: 4, column: 16));
-		}
+            await VerifyCSharpDiagnosticAsync(
+                sources: new string[] { source1, source2 },
+                expected: CreateExpectedDiagnosticResult(line: 4, column: 16));
+        }
 
-		[Fact]
-		public async Task FieldInPartialClassWithAssignmentOnMethodInOtherTreeCreatesNoDiagnostic()
-		{
-			const string source1 = @"
+        [Fact]
+        public async Task FieldInPartialClassWithAssignmentOnMethodInOtherTreeCreatesNoDiagnostic()
+        {
+            const string source1 = @"
 			public partial class TypeName
 			{
 				public int i;
 			}";
 
-			const string source2 = @"
+            const string source2 = @"
 			public partial class TypeName
 			{
 				void Foo()
@@ -433,23 +433,23 @@ namespace CodeCracker.Test.CSharp.Usage
 					i = 0;
 				};
 			}";
-			await VerifyCSharpHasNoDiagnosticsAsync(source1, source2);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(source1, source2);
+        }
 
-		[Fact]
-		public async Task ChangeFieldWhenIsPublicAndNotAssigned()
-		{
-			const string source = @"
+        [Fact]
+        public async Task ChangeFieldWhenIsPublicAndNotAssigned()
+        {
+            const string source = @"
 			class TypeName
 			{
 				public int i;
 			}";
-			const string fixtest = @"
+            const string fixtest = @"
 			class TypeName
 			{
 				public readonly int i;
 			}";
-			await VerifyCSharpFixAsync(source, fixtest);
-		}
-	}
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+    }
 }

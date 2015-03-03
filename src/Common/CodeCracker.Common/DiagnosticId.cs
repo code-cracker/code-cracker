@@ -58,6 +58,6 @@
         IntroduceFieldFromConstructor = 71,
         RemoveAsyncFromMethod = 72,
         AddBracesToSwitchSections = 73,
-		NoPrivateReadonlyField = 74,
+        NoPrivateReadonlyField = 74,
 	}
 }
