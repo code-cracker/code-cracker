@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>codecracker.VisualBasic</id>
-        <version>1.0.0-alpha3</version>
+        <version>1.0.0-alpha4</version>
         <title>CodeCracker</title>
         <authors>giggio,elemarjr,carloscds,viniciushana</authors>
         <owners>giggio,elemarjr,carloscds,viniciushana</owners>
