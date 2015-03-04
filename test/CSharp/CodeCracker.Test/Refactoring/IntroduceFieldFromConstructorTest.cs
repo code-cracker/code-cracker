@@ -139,6 +139,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
             await VerifyCSharpFixAsync(test, expected);
         }
 
+
         [Fact]
         public async Task ConstructorParameterWithPrivateFieldWhenFieldParameterNameAlreadyExists()
         {
