@@ -66,47 +66,56 @@ namespace CodeCracker.CSharp.Refactoring
             return newRoot;
         }
 
-        private static Dictionary<string,string> ExtractMembersFromClass(SyntaxList<MemberDeclarationSyntax> classMembers)
+        private static Dictionary<string, string> ExtractMembersFromClass(SyntaxList<MemberDeclarationSyntax> classMembers)
         {
             var members = new Dictionary<string, string>();
             foreach (var m in classMembers)
             {
                 var name = "";
-                if (m.GetType().Name == "MethodDeclarationSyntax")
+                if (m.IsKind(SyntaxKind.MethodDeclaration))
                 {
                     var eve = m as MethodDeclarationSyntax;
                     name = eve.Identifier.Text;
                 }
-                if (m.GetType().Name == "EventDeclarationSyntax")
+                if (m.IsKind(SyntaxKind.EventDeclaration))
                 {
-                    var eve = m as EventDeclarationSyntax;
-                    name = eve.Identifier.Text;
-                   
+                    var theEvent = m as EventDeclarationSyntax;
+                    name = theEvent.Identifier.Text;
                 }
-                if (m.GetType().Name == "EventFieldDeclarationSyntax")
+                if (m.IsKind(SyntaxKind.EventFieldDeclaration))
                 {
-                    var eve = m as EventFieldDeclarationSyntax;
-                    foreach (var v in eve.Declaration.Variables)
+                    var eventField = m as EventFieldDeclarationSyntax;
+                    foreach (var v in eventField.Declaration.Variables)
                     {
-                        members.Add(v.Identifier.Text,eve.Declaration.Type.ToString());
+                        members.Add(v.Identifier.Text, eventField.Declaration.Type.ToString());
                     }
                 }
-                if (m.GetType().Name == "FieldDeclarationSyntax")
+                if (m.IsKind(SyntaxKind.FieldDeclaration))
                 {
-                    var eve = m as FieldDeclarationSyntax;
-                    foreach (var v in eve.Declaration.Variables)
+                    var field = m as FieldDeclarationSyntax;
+                    foreach (var v in field.Declaration.Variables)
                     {
-                        members.Add(v.Identifier.Text, eve.Declaration.Type.ToString());
+                        members.Add(v.Identifier.Text, field.Declaration.Type.ToString());
                     }
                 }
-                if (m.GetType().Name == "PropertyDeclarationSyntax")
+                if (m.IsKind(SyntaxKind.PropertyDeclaration))
                 {
-                    var eve = m as PropertyDeclarationSyntax;
-                    name = eve.Identifier.Text;
+                    var property = m as PropertyDeclarationSyntax;
+                    name = property.Identifier.Text;
+                }
+                if (m.IsKind(SyntaxKind.DelegateDeclaration))
+                {
+                    var theDelegate = m as DelegateDeclarationSyntax;
+                    name = theDelegate.Identifier.Text;
+                }
+                if (m.IsKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.EnumDeclaration, SyntaxKind.InterfaceDeclaration))
+                {
+                    var type = m as BaseTypeDeclarationSyntax;
+                    name = type.Identifier.Text;
                 }
                 if (name != "")
                 {
-                    members.Add(name,"");
+                    members.Add(name, "");
                 }
             }
             return members;
