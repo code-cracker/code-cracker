@@ -1,14 +1,9 @@
-﻿using CodeCracker;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace CodeCracker
 {
@@ -16,6 +11,18 @@ namespace CodeCracker
     {
         public static bool IsGenerated(this SyntaxNodeAnalysisContext context) =>
             context.SemanticModel.SyntaxTree.FilePath.IsOnGeneratedFile() || context.Node.IsGenerated();
+
+        public static bool IsGenerated(this SymbolAnalysisContext context)
+        {
+            foreach (var syntaxReference in context.Symbol.DeclaringSyntaxReferences)
+            {
+                if (syntaxReference.SyntaxTree.FilePath.IsOnGeneratedFile()) return true;
+                var root = syntaxReference.SyntaxTree.GetRoot();
+                var node = root.FindNode(syntaxReference.Span);
+                if (node.IsGenerated()) return true;
+            }
+            return false;
+        }
 
         internal static bool IsGenerated(this SyntaxNode node) =>
             node.HasAttributeOnAncestorOrSelf("DebuggerNonUserCode")

@@ -119,8 +119,11 @@ namespace CodeCracker
             var anEnum = node.FirstAncestorOrSelfOfType<EnumDeclarationSyntax>();
             if (anEnum?.AttributeLists.HasAttribute(attributeName) ?? false)
                 return true;
-            var field = node as BaseFieldDeclarationSyntax;
+            var field = node.FirstAncestorOrSelfOfType<FieldDeclarationSyntax>();
             if (field?.AttributeLists.HasAttribute(attributeName) ?? false)
+                return true;
+            var eventField = node.FirstAncestorOrSelfOfType<EventFieldDeclarationSyntax>();
+            if (eventField?.AttributeLists.HasAttribute(attributeName) ?? false)
                 return true;
             var parameter = node as ParameterSyntax;
             if (parameter?.AttributeLists.HasAttribute(attributeName) ?? false)
