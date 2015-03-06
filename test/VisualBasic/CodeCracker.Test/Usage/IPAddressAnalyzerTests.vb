@@ -21,13 +21,17 @@ End Namespace"
     <Fact>
     Public Async Function IfParseIdentifierFoundAndIpAddressTextIsIncorrectCreatesDiagnostic() As Task
         Dim test = String.Format(TestCode, "System.Net.IPAddress.Parse(""foo"")")
+#Disable Warning CC0064
         Await VerifyBasicDiagnosticAsync(test, CreateDiagnosticResult(7, 40, Sub() IPAddress.Parse("foo")))
+#Enable Warning CC0064
     End Function
 
     <Fact>
     Public Async Function IfAbbreviatedParseIdentifierFoundAndIPAddressTextIsIncorrectCreatesDiagnostic() As Task
         Dim test = String.Format(TestCode, "IPAddress.Parse(""foo"")")
+#Disable Warning CC0064
         Await VerifyBasicDiagnosticAsync(test, CreateDiagnosticResult(7, 29, Sub() IPAddress.Parse("foo")))
+#Enable Warning CC0064
     End Function
 
     <Fact>
