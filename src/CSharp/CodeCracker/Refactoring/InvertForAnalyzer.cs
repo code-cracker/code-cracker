@@ -28,6 +28,7 @@ namespace CodeCracker.CSharp.Refactoring
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var @for = (ForStatementSyntax)context.Node;
             if (@for.Declaration == null && @for.Initializers.Count == 0) return;
             if (@for.Declaration != null && @for.Declaration.Variables.Count != 1) return;

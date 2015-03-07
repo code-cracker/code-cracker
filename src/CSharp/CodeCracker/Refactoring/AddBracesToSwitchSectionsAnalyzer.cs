@@ -29,6 +29,7 @@ namespace CodeCracker.CSharp.Refactoring
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var @switch = (SwitchStatementSyntax)context.Node;
             if (!@switch.Sections.All(HasBraces))
                 context.ReportDiagnostic(Diagnostic.Create(Rule, @switch.GetLocation()));

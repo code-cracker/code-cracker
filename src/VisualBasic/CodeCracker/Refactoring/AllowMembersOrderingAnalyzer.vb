@@ -34,6 +34,7 @@ Namespace Refactoring
         End Sub
 
         Public Sub Analyze(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim typeSyntax = TryCast(context.Node, TypeBlockSyntax)
             If typeSyntax Is Nothing Then Exit Sub
 

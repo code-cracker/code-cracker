@@ -32,6 +32,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var methodInvokeSyntax = context.Node as InvocationExpressionSyntax;
 
             var childNodes = methodInvokeSyntax.ChildNodes();

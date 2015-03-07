@@ -32,6 +32,7 @@ namespace CodeCracker.CSharp.Performance
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var localDeclaration = (LocalDeclarationStatementSyntax)context.Node;
             var semanticModel = context.SemanticModel;
 

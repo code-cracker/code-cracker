@@ -34,6 +34,7 @@ Public Class IPAddressAnalyzer
     End Sub
 
     Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
+        If (context.IsGenerated()) Then Return
         Dim method As New MethodInformation("Parse",
                                             "System.Net.IPAddress.Parse(string)",
                                             Sub(args) parseMethodInfo.Value.Invoke(Nothing, {args(0).ToString()}))

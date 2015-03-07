@@ -30,6 +30,7 @@ namespace CodeCracker.CSharp.Usage
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var comparison = (BinaryExpressionSyntax)context.Node;
 
             // Only handle the case where both operands of type bool; other cases involve

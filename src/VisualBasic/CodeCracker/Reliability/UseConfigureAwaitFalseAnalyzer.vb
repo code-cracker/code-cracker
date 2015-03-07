@@ -35,6 +35,7 @@ Namespace Reliability
         End Sub
 
         Private Shared Sub AnalyzeNode(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim awaitExpression = DirectCast(context.Node, AwaitExpressionSyntax)
             Dim awaitedExpression = awaitExpression.Expression
             If Not IsTask(awaitedExpression, context) Then Exit Sub

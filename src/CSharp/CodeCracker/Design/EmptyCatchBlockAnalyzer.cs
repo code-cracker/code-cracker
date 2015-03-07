@@ -31,6 +31,7 @@ namespace CodeCracker.CSharp.Design
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var catchStatement = (CatchClauseSyntax)context.Node;
             if (catchStatement?.Block?.Statements.Count != 0) return;
             var diagnostic = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Empty Catch Block.");

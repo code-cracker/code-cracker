@@ -33,6 +33,7 @@ namespace CodeCracker.CSharp.Design
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var stringLiteral = context.Node as LiteralExpressionSyntax;
             if (string.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText)) return;
             var parameters = GetParameters(stringLiteral);

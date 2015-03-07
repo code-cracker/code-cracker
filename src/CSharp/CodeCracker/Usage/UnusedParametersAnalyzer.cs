@@ -35,6 +35,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var methodOrConstructor = context.Node as BaseMethodDeclarationSyntax;
             if (methodOrConstructor == null) return;
             var semanticModel = context.SemanticModel;

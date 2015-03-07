@@ -89,7 +89,23 @@ namespace CodeCracker
             var csharpNode = node as CSharpSyntaxNode;
             if (csharpNode != null)
                 return csharpNode.HasAttributeOnAncestorOrSelf(attributeName);
-            return ((Microsoft.CodeAnalysis.VisualBasic.VisualBasicSyntaxNode)node).HasAttributeOnAncestorOrSelf(attributeName);
+            var vbNode = node as Microsoft.CodeAnalysis.VisualBasic.VisualBasicSyntaxNode;
+            if (vbNode != null)
+                return vbNode.HasAttributeOnAncestorOrSelf(attributeName);
+            return false;
+        }
+
+        public static bool HasAttributeOnAncestorOrSelf(this SyntaxNode node, params string[] attributeNames)
+        {
+            var csharpNode = node as CSharpSyntaxNode;
+            if (csharpNode != null)
+                foreach (var attributeName in attributeNames)
+                    if (csharpNode.HasAttributeOnAncestorOrSelf(attributeName)) return true;
+            var vbNode = node as Microsoft.CodeAnalysis.VisualBasic.VisualBasicSyntaxNode;
+            if (vbNode != null)
+                foreach (var attributeName in attributeNames)
+                    if (vbNode.HasAttributeOnAncestorOrSelf(attributeName)) return true;
+            return false;
         }
 
         public static bool HasAttributeOnAncestorOrSelf(this CSharpSyntaxNode node, string attributeName)

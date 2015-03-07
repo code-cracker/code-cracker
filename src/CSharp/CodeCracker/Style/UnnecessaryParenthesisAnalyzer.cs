@@ -33,6 +33,7 @@ namespace CodeCracker.CSharp.Style
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var objectCreation = context.Node as ObjectCreationExpressionSyntax;
             if (objectCreation.Initializer != null && objectCreation.ArgumentList != null && !objectCreation.ArgumentList.Arguments.Any())
             {

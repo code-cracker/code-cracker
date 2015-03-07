@@ -32,6 +32,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void AnalyzeAssignment(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var assignmentExpression = (AssignmentExpressionSyntax)context.Node;
             var whileStatement = assignmentExpression.FirstAncestorOfType(typeof(WhileStatementSyntax),
                 typeof(ForStatementSyntax),

@@ -32,6 +32,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var ifStatement = context.Node as IfStatementSyntax;
             if (ifStatement?.Else == null) return;
             var statementInsideIf = ifStatement.Statement.GetSingleStatementFromPossibleBlock();

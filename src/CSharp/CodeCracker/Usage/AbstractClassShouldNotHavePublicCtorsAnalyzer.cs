@@ -29,6 +29,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var ctor = (ConstructorDeclarationSyntax)context.Node;
             if (!ctor.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword))) return;
 

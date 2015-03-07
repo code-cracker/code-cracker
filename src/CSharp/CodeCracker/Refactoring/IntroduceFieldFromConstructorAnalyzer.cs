@@ -31,6 +31,7 @@ namespace CodeCracker.CSharp.Refactoring
 
         private static void AnalyzeConstructor(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var constructorMethod = (ConstructorDeclarationSyntax)context.Node;
             var parameters = constructorMethod.ParameterList.Parameters;
 

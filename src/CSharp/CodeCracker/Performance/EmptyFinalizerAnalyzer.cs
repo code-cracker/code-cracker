@@ -35,6 +35,7 @@ namespace CodeCracker.CSharp.Performance
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var finalizer = (DestructorDeclarationSyntax)context.Node;
             var body = finalizer.Body;
 

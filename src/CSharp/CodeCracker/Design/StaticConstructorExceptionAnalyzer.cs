@@ -35,6 +35,7 @@ namespace CodeCracker.CSharp.Design
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var ctor = (ConstructorDeclarationSyntax)context.Node;
 
             if (!ctor.Modifiers.Any(SyntaxKind.StaticKeyword)) return;

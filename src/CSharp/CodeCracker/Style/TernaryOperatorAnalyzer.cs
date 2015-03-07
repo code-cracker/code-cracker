@@ -40,6 +40,7 @@ namespace CodeCracker.CSharp.Style
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var ifStatement = context.Node as IfStatementSyntax;
             if (ifStatement == null) return;
             if (ifStatement.Else == null) return;

@@ -40,6 +40,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void AnalyzeField(SymbolAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var fieldSymbol = (IFieldSymbol)context.Symbol;
             if (!fieldSymbol.Type.AllInterfaces.Any(i => i.ToString() == "System.IDisposable") && fieldSymbol.Type.ToString() != "System.IDisposable") return;
             var fieldSyntaxRef = fieldSymbol.DeclaringSyntaxReferences.FirstOrDefault();

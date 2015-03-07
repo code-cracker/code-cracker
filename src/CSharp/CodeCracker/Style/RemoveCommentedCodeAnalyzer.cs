@@ -30,6 +30,7 @@ namespace CodeCracker.CSharp.Style
 
         private void AnalyzeSingleLineCommentTrivia(SyntaxTreeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var root = context.Tree.GetRoot();
 
             var comments = root.DescendantTrivia()

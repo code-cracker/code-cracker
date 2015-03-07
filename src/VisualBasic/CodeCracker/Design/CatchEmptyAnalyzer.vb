@@ -28,8 +28,9 @@ Namespace Design
         End Sub
 
         Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim catchStatement = DirectCast(context.Node, Syntax.CatchStatementSyntax)
-            If catchStatement Is Nothing Then Exit Sub
+                If catchStatement Is Nothing Then Exit Sub
 
             If catchStatement.IdentifierName Is Nothing Then
                 Dim diag = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Consider including an Exception Class in catch.")

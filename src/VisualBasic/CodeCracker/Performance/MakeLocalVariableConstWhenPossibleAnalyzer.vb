@@ -31,6 +31,7 @@ Namespace Performance
         End Sub
 
         Private Sub AnalyzeNode(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim localDeclaration = DirectCast(context.Node, LocalDeclarationStatementSyntax)
             Dim semanticModel = context.SemanticModel
             If Not localDeclaration.Modifiers.OfType(Of ConstDirectiveTriviaSyntax).Any() AndAlso

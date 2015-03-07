@@ -30,6 +30,7 @@ namespace CodeCracker.CSharp.Style
 
         private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var method = (MethodDeclarationSyntax)context.Node;
             if (method.Identifier.ToString().EndsWith("Async")) return;
 

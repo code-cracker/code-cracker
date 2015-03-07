@@ -33,6 +33,7 @@ Namespace Performance
         End Sub
 
         Private Sub AnalyzeNode(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim whereInvoke = DirectCast(context.Node, InvocationExpressionSyntax)
             If GetNameOfTheInvokeMethod(whereInvoke) <> "Where" Then Exit Sub
 

@@ -30,6 +30,7 @@ namespace CodeCracker.CSharp.Style
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var forStatement = context.Node as ForStatementSyntax;
             if (forStatement == null) return;
             if (forStatement.Declaration == null || forStatement.Condition == null || !forStatement.Incrementors.Any()

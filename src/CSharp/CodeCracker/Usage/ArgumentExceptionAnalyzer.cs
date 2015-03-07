@@ -34,6 +34,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var objectCreationExpression = (ObjectCreationExpressionSyntax)context.Node;
 
             var type = objectCreationExpression.Type;

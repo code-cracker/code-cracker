@@ -32,6 +32,7 @@ If the error is expected, consider logging it or changing the control flow such 
         End Sub
 
         Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim catchBlock = DirectCast(context.Node, CatchBlockSyntax)
             If (catchBlock.Statements.Count <> 0) Then Exit Sub
             Dim diag = Diagnostic.Create(Rule, catchBlock.GetLocation(), "Empty Catch Block.")

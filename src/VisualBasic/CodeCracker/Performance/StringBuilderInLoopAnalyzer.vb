@@ -31,6 +31,7 @@ Namespace Performance
         End Sub
 
         Private Sub Analyze(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim assignmentExpression = DirectCast(context.Node, AssignmentStatementSyntax)
             Dim loopStatment = assignmentExpression.FirstAncestorOfType(
             GetType(WhileBlockSyntax),

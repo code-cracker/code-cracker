@@ -32,6 +32,7 @@ namespace CodeCracker.CSharp.Style
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var lambda = context.Node as ExpressionSyntax;
 
             var invocation = GetInvocationIfAny(lambda);

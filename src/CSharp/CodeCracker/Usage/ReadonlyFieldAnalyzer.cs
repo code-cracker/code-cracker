@@ -39,6 +39,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void AnalyzeTree(SyntaxTreeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             if (!compilation.SyntaxTrees.Contains(context.Tree)) return;
             var semanticModel = compilation.GetSemanticModel(context.Tree);
             SyntaxNode root;
