@@ -59,5 +59,6 @@
         RemoveAsyncFromMethod = 72,
         AddBracesToSwitchSections = 73,
         NoPrivateReadonlyField = 74,
+        NumericLiteral = 79,
 	}
 }

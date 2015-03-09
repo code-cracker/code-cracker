@@ -42,6 +42,7 @@
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
+    <Compile Include="Refactoring\NumericLiteralCodeFixProvider.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorAnalyzer.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorCodeFixProviderAll.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorCodeFixProvider.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Style\RemoveTrailingWhitespaceAnalyzer.cs" />
     <Compile Include="Style\RemoveTrailingWhitespaceCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatCodeFixProvider.cs" />
+    <Compile Include="Refactoring\NumericLiteralAnalyzer.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsCodeFixProvider.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
