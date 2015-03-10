@@ -58,6 +58,6 @@
         IntroduceFieldFromConstructor = 71,
         RemoveAsyncFromMethod = 72,
         AddBracesToSwitchSections = 73,
-        TernaryOperator_Iif = 74
+        TernaryOperator_Iif = 80
     }
 }
