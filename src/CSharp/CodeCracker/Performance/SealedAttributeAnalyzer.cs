@@ -30,6 +30,7 @@ namespace CodeCracker.CSharp.Performance
 
         private void Analyze(SymbolAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var type = (INamedTypeSymbol)context.Symbol;
 
             if (type.TypeKind != TypeKind.Class) return;

@@ -36,6 +36,7 @@ Namespace Style
         End Sub
 
         Private Shared Sub AnalyzeClass(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim interfaceDeclaration = DirectCast(context.Node, InterfaceStatementSyntax)
             Dim model = context.SemanticModel
             Dim name = interfaceDeclaration.Identifier.Text

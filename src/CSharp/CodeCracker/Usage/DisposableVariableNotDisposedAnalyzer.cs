@@ -32,6 +32,7 @@ namespace CodeCracker.CSharp.Usage
 
         private static void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var objectCreation = context.Node as ObjectCreationExpressionSyntax;
             if (objectCreation == null) return;
             var semanticModel = context.SemanticModel;

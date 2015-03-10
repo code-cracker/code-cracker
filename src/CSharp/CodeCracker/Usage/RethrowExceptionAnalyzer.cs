@@ -34,6 +34,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var throwStatement = (ThrowStatementSyntax)context.Node;
             var ident = throwStatement.Expression as IdentifierNameSyntax;
             if (ident == null) return;

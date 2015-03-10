@@ -37,6 +37,7 @@ namespace CodeCracker.CSharp.Refactoring
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var literalExpression = (LiteralExpressionSyntax)context.Node;
             var isVerbatim = literalExpression.Token.Text.Length > 0
                 && literalExpression.Token.Text.StartsWith("@\"");

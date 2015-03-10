@@ -42,6 +42,7 @@
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
+    <Compile Include="Refactoring\NumericLiteralCodeFixProvider.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorAnalyzer.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorCodeFixProviderAll.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorCodeFixProvider.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Style\RemoveTrailingWhitespaceAnalyzer.cs" />
     <Compile Include="Style\RemoveTrailingWhitespaceCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatCodeFixProvider.cs" />
+    <Compile Include="Refactoring\NumericLiteralAnalyzer.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsCodeFixProvider.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
@@ -98,6 +100,7 @@
     <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzer.cs" />
     <Compile Include="Usage\RemoveUnreachableCodeCodeFixProvider.cs" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedCodeFixProvider.cs" />
+    <Compile Include="Usage\NoPrivateReadonlyFieldAnalyzer.cs" />
     <Compile Include="Usage\UnusedParametersCodeFixProvider.cs" />
     <Compile Include="Usage\UnusedParametersAnalyzer.cs" />
     <Compile Include="Usage\IPAddressAnalyzer.cs" />
@@ -218,6 +221,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha4\tools\analyzers\CodeCracker.CSharp.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc1\tools\analyzers\Microsoft.CodeAnalysis.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

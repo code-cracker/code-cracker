@@ -33,6 +33,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var invocationExpression = (InvocationExpressionSyntax)context.Node;
 
             var memberExpresion = invocationExpression.Expression as MemberAccessExpressionSyntax;

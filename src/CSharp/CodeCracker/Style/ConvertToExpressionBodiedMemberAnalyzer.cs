@@ -34,6 +34,7 @@ namespace CodeCracker.CSharp.Style
 
         static void AnalyzeBaseMethodNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var methodDeclaration = (BaseMethodDeclarationSyntax)context.Node;
             var body = methodDeclaration.Body;
             if (body == null) return;
@@ -46,6 +47,7 @@ namespace CodeCracker.CSharp.Style
 
         private void AnalyzeBasePropertyNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var declaration = (BasePropertyDeclarationSyntax)context.Node;
             if (declaration.AccessorList == null) return;
             var accessors = declaration.AccessorList.Accessors;

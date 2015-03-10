@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Message,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: Description,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UnusedParameters));
@@ -35,6 +35,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var methodOrConstructor = context.Node as BaseMethodDeclarationSyntax;
             if (methodOrConstructor == null) return;
             var semanticModel = context.SemanticModel;

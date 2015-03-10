@@ -30,6 +30,7 @@ namespace CodeCracker.CSharp.Style
 
         private static void AnalyzeClass(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var invocationExpression = (PropertyDeclarationSyntax)context.Node;
             var semanticModel = context.SemanticModel;
 

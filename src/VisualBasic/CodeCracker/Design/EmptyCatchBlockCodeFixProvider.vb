@@ -54,7 +54,7 @@ Namespace Design
             WithTrailingTrivia(catchBlock.GetTrailingTrivia).
             WithAdditionalAnnotations(Formatter.Annotation)
 
-            Dim root = Await document.GetSyntaxRootAsync()
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
             Dim newRoot = root.ReplaceNode(catchBlock, catchClause)
             Dim newDocument = document.WithSyntaxRoot(newRoot)
             Return newDocument

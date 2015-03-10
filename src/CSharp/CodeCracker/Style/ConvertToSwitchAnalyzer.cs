@@ -33,6 +33,7 @@ namespace CodeCracker.CSharp.Style
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var ifStatement = (IfStatementSyntax)context.Node;
 
             // ignoring else if

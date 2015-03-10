@@ -52,7 +52,9 @@ Namespace Refactoring
 
         Protected MustOverride Function GetMemberDeclarationComparer(document As Document, cancellationToken As CancellationToken) As IComparer(Of DeclarationStatementSyntax)
 
+#Disable Warning CC0057 ' Unused parameters. todo: remove when #291 is fixed
         Private Function TryReplaceTypeMembers(typeBlock As TypeBlockSyntax, membersDeclaration As IEnumerable(Of DeclarationStatementSyntax), sortedMembers As IEnumerable(Of DeclarationStatementSyntax), ByRef orderedType As TypeBlockSyntax) As Boolean
+#Enable Warning CC0057 ' Unused parameters.
             Dim sortedMembersQueue = New Queue(Of DeclarationStatementSyntax)(sortedMembers)
             Dim orderChanged = False
             orderedType = typeBlock.ReplaceNodes(membersDeclaration,

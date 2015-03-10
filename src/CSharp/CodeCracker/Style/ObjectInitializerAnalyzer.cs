@@ -49,6 +49,7 @@ namespace CodeCracker.CSharp.Style
 
         private void AnalyzerAssignment(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var semanticModel = context.SemanticModel;
             var expressionStatement = context.Node as ExpressionStatementSyntax;
             if (!expressionStatement?.Expression?.IsKind(SyntaxKind.SimpleAssignmentExpression) ?? false) return;
@@ -63,6 +64,7 @@ namespace CodeCracker.CSharp.Style
 
         private void AnalyzerLocalDeclaration(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var semanticModel = context.SemanticModel;
             var localDeclarationStatement = context.Node as LocalDeclarationStatementSyntax;
             if (localDeclarationStatement == null) return;

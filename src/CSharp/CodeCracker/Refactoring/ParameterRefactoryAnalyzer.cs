@@ -29,6 +29,7 @@ namespace CodeCracker.CSharp.Refactoring
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var method = (MethodDeclarationSyntax)context.Node;
 
             if (method.Modifiers.Any(SyntaxKind.ExternKeyword)) return;

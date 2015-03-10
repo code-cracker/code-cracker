@@ -50,7 +50,7 @@ namespace ConsoleApplication1
         [Fact]
         public async Task IfAbbreviateParseIdentifierFoundAndIPAddressTextIsCorrectDoesNotCreatesDiagnostic()
         {
-            var test = string.Format(TestCode, @"Parse(""127.0.0.1"")");
+            var test = string.Format(TestCode, @"IPAddress.Parse(""127.0.0.1"")");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 

@@ -32,22 +32,22 @@ Namespace Design
             Dim methodDeclaration = stringLiteral.AncestorsAndSelf().OfType(Of MethodBlockSyntax).FirstOrDefault
             If methodDeclaration IsNot Nothing Then
                 Dim methodParam = methodDeclaration.SubOrFunctionStatement.ParameterList.Parameters.First
-                Return Await NewDocument(document, stringLiteral, methodParam)
+                Return Await NewDocument(document, stringLiteral, methodParam, cancellationToken)
             Else
                 Dim constructorDeclaration = stringLiteral.AncestorsAndSelf.OfType(Of ConstructorBlockSyntax).FirstOrDefault
                 Dim constructorParam = constructorDeclaration.SubNewStatement.ParameterList.Parameters.First
 
-                Return Await NewDocument(document, stringLiteral, constructorParam)
+                Return Await NewDocument(document, stringLiteral, constructorParam, cancellationToken)
             End If
         End Function
 
-        Private Async Function NewDocument(document As Document, stringLiteral As LiteralExpressionSyntax, methodParameter As ParameterSyntax) As Task(Of Document)
+        Private Async Function NewDocument(document As Document, stringLiteral As LiteralExpressionSyntax, methodParameter As ParameterSyntax, cancellationToken As CancellationToken) As Task(Of Document)
             Dim newNameof = SyntaxFactory.ParseExpression(String.Format("NameOf({0})", methodParameter.Identifier.Identifier.ValueText)).
             WithLeadingTrivia(stringLiteral.GetLeadingTrivia).
             WithTrailingTrivia(stringLiteral.GetTrailingTrivia).
             WithAdditionalAnnotations(Formatter.Annotation)
 
-            Dim root = Await document.GetSyntaxRootAsync()
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken)
             Dim newRoot = root.ReplaceNode(stringLiteral, newNameof)
             Return document.WithSyntaxRoot(newRoot)
         End Function

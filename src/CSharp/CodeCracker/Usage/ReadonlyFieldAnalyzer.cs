@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Title = "Make field readonly";
         internal const string Message = "Make '{0}' readonly";
         internal const string Category = SupportedCategories.Usage;
-        const string Description = "A field that is only assigned on the constructor can be make readonly.";
+        const string Description = "A field that is only assigned on the constructor can be made readonly.";
         private Compilation compilation;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -39,6 +39,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void AnalyzeTree(SyntaxTreeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             if (!compilation.SyntaxTrees.Contains(context.Tree)) return;
             var semanticModel = compilation.GetSemanticModel(context.Tree);
             SyntaxNode root;

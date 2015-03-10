@@ -19,7 +19,7 @@ Namespace Usage
             Message,
             SupportedCategories.Usage,
             DiagnosticSeverity.Info,
-            isEnabledByDefault:=True,
+            isEnabledByDefault:=False,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed))
 
@@ -34,6 +34,7 @@ Namespace Usage
         End Sub
 
         Private Sub AnalyzeNode(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim methodStatement = DirectCast(context.Node, MethodStatementSyntax)
             If Not methodStatement.Modifiers.Any(Function(a) a.ValueText = SyntaxFactory.Token(SyntaxKind.PrivateKeyword).ValueText) Then Exit Sub
             If IsMethodUsed(methodStatement) Then Exit Sub

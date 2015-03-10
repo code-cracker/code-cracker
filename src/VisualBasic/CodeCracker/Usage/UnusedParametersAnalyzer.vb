@@ -20,7 +20,7 @@ You should delete the parameter in such cases."
         Message,
         SupportedCategories.Usage,
         DiagnosticSeverity.Warning,
-        True,
+        False,
         Description,
         HelpLink.ForDiagnostic(DiagnosticId.UnusedParameters),
         WellKnownDiagnosticTags.Unnecessary)
@@ -36,6 +36,7 @@ You should delete the parameter in such cases."
         End Sub
 
         Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim methodOrConstructor = TryCast(context.Node, MethodBlockBaseSyntax)
             If methodOrConstructor Is Nothing Then Exit Sub
             Dim model = context.SemanticModel

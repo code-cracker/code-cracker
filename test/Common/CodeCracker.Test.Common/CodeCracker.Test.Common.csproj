@@ -95,7 +95,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>D:\proj\code-cracker\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Composition.AttributedModel, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -129,7 +129,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>D:\proj\code-cracker\packages\xunit.abstractions.2.0.0-rc3-build2880\lib\net35\xunit.abstractions.dll</HintPath>
+      <HintPath>..\..\..\packages\xunit.abstractions.2.0.0-rc3-build2880\lib\net35\xunit.abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.assert, Version=2.0.0.2880, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
@@ -155,6 +155,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha4\tools\analyzers\CodeCracker.CSharp.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc1\tools\analyzers\Microsoft.CodeAnalysis.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

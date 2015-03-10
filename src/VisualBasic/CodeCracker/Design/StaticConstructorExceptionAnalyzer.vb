@@ -31,6 +31,7 @@ Exception thrown in this context forces callers to use 'try' block around any us
         End Sub
 
         Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim ctor = DirectCast(context.Node, Syntax.SubNewStatementSyntax)
             If Not ctor.Modifiers.Any(SyntaxKind.SharedKeyword) Then Exit Sub
 

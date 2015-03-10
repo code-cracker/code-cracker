@@ -31,7 +31,7 @@ function global:DebounceXunit {
 Write-Host "Watching $testDllDirPath"
 If ($testClass) {
     If ($testClass.StartsWith("CodeCracker.Test") -eq $false) {
-        $testClass = "CodeCracker.Test.$testClass"
+        $testClass = "CodeCracker.Test.VisualBasic.$testClass"
     }
     Write-Host "Only for $testClass"
 }

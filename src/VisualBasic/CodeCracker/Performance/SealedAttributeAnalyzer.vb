@@ -29,6 +29,7 @@ Namespace Performance
         End Sub
 
         Private Sub Analyze(context As SymbolAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim type = DirectCast(context.Symbol, INamedTypeSymbol)
             If type.TypeKind <> TypeKind.Class Then Exit Sub
 

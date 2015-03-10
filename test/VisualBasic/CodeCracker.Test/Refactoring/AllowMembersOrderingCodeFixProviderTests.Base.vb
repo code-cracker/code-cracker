@@ -134,7 +134,8 @@ End Namespace
             Public Sub New()
                 MyBase.New("Fake codefix")
             End Sub
-            Public Property HasIComparerBeenCalled
+
+            Public Property HasIComparerBeenCalled As Boolean
 
             Protected Overrides Function GetMemberDeclarationComparer(document As Document, cancellationToken As CancellationToken) As IComparer(Of DeclarationStatementSyntax)
                 Return New AlphabeticalMemberOrderingComparer(Me)

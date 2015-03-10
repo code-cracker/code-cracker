@@ -31,6 +31,7 @@ Namespace Usage
             context.RegisterSyntaxNodeAction(AddressOf AnalyzeNode, SyntaxKind.SubNewStatement)
         End Sub
         Private Sub AnalyzeNode(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim constructor = DirectCast(context.Node, SubNewStatementSyntax)
             If Not constructor.Modifiers.Any(Function(m) m.IsKind(SyntaxKind.PublicKeyword)) Then Exit Sub
 

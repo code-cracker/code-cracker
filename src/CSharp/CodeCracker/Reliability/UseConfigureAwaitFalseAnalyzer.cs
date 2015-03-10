@@ -28,6 +28,7 @@ namespace CodeCracker.CSharp.Reliability
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var awaitExpression = (AwaitExpressionSyntax)context.Node;
             var awaitedExpression = awaitExpression.Expression;
             if (!IsTask(awaitedExpression, context))

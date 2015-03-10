@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CodeCracker
 {
@@ -13,5 +14,14 @@ namespace CodeCracker
             return dictionary;
         }
 
+        public static bool EndsWithAny(this string text, params string[] values) =>
+            text.EndsWithAny(StringComparison.CurrentCulture, values);
+
+        public static bool EndsWithAny(this string text, StringComparison comparisonType, params string[] values)
+        {
+            foreach (var value in values)
+                if (text.EndsWith(value, comparisonType)) return true;
+            return false;
+        }
     }
 }

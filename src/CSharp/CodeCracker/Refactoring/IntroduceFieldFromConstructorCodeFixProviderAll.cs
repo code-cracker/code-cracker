@@ -63,7 +63,7 @@ namespace CodeCracker.CSharp.Refactoring
 
                 var constructorMethod = (ConstructorDeclarationSyntax)node.Parent.Parent;
                 var parameter = (ParameterSyntax)node;
-                newRoot = IntroduceFieldFromConstructorCodeFixProvider.IntroduceFieldFromConstructorAsync(newRoot, constructorMethod, parameter);
+                newRoot = IntroduceFieldFromConstructorCodeFixProvider.IntroduceFieldFromConstructor(newRoot, constructorMethod, parameter);
                 node = newRoot.GetAnnotatedNodes(introduceFieldAnnotation).First();
                 newRoot = newRoot.ReplaceNode(node, node.WithoutAnnotations(introduceFieldAnnotation));
             }

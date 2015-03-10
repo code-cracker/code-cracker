@@ -33,6 +33,7 @@ namespace CodeCracker.CSharp.Design
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var invocation = (InvocationExpressionSyntax)context.Node;
             var identifier = invocation.Expression as IdentifierNameSyntax;
             if (identifier == null) return;

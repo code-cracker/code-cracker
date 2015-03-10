@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Message,
             Category,
             DiagnosticSeverity.Info,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed));
 
@@ -33,6 +33,7 @@ namespace CodeCracker.CSharp.Usage
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var methodDeclaration = (MethodDeclarationSyntax)context.Node;
             if (!methodDeclaration.Modifiers.Any(a => a.ValueText == SyntaxFactory.Token(SyntaxKind.PrivateKeyword).ValueText)) return;
             if (IsMethodUsed(methodDeclaration)) return;

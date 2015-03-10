@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.22609.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeCracker", "src\VisualBasic\CodeCracker\CodeCracker.vbproj", "{41FA4971-D354-4647-A269-4A886DA2EF4C}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeCracker.Vsix", "src\VisualBasic\CodeCracker.Vsix\CodeCracker.Vsix.vbproj", "{0C891C7E-FCA1-4318-A1EE-EF06F0767419}"
-EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeCracker.Test", "test\VisualBasic\CodeCracker.Test\CodeCracker.Test.vbproj", "{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3DB077DC-387D-4AAD-9ECE-96D3D24FB3A6}"
@@ -40,6 +38,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Common", "src\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Test.Common", "test\Common\CodeCracker.Test.Common\CodeCracker.Test.Common.csproj", "{1CD1A3EE-28CE-404B-A59E-AEACF762D938}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Vsix", "src\VisualBasic\CodeCracker.Vsix\CodeCracker.Vsix.csproj", "{B7B513B4-0317-4F32-B560-4BFC4FAEC239}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,11 +53,6 @@ Global
 		{41FA4971-D354-4647-A269-4A886DA2EF4C}.DebugNoVsix|Any CPU.Build.0 = Debug|Any CPU
 		{41FA4971-D354-4647-A269-4A886DA2EF4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41FA4971-D354-4647-A269-4A886DA2EF4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C891C7E-FCA1-4318-A1EE-EF06F0767419}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C891C7E-FCA1-4318-A1EE-EF06F0767419}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C891C7E-FCA1-4318-A1EE-EF06F0767419}.DebugNoVsix|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C891C7E-FCA1-4318-A1EE-EF06F0767419}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C891C7E-FCA1-4318-A1EE-EF06F0767419}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D}.DebugNoVsix|Any CPU.ActiveCfg = Debug|Any CPU
@@ -76,6 +71,11 @@ Global
 		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.DebugNoVsix|Any CPU.Build.0 = Debug|Any CPU
 		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CD1A3EE-28CE-404B-A59E-AEACF762D938}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.DebugNoVsix|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7B513B4-0317-4F32-B560-4BFC4FAEC239}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

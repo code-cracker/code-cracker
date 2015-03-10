@@ -29,15 +29,13 @@ namespace CodeCracker.CSharp.Usage
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.IPAddress));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-        {
-            get { return ImmutableArray.Create(Rule); }
-        }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var method = new MethodInformation(
                 "Parse",
                 "System.Net.IPAddress.Parse(string)",

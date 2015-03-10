@@ -33,6 +33,7 @@ Namespace Refactoring
         End Sub
 
         Public Sub AnalyzeNode(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim method = DirectCast(context.Node, MethodBlockSyntax)
             If method.SubOrFunctionStatement.Modifiers.Any(SyntaxKind.FriendKeyword) Then Exit Sub
 

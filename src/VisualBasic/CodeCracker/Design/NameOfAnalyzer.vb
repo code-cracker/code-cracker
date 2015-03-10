@@ -32,6 +32,7 @@ Namespace Design
         End Sub
 
         Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim stringLiteral = DirectCast(context.Node, LiteralExpressionSyntax)
             If String.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText) Then Return
             Dim parameters = GetParameters(stringLiteral)

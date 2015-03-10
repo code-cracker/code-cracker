@@ -28,6 +28,7 @@ namespace CodeCracker.CSharp.Design
 
         private void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var catchStatement = (CatchClauseSyntax)context.Node;
 
             if (catchStatement == null || catchStatement.Declaration != null) return;

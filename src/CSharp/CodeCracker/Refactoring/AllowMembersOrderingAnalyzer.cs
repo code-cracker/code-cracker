@@ -29,6 +29,7 @@ namespace CodeCracker.CSharp.Refactoring
 
         private void Analyze(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var typeDeclarationSyntax = context.Node as TypeDeclarationSyntax;
             if (!CanOrder(typeDeclarationSyntax)) return;
             context.ReportDiagnostic(Diagnostic.Create(Rule, typeDeclarationSyntax.Identifier.GetLocation()));

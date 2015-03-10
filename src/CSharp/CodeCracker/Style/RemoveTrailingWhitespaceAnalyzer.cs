@@ -32,6 +32,7 @@ namespace CodeCracker.CSharp.Style
 
         private void AnalyzeTrailingTrivia(SyntaxTreeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             SourceText text;
             if (!context.Tree.TryGetText(out text)) return;
             SyntaxNode root;

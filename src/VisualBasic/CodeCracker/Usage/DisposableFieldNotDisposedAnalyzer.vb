@@ -45,6 +45,7 @@ Namespace Usage
         End Sub
 
         Private Sub AnalyzeField(context As SymbolAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim fieldSymbol = DirectCast(context.Symbol, IFieldSymbol)
             If Not fieldSymbol.Type.AllInterfaces.Any(Function(i) i.ToString().EndsWith("IDisposable")) AndAlso Not fieldSymbol.Type.ToString().EndsWith("IDisposable") Then Exit Sub
             Dim fieldSyntaxRef = fieldSymbol.DeclaringSyntaxReferences.FirstOrDefault

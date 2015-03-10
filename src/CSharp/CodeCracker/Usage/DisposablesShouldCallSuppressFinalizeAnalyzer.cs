@@ -32,6 +32,7 @@ namespace CodeCracker.CSharp.Usage
 
         private async void AnalyzeAsync(SymbolAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var symbol = (INamedTypeSymbol)context.Symbol;
             if (symbol.TypeKind != TypeKind.Class && symbol.TypeKind != TypeKind.Struct) return;
             if (!symbol.Interfaces.Any(i => i.SpecialType == SpecialType.System_IDisposable)) return;
