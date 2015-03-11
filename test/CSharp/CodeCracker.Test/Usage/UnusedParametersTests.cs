@@ -449,5 +449,97 @@ class Derived : Base
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task CallWithRefPeremeterDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class TypeName
+{
+    bool TryParse(string input, ref int output)
+    {
+        try
+        {
+            output = int.Parse(input);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+        [Fact]
+        public async Task CallWithUnusedRefPeremeterCreateDiagnostic()
+        {
+            const string source = @"
+class TypeName
+{
+    bool TryParse(string input, ref int output, ref int out2)
+    {
+        try
+        {
+            output = int.Parse(input);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}";
+
+            await VerifyCSharpDiagnosticAsync(source, CreateDiagnosticResult("out2", 4, 49));
+        }
+
+        [Fact]
+        public async Task CallWithOutPeremeterDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class TypeName
+{
+    bool TryParse(string input, out int output)
+    {
+        try
+        {
+            output = int.Parse(input);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+        [Fact]
+        public async Task CallWithUnusedOutPeremeterCreateDiagnostic()
+        {
+            const string source = @"
+class TypeName
+{
+    bool TryParse(string input, out int output, out int out2)
+    {
+        try
+        {
+            output = int.Parse(input);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}";
+
+            await VerifyCSharpDiagnosticAsync(source, CreateDiagnosticResult("out2", 4, 49));
+        }
+
+    }
+
 }
+
+
