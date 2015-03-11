@@ -361,6 +361,32 @@ End Class
             Await VerifyBasicHasNoDiagnosticsAsync(source)
         End Function
 
+        <Fact>
+        Public Async Function CallWithRefParameterDoesNotCreateDiagnostic() As Task
+            Const source = "
+Class Base
+        Private Function TryParse(input As String, ByRef output As Integer) As Boolean
+            output = CInt(input)
+            Return True
+        End Function
+End Class
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function CallWithUnusedRefParameterDoesCreateDiagnostic() As Task
+            Const source = "
+Class Base
+        Private Function TryParse(input As String, ByRef output As Integer, ByRef out2 As Integer) As Boolean
+            output = CInt(input)
+            Return True
+        End Function
+End Class
+"
+            Await VerifyBasicDiagnosticAsync(source, CreateDiagnosticResult("out2", 3, 77))
+        End Function
+
         Private Function CreateDiagnosticResult(parameterName As String, line As Integer, column As Integer) As DiagnosticResult
             Return New DiagnosticResult With {
                 .Id = DiagnosticId.UnusedParameters.ToDiagnosticId(),
