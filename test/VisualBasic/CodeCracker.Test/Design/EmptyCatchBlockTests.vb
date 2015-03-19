@@ -5,7 +5,7 @@ Namespace Design
     Public Class EmptyCatchBlockTests
         Inherits CodeFixVerifier(Of EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider)
 
-        Private test = "
+        Private test As String = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName

@@ -10,7 +10,7 @@ namespace CodeCracker.CSharp.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TernaryOperatorAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "User ternary operator";
+        internal const string Title = "Use ternary operator";
         internal const string MessageFormatForIfWithReturn = "{0}";
         internal const string Category = SupportedCategories.Style;
         internal const string MessageFormatForIfWithAssignment = "{0}";
