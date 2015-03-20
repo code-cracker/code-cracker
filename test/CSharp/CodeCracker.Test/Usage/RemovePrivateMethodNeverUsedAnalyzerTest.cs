@@ -26,7 +26,65 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact]
+		[Fact]
+		public async void DoesNotGenerateDiagnosticsWhenPrivateMethodIsInvokedInPartialClasses()
+		{
+			const string test = @"
+public partial class Foo
+{
+    public void PublicFoo()
+    {
+        PrivateFoo();
+    }
+}
+
+public partial class Foo
+{
+    private void PrivateFoo()
+    {
+    }
+}
+";
+
+			await VerifyCSharpHasNoDiagnosticsAsync(test);
+		}
+
+		[Fact]
+		public async void FixRemovesPrivateMethodWhenItIsNotInvokedInPartialClasses()
+		{
+			const string test = @"
+public partial class Foo
+{
+    public void PublicFoo()
+    {
+    }
+}
+
+public partial class Foo
+{
+    private void PrivateFoo()
+    {
+    }
+}
+";
+
+			const string expected = @"
+public partial class Foo
+{
+    public void PublicFoo()
+    {
+    }
+}
+
+public partial class Foo
+{
+}
+";
+
+			await VerifyCSharpFixAsync(test, expected);
+		}
+
+		[Fact]
         public async void WhenPrivateMethodUsedDoesNotGenerateDiagnostics()
         {
             const string test = @"

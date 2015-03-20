@@ -36,20 +36,32 @@ namespace CodeCracker.CSharp.Usage
             if (context.IsGenerated()) return;
             var methodDeclaration = (MethodDeclarationSyntax)context.Node;
             if (!methodDeclaration.Modifiers.Any(a => a.ValueText == SyntaxFactory.Token(SyntaxKind.PrivateKeyword).ValueText)) return;
-            if (IsMethodUsed(methodDeclaration)) return;
+            if (IsMethodUsed(methodDeclaration, context.SemanticModel)) return;
             if (methodDeclaration.Modifiers.Any(SyntaxKind.ExternKeyword)) return;
             var diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
             context.ReportDiagnostic(diagnostic);
         }
 
-        private bool IsMethodUsed(MethodDeclarationSyntax methodTarget)
+        private static bool IsMethodUsed(MethodDeclarationSyntax methodTarget, SemanticModel semanticModel)
         {
             var typeDeclaration = methodTarget.Parent as TypeDeclarationSyntax;
             if (typeDeclaration == null) return true;
 
-            var hasIdentifier = typeDeclaration.DescendantNodes()?.OfType<IdentifierNameSyntax>();
-            if (hasIdentifier == null || !hasIdentifier.Any()) return false;
-            return hasIdentifier.Any(a => a != null && a.Identifier.ValueText.Equals(methodTarget?.Identifier.ValueText));
+	        if (!typeDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
+		        return IsMethodUsed(methodTarget, typeDeclaration);
+
+	        var symbol = semanticModel.GetDeclaredSymbol(typeDeclaration);
+	        
+			return 
+				symbol == null || 
+				symbol.DeclaringSyntaxReferences.Any(reference => IsMethodUsed(methodTarget, reference.GetSyntax()));
         }
-    }
+
+		private static bool IsMethodUsed(MethodDeclarationSyntax methodTarget, SyntaxNode typeDeclaration)
+		{
+			var hasIdentifier = typeDeclaration.DescendantNodes()?.OfType<IdentifierNameSyntax>();
+			if (hasIdentifier == null || !hasIdentifier.Any()) return false;
+			return hasIdentifier.Any(a => a != null && a.Identifier.ValueText.Equals(methodTarget?.Identifier.ValueText));
+		}
+	}
 }
