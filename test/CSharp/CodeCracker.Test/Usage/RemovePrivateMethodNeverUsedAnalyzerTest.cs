@@ -49,6 +49,34 @@ public partial class Foo
 			await VerifyCSharpHasNoDiagnosticsAsync(test);
 		}
 
+
+		[Fact]
+		public async void DoesNotGenerateDiagnosticsWhenPrivateMethodIsInvokedInPartialClasses2()
+		{
+			const string test = @"
+public partial class foo
+{
+    public foo()
+    {
+
+    }
+
+    private void test()
+    {
+    }
+}
+
+public partial class foo
+{
+    public void test2()
+    {
+        test();
+    }
+}";
+			await VerifyCSharpHasNoDiagnosticsAsync(test);
+		}
+
+
 		[Fact]
 		public async void FixRemovesPrivateMethodWhenItIsNotInvokedInPartialClasses()
 		{
