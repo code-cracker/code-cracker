@@ -66,7 +66,7 @@
         SplitIntoNestedIf = 76,
         NumericLiteral = 79,
         TernaryOperator_Iif = 80,
-        ComputeExpression = 82,
-        UseStringEmpty = 84
+        UseStaticRegexIsMatch = 81,
+        ComputeExpression = 82
     }
 }
