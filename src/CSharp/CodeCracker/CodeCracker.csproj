@@ -35,8 +35,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
+    <Compile Include="Performance\UseStaticRegexIsMatchAnalyzer.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
+    <Compile Include="Performance\UseStaticRegexIsMatchCodeFixProvider.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsAnalyzer.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsCodeFix.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
