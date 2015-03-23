@@ -50,7 +50,8 @@ You should delete the parameter in such cases."
                 For Each parameter In parameters
                     Dim parameterSymbol = parameter.Value
                     If parameterSymbol Is Nothing Then Continue For
-                    If Not dataFlowAnalysis.ReadInside.Contains(parameterSymbol) Then 'AndAlso Not dataFlowAnalysis.WrittenOutside.Contains(parameterSymbol) 
+                    If Not dataFlowAnalysis.ReadInside.Contains(parameterSymbol) AndAlso
+                        Not dataFlowAnalysis.WrittenInside.Contains(parameterSymbol) Then
                         context = CreateDiagnostic(context, parameter.Key)
                     End If
                 Next

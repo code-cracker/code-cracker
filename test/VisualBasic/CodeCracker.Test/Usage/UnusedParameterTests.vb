@@ -1,4 +1,6 @@
 ﻿Imports CodeCracker.VisualBasic.Usage
+Imports Microsoft.CodeAnalysis
+Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports Xunit
 
 Namespace Usage
@@ -361,6 +363,57 @@ End Class
             Await VerifyBasicHasNoDiagnosticsAsync(source)
         End Function
 
+        <Fact>
+        Public Async Function CallWithRefParameterDoesNotCreateDiagnostic() As Task
+            Const source = "
+Class Base
+        Private Function TryParse(input As String, ByRef output As Integer) As Boolean
+            output = CInt(input)
+            Return True
+        End Function
+End Class
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function CallWithUnusedRefParameterDoesCreateDiagnostic() As Task
+            Const source = "
+Class Base
+        Private Function TryParse(input As String, ByRef output As Integer, ByRef out2 As Integer) As Boolean
+            output = CInt(input)
+            Return True
+        End Function
+End Class
+"
+            Await VerifyBasicDiagnosticAsync(source, CreateDiagnosticResult("out2", 3, 77))
+        End Function
+
+        <Fact>
+        Public Async Function CallWithRefAndEnumerableDoesNotCreateDiagnostic() As Task
+            Const source = "
+Imports Microsoft.CodeAnalysis
+Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
+Class Base
+        Private Function TryReplaceTypeMembers(typeBlock As TypeBlockSyntax, membersDeclaration As IEnumerable(Of DeclarationStatementSyntax), sortedMembers As IEnumerable(Of DeclarationStatementSyntax), ByRef orderedType As TypeBlockSyntax) As Boolean
+            Dim sortedMembersQueue = New Queue(Of DeclarationStatementSyntax)(sortedMembers)
+            Dim orderChanged = False
+            orderedType = typeBlock.ReplaceNodes(membersDeclaration,
+                                                 Function(original, rewritten)
+                                                     Dim newMember = sortedMembersQueue.Dequeue()
+                                                     If Not orderChanged And Not original.Equals(newMember) Then
+                                                         orderChanged = True
+                                                     End If
+                                                     Return newMember
+                                                 End Function)
+            Return orderChanged
+        End Function
+End Class
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+
         Private Function CreateDiagnosticResult(parameterName As String, line As Integer, column As Integer) As DiagnosticResult
             Return New DiagnosticResult With {
                 .Id = DiagnosticId.UnusedParameters.ToDiagnosticId(),
@@ -369,5 +422,6 @@ End Class
                 .Locations = {New DiagnosticResultLocation("Test0.vb", line, column)}
                 }
         End Function
+
     End Class
 End Namespace
