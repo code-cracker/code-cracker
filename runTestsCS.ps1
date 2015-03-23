@@ -3,7 +3,7 @@ $Global:lastRun = $(date)
 $testDllDirPath = "$PSScriptRoot\test\CSharp\CodeCracker.Test\bin\Debug\"
 $testDllFileName = "CodeCracker.Test.CSharp.dll"
 $Global:testDllFullFileName = "$testDllDirPath$testDllFileName"
-$Global:xunitConsole = "$PSScriptRoot\packages\xunit.runners.2.0.0-rc3-build2880\tools\xunit.console.x86.exe"
+$Global:xunitConsole = "$PSScriptRoot\packages\xunit.runner.console.2.0.0\tools\xunit.console.x86.exe"
 
 if ($testClass -eq "now"){
     . $Global:xunitConsole "$Global:testDllFullFileName"
