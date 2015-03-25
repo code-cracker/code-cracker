@@ -57,7 +57,6 @@ namespace CodeCracker.CSharp.Usage
                 if (!IsUsedVariable(variable, semanticModel, dataFlowAnalysis))
                 {
                     ReportDiagnostic(context, variable);
-                    return;
                 }
             }
         }
