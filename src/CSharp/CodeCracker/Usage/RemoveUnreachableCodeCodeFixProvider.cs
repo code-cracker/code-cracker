@@ -33,15 +33,13 @@ namespace CodeCracker.CSharp.Usage
 
         public static SyntaxNode RemoveUnreachableStatement(SyntaxNode root, SyntaxNode node)
         {
+            if (node.Parent.IsKind(SyntaxKind.IfStatement, SyntaxKind.WhileStatement))
+                return root.ReplaceNode(node, SyntaxFactory.Block());
+            if (node.Parent.IsKind(SyntaxKind.ElseClause))
+                return root.RemoveNode(node.Parent, SyntaxRemoveOptions.KeepNoTrivia);
             var statement = node as StatementSyntax;//for, while, foreach, if, throw, var, etc
             if (statement != null)
-            {
-                if (statement.Parent.IsKind(SyntaxKind.IfStatement, SyntaxKind.WhileStatement))
-                    return root.ReplaceNode(node, SyntaxFactory.Block());
-                if (statement.Parent.IsKind(SyntaxKind.ElseClause))
-                    return root.RemoveNode(statement.Parent, SyntaxRemoveOptions.KeepNoTrivia);
                 return root.RemoveNode(statement, SyntaxRemoveOptions.KeepNoTrivia);
-            }
             var localDeclaration = node.FirstAncestorOfType<LocalDeclarationStatementSyntax>();
             if (localDeclaration != null)
                 return root.RemoveNode(localDeclaration, SyntaxRemoveOptions.KeepNoTrivia);
@@ -49,6 +47,10 @@ namespace CodeCracker.CSharp.Usage
             if (expression.Parent.IsKind(SyntaxKind.ForStatement))
                 return root.RemoveNode(expression, SyntaxRemoveOptions.KeepNoTrivia);
             var expressionStatement = expression.FirstAncestorOfType<ExpressionStatementSyntax>();
+            if (expressionStatement.Parent.IsKind(SyntaxKind.IfStatement, SyntaxKind.WhileStatement))
+                return root.ReplaceNode(expressionStatement, SyntaxFactory.Block());
+            if (expressionStatement.Parent.IsKind(SyntaxKind.ElseClause))
+                return root.RemoveNode(expressionStatement.Parent, SyntaxRemoveOptions.KeepNoTrivia);
             return root.RemoveNode(expressionStatement, SyntaxRemoveOptions.KeepNoTrivia);
         }
 

@@ -188,6 +188,36 @@ class Foo
         }
 
         [Fact]
+        public async void FixUnreacheableInNestedIfWithInvocation()
+        {
+            const string source = @"
+class Foo
+{
+    int T()
+    {
+        if (true)
+            if (false)
+                System.Console.Write(1);
+        return 0;
+    }
+}";
+            const string fixtest = @"
+class Foo
+{
+    int T()
+    {
+        if (true)
+            if (false)
+            {
+            }
+
+        return 0;
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
         public async void FixUnreacheableInElse()
         {
             const string source = @"
