@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Usage
     {
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
-            ImmutableArray.Create(DiagnosticId.RemoveUnusedVariables.ToDiagnosticId());
+            ImmutableArray.Create("CS0168", "CS0219");
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
