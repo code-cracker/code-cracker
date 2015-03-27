@@ -42,6 +42,8 @@
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
+    <Compile Include="Refactoring\MergeNestedIfAnalyzer.cs" />
+    <Compile Include="Refactoring\MergeNestedIfCodeFixProvider.cs" />
     <Compile Include="Refactoring\NumericLiteralCodeFixProvider.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorAnalyzer.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorCodeFixProviderAll.cs" />
