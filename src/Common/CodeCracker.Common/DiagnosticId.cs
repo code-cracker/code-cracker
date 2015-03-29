@@ -61,6 +61,7 @@
         AddBracesToSwitchSections = 73,
         NoPrivateReadonlyField = 74,
         MergeNestedIf = 75,
+        SplitIntoNestedIf = 76,
         NumericLiteral = 79,
         TernaryOperator_Iif = 80
     }
