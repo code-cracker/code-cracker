@@ -107,6 +107,13 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async Task MethodWithStringInterpolationDoesNotCreateDiagnostic()
+        {
+            var source = @"var result = string.Format($""one {{0}} two {{1}} {""whatever""}"", ""a"", ""b"", ""c"");".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task IgnoreStringFormatWithCorrectNumberOfParameters()
         {
             var source = @"
