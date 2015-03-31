@@ -107,6 +107,7 @@
     <Compile Include="Usage\RemovePrivateMethodNeverUsedCodeFixProvider.cs" />
     <Compile Include="Usage\NoPrivateReadonlyFieldAnalyzer.cs" />
     <Compile Include="Usage\RemoveUnusedVariablesCodeFixProvider.cs" />
+    <Compile Include="Usage\StringFormatArgsAnalyzer.cs" />
     <Compile Include="Usage\UnusedParametersCodeFixProvider.cs" />
     <Compile Include="Usage\UnusedParametersAnalyzer.cs" />
     <Compile Include="Usage\IPAddressAnalyzer.cs" />

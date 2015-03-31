@@ -46,6 +46,7 @@
         SimplifyRedundantBooleanComparisons = 49,
         ReadonlyField = 52,
         JsonNet = 54,
+        StringFormatArgs = 56,
         UnusedParameters = 57,
         AbstractClassShouldNotHavePublicCtors = 60,
         TaskNameAsync = 61,

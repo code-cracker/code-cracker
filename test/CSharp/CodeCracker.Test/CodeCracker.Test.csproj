@@ -171,6 +171,7 @@
     <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzerTest.cs" />
     <Compile Include="Usage\NoPrivateReadonlyFieldTest.cs" />
     <Compile Include="Usage\RemoveUnusedVariablesTest.cs" />
+    <Compile Include="Usage\StringFormatArgsTests.cs" />
     <Compile Include="Usage\UnusedParametersTests.cs" />
     <Compile Include="Usage\IPAddressAnalyzerTests.cs" />
     <Compile Include="Usage\JsonNetAnalyzerTests.cs" />
