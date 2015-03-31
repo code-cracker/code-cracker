@@ -30,7 +30,12 @@ namespace CodeCracker.CSharp.Refactoring
         private async static Task<Document> ChangeLiteralAsync(Document document, Location diagnosticLocation, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var literal = (LiteralExpressionSyntax)root.FindNode(diagnosticLocation.SourceSpan);
+            var literal = root.FindNode(diagnosticLocation.SourceSpan) as LiteralExpressionSyntax;
+            if (literal == null)
+            {
+                var argument = (ArgumentSyntax)root.FindNode(diagnosticLocation.SourceSpan);
+                literal = (LiteralExpressionSyntax)argument.Expression;
+            }
             var newRoot = CreateNewLiteral(literal, root);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
