@@ -33,6 +33,14 @@ namespace CodeCracker.Test.CSharp.Refactoring
             await VerifyCSharpDiagnosticAsync(source, CreateDiagnosticResult(literal, isDecimal));
         }
 
+        [Fact]
+        public async Task FixLiteralAsArgument()
+        {
+            var source = @"string.Format("""", 1);".WrapInCSharpMethod();
+            var fixtest = @"string.Format("""", 0x1);".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
         [Theory]
         [InlineData("1", "0x1")]
         [InlineData("0x1", "1")]
