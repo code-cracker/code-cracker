@@ -195,6 +195,6 @@ function RunTestWithCoverage($fullTestDllPaths) {
     Exec { . $reportGeneratorExe -verbosity:Info -reports:$outputXml -targetdir:$coverageReportDir }
     if ($env:COVERALLS_REPO_TOKEN -ne $null) {
         Write-Host -ForegroundColor DarkBlue "Uploading coverage report to Coveralls.io"
-        Exec { . $converallsNetExe --opencover $outputXml }
+        Exec { . $converallsNetExe --opencover $outputXml --full-sources }
     }
 }
