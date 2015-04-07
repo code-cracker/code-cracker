@@ -34,6 +34,31 @@ public class Person
         }
 
         [Fact]
+        public async Task IfVirtualMethodWithThisFoundInConstructorCreatesDiagnostic() {
+            const string test = @"
+public class Person
+{{
+	public Person(string foo) 
+	{{
+		this.DoFoo(foo);
+	}}
+
+	public virtual void DoFoo(string foo) 
+	{{ 
+	}}
+}}";
+            var expected = new DiagnosticResult {
+                Id = DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
+                Message = VirtualMethodOnConstructorAnalyzer.Message,
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 3) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+
+        [Fact]
         public async Task IfVirtualMethodFoundFromOtherClassInConstructorDoNotCreateDiagnostic() {
             const string test = @"
 public class Book
