@@ -44,8 +44,7 @@ namespace CodeCracker.CSharp.Usage
             var methodInvocations = ctor.Body.DescendantNodes().OfType<InvocationExpressionSyntax>();
             foreach (var method in methodInvocations) {
                 var identifier = method.Expression as IdentifierNameSyntax;
-                if (identifier == null) return;
-                
+                if (identifier == null && !method.ToString().StartsWith("this")) return;
                 var methodDeclaration = context.SemanticModel.GetSymbolInfo(method);
                 if (methodDeclaration.Symbol.IsVirtual) {
                     var diagnostic = Diagnostic.Create(Rule, method.GetLocation());
