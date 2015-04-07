@@ -27,7 +27,7 @@ public class Person
                 Id = DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
                 Message = VirtualMethodOnConstructorAnalyzer.Message,
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 3) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
