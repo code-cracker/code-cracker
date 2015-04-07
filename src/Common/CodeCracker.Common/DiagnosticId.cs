@@ -54,6 +54,7 @@
         Uri = 63,
         IPAddress = 64,
         RemoveTrailingWhitespace = 65,
+        VirtualMethodOnConstructor = 67,
         RemovePrivateMethodNeverUsed = 68,
         UseConfigureAwaitFalse = 70,
         IntroduceFieldFromConstructor = 71,
