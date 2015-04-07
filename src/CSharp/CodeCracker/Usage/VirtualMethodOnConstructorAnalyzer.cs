@@ -39,10 +39,10 @@ namespace CodeCracker.CSharp.Usage
         }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context) {
-            var ctor = context.Node as ConstructorDeclarationSyntax;
+            var ctor = (ConstructorDeclarationSyntax)context.Node;
             if (ctor.Body == null) return;
-            var methods = ctor.Body.DescendantNodes().OfType<InvocationExpressionSyntax>();
-            foreach (var method in methods) {
+            var methodInvocations = ctor.Body.DescendantNodes().OfType<InvocationExpressionSyntax>();
+            foreach (var method in methodInvocations) {
                 var identifier = method.Expression as IdentifierNameSyntax;
                 if (identifier == null) return;
                 
