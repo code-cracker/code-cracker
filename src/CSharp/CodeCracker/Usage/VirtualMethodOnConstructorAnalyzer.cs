@@ -39,7 +39,19 @@ namespace CodeCracker.CSharp.Usage
         }
 
         private void AnalyzeNode(SyntaxNodeAnalysisContext context) {
-
+            var ctor = context.Node as ConstructorDeclarationSyntax;
+            if (ctor.Body == null) return;
+            var methods = ctor.Body.DescendantNodes().OfType<InvocationExpressionSyntax>();
+            foreach (var method in methods) {
+                var identifier = method.Expression as IdentifierNameSyntax;
+                if (identifier == null) return;
+                
+                var methodDeclaration = context.SemanticModel.GetSymbolInfo(method);
+                if (methodDeclaration.Symbol.IsVirtual) {
+                    var diagnostic = Diagnostic.Create(Rule, method.GetLocation());
+                    context.ReportDiagnostic(diagnostic);
+                }
+            }
         }
     }
 }
