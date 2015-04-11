@@ -149,10 +149,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-
     <Fact>
     Public Async Function WhenUsingIfAndElseWithAssignmentChangeToTernaryFix() As Task
-        Dim fix = "
+        Const fix = "
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
@@ -169,8 +168,6 @@ End Class
 
 Public Class TernaryOperatorWithReturnTests
     Inherits CodeFixVerifier(Of TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider)
-
-
 
     <Fact>
     Public Async Function WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic() As Task
