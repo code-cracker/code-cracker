@@ -96,7 +96,7 @@ namespace CodeCracker.Test
         {
             var supportedDiagnostics = analyzer.SupportedDiagnostics.Select(d => d.Id);
             var codeFixFixableDiagnostics = codeFixProvider.FixableDiagnosticIds;
-            Assert.True(codeFixFixableDiagnostics.Any(d => supportedDiagnostics.Contains(d)));
+            Assert.True(codeFixFixableDiagnostics.Any(d => supportedDiagnostics.Contains(d)), "Code fix provider does not fix the diagnostic provided by the analyzer.");
             var document = CreateDocument(oldSource, language);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document });
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
