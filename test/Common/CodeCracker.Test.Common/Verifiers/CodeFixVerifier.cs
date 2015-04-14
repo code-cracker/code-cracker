@@ -277,7 +277,7 @@ namespace CodeCracker.Test
             }
         }
 
-        protected async Task VerifyFixAllAsync(string oldSource, string newSource, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null)
+        protected async Task VerifyCSharpFixAllAsync(string oldSource, string newSource, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null)
         {
             if (formatBeforeCompare)
             {
@@ -286,14 +286,34 @@ namespace CodeCracker.Test
             }
             var diagnosticAnalyzer = GetDiagnosticAnalyzer();
             if (diagnosticAnalyzer != null)
-                await VerifyFixAllAsync(diagnosticAnalyzer, codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
+                await VerifyCSharpFixAllAsync(diagnosticAnalyzer, codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
             else
-                await VerifyFixAllAsync(codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
+                await VerifyCSharpFixAllAsync(codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
         }
 
-        private async Task VerifyFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics)
+        protected async Task VerifyBasicFixAllAsync(string oldSource, string newSource, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null)
         {
-            var document = CreateDocument(oldSource, LanguageNames.CSharp);
+            if (formatBeforeCompare)
+            {
+                oldSource = await FormatSourceAsync(LanguageNames.VisualBasic, oldSource);
+                newSource = await FormatSourceAsync(LanguageNames.VisualBasic, newSource);
+            }
+            var diagnosticAnalyzer = GetDiagnosticAnalyzer();
+            if (diagnosticAnalyzer != null)
+                await VerifyBasicFixAllAsync(diagnosticAnalyzer, codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
+            else
+                await VerifyBasicFixAllAsync(codeFixProvider ?? GetCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics);
+        }
+
+        private async Task VerifyBasicFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics) =>
+            await VerifyFixAllAsync(LanguageNames.VisualBasic, analyzer, codeFixProvider, oldSource, newSource, allowNewCompilerDiagnostics);
+
+        private async Task VerifyCSharpFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics) =>
+            await VerifyFixAllAsync(LanguageNames.CSharp, analyzer, codeFixProvider, oldSource, newSource, allowNewCompilerDiagnostics);
+
+        private async Task VerifyFixAllAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics)
+        {
+            var document = CreateDocument(oldSource, language);
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
             Func<Document, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync = async doc =>
                 await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { doc });
@@ -331,10 +351,16 @@ namespace CodeCracker.Test
             Assert.Equal(newSource, actual);
         }
 
-        private async Task VerifyFixAllAsync(CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics)
+        private async Task VerifyBasicFixAllAsync(CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics) =>
+            await VerifyFixAllAsync(LanguageNames.VisualBasic, codeFixProvider, oldSource, newSource, allowNewCompilerDiagnostics);
+
+        private async Task VerifyCSharpFixAllAsync(CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics) =>
+            await VerifyFixAllAsync(LanguageNames.CSharp, codeFixProvider, oldSource, newSource, allowNewCompilerDiagnostics);
+
+        private async Task VerifyFixAllAsync(string language, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics)
         {
             var diagnosticIds = codeFixProvider.FixableDiagnosticIds;
-            var document = CreateDocument(oldSource, LanguageNames.CSharp);
+            var document = CreateDocument(oldSource, language);
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document);
             Func<Document, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync = async doc =>
             {

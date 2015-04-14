@@ -178,5 +178,26 @@ Public Class TypeName
 End Class"
             Await VerifyBasicHasNoDiagnosticsAsync(test)
         End Function
+
+        <Fact>
+        Public Async Function FixAllInDocument() As Task
+            Const source = "
+Public Class TypeName
+    Sub Go(x As Integer, y As Integer, z As Integer)
+        Dim a = ""x""
+        Dim b = ""y""
+        Dim c = ""z""
+    End Sub
+End Class"
+            Const fixtest = "
+Public Class TypeName
+    Sub Go(x As Integer, y As Integer, z As Integer)
+        Dim a = NameOf(x)
+        Dim b = NameOf(y)
+        Dim c = NameOf(z)
+    End Sub
+End Class"
+            Await VerifyBasicFixAllAsync(source, fixtest)
+        End Function
     End Class
 End Namespace

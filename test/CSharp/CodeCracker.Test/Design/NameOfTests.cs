@@ -254,7 +254,7 @@ public class TypeName
     }
 }";
 
-            await VerifyFixAllAsync(source, fixtest);
+            await VerifyCSharpFixAllAsync(source, fixtest);
         }
 
         [Fact]

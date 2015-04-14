@@ -704,7 +704,7 @@ m.Dispose();".WrapInCSharpMethod();
                     public void Dispose() { }
                 }
 ";
-            await VerifyFixAllAsync(source, fixtest);
+            await VerifyCSharpFixAllAsync(source, fixtest);
         }
 
         [Fact]
