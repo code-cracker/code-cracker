@@ -1,3 +1,3 @@
 # Contributing
 
-Please see the [contribuing rules and guidelines](http://code-cracker.github.io/contributing.html) on the code cracker site.
+Please see the [Readme](https://github.com/code-cracker/code-cracker/blob/master/README.md#contributing), on the contributing section.
