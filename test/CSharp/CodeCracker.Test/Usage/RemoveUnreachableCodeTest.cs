@@ -336,7 +336,7 @@ class Foo
         return;
     }
 }";
-            await VerifyFixAllAsync(source, fixtest);
+            await VerifyCSharpFixAllAsync(source, fixtest);
         }
 
         [Fact]

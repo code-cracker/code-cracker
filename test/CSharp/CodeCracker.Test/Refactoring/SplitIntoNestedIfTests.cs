@@ -122,7 +122,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                         }
                     }
                 }".WrapInCSharpMethod();
-            await VerifyFixAllAsync(source, expected);
+            await VerifyCSharpFixAllAsync(source, expected);
         }
     }
 }
