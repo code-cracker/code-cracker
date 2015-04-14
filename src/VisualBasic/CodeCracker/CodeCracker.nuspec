@@ -4,8 +4,8 @@
         <id>codecracker.VisualBasic</id>
         <version>1.0.0-alpha4</version>
         <title>CodeCracker</title>
-        <authors>giggio,elemarjr,carloscds,viniciushana</authors>
-        <owners>giggio,elemarjr,carloscds,viniciushana</owners>
+        <authors>giggio,elemarjr,carloscds</authors>
+        <owners>giggio,elemarjr,carloscds</owners>
         <licenseUrl>https://github.com/code-cracker/code-cracker/blob/master/LICENSE.txt</licenseUrl>
         <projectUrl>http://code-cracker.github.io/</projectUrl>
         <iconUrl>https://avatars1.githubusercontent.com/u/9695920?v=3&amp;s=200</iconUrl>
@@ -14,7 +14,7 @@
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this software, nor it will be. Ever.</description>
         <releaseNotes>Third alpha release</releaseNotes>
-        <copyright>Copyright CodeCracker 2014</copyright>
+        <copyright>Copyright CodeCracker 2014-2015</copyright>
         <tags>roslyn, analyzers</tags>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System" targetFramework="" />
