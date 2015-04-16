@@ -64,6 +64,7 @@
         MergeNestedIf = 75,
         SplitIntoNestedIf = 76,
         NumericLiteral = 79,
-        TernaryOperator_Iif = 80
+        TernaryOperator_Iif = 80,
+        ComputeExpression = 82
     }
 }

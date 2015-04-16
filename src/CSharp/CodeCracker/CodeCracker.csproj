@@ -44,6 +44,8 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
     <Compile Include="Refactoring\MergeNestedIfAnalyzer.cs" />
     <Compile Include="Refactoring\MergeNestedIfCodeFixProvider.cs" />
+    <Compile Include="Refactoring\ComputeExpressionAnalyzer.cs" />
+    <Compile Include="Refactoring\ComputeExpressionCodeFixProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfFixAllProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfCodeFixProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfAnalyzer.cs" />
