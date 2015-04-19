@@ -165,9 +165,33 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
+        [Fact]
+        public async Task ObjectCreationWithoutConstructorDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            class Point
+            {
+                public int X { get; set; }
+                public int Y { get; set; }
+            }
+            Point GetPoint() { return null; }
+            void Foo()
+            {
+                var myPoint = GetPoint();
+                myPoint.X = 5;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 
-    public class ObjectInitializerWithAssingmentTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
+    public class ObjectInitializerWithAssignmentTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
     {
 
         [Fact]
@@ -298,6 +322,32 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async Task ObjectCreationWithoutConstructorDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            class Point
+            {
+                public int X { get; set; }
+                public int Y { get; set; }
+            }
+            Point GetPoint() { return null; }
+
+            Point myPoint;
+            void Foo()
+            {
+                myPoint = GetPoint();
+                myPoint.X = 5;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }
