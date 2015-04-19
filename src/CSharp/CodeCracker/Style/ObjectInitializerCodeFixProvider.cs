@@ -64,7 +64,7 @@ namespace CodeCracker.CSharp.Style
         private static BlockSyntax CreateNewBlockParent(StatementSyntax statement, SemanticModel semanticModel, ObjectCreationExpressionSyntax objectCreationExpression, ISymbol variableSymbol)
         {
             var blockParent = statement.FirstAncestorOrSelf<BlockSyntax>();
-            var assignmentExpressions = ObjectInitializerAnalyzer.FindAssingmentExpressions(semanticModel, statement, variableSymbol);
+            var assignmentExpressions = ObjectInitializerAnalyzer.FindAssignmentExpressions(semanticModel, statement, variableSymbol);
             var newBlockParent = SyntaxFactory.Block()
                 .WithLeadingTrivia(blockParent.GetLeadingTrivia())
                 .WithTrailingTrivia(blockParent.GetTrailingTrivia())
