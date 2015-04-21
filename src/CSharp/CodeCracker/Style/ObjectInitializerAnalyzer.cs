@@ -55,7 +55,8 @@ namespace CodeCracker.CSharp.Style
             if (!expressionStatement?.Expression?.IsKind(SyntaxKind.SimpleAssignmentExpression) ?? false) return;
             var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
             var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
-            var assignmentExpressions = FindAssingmentExpressions(semanticModel, expressionStatement, variableSymbol);
+            if (!assignmentExpression.Right.IsKind(SyntaxKind.ObjectCreationExpression)) return;
+            var assignmentExpressions = FindAssignmentExpressions(semanticModel, expressionStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
 
             var diagnostic = Diagnostic.Create(RuleAssignment, expressionStatement.GetLocation(), "You can use initializers in here.");
@@ -73,14 +74,14 @@ namespace CodeCracker.CSharp.Style
             if (localDeclarationStatement.Declaration.Variables.Count > 1) return;
             var variable = localDeclarationStatement.Declaration.Variables.Single();
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
-            var assignmentExpressions = FindAssingmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
+            var assignmentExpressions = FindAssignmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
 
             var diagnostic = Diagnostic.Create(RuleLocalDeclaration, localDeclarationStatement.GetLocation(), "You can use initializers in here.");
             context.ReportDiagnostic(diagnostic);
         }
 
-        public static List<ExpressionStatementSyntax> FindAssingmentExpressions(SemanticModel semanticModel, StatementSyntax statement, ISymbol variableSymbol)
+        public static List<ExpressionStatementSyntax> FindAssignmentExpressions(SemanticModel semanticModel, StatementSyntax statement, ISymbol variableSymbol)
         {
             var blockParent = statement.FirstAncestorOrSelf<BlockSyntax>();
             var isBefore = true;
