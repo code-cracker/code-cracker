@@ -8,7 +8,7 @@ our task board, definition of done, definition of ready, etc.
 [![Build status](https://ci.appveyor.com/api/projects/status/h21sli3jkumuswyi?svg=true)](https://ci.appveyor.com/project/code-cracker/code-cracker)
 [![Nuget count](http://img.shields.io/nuget/v/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
 [![Nuget downloads](http://img.shields.io/nuget/dt/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
-[![Issues open](http://img.shields.io/github/issues-raw/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker)
+[![Issues open](http://img.shields.io/github/issues-raw/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker/)
 [![Coverage Status](https://img.shields.io/coveralls/code-cracker/code-cracker/master.svg)](https://coveralls.io/r/code-cracker/code-cracker?branch=master)
 [![Source Browser](https://img.shields.io/badge/Browse-Source-green.svg)](http://sourcebrowser.io/Browse/code-cracker/code-cracker)
 
@@ -66,7 +66,7 @@ Bug reports that include steps-to-reproduce (including code) are
 preferred. Even better, make them in the form of pull requests.
 Before you start to work on an existing issue, check if it is not assigned
 to anyone yet, and if it is, talk to that person.
-Also check the project [board](http://huboard.com/code-cracker/code-cracker/board)
+Also check the project [board](https://huboard.com/code-cracker/code-cracker/)
 and verify it is not being worked on (it will be tagged with the `Working` tag).
 If it is not being worked on, before you start check if the item is `Ready`.
 If the issue has the `Working` tag (working swimlane on Huboard) and has no Assignee
@@ -75,7 +75,7 @@ description to find out who it is (if it is not there it has to be on the commen
 
 ## Issues and task board
 
-* The task board is at [Huboard](http://huboard.com/code-cracker/code-cracker/).
+* The task board is at [Huboard](https://huboard.com/code-cracker/code-cracker/).
 * You can also check the [Github backlog](https://github.com/code-cracker/code-cracker/issues) directly.
 
 ### Definition of Ready (DoR)
