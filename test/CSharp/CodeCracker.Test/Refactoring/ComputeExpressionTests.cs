@@ -63,6 +63,15 @@ namespace CodeCracker.Test.CSharp.Refactoring
             await VerifyCSharpFixAsync(original.WrapInCSharpMethod(), fix.WrapInCSharpMethod());
 
         [Fact]
+        public async Task ComputeExpressionOnADifferentCulture()
+        {
+#pragma warning disable CC0022 //todo: remove this pragma as soon as CC0022 is fixed (issue #319)
+            using (new ChangeCulture("pt-BR"))
+                await VerifyCSharpFixAsync("var a = 1m * (1 + 2) * 3.1m;".WrapInCSharpMethod(), "var a = 9.3;".WrapInCSharpMethod());
+#pragma warning restore CC0022
+        }
+
+        [Fact]
         public async Task IncorrectExpressionDoesNotCreateDiagnostic() =>
             await VerifyCSharpHasNoDiagnosticsAsync("var a = 1m * (1 + 2) * 3.1;".WrapInCSharpMethod());
 

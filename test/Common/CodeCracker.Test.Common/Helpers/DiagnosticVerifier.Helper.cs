@@ -43,7 +43,7 @@ namespace CodeCracker.Test
         /// <returns>An IEnumerable of Diagnostics that surfaced in teh source code, sorted by Location</returns>
         private static async Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer)
         {
-            return await GetSortedDiagnosticsFromDocumentsAsync(analyzer, GetDocuments(sources, language));
+            return await GetSortedDiagnosticsFromDocumentsAsync(analyzer, GetDocuments(sources, language)).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -63,9 +63,9 @@ namespace CodeCracker.Test
             var diagnostics = new List<Diagnostic>();
             foreach (var project in projects)
             {
-                var compilation = await project.GetCompilationAsync();
+                var compilation = await project.GetCompilationAsync().ConfigureAwait(true);
                 var compilationWithAnalyzers = compilation.WithAnalyzers(ImmutableArray.Create(analyzer));
-                var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync();
+                var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(true);
                 foreach (var diag in diags)
                 {
                     if (diag.Location == Location.None || diag.Location.IsInMetadata)
@@ -76,7 +76,7 @@ namespace CodeCracker.Test
                     {
                         foreach (var document in project.Documents)
                         {
-                            var tree = await document.GetSyntaxTreeAsync();
+                            var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(true);
                             if (tree == diag.Location.SourceTree) diagnostics.Add(diag);
                         }
                     }
@@ -192,8 +192,8 @@ namespace CodeCracker.Test
         /// <returns>A string contianing the syntax of the Document after formatting</returns>
         public static async Task<string> GetStringFromDocumentAsync(Document document)
         {
-            var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation);
-            var root = await simplifiedDoc.GetSyntaxRootAsync();
+            var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation).ConfigureAwait(true);
+            var root = await simplifiedDoc.GetSyntaxRootAsync().ConfigureAwait(true);
             root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
             return root.GetText().ToString();
         }
@@ -201,8 +201,8 @@ namespace CodeCracker.Test
         public static async Task<string> FormatSourceAsync(string language, string source)
         {
             var document = CreateDocument(source, language);
-            var newDoc = await Formatter.FormatAsync(document);
-            return (await newDoc.GetSyntaxRootAsync()).ToFullString();
+            var newDoc = await Formatter.FormatAsync(document).ConfigureAwait(true);
+            return (await newDoc.GetSyntaxRootAsync().ConfigureAwait(true)).ToFullString();
         }
     }
 }

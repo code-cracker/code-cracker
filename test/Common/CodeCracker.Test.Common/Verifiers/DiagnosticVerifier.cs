@@ -26,16 +26,16 @@ namespace CodeCracker.Test
     public abstract partial class DiagnosticVerifier
     {
         protected async Task VerifyBasicHasNoDiagnosticsAsync(string source) =>
-            await VerifyBasicDiagnosticAsync(source);
+            await VerifyBasicDiagnosticAsync(source).ConfigureAwait(true);
 
         protected async Task VerifyBasicHasNoDiagnosticsAsync(params string[] sources) =>
-            await VerifyBasicDiagnosticAsync(sources);
+            await VerifyBasicDiagnosticAsync(sources).ConfigureAwait(true);
 
         protected async Task VerifyCSharpHasNoDiagnosticsAsync(string source) =>
-            await VerifyCSharpDiagnosticAsync(source);
+            await VerifyCSharpDiagnosticAsync(source).ConfigureAwait(true);
 
         protected async Task VerifyCSharpHasNoDiagnosticsAsync(params string[] sources) =>
-            await VerifyCSharpDiagnosticAsync(sources);
+            await VerifyCSharpDiagnosticAsync(sources).ConfigureAwait(true);
 
         /// <summary>
         /// Get the CSharp analyzer being tested - to be implemented in non-abstract class
@@ -50,7 +50,7 @@ namespace CodeCracker.Test
         /// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
         protected async Task VerifyCSharpDiagnosticAsync(string source, params DiagnosticResult[] expected)
         {
-            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetDiagnosticAnalyzer(), expected);
+            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetDiagnosticAnalyzer(), expected).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace CodeCracker.Test
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source</param>
         protected async Task VerifyBasicDiagnosticAsync(string source, params DiagnosticResult[] expected)
         {
-            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected);
+            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace CodeCracker.Test
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
         protected async Task VerifyCSharpDiagnosticAsync(string[] sources, params DiagnosticResult[] expected)
         {
-            await VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetDiagnosticAnalyzer(), expected);
+            await VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetDiagnosticAnalyzer(), expected).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace CodeCracker.Test
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
         protected async Task VerifyBasicDiagnosticAsync(string[] sources, params DiagnosticResult[] expected)
         {
-            await VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected);
+            await VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace CodeCracker.Test
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
         private async Task VerifyDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
         {
-            var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer);
+            var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer).ConfigureAwait(true);
             VerifyDiagnosticResults(diagnostics, analyzer, expected);
         }
 
