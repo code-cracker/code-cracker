@@ -39,6 +39,46 @@ End Structure
             Await VerifyBasicHasNoDiagnosticsAsync(test)
         End Function
 
+
+        <Fact>
+        Public Async Function DoesNotWarnIfSealedClassImplementsIDisposableWithNoSuppressFinalizeCall() As Task
+            Dim test = "
+Public NotInheritable Class MyType
+    Implements System.IDisposable
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+    End Sub
+End Class
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
+
+
+        <Fact>
+        Public Async Function WarnIfSealedClassImplementsIDisposableWithNoSuppressFinalizeCallAndContainsUserDefinedFinalizer() As Task
+            Dim test = "
+Public NotInheritable Class MyType
+    Implements System.IDisposable
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+    End Sub
+
+    Protected Overrides Sub Finalize()
+            MyBase.Finalize()
+    End Sub
+End Class
+"
+
+            Dim expected = New DiagnosticResult With {
+                .Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
+                .Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
+                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
+                .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 16)}
+            }
+
+            Await VerifyBasicDiagnosticAsync(test, expected)
+        End Function
+
         <Theory>
         <InlineData("Structure")>
         <InlineData("Class")>

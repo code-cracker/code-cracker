@@ -41,6 +41,8 @@ This rule should be followed even if the class doesn't have a finalizer in a der
             If symbol.TypeKind <> TypeKind.Class Then Exit Sub
             If Not symbol.Interfaces.Any(Function(i) i.SpecialType = SpecialType.System_IDisposable) Then Exit Sub
 
+            If symbol.IsSealed AndAlso Not ContainsUserDefinedFinalizer(symbol) Then Exit Sub
+
             Dim disposeMethod = FindDisposeMethod(symbol)
             If disposeMethod Is Nothing Then Exit Sub
 
@@ -78,5 +80,12 @@ This rule should be followed even if the class doesn't have a finalizer in a der
             Next
             Return disposeMethod
         End Function
+
+        Private Shared Function ContainsUserDefinedFinalizer(symbol As INamedTypeSymbol) As Boolean
+            Return symbol.GetMembers().Any(Function(x) x.ToString().Contains("Finalize"))
+        End Function
+
     End Class
+
+
 End Namespace
