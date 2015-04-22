@@ -332,6 +332,27 @@ using System;
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+
+        [Fact]
+        public async Task IgnoresReadonlyPropertiesWithNoBody()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public TypeName(int age) {
+                Age = age;
+            }
+
+            public int Age { get; }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
         [Fact]
         public async Task IgnoresIndexersWithGetAndSet()
         {
