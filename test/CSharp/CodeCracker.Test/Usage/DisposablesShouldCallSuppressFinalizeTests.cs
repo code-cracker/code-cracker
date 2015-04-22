@@ -69,10 +69,49 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async void NoWarningIfClassIsSealedWithNoUserDefinedFinalizer()
+        {
+            const string test = @"
+                public sealed class MyType : System.IDisposable
+                { 
+                    public void Dispose() 
+                    { 
+                    } 
+                }"
+                ;
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void WarningIfSealedClassHaveUserDefinedFinalizerImplmentsIDisposableWithNoSuppressFinalizeCall()
+        {
+            const string test = @"
+                public sealed class MyType : System.IDisposable
+                { 
+                    public void Dispose() 
+                    { 
+                    }
+
+                    ~MyType() {} 
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
+                Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 33) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
         public async void NoWarningIfClassDoesNotImplementsIDisposable()
         {
             const string test = @"
-                public class MyType
+                public class MyType 
                 { 
                 }";
 
@@ -104,6 +143,8 @@ namespace CodeCracker.Test.CSharp.Usage
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
+        
 
         [Fact]
         public async void WhenClassHasParametrizedDisposeMethod()
