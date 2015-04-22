@@ -22,14 +22,14 @@ namespace CodeCracker.Test
         /// <returns>A Document with the changes from the CodeAction</returns>
         private static async Task<Document> ApplyFixAsync(Document document, CodeAction codeAction)
         {
-            var operations = await codeAction.GetOperationsAsync(CancellationToken.None);
+            var operations = await codeAction.GetOperationsAsync(CancellationToken.None).ConfigureAwait(true);
             var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
             return solution.GetDocument(document.Id);
         }
 
         private static async Task<Project> ApplyFixAsync(Project project, CodeAction codeAction)
         {
-            var operations = await codeAction.GetOperationsAsync(CancellationToken.None);
+            var operations = await codeAction.GetOperationsAsync(CancellationToken.None).ConfigureAwait(true);
             var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
             return solution.GetProject(project.Id);
         }
@@ -71,7 +71,7 @@ namespace CodeCracker.Test
         /// <returns>The compiler diagnostics that were found in the code</returns>
         private static async Task<IEnumerable<Diagnostic>> GetCompilerDiagnosticsAsync(Document document)
         {
-            return (await document.GetSemanticModelAsync()).GetDiagnostics();
+            return (await document.GetSemanticModelAsync().ConfigureAwait(true)).GetDiagnostics();
         }
     }
 }
