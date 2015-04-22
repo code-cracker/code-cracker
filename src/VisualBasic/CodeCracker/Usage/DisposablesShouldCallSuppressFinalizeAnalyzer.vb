@@ -38,7 +38,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         Public Async Sub AnalyzeAsync(context As SymbolAnalysisContext)
             If (context.IsGenerated()) Then Return
             Dim symbol = DirectCast(context.Symbol, INamedTypeSymbol)
-            If symbol.TypeKind <> TypeKind.Class AndAlso symbol.TypeKind <> TypeKind.Struct Then Exit Sub
+            If symbol.TypeKind <> TypeKind.Class Then Exit Sub
             If Not symbol.Interfaces.Any(Function(i) i.SpecialType = SpecialType.System_IDisposable) Then Exit Sub
 
             Dim disposeMethod = FindDisposeMethod(symbol)
