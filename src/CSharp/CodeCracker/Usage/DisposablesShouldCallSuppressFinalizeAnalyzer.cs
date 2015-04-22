@@ -34,7 +34,7 @@ namespace CodeCracker.CSharp.Usage
         {
             if (context.IsGenerated()) return;
             var symbol = (INamedTypeSymbol)context.Symbol;
-            if (symbol.TypeKind != TypeKind.Class && symbol.TypeKind != TypeKind.Struct) return;
+            if (symbol.TypeKind != TypeKind.Class) return;
             if (!symbol.Interfaces.Any(i => i.SpecialType == SpecialType.System_IDisposable)) return;
             var disposeMethod = FindDisposeMethod(symbol);
             if (disposeMethod == null) return;

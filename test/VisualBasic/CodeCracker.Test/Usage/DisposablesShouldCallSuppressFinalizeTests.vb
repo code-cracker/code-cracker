@@ -6,9 +6,8 @@ Namespace Usage
         Inherits CodeFixVerifier(Of DisposablesShouldCallSuppressFinalizeAnalyzer, DisposablesShouldCallSuppressFinalizeCodeFixProvider)
 
         <Theory>
-        <InlineData("Structure")>
         <InlineData("Class")>
-        Public Async Function WarningIfStructImplementsIDisposableWithNoSuppressFinalizeCall(type As String) As Task
+        Public Async Function WarningIfClassImplementsIDisposableWithNoSuppressFinalizeCall(type As String) As Task
             Dim test = String.Format("
 Public {0} MyType
     Implements System.IDisposable
@@ -27,6 +26,19 @@ End {0}
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 
+        <Fact>
+        Public Async Function DoesNotWarnIfStructImplementsIDisposableWithNoSuppressFinalizeCall() As Task
+            Dim test = "
+Public Struture MyType
+    Implements System.IDisposable
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+    End Sub
+End Structure
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
+
         <Theory>
         <InlineData("Structure")>
         <InlineData("Class")>
@@ -38,7 +50,6 @@ End {0}", type)
         End Function
 
         <Theory>
-        <InlineData("Structure")>
         <InlineData("Class")>
         Public Async Function WhenImplementsIDisposableCallSuppressFinalize(type As String) As Task
             Dim source = String.Format("

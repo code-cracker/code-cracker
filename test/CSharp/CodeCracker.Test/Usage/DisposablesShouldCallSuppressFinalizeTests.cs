@@ -22,7 +22,7 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
-        public async void WarningIfStructImplmentsIDisposableWithNoSuppressFinalizeCall()
+        public async void DoNotWarnIfStructImplmentsIDisposableWithNoSuppressFinalizeCall()
         {
             const string test = @"
                 public struct MyType : System.IDisposable
@@ -32,15 +32,7 @@ namespace CodeCracker.Test.CSharp.Usage
                     } 
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
-                Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 33) }
-            };
-
-            await VerifyCSharpDiagnosticAsync(test, expected);
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
@@ -87,30 +79,6 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact]
-        public async void WhenStructImplementsIDisposableCallSuppressFinalize()
-        {
-            const string source = @"
-                    public struct MyType : System.IDisposable
-                    { 
-                        public void Dispose() 
-                        { 
-                            var x = 123;
-                        } 
-                    }";
-
-            const string fixtest = @"
-                    public struct MyType : System.IDisposable
-                    { 
-                        public void Dispose() 
-                        {
-                            var x = 123;
-                            GC.SuppressFinalize(this);
-                        } 
-                    }";
-
-            await VerifyCSharpFixAsync(source, fixtest, 0);
-        }
 
         [Fact]
         public async void WhenClassImplementsIDisposableCallSuppressFinalize()
