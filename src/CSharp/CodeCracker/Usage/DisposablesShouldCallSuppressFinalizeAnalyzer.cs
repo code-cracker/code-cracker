@@ -34,8 +34,9 @@ namespace CodeCracker.CSharp.Usage
         {
             if (context.IsGenerated()) return;
             var symbol = (INamedTypeSymbol)context.Symbol;
-            if (symbol.TypeKind != TypeKind.Class && symbol.TypeKind != TypeKind.Struct) return;
+            if (symbol.TypeKind != TypeKind.Class) return;
             if (!symbol.Interfaces.Any(i => i.SpecialType == SpecialType.System_IDisposable)) return;
+            if (symbol.IsSealed && !ContainsUserDefinedFinalizer(symbol)) return;
             var disposeMethod = FindDisposeMethod(symbol);
             if (disposeMethod == null) return;
             var syntaxTree = await disposeMethod.DeclaringSyntaxReferences[0]?.GetSyntaxAsync(context.CancellationToken);
@@ -59,6 +60,12 @@ namespace CodeCracker.CSharp.Usage
             var methods = symbol.GetMembers().Where(x => x.ToString().Contains($"{x.ContainingType.Name}.Dispose(")).Cast<IMethodSymbol>();
             var disposeWithDisposedParameter = methods.FirstOrDefault(m => m.Parameters.FirstOrDefault()?.Type.SpecialType == SpecialType.System_Boolean);
             return disposeWithDisposedParameter != null ? disposeWithDisposedParameter : methods.FirstOrDefault(m => !m.Parameters.Any());
+        }
+
+        public static bool ContainsUserDefinedFinalizer(INamedTypeSymbol symbol)
+        {
+            return symbol.GetMembers()
+                .Any(x => x.ToString().Contains($".~{x.ContainingType.Name}("));
         }
     }
 }
