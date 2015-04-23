@@ -130,9 +130,10 @@ Public Class MyType
     Implements System.IDisposable
     Public Sub Dispose() Implements IDisposable.Dispose
         Dispose(true)
-    End Sub
-    Protected Overridable Sub Dispose(disposing As Boolean)
         GC.SuppressFinalize(Me)
+    End Sub
+
+    Protected Overridable Sub Dispose(disposing As Boolean)
     End Sub
 End Class"
 

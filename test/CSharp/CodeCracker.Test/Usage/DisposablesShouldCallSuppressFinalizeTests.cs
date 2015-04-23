@@ -169,11 +169,12 @@ namespace CodeCracker.Test.CSharp.Usage
                         public void Dispose() 
                         { 
                             Dispose(true);
+                            GC.SuppressFinalize(this);
                         } 
 
                         protected virtual void Dispose(bool disposing)
                         {
-                            GC.SuppressFinalize(this);
+                            
                         }
                     }";
 
@@ -228,11 +229,12 @@ namespace CodeCracker.Test.CSharp.Usage
                         public void IDisposable.Dispose() 
                         { 
                             Dispose(true);
+                            GC.SuppressFinalize(this);
                         } 
 
                         protected virtual void Dispose(bool disposing)
                         {
-                            GC.SuppressFinalize(this);
+                            
                         }
                     }";
 
