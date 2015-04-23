@@ -74,11 +74,22 @@ namespace CodeCracker.CSharp.Style
             if (localDeclarationStatement.Declaration.Variables.Count > 1) return;
             var variable = localDeclarationStatement.Declaration.Variables.Single();
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
-            var assignmentExpressions = FindAssignmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
-            if (!assignmentExpressions.Any()) return;
-
+            var assignmentExpressionStatements = FindAssignmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
+            if (!assignmentExpressionStatements.Any()) return;
+            if (HasAssignmentUsingDeclaredVariable(semanticModel, variableSymbol, assignmentExpressionStatements)) return;
             var diagnostic = Diagnostic.Create(RuleLocalDeclaration, localDeclarationStatement.GetLocation(), "You can use initializers in here.");
             context.ReportDiagnostic(diagnostic);
+        }
+
+        public bool HasAssignmentUsingDeclaredVariable(SemanticModel semanticModel, ISymbol variableSymbol, IEnumerable<ExpressionStatementSyntax> assignmentExpressionStatements)
+        {
+            foreach (var assignmentExpressionStatement in assignmentExpressionStatements)
+            {
+                var assignmentExpression = (AssignmentExpressionSyntax)assignmentExpressionStatement.Expression;
+                var ids = assignmentExpression.Right.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>().ToList();
+                if (ids.Any(id => semanticModel.GetSymbolInfo(id).Symbol?.Equals(variableSymbol) == true)) return true;
+            }
+            return false;
         }
 
         public static List<ExpressionStatementSyntax> FindAssignmentExpressions(SemanticModel semanticModel, StatementSyntax statement, ISymbol variableSymbol)

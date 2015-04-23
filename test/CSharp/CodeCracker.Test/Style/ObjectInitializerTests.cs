@@ -189,6 +189,110 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task WhenInitializerWouldReferenceAnotherVariableCreatesDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class Point
+        {
+            public Point(int x) { X = x; }
+            public int X { get; set; }
+            public int Y { get; set; }
+        }
+        class Bar
+        {
+            void Foo()
+            {
+                var myPoint = new Point(5);
+                var myPoint2 = new Point(5);
+                myPoint2.Y = myPoint.X;
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(),
+                Message = "You can use initializers in here.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 17) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenInitializerWouldReferenceItselfDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class Point
+        {
+            public Point(int x) { X = x; }
+            public int X { get; set; }
+            public int Y { get; set; }
+        }
+        class Bar
+        {
+            void Foo()
+            {
+                var myPoint = new Point(5);
+                myPoint.Y = myPoint.X;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WhenInitializerWouldReferenceItselfWithParamDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class Point
+        {
+            public Point(int x) { X = x; }
+            public int X { get; set; }
+            public int Y { get; set; }
+        }
+        class Bar
+        {
+            void Foo(int i)
+            {
+                var myPoint = new Point(5);
+                myPoint.Y = myPoint.X + i;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WhenInitializerWouldReferenceItselfInAnExpressionDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class Point
+        {
+            public Point(int x) { X = x; }
+            public int X { get; set; }
+            public int Y { get; set; }
+        }
+        class Bar
+        {
+            void Foo()
+            {
+                var myPoint = new Point(5);
+                myPoint.Y = 5 + myPoint.X;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 
     public class ObjectInitializerWithAssignmentTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
