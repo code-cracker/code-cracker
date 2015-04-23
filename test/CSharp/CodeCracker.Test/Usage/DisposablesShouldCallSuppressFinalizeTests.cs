@@ -57,6 +57,69 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
+
+        [Fact]
+        public async void NoWarningIfClassImplmentsIDisposableButDoesNotContainsAPublicConstructor()
+        {
+            const string test = @"
+                public class MyType : System.IDisposable
+                { 
+                    private MyType() 
+                    {
+                    }
+
+                    public void Dispose() 
+                    { 
+                    }
+
+                    ~MyType() {}
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+
+        [Fact]
+        public async void NoWarningIfClassIsAPrivateNestedType()
+        {
+            const string test = @"
+                public class MyType
+                {
+                    private class MyNestedType : System.IDisposable
+                    { 
+                        public void Dispose() 
+                        { 
+                        }
+
+                        ~MyType() {}
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void NoWarningIfClassIsNestedOfAPrivateNestedType()
+        {
+            const string test = @"
+                public class MyType
+                {
+                    private class MyType
+                    {
+                        public class MyNestedType : System.IDisposable
+                        { 
+                            public void Dispose() 
+                            { 
+                            }
+
+                            ~MyType() {}
+                        }
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
         [Fact]
         public async void NoWarningIfStructDoesNotImplementsIDisposable()
         {
