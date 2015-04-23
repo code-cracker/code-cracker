@@ -5,17 +5,16 @@ Namespace Usage
     Public Class DisposablesShouldCallSuppressFinalizeTests
         Inherits CodeFixVerifier(Of DisposablesShouldCallSuppressFinalizeAnalyzer, DisposablesShouldCallSuppressFinalizeCodeFixProvider)
 
-        <Theory>
-        <InlineData("Class")>
-        Public Async Function WarningIfClassImplementsIDisposableWithNoSuppressFinalizeCall(type As String) As Task
-            Dim test = String.Format("
-Public {0} MyType
+        <Fact>
+        Public Async Function WarningIfClassImplementsIDisposableWithNoSuppressFinalizeCall() As Task
+            Dim test = "
+Public Class MyType
     Implements System.IDisposable
 
     Public Sub Dispose() Implements IDisposable.Dispose
     End Sub
-End {0}
-", type)
+End Class
+"
             Dim expected = New DiagnosticResult With {
                 .Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
                 .Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
@@ -24,6 +23,47 @@ End {0}
             }
 
             Await VerifyBasicDiagnosticAsync(test, expected)
+        End Function
+
+        <Fact>
+        Public Async Function NoWarningIfClassImplmentsIDisposableButDoesNotContainsAPublicConstructor() As Task
+            Dim test = "
+Public Class MyType
+    Implements System.IDisposable
+
+    Private Sub New()
+    End Sub
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+    End Sub
+
+    Protected Overrides Sub Finalize()
+            MyBase.Finalize()
+    End Sub
+End Class
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
+
+        <Fact>
+        Public Async Function FunctionNoWarningIfClassIsAPrivateNestedType() As Task
+            Dim test = "
+Public Class MyType
+    Private Class MyNestedType
+        Implements System.IDisposable
+
+        Public Sub Dispose() Implements IDisposable.Dispose
+        End Sub
+
+        Protected Overrides Sub Finalize()
+                MyBase.Finalize()
+        End Sub
+    End Class
+End Class
+"
+
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+
         End Function
 
         <Fact>
@@ -89,27 +129,26 @@ End {0}", type)
             Await VerifyBasicHasNoDiagnosticsAsync(test)
         End Function
 
-        <Theory>
-        <InlineData("Class")>
-        Public Async Function WhenImplementsIDisposableCallSuppressFinalize(type As String) As Task
-            Dim source = String.Format("
+        <Fact>
+        Public Async Function WhenImplementsIDisposableCallSuppressFinalize() As Task
+            Dim source = "
 Imports System
-Public {0} MyType
+Public Class MyType
     Implements System.IDisposable
     Public Sub Dispose() Implements IDisposable.Dispose
         Dim x = 123
     End Sub
-End {0}", type)
+End Class"
 
-            Dim fix = String.Format("
+            Dim fix = "
 Imports System
-Public {0} MyType
+Public Class MyType
     Implements System.IDisposable
     Public Sub Dispose() Implements IDisposable.Dispose
         Dim x = 123
         GC.SuppressFinalize(Me)
     End Sub
-End {0}", type)
+End Class"
             Await VerifyBasicFixAsync(source, fix)
         End Function
 
@@ -132,9 +171,10 @@ Public Class MyType
     Implements System.IDisposable
     Public Sub Dispose() Implements IDisposable.Dispose
         Dispose(true)
-    End Sub
-    Protected Overridable Sub Dispose(disposing As Boolean)
         GC.SuppressFinalize(Me)
+    End Sub
+
+    Protected Overridable Sub Dispose(disposing As Boolean)
     End Sub
 End Class"
 
@@ -143,4 +183,5 @@ End Class"
         End Function
 
     End Class
+
 End Namespace

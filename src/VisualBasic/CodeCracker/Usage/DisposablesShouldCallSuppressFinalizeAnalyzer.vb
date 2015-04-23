@@ -21,7 +21,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         MessageFormat,
         SupportedCategories.Naming,
         DiagnosticSeverity.Warning,
-        isEnabledByDefault:=False,
+        isEnabledByDefault:=True,
         description:=Description,
         helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize))
 
@@ -42,6 +42,8 @@ This rule should be followed even if the class doesn't have a finalizer in a der
             If Not symbol.Interfaces.Any(Function(i) i.SpecialType = SpecialType.System_IDisposable) Then Exit Sub
 
             If symbol.IsSealed AndAlso Not ContainsUserDefinedFinalizer(symbol) Then Exit Sub
+
+            If Not ContainsNonPrivateConstructors(symbol) Then Exit Sub
 
             Dim disposeMethod = FindDisposeMethod(symbol)
             If disposeMethod Is Nothing Then Exit Sub
@@ -66,26 +68,27 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         End Sub
 
         Private Shared Function FindDisposeMethod(symbol As INamedTypeSymbol) As ISymbol
-            Dim methods = symbol.GetMembers().Where(Function(x) x.ToString().Contains("Dispose")).OfType(Of IMethodSymbol)
-
-            Dim disposeMethod As ISymbol = Nothing
-            For Each method In methods
-                If method.Parameters.Any() Then
-                    If method.Parameters(0).Type.SpecialType = SpecialType.System_Boolean Then
-                        Return method
-                    End If
-                Else
-                    disposeMethod = method ' Version without arguments, but keep checking in case there's one with the boolean dispose override
-                End If
-            Next
-            Return disposeMethod
+            Return symbol.GetMembers().
+                Where(Function(x) x.ToString().Contains("Dispose")).OfType(Of IMethodSymbol).
+                FirstOrDefault(Function(m) m.Parameters = Nothing Or m.Parameters.Count() = 0)
         End Function
 
         Private Shared Function ContainsUserDefinedFinalizer(symbol As INamedTypeSymbol) As Boolean
             Return symbol.GetMembers().Any(Function(x) x.ToString().Contains("Finalize"))
         End Function
 
+        Private Shared Function ContainsNonPrivateConstructors(symbol As INamedTypeSymbol) As Boolean
+            If IsNestedPrivateType(symbol) Then Return False
+
+            Return symbol.GetMembers().
+                Any(Function(m) m.MetadataName = ".ctor" AndAlso m.DeclaredAccessibility <> Accessibility.Private)
+        End Function
+
+
+        Private Shared Function IsNestedPrivateType(symbol As INamedTypeSymbol) As Boolean
+            If symbol Is Nothing Then Return False
+            If symbol.DeclaredAccessibility = Accessibility.Private AndAlso symbol.ContainingType IsNot Nothing Then Return True
+            Return IsNestedPrivateType(symbol.ContainingType)
+        End Function
     End Class
-
-
 End Namespace
