@@ -66,19 +66,9 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         End Sub
 
         Private Shared Function FindDisposeMethod(symbol As INamedTypeSymbol) As ISymbol
-            Dim methods = symbol.GetMembers().Where(Function(x) x.ToString().Contains("Dispose")).OfType(Of IMethodSymbol)
-
-            Dim disposeMethod As ISymbol = Nothing
-            For Each method In methods
-                If method.Parameters.Any() Then
-                    If method.Parameters(0).Type.SpecialType = SpecialType.System_Boolean Then
-                        Return method
-                    End If
-                Else
-                    disposeMethod = method ' Version without arguments, but keep checking in case there's one with the boolean dispose override
-                End If
-            Next
-            Return disposeMethod
+            Return symbol.GetMembers().
+                Where(Function(x) x.ToString().Contains("Dispose")).OfType(Of IMethodSymbol).
+                FirstOrDefault(Function(m) m.Parameters = Nothing Or m.Parameters.Count() = 0)
         End Function
 
         Private Shared Function ContainsUserDefinedFinalizer(symbol As INamedTypeSymbol) As Boolean
