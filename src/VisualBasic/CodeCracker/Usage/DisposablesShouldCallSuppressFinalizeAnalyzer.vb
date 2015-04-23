@@ -21,7 +21,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         MessageFormat,
         SupportedCategories.Naming,
         DiagnosticSeverity.Warning,
-        isEnabledByDefault:=False,
+        isEnabledByDefault:=True,
         description:=Description,
         helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize))
 
