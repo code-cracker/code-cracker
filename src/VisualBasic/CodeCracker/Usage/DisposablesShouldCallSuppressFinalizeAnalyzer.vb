@@ -43,6 +43,8 @@ This rule should be followed even if the class doesn't have a finalizer in a der
 
             If symbol.IsSealed AndAlso Not ContainsUserDefinedFinalizer(symbol) Then Exit Sub
 
+            If Not ContainsNonPrivateConstructors(symbol) Then Exit Sub
+
             Dim disposeMethod = FindDisposeMethod(symbol)
             If disposeMethod Is Nothing Then Exit Sub
 
@@ -75,7 +77,18 @@ This rule should be followed even if the class doesn't have a finalizer in a der
             Return symbol.GetMembers().Any(Function(x) x.ToString().Contains("Finalize"))
         End Function
 
+        Private Shared Function ContainsNonPrivateConstructors(symbol As INamedTypeSymbol) As Boolean
+            If IsNestedPrivateType(symbol) Then Return False
+
+            Return symbol.GetMembers().
+                Any(Function(m) m.MetadataName = ".ctor" AndAlso m.DeclaredAccessibility <> Accessibility.Private)
+        End Function
+
+
+        Private Shared Function IsNestedPrivateType(symbol As INamedTypeSymbol) As Boolean
+            If symbol Is Nothing Then Return False
+            If symbol.DeclaredAccessibility = Accessibility.Private AndAlso symbol.ContainingType IsNot Nothing Then Return True
+            Return IsNestedPrivateType(symbol.ContainingType)
+        End Function
     End Class
-
-
 End Namespace

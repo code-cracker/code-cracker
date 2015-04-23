@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Usage
             MessageFormat,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: false,
+            isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize));
 
@@ -37,6 +37,7 @@ namespace CodeCracker.CSharp.Usage
             if (symbol.TypeKind != TypeKind.Class) return;
             if (!symbol.Interfaces.Any(i => i.SpecialType == SpecialType.System_IDisposable)) return;
             if (symbol.IsSealed && !ContainsUserDefinedFinalizer(symbol)) return;
+            if (!ContainsNonPrivateConstructors(symbol)) return;
             var disposeMethod = FindDisposeMethod(symbol);
             if (disposeMethod == null) return;
             var syntaxTree = await disposeMethod.DeclaringSyntaxReferences[0]?.GetSyntaxAsync(context.CancellationToken);
@@ -65,6 +66,26 @@ namespace CodeCracker.CSharp.Usage
         {
             return symbol.GetMembers()
                 .Any(x => x.ToString().Contains($".~{x.ContainingType.Name}("));
+        }
+
+        public static bool ContainsNonPrivateConstructors(INamedTypeSymbol symbol)
+        {
+            if (IsNestedPrivateType(symbol))
+                return false;
+
+            return symbol.GetMembers()
+                .Any(m => m.MetadataName == ".ctor" && m.DeclaredAccessibility != Accessibility.Private);
+        }
+
+        private static bool IsNestedPrivateType(INamedTypeSymbol symbol)
+        {
+            if (symbol == null)
+                return false;
+
+            if (symbol.DeclaredAccessibility == Accessibility.Private && symbol.ContainingType != null)
+                return true;
+
+            return IsNestedPrivateType(symbol.ContainingType);
         }
     }
 }

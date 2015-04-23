@@ -26,6 +26,47 @@ End Class
         End Function
 
         <Fact>
+        Public Async Function NoWarningIfClassImplmentsIDisposableButDoesNotContainsAPublicConstructor() As Task
+            Dim test = "
+Public Class MyType
+    Implements System.IDisposable
+
+    Private Sub New()
+    End Sub
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+    End Sub
+
+    Protected Overrides Sub Finalize()
+            MyBase.Finalize()
+    End Sub
+End Class
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
+
+        <Fact>
+        Public Async Function FunctionNoWarningIfClassIsAPrivateNestedType() As Task
+            Dim test = "
+Public Class MyType
+    Private Class MyNestedType
+        Implements System.IDisposable
+
+        Public Sub Dispose() Implements IDisposable.Dispose
+        End Sub
+
+        Protected Overrides Sub Finalize()
+                MyBase.Finalize()
+        End Sub
+    End Class
+End Class
+"
+
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+
+        End Function
+
+        <Fact>
         Public Async Function DoesNotWarnIfStructImplementsIDisposableWithNoSuppressFinalizeCall() As Task
             Dim test = "
 Public Struture MyType
@@ -142,4 +183,5 @@ End Class"
         End Function
 
     End Class
+
 End Namespace
