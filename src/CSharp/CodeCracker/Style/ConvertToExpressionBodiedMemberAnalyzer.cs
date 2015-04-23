@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Style
             MessageFormat,
             Category,
             DiagnosticSeverity.Hidden,
-            isEnabledByDefault: false,
+            isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ConvertToExpressionBodiedMember));
 
@@ -38,9 +38,11 @@ namespace CodeCracker.CSharp.Style
             var methodDeclaration = (BaseMethodDeclarationSyntax)context.Node;
             var body = methodDeclaration.Body;
             if (body == null) return;
+
             if (body.Statements.Count != 1) return;
             var returnStatement = body.Statements[0] as ReturnStatementSyntax;
             if (returnStatement == null) return;
+
             var diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
             context.ReportDiagnostic(diagnostic);
         }
@@ -54,7 +56,10 @@ namespace CodeCracker.CSharp.Style
             if (accessors.Count != 1) return;
             if (!accessors[0].IsKind(SyntaxKind.GetAccessorDeclaration)) return;
             var body = accessors[0].Body;
+
+            if (body == null) return;
             if (body.Statements.Count != 1) return;
+
             var returnStatement = body.Statements[0] as ReturnStatementSyntax;
             if (returnStatement == null) return;
             var diagnostic = Diagnostic.Create(Rule, declaration.GetLocation());
