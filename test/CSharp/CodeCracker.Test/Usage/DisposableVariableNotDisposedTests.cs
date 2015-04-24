@@ -36,6 +36,13 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async Task IgnoresDisposableObjectsCreatedWithUsingStatement()
+        {
+            var source = "using (new System.IO.MemoryStream()) { }".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task DisposableVariableDeclaredWithAnotherVariableCreatesOnlyOneDiagnostic()
         {
 

@@ -32,9 +32,15 @@ namespace CodeCracker.CSharp.Usage
 
         private static void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
         {
+            
             if (context.IsGenerated()) return;
             var objectCreation = context.Node as ObjectCreationExpressionSyntax;
             if (objectCreation == null) return;
+            if (objectCreation?.Parent is UsingStatementSyntax)
+            {
+                return;
+            }
+
             var semanticModel = context.SemanticModel;
             var type = semanticModel.GetSymbolInfo(objectCreation.Type).Symbol as INamedTypeSymbol;
             if (type == null) return;
