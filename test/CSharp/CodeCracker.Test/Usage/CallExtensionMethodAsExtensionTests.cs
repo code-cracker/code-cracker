@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
+
 namespace CodeCracker.Test.CSharp.Usage
 {
     public class CallExtensionMethodAsExtensionTests :
@@ -212,6 +213,25 @@ namespace CodeCracker.Test.CSharp.Usage
                             }
                         }
                     }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WhenTheSelectedMethodWouldChangeThenCreatesNoDiagnostics()
+        {
+            const string source = @"
+using System.Linq;
+using System.Collections.Generic;
+public static class ExtensionsTestCase
+{
+    public static void Select(this IEnumerable<string> strings, System.Func<string, bool> mySelector)
+    {
+    }
+    public static void UsesSelect()
+    {
+        Enumerable.Select(new[] { """" }, s => s == """");
+    }
+}";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }

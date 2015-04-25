@@ -20,6 +20,39 @@ namespace CodeCracker
                 .WithTrailingTrivia(source.GetTrailingTrivia());
         }
 
+        public static bool IsAnyKind(this SyntaxNode node, params SyntaxKind[] kinds)
+        {
+            foreach (var kind in kinds)
+            {
+                if (node.IsKind(kind)) return true;
+            }
+            return false;
+        }
+
+        public static StatementSyntax FirstAncestorOrSelfThatIsAStatement(this SyntaxNode node)
+        {
+            var currentNode = node;
+            while (true)
+            {
+                if (currentNode == null) break;
+                if (currentNode.IsAnyKind(SyntaxKind.Block, SyntaxKind.BreakStatement,
+                    SyntaxKind.CheckedStatement, SyntaxKind.ContinueStatement,
+                    SyntaxKind.DoStatement, SyntaxKind.EmptyStatement,
+                    SyntaxKind.ExpressionStatement, SyntaxKind.FixedKeyword,
+                    SyntaxKind.ForEachKeyword, SyntaxKind.ForStatement,
+                    SyntaxKind.GotoStatement, SyntaxKind.IfStatement,
+                    SyntaxKind.LabeledStatement, SyntaxKind.LocalDeclarationStatement,
+                    SyntaxKind.LockStatement, SyntaxKind.ReturnStatement,
+                    SyntaxKind.SwitchStatement, SyntaxKind.ThrowStatement,
+                    SyntaxKind.TryStatement, SyntaxKind.UnsafeStatement,
+                    SyntaxKind.UsingStatement, SyntaxKind.WhileStatement,
+                    SyntaxKind.YieldBreakStatement, SyntaxKind.YieldReturnStatement))
+                    return (StatementSyntax)currentNode;
+                currentNode = currentNode.Parent;
+            }
+            return null;
+        }
+
         public static T FirstAncestorOrSelfOfType<T>(this SyntaxNode node) where T : SyntaxNode =>
             (T)node.FirstAncestorOrSelfOfType(typeof(T));
 
@@ -153,5 +186,18 @@ namespace CodeCracker
         public static bool HasAttribute(this SyntaxList<AttributeListSyntax> attributeLists, string attributeName) =>
             attributeLists.SelectMany(a => a.Attributes).Any(a => a.Name.ToString().EndsWith(attributeName, StringComparison.OrdinalIgnoreCase));
 
+        public static NameSyntax ToNameSyntax(this INamespaceSymbol namespaceSymbol) =>
+            ToNameSyntax(namespaceSymbol.ToDisplayString().Split('.'));
+
+        private static NameSyntax ToNameSyntax(IEnumerable<string> names)
+        {
+            var count = names.Count();
+            if (count == 1)
+                return SyntaxFactory.IdentifierName(names.First());
+            return SyntaxFactory.QualifiedName(
+                ToNameSyntax(names.Take(count - 1)),
+                ToNameSyntax(names.Skip(count - 1)) as IdentifierNameSyntax
+            );
+        }
     }
 }
