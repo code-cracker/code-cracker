@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -25,55 +26,64 @@ namespace CodeCracker.CSharp.Usage
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.CallExtensionMethodAsExtension));
 
+        private Compilation compilation;
+
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context) =>
-            context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
+            context.RegisterCompilationStartAction(AnalyzeCompilation);
 
-        private void Analyzer(SyntaxNodeAnalysisContext context)
+        private void AnalyzeCompilation(CompilationStartAnalysisContext compilationContext)
+        {
+            compilation = compilationContext.Compilation;
+            compilationContext.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
+        }
+
+        private static readonly SyntaxAnnotation introduceExtensionMethodAnnotation = new SyntaxAnnotation("CallExtensionMethodAsExtensionAnalyzerIntroduceExtensionMethod");
+
+        private void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var methodInvokeSyntax = context.Node as InvocationExpressionSyntax;
-
             var childNodes = methodInvokeSyntax.ChildNodes();
-
-            var methodCaller = childNodes
-                                .OfType<MemberAccessExpressionSyntax>()
-                                .FirstOrDefault();
-
+            var methodCaller = childNodes.OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             if (methodCaller == null) return;
-
             var argumentsCount = CountArguments(childNodes);
-
             var classSymbol = GetCallerClassSymbol(context.SemanticModel, methodCaller.Expression);
             if (classSymbol == null || !classSymbol.MightContainExtensionMethods) return;
-
             var methodSymbol = GetCallerMethodSymbol(context.SemanticModel, methodCaller.Name, argumentsCount);
             if (methodSymbol == null || !methodSymbol.IsExtensionMethod) return;
-
             if (ContainsDynamicArgument(context.SemanticModel, childNodes)) return;
-
-            context.ReportDiagnostic(
-                Diagnostic.Create(
-                    Rule,
-                    methodCaller.GetLocation(),
-                    methodSymbol.Name,
-                    classSymbol.Name
-                ));
+            if (IsSelectingADifferentMethod(childNodes, methodCaller.Name, context.Node.SyntaxTree, methodSymbol, methodInvokeSyntax.FirstAncestorOrSelfThatIsAStatement())) return;
+            context.ReportDiagnostic(Diagnostic.Create(Rule, methodCaller.GetLocation(), methodSymbol.Name, classSymbol.Name));
         }
 
-        private static int CountArguments(IEnumerable<SyntaxNode> childNodes)
+        private bool IsSelectingADifferentMethod(IEnumerable<SyntaxNode> childNodes, SimpleNameSyntax methodName, SyntaxTree tree, IMethodSymbol methodSymbol, StatementSyntax invocationStatement)
         {
-            return childNodes
-                    .OfType<ArgumentListSyntax>()
-                    .Select(s => s.Arguments.Count)
-                    .FirstOrDefault();
+            var parameterExpressions = CallExtensionMethodAsExtensionCodeFixProvider.GetParameterExpressions(childNodes);
+            var firstArgument = parameterExpressions.FirstOrDefault();
+            var argumentList = CallExtensionMethodAsExtensionCodeFixProvider.CreateArgumentListSyntaxFrom(parameterExpressions.Skip(1));
+            var newInvocationStatement = SyntaxFactory.ExpressionStatement(
+                CallExtensionMethodAsExtensionCodeFixProvider.CreateInvocationExpression(
+                    firstArgument, methodName, argumentList)).WithAdditionalAnnotations(introduceExtensionMethodAnnotation);
+            var extensionMethodNamespaceUsingDirective = SyntaxFactory.UsingDirective(methodSymbol.ContainingNamespace.ToNameSyntax());
+            var speculativeRootWithExtensionMethod = tree.GetCompilationUnitRoot()
+                .InsertNodesAfter(invocationStatement, new[] { newInvocationStatement })
+                .AddUsings(extensionMethodNamespaceUsingDirective);
+            var speculativeModel = compilation.ReplaceSyntaxTree(tree, speculativeRootWithExtensionMethod.SyntaxTree)
+                .GetSemanticModel(speculativeRootWithExtensionMethod.SyntaxTree);
+            var speculativeInvocationStatement = speculativeRootWithExtensionMethod.SyntaxTree.GetCompilationUnitRoot().GetAnnotatedNodes(introduceExtensionMethodAnnotation).Single() as ExpressionStatementSyntax;
+            var speculativeExtensionMethodSymbol = speculativeModel.GetSymbolInfo(speculativeInvocationStatement.Expression).Symbol as IMethodSymbol;
+            var speculativeNonExtensionFormOfTheMethodSymbol = speculativeExtensionMethodSymbol?.GetConstructedReducedFrom();
+            return speculativeNonExtensionFormOfTheMethodSymbol == null || !speculativeNonExtensionFormOfTheMethodSymbol.Equals(methodSymbol);
         }
+
+        private static int CountArguments(IEnumerable<SyntaxNode> childNodes) =>
+            childNodes.OfType<ArgumentListSyntax>().Select(s => s.Arguments.Count).FirstOrDefault();
 
         private IMethodSymbol GetCallerMethodSymbol(SemanticModel semanticModel, SimpleNameSyntax name, int argumentsCount)
         {
             var symbolInfo = semanticModel.GetSymbolInfo(name);
-
             return symbolInfo.Symbol as IMethodSymbol ??
                     symbolInfo
                         .CandidateSymbols
@@ -81,18 +91,13 @@ namespace CodeCracker.CSharp.Usage
                         .FirstOrDefault(s => s.Parameters.Count() == argumentsCount + 1);
         }
 
-        private INamedTypeSymbol GetCallerClassSymbol(SemanticModel semanticModel, ExpressionSyntax expression)
-        {
-            var symbolInfo = semanticModel.GetSymbolInfo(expression);
-            return symbolInfo.Symbol as INamedTypeSymbol;
-        }
+        private static INamedTypeSymbol GetCallerClassSymbol(SemanticModel semanticModel, ExpressionSyntax expression) =>
+            semanticModel.GetSymbolInfo(expression).Symbol as INamedTypeSymbol;
 
-        private static bool ContainsDynamicArgument(SemanticModel sm, IEnumerable<SyntaxNode> childNodes)
-        {
-            return childNodes
-                    .OfType<ArgumentListSyntax>()
-                    .SelectMany(s => s.Arguments)
-                    .Any(a => sm.GetTypeInfo(a.Expression).Type?.Name == "dynamic");
-        }
+        private static bool ContainsDynamicArgument(SemanticModel sm, IEnumerable<SyntaxNode> childNodes) =>
+            childNodes
+                .OfType<ArgumentListSyntax>()
+                .SelectMany(s => s.Arguments)
+                .Any(a => sm.GetTypeInfo(a.Expression).Type?.Name == "dynamic");
     }
 }

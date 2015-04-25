@@ -41,14 +41,9 @@ namespace CodeCracker.CSharp.Usage
         private async Task<Document> CallAsExtensionAsync(Document document, InvocationExpressionSyntax staticInvocationExpression, CancellationToken cancellationToken)
         {
             var childNodes = staticInvocationExpression.ChildNodes();
+            var parameterExpressions = GetParameterExpressions(childNodes);
 
-            var parametersExpression =
-                childNodes
-                    .OfType<ArgumentListSyntax>()
-                    .SelectMany(s => s.Arguments)
-                    .Select(s => s.Expression);
-
-            var firstArgument = parametersExpression.FirstOrDefault();
+            var firstArgument = parameterExpressions.FirstOrDefault();
             var callerMethod = childNodes.OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
 
             var root = await document.GetSyntaxRootAsync(cancellationToken) as CompilationUnitSyntax;
@@ -58,7 +53,7 @@ namespace CodeCracker.CSharp.Usage
                         staticInvocationExpression,
                         firstArgument,
                         callerMethod.Name,
-                        CreateArgumentListSyntaxFrom(parametersExpression.Skip(1))
+                        CreateArgumentListSyntaxFrom(parameterExpressions.Skip(1))
                    ).WithAdditionalAnnotations(Formatter.Annotation);
 
             SemanticModel semanticModel;
@@ -70,68 +65,44 @@ namespace CodeCracker.CSharp.Usage
             return newDocument;
         }
 
-        public ArgumentListSyntax CreateArgumentListSyntaxFrom(IEnumerable<ExpressionSyntax> expressions)
-        {
-            return SyntaxFactory
-                    .ArgumentList()
-                    .AddArguments(expressions.Select(s => SyntaxFactory.Argument(s)).ToArray());
-        }
+        public static IEnumerable<ExpressionSyntax> GetParameterExpressions(IEnumerable<SyntaxNode> childNodes) =>
+            childNodes.OfType<ArgumentListSyntax>().SelectMany(s => s.Arguments).Select(s => s.Expression);
+
+        public static ArgumentListSyntax CreateArgumentListSyntaxFrom(IEnumerable<ExpressionSyntax> expressions) =>
+            SyntaxFactory.ArgumentList().AddArguments(expressions.Select(s => SyntaxFactory.Argument(s)).ToArray());
 
         private CompilationUnitSyntax ReplaceStaticCallWithExtionMethodCall(CompilationUnitSyntax root, InvocationExpressionSyntax staticInvocationExpression, ExpressionSyntax sourceExpression, SimpleNameSyntax methodName, ArgumentListSyntax argumentList)
         {
-            var extensionInvocationExpression =
-                SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        sourceExpression,
-                        methodName),
-                        argumentList
-                    )
-                    .WithLeadingTrivia(staticInvocationExpression.GetLeadingTrivia());
-
+            var extensionInvocationExpression = CreateInvocationExpression(sourceExpression, methodName, argumentList)
+                .WithLeadingTrivia(staticInvocationExpression.GetLeadingTrivia());
             return root.ReplaceNode(staticInvocationExpression, extensionInvocationExpression);
         }
+
+        public static InvocationExpressionSyntax CreateInvocationExpression(ExpressionSyntax sourceExpression, SimpleNameSyntax methodName, ArgumentListSyntax argumentList) =>
+            SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                sourceExpression,
+                methodName),
+                argumentList);
 
         private CompilationUnitSyntax ImportNeededNamespace(CompilationUnitSyntax root, SemanticModel semanticModel, MemberAccessExpressionSyntax callerMethod)
         {
             var symbolInfo = semanticModel.GetSymbolInfo(callerMethod.Name);
             var methodSymbol = symbolInfo.Symbol as IMethodSymbol;
-
             if (methodSymbol == null) return root;
-
             var namespaceDisplayString = methodSymbol.ContainingNamespace.ToDisplayString();
-
             var hasNamespaceImported = root
                 .DescendantNodes()
                 .OfType<UsingDirectiveSyntax>()
-                .Select(s => s.DescendantNodes().OfType<IdentifierNameSyntax>())
-                .Select(s => TransformIdentifierNameSyntaxIntoNamespace(s))
-                .Any(p => p == namespaceDisplayString);
-
+                .Select(s => s.Name.ToString())
+                .Any(n => n == namespaceDisplayString);
             if (!hasNamespaceImported)
             {
-                var namespaceQualifiedName = GenerateNamespaceQualifiedName(namespaceDisplayString.Split('.'));
+                var namespaceQualifiedName = methodSymbol.ContainingNamespace.ToNameSyntax();
                 root = root.AddUsings(SyntaxFactory.UsingDirective(namespaceQualifiedName));
             }
             return root;
-        }
-
-        private string TransformIdentifierNameSyntaxIntoNamespace(IEnumerable<IdentifierNameSyntax> usingIdentifierNames)
-        {
-            return string.Join(".", usingIdentifierNames.Select(s => s.Identifier.ValueText).ToArray());
-        }
-
-        private NameSyntax GenerateNamespaceQualifiedName(IEnumerable<string> names)
-        {
-            var total = names.Count();
-
-            if (total == 1)
-                return SyntaxFactory.IdentifierName(names.First());
-
-            return SyntaxFactory.QualifiedName(
-                GenerateNamespaceQualifiedName(names.Take(total - 1)),
-                GenerateNamespaceQualifiedName(names.Skip(total - 1)) as IdentifierNameSyntax
-            );
         }
     }
 }
