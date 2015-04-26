@@ -2,10 +2,10 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>codecracker</id>
-        <version>1.0.0-alpha4</version>
+        <version>1.0.0-alpha5</version>
         <title>CodeCracker</title>
-        <authors>giggio,elemarjr,carloscds,viniciushana</authors>
-        <owners>giggio,elemarjr,carloscds,viniciushana</owners>
+        <authors>giggio,elemarjr,carloscds</authors>
+        <owners>giggio,elemarjr,carloscds</owners>
         <licenseUrl>https://github.com/code-cracker/code-cracker/blob/master/LICENSE.txt</licenseUrl>
         <projectUrl>http://code-cracker.github.io/</projectUrl>
         <iconUrl>https://avatars1.githubusercontent.com/u/9695920?v=3&amp;s=200</iconUrl>
@@ -19,8 +19,8 @@ This is a community project, free and open source. Everyone is invited to contri
         <copyright>Copyright CodeCracker 2014</copyright>
         <tags>roslyn, analyzers</tags>
         <dependencies>
-            <dependency id="codecracker.CSharp" version="1.0.0-alpha4" />
-            <dependency id="codecracker.VisualBasic" version="1.0.0-alpha4" />
+            <dependency id="codecracker.CSharp" version="1.0.0-alpha5" />
+            <dependency id="codecracker.VisualBasic" version="1.0.0-alpha5" />
         </dependencies>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System" targetFramework="" />
