@@ -149,7 +149,7 @@ function RestorePkgs($sln) {
         Write-Host "File $sln does not exist, exiting." -ForegroundColor DarkRed
         return
     }
-    nuget restore $sln
+    exec { . $nugetExe restore $sln }
 }
 
 function TestPath($paths) {
