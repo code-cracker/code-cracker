@@ -1,6 +1,6 @@
 # Code Cracker
 
-An analyzer library for C# that uses [Roslyn](http://msdn.microsoft.com/en-us/vstudio/roslyn.aspx) to produce refactorings, code analysis, and other niceties.
+An analyzer library for C# and VB that uses [Roslyn](http://msdn.microsoft.com/en-us/vstudio/roslyn.aspx) to produce refactorings, code analysis, and other niceties.
 
 Check the official project site on [code-cracker.github.io](http://code-cracker.github.io). There you will find information on how to contribute,
 our task board, definition of done, definition of ready, etc.
