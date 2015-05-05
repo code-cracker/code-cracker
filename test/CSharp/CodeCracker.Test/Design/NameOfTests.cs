@@ -104,6 +104,92 @@ public class TypeName
         }
 
         [Fact]
+        public async Task WhenUsingVerbatimSpecifierWithKeywordEqualsParameterNameReturnAnalyzerCreatesDiagnostic()
+        {
+            const string source = @"
+public class TypeName
+{
+    void Foo(string @for)
+    {
+        string whatever = ""for"";
+    }
+}
+";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.NameOf.ToDiagnosticId(),
+                Message = "Use 'nameof(@for)' instead of specifying the parameter name.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 27) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenUsingVerbatimSpecifierWithSimpleIdentifierEqualsParameterNameReturnAnalyzerCreatesDiagnostic()
+        {
+            const string source = @"
+public class TypeName
+{
+    void Foo(string @xyz)
+    {
+        string whatever = ""xyz"";
+    }
+}
+";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.NameOf.ToDiagnosticId(),
+                Message = "Use 'nameof(@xyz)' instead of specifying the parameter name.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 27) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixWithVerbatimIdentifiers()
+        {
+            const string source = @"
+public class TypeName
+{
+    public TypeName(int @object)
+    {
+        var name = ""object"";
+    }
+
+    void Foo(string a, int @for, string b, object @int)
+    {
+        var whatever = ""for"";
+        var whatever1 = ""b"";
+        var whatever2 = ""a"";
+        var whatever3 = ""int"";
+    }
+}";
+
+            const string fixtest = @"
+public class TypeName
+{
+    public TypeName(int @object)
+    {
+        var name = nameof(@object);
+    }
+
+    void Foo(string a, int @for, string b, object @int)
+    {
+        var whatever = nameof(@for);
+        var whatever1 = nameof(b);
+        var whatever2 = nameof(a);
+        var whatever3 = nameof(@int);
+    }
+}";
+
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
         public async Task WhenUsingStringLiteralEqualsParameterNameInConstructorFixItToNameof()
         {
             const string source = @"
