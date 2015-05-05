@@ -41,8 +41,9 @@ namespace CodeCracker.CSharp.Design
             var attribute = stringLiteral.FirstAncestorOfType<AttributeSyntax>();
             var method = stringLiteral.FirstAncestorOfType(typeof(MethodDeclarationSyntax), typeof(ConstructorDeclarationSyntax)) as BaseMethodDeclarationSyntax;
             if (attribute != null && method.AttributeLists.Any(a => a.Attributes.Contains(attribute))) return;
-            if (!AreEqual(stringLiteral, parameters)) return;
-            var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value);
+            var parameter = GetParameterWithIdentifierEqualToStringLiteral(stringLiteral, parameters);
+            if (parameter == null) return;
+            var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), parameter.Identifier.Text);
             context.ReportDiagnostic(diagnostic);
         }
 
@@ -64,7 +65,7 @@ namespace CodeCracker.CSharp.Design
             return parameters;
         }
 
-        private bool AreEqual(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters) =>
-            parameters.Any(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString());
+        private ParameterSyntax GetParameterWithIdentifierEqualToStringLiteral(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters) =>
+            parameters.FirstOrDefault(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString());
     }
 }
