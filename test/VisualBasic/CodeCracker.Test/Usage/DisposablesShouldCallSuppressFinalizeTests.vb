@@ -7,7 +7,7 @@ Namespace Usage
 
         <Fact>
         Public Async Function WarningIfClassImplementsIDisposableWithNoSuppressFinalizeCall() As Task
-            Dim test = "
+            Const test = "
 Public Class MyType
     Implements System.IDisposable
 
@@ -27,7 +27,7 @@ End Class
 
         <Fact>
         Public Async Function NoWarningIfClassImplmentsIDisposableButDoesNotContainsAPublicConstructor() As Task
-            Dim test = "
+            Const test = "
 Public Class MyType
     Implements System.IDisposable
 
@@ -47,7 +47,7 @@ End Class
 
         <Fact>
         Public Async Function FunctionNoWarningIfClassIsAPrivateNestedType() As Task
-            Dim test = "
+            Const test = "
 Public Class MyType
     Private Class MyNestedType
         Implements System.IDisposable
@@ -68,7 +68,7 @@ End Class
 
         <Fact>
         Public Async Function DoesNotWarnIfStructImplementsIDisposableWithNoSuppressFinalizeCall() As Task
-            Dim test = "
+            Const test = "
 Public Struture MyType
     Implements System.IDisposable
 
@@ -82,7 +82,7 @@ End Structure
 
         <Fact>
         Public Async Function DoesNotWarnIfSealedClassImplementsIDisposableWithNoSuppressFinalizeCall() As Task
-            Dim test = "
+            Const test = "
 Public NotInheritable Class MyType
     Implements System.IDisposable
 
@@ -96,7 +96,7 @@ End Class
 
         <Fact>
         Public Async Function WarnIfSealedClassImplementsIDisposableWithNoSuppressFinalizeCallAndContainsUserDefinedFinalizer() As Task
-            Dim test = "
+            Const test = "
 Public NotInheritable Class MyType
     Implements System.IDisposable
 
@@ -131,7 +131,7 @@ End {0}", type)
 
         <Fact>
         Public Async Function WhenImplementsIDisposableCallSuppressFinalize() As Task
-            Dim source = "
+            Const source = "
 Imports System
 Public Class MyType
     Implements System.IDisposable
@@ -140,7 +140,7 @@ Public Class MyType
     End Sub
 End Class"
 
-            Dim fix = "
+            Const fix = "
 Imports System
 Public Class MyType
     Implements System.IDisposable

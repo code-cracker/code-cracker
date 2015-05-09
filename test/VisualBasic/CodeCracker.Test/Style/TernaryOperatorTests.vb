@@ -18,8 +18,6 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
         Await VerifyBasicHasNoDiagnosticsAsync(sourceWithoutElse)
-
-        Dim x = IIf(True, 1, 2)
     End Function
 
     <Fact>

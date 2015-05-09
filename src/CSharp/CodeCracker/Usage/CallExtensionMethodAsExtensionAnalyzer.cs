@@ -26,7 +26,9 @@ namespace CodeCracker.CSharp.Usage
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.CallExtensionMethodAsExtension));
 
+#pragma warning disable RS1008//todo: how to solve this without storing compilation?
         private Compilation compilation;
+#pragma warning restore RS1008
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

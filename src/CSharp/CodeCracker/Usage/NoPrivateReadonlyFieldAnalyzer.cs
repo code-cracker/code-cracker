@@ -73,26 +73,11 @@ namespace CodeCracker.CSharp.Usage
             candidateFields.AddRange(currentAnalysisCandidateFields);
         }
 
-        #region GetCandidateFields
-
-        private IEnumerable<FieldCandidate> GetCandidateFields(SyntaxNode root, SemanticModel semanticModel)
-        {
-            return root
-                    .DescendantNodesAndSelf()
-                    .OfType<FieldDeclarationSyntax>()
-                    .Where(CanBecameReadOnlyField)
-                    .SelectMany(s => s.Declaration.Variables)
-                    .Select(s => new FieldCandidate { Variable = s, FieldSymbol = semanticModel.GetDeclaredSymbol(s) as IFieldSymbol })
-                    .Where(p => p.FieldSymbol != null && p.FieldSymbol.ContainingType != null);
-        }
-
         private bool CanBecameReadOnlyField(FieldDeclarationSyntax field)
         {
             var noPrivate = field.Modifiers.Any(p => p.IsKind(SyntaxKind.PublicKeyword) || p.IsKind(SyntaxKind.ProtectedKeyword) || p.IsKind(SyntaxKind.InternalKeyword));
             return noPrivate ? !field.Modifiers.Any(p => p.IsKind(SyntaxKind.ConstKeyword) || p.IsKind(SyntaxKind.ReadOnlyKeyword)) : false;
         }
-
-        #endregion
 
         #region GetAssignedField
 

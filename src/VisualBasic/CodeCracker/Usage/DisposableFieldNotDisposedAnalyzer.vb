@@ -76,7 +76,7 @@ Namespace Usage
             If disposeMethod.SubOrFunctionStatement.Modifiers.Any(SyntaxKind.MustInheritKeyword) Then Return True
             Dim typeDeclaration = DirectCast(typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().Parent, TypeBlockSyntax)
             Dim semanticModel = context.Compilation.GetSemanticModel(typeDeclaration.SyntaxTree)
-            If callsDisposeOnField(fieldSymbol, disposeMethod, semanticModel) Then Return True
+            If CallsDisposeOnField(fieldSymbol, disposeMethod, semanticModel) Then Return True
 
             Return False
         End Function

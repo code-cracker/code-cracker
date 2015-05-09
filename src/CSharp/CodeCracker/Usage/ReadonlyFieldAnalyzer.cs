@@ -15,7 +15,9 @@ namespace CodeCracker.CSharp.Usage
         internal const string Message = "Make '{0}' readonly";
         internal const string Category = SupportedCategories.Usage;
         const string Description = "A field that is only assigned on the constructor can be made readonly.";
+#pragma warning disable RS1008//todo: how to solve this without storing compilation?
         private Compilation compilation;
+#pragma warning restore RS1008
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ReadonlyField.ToDiagnosticId(),

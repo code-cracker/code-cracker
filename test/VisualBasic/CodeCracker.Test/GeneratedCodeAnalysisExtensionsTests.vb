@@ -316,9 +316,12 @@ End Class").IsGenerated().Should().BeTrue()
         Dim semanticModel = compilation.GetSemanticModel(tree)
         Dim analyzerOptions = New AnalyzerOptions(ImmutableArray(Of AdditionalText).Empty)
         Dim node = root.DescendantNodesAndSelf().OfType(Of T)().First()
-        Dim context = New SyntaxNodeAnalysisContext(node, semanticModel, analyzerOptions, Sub(diag)
-                                                                                          End Sub, Nothing)
+        Dim context = New SyntaxNodeAnalysisContext(node, semanticModel, analyzerOptions,
+                                                    Sub(diag)
+                                                    End Sub,
+                                                    Function(diag)
+                                                        Return True
+                                                    End Function, Nothing)
         Return context
     End Function
-
 End Class
