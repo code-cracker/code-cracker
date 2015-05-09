@@ -18,6 +18,7 @@ namespace CodeCracker.Test
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
+            GC.SuppressFinalize(this);
         }
     }
 }

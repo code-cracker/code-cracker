@@ -88,21 +88,18 @@ Namespace Refactoring
             Dim parameters = SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(Of ParameterSyntax).Add(newParameter)).
                 WithAdditionalAnnotations(Formatter.Annotation)
 
-            Dim methodStatement As MethodStatementSyntax
-            If oldMethod.Kind = SyntaxKind.SubBlock Then
-                methodStatement = SyntaxFactory.SubStatement(oldMethod.SubOrFunctionStatement.Identifier.Text).
+            Dim methodStatement = If(oldMethod.Kind = SyntaxKind.SubBlock,
+                SyntaxFactory.SubStatement(oldMethod.SubOrFunctionStatement.Identifier.Text).
                     WithModifiers(oldMethod.SubOrFunctionStatement.Modifiers).
                     WithParameterList(parameters).
                     WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed).
-                    WithAdditionalAnnotations(Formatter.Annotation)
-            Else
-                methodStatement = SyntaxFactory.FunctionStatement(oldMethod.SubOrFunctionStatement.Identifier.Text).
+                    WithAdditionalAnnotations(Formatter.Annotation),
+                SyntaxFactory.FunctionStatement(oldMethod.SubOrFunctionStatement.Identifier.Text).
                     WithModifiers(oldMethod.SubOrFunctionStatement.Modifiers).
                     WithParameterList(parameters).
                     WithAsClause(oldMethod.SubOrFunctionStatement.AsClause).
                     WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed).
-                    WithAdditionalAnnotations(Formatter.Annotation)
-            End If
+                    WithAdditionalAnnotations(Formatter.Annotation))
 
             Dim newMethod = SyntaxFactory.MethodBlock(oldMethod.Kind, methodStatement, oldMethod.Statements, oldMethod.EndSubOrFunctionStatement).
                 WithAdditionalAnnotations(Formatter.Annotation)

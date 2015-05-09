@@ -298,7 +298,7 @@ namespace WebApplication3
             var semanticModel = compilation.GetSemanticModel(tree);
             var analyzerOptions = new AnalyzerOptions(ImmutableArray<AdditionalText>.Empty);
             var node = root.DescendantNodesAndSelf().OfType<T>().First();
-            var context = new SyntaxNodeAnalysisContext(node, semanticModel, analyzerOptions, diag => { }, default(CancellationToken));
+            var context = new SyntaxNodeAnalysisContext(node, semanticModel, analyzerOptions, diag => { }, diag => true, default(CancellationToken));
             return context;
         }
 
@@ -312,7 +312,7 @@ namespace WebApplication3
             var node = root.DescendantNodesAndSelf().OfType<T>().First();
             var symbol = semanticModel.GetSymbolInfo(node).Symbol;
             if (symbol == null) symbol = semanticModel.GetDeclaredSymbol(node);
-            var context = new SymbolAnalysisContext(symbol, compilation, analyzerOptions, diag => { }, default(CancellationToken));
+            var context = new SymbolAnalysisContext(symbol, compilation, analyzerOptions, diag => { }, diag => true, default(CancellationToken));
             return context;
         }
 
@@ -320,7 +320,7 @@ namespace WebApplication3
         {
             var tree = SyntaxFactory.ParseSyntaxTree(code, path: fileName);
             var analyzerOptions = new AnalyzerOptions(ImmutableArray<AdditionalText>.Empty);
-            var context = new SyntaxTreeAnalysisContext(tree, analyzerOptions, diag => { }, default(CancellationToken));
+            var context = new SyntaxTreeAnalysisContext(tree, analyzerOptions, diag => { }, diag => true, default(CancellationToken));
             return context;
         }
     }

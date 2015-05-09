@@ -130,10 +130,5 @@ End Namespace"
 
             Await VerifyBasicFixAsync(test, expected)
         End Function
-
-        Private Sub testee()
-            Dim a(10) As Integer
-            Dim f = a.Any(Function(i) i > 10)
-        End Sub
     End Class
 End Namespace
