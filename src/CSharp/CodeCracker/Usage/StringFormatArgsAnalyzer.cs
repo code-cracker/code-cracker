@@ -45,7 +45,8 @@ namespace CodeCracker.CSharp.Usage
             if (memberSymbol.ToString() == "string.Format(string, params object[])" && argumentList.Arguments.Skip(1).Any(a => context.SemanticModel.GetTypeInfo(a.Expression).Type.TypeKind == TypeKind.Array)) return;
             var formatLiteral = (LiteralExpressionSyntax)argumentList.Arguments[0].Expression;
             var analyzingInterpolation = (InterpolatedStringExpressionSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
-            if (analyzingInterpolation.Contents.Count(c => c.IsKind(SyntaxKind.Interpolation)) == argumentList.Arguments.Count - 1) return;
+            var allInterpolations = analyzingInterpolation.Contents.Where(c => c.IsKind(SyntaxKind.Interpolation)).Select(c => (InterpolationSyntax)c);
+            if (allInterpolations.Select(c => c.Expression.ToString()).Distinct().Count() == argumentList.Arguments.Count - 1) return;
             var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation());
             context.ReportDiagnostic(diag);
         }
