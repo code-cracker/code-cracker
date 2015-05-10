@@ -114,6 +114,34 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async Task MethodWithParamtersReferencingSingleArgumentDoesNotCreateDiagnostic()
+        {
+            var source = @"var result = string.Format(""one {0} two {0}"", ""a"");".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task MethodWithParamtersReferencingSingleAndFormatSpecifiersArgumentDoesNotCreateDiagnostic()
+        {
+            var source = @"var result = string.Format(""PI {0:0.##} PI as Percent {0:P}"", Math.PI);".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task MethodWithMultibleParamtersReferencingSingleArgumentCreatesDiagnostic()
+        {
+            var source = @"var result = string.Format(""one {0} two {0}"", ""a"", ""b"");".WrapInCSharpMethod();
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.StringFormatArgs.ToDiagnosticId(),
+                Message = StringFormatArgsAnalyzer.MessageFormat,
+                Severity = DiagnosticSeverity.Error,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
         public async Task IgnoreStringFormatWithCorrectNumberOfParameters()
         {
             var source = @"
