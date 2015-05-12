@@ -12,21 +12,32 @@ namespace CodeCracker.CSharp.Usage
     public class StringFormatArgsAnalyzer : DiagnosticAnalyzer
     {
         internal const string Title = "Incorrect String.Format usage";
-        internal const string MessageFormat = "The number of arguments in String.Format is incorrect.";
+        internal const string IncorrectNumberOfArgsMessage = "The number of arguments in String.Format is incorrect.";
+        internal const string InvalidArgsReferenceMessage = "Invalid argument reference in String.Format.";
         internal const string Category = SupportedCategories.Usage;
         const string Description = "The format argument in String.Format determines the number of argument, considering the {} inside. You should pass the correct number of arguments.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static DiagnosticDescriptor IncorrectNumberOfArgs = new DiagnosticDescriptor(
             DiagnosticId.StringFormatArgs.ToDiagnosticId(),
             Title,
-            MessageFormat,
+            IncorrectNumberOfArgsMessage,
             Category,
             DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringFormatArgs));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+        internal static DiagnosticDescriptor InvalidArgsReference = new DiagnosticDescriptor(
+            DiagnosticId.StringFormatArgs.ToDiagnosticId(),
+            Title,
+            InvalidArgsReferenceMessage,
+            Category,
+            DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: Description,
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringFormatArgs));
+
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(IncorrectNumberOfArgs, InvalidArgsReference);
 
         public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
 
@@ -46,9 +57,27 @@ namespace CodeCracker.CSharp.Usage
             var formatLiteral = (LiteralExpressionSyntax)argumentList.Arguments[0].Expression;
             var analyzingInterpolation = (InterpolatedStringExpressionSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
             var allInterpolations = analyzingInterpolation.Contents.Where(c => c.IsKind(SyntaxKind.Interpolation)).Select(c => (InterpolationSyntax)c);
-            if (allInterpolations.Select(c => c.Expression.ToString()).Distinct().Count() == argumentList.Arguments.Count - 1) return;
-            var diag = Diagnostic.Create(Rule, invocationExpression.GetLocation());
-            context.ReportDiagnostic(diag);
+            var distinctInterpolations = allInterpolations.Select(c => c.Expression.ToString()).Distinct();
+            if (distinctInterpolations.Count() != argumentList.Arguments.Count - 1)
+            {
+                var diag = Diagnostic.Create(IncorrectNumberOfArgs, invocationExpression.GetLocation());
+                context.ReportDiagnostic(diag);
+                return;
+            }
+            foreach (var interpolation in distinctInterpolations)
+            {
+                var validIndexReference = false;
+                int argIndexReference;
+                if (int.TryParse(interpolation, out argIndexReference))
+                {
+                    validIndexReference = argIndexReference >= 0 && argIndexReference < argumentList.Arguments.Count - 1;
+                }
+                if (!validIndexReference)
+                {
+                    var diag = Diagnostic.Create(InvalidArgsReference, invocationExpression.GetLocation());
+                    context.ReportDiagnostic(diag);
+                }
+            }
         }
     }
 }
