@@ -564,7 +564,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 }
     ";
 
-            await VerifyFixAllAsync(new[] { source1, source2, source3 }, new[] { fixtest1, fixtest2, fixtest3 });
+            await VerifyCSharpFixAllAsync(new[] { source1, source2, source3 }, new[] { fixtest1, fixtest2, fixtest3 });
         }
     }
 }

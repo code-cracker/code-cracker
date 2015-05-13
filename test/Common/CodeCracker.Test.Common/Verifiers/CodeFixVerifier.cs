@@ -187,7 +187,7 @@ namespace CodeCracker.Test
             Assert.Equal(newSource, actual);
         }
 
-        protected async Task VerifyFixAllAsync(string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null)
+        protected async Task VerifyCSharpFixAllAsync(string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null)
         {
             if (formatBeforeCompare)
             {
@@ -196,12 +196,12 @@ namespace CodeCracker.Test
             }
             var diagnosticAnalyzer = GetDiagnosticAnalyzer();
             if (diagnosticAnalyzer != null)
-                await VerifyFixAllAsync(diagnosticAnalyzer, codeFixProvider ?? GetCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics).ConfigureAwait(true);
+                await VerifyCSharpFixAllAsync(diagnosticAnalyzer, codeFixProvider ?? GetCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics).ConfigureAwait(true);
             else
-                await VerifyFixAllAsync(codeFixProvider ?? GetCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics).ConfigureAwait(true);
+                await VerifyCSharpFixAllAsync(codeFixProvider ?? GetCodeFixProvider(), oldSources, newSources, allowNewCompilerDiagnostics).ConfigureAwait(true);
         }
 
-        private async Task VerifyFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics)
+        private async Task VerifyCSharpFixAllAsync(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics)
         {
             var project = CreateProject(oldSources, LanguageNames.CSharp);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, project.Documents.ToArray()).ConfigureAwait(true);
@@ -234,7 +234,7 @@ namespace CodeCracker.Test
             }
         }
 
-        private async Task VerifyFixAllAsync(CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics)
+        private async Task VerifyCSharpFixAllAsync(CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics)
         {
             var diagnosticIds = codeFixProvider.FixableDiagnosticIds;
             var project = CreateProject(oldSources, LanguageNames.CSharp);
