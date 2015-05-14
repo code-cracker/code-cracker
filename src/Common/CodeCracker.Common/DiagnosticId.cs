@@ -34,6 +34,7 @@
         DisposableFieldNotDisposed_Returned = 32,
         DisposableFieldNotDisposed_Created = 33,
         AllowMembersOrdering = 35,
+        RedundantFieldAssignment = 34,
         RemoveCommentedCode = 37,
         ConvertToExpressionBodiedMember = 38,
         StringBuilderInLoop = 39,
