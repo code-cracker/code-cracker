@@ -29,6 +29,15 @@ namespace CodeCracker
             return false;
         }
 
+        public static bool IsAnyKind(this SymbolDisplayPart displayPart, params SymbolDisplayPartKind[] kinds)
+        {
+            foreach (var kind in kinds)
+            {
+                if (displayPart.Kind == kind) return true;
+            }
+            return false;
+        }
+
         public static StatementSyntax FirstAncestorOrSelfThatIsAStatement(this SyntaxNode node)
         {
             var currentNode = node;
