@@ -1,19 +1,16 @@
-﻿namespace CodeCracker.CSharp.Design
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
+
+namespace CodeCracker.CSharp.Design
 {
-    using System;
-    using System.Collections.Immutable;
-    using System.Linq;
-
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.CodeAnalysis.Diagnostics;
-
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class NameOfAnalyzer : DiagnosticAnalyzer
     {
-        private const char DotChar = '.';
-
         internal const string Title = "You should use nameof instead of program element name string";
         internal const string MessageFormat = "Use 'nameof({0})' instead of specifying the program element name.";
         internal const string Category = SupportedCategories.Design;
@@ -75,26 +72,18 @@
                 {
                     case SyntaxKind.MethodDeclaration:
                     case SyntaxKind.ConstructorDeclaration:
-                        {
-                            var method = (BaseMethodDeclarationSyntax)ancestorThatMightHaveParameters;
-                            parameters = method.ParameterList.Parameters;
-                            break;
-                        }
+                        var method = (BaseMethodDeclarationSyntax)ancestorThatMightHaveParameters;
+                        parameters = method.ParameterList.Parameters;
+                        break;
                     case SyntaxKind.IndexerDeclaration:
-                        {
-                            var indexer = (IndexerDeclarationSyntax)ancestorThatMightHaveParameters;
-                            parameters = indexer.ParameterList.Parameters;
-                            break;
-                        }
+                        var indexer = (IndexerDeclarationSyntax)ancestorThatMightHaveParameters;
+                        parameters = indexer.ParameterList.Parameters;
+                        break;
                     case SyntaxKind.AttributeList:
-                        {
-                            break;
-                        }
+                        break;
                 }
-
                 parameterName = GetParameterWithIdentifierEqualToStringLiteral(stringLiteral, parameters)?.Identifier.Text;
             }
-
             return parameterName;
         }
 

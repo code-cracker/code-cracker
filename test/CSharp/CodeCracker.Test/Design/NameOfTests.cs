@@ -27,10 +27,10 @@ public class TypeName
         }
 
         [Theory]
-        [InlineData("string b", "b", "b", "Test0.cs", 6, 24)]
-        [InlineData("string @for","for", "@for", "Test0.cs", 6, 24)]
-        [InlineData("string @xyz", "xyz", "@xyz", "Test0.cs", 6, 24)]
-        public async Task WhenStringLiteralInMethodShouldReportDiagnostic(string parameters, string stringLiteral, string nameofArgument, string diagnosticFilePath, int diagnosticLine, int diagnosticColumn)
+        [InlineData("string b", "b", "b")]
+        [InlineData("string @for","for", "@for")]
+        [InlineData("string @xyz", "xyz", "@xyz")]
+        public async Task WhenStringLiteralInMethodShouldReportDiagnostic(string parameters, string stringLiteral, string nameofArgument)
         {
             var source = @"
 public class TypeName
@@ -41,7 +41,7 @@ public class TypeName
     }
 }";
 
-            var expected = CreateNameofDiagnosticResult(nameofArgument, diagnosticLine, diagnosticColumn, diagnosticFilePath);
+            var expected = CreateNameofDiagnosticResult(nameofArgument, 6, 24);
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -77,12 +77,12 @@ public class TypeName
         }
 
         [Theory]
-        [InlineData("xyz", false, "", 0 ,0)]
-        [InlineData("OtherProperty", true, "Test0.cs", 18, 18)]
-        [InlineData("SomeStruct", true, "Test0.cs", 18, 18)]
-        [InlineData("readonlyField", true, "Test0.cs", 18, 18)]
-        [InlineData("Property", true, "Test0.cs", 18, 18)]
-        public async Task WhenUsingProgramElementNameStringAsIndexerParameter(string stringLiteral, bool shouldReportDiagnostic, string diagnosticFilePath, int diagnosticLine, int diagnosticColumn)
+        [InlineData("xyz", false)]
+        [InlineData("OtherProperty", true)]
+        [InlineData("SomeStruct", true)]
+        [InlineData("readonlyField", true)]
+        [InlineData("Property", true)]
+        public async Task WhenUsingProgramElementNameStringAsIndexerParameter(string stringLiteral, bool shouldReportDiagnostic)
         {
             var source = @"
 public class TypeName
@@ -117,28 +117,28 @@ public class TypeName
             }
             else
             {
-                var expected = CreateNameofDiagnosticResult(stringLiteral, diagnosticLine, diagnosticColumn, diagnosticFilePath);
+                var expected = CreateNameofDiagnosticResult(stringLiteral, 18, 18);
 
                 await VerifyCSharpDiagnosticAsync(source, expected);
             }
         }
 
         [Theory]
-        [InlineData("xyz", false, "", 0, 0)]
-        [InlineData("NestedClass", true, "Test0.cs", 22, 35)]
-        [InlineData("SomeStruct", true, "Test0.cs", 22, 35)]
-        [InlineData("SomeEnum", true, "Test0.cs", 22, 35)]
-        [InlineData("IInterface", true, "Test0.cs", 22, 35)]
-        [InlineData("N2", true, "Test0.cs", 22, 35)]
-        [InlineData("SomeDelegate", true, "Test0.cs", 22, 35)]
-        [InlineData("readonlyField", true, "Test0.cs", 22, 35)]
-        [InlineData("ParticularEvent", true, "Test0.cs", 22, 35)]
-        [InlineData("Property", true, "Test0.cs", 22, 35)]
-        [InlineData("TypeName", true, "Test0.cs", 22, 35)]
-        [InlineData("Invoke", true, "Test0.cs", 22, 35)]
-        [InlineData("N1", true, "Test0.cs", 22, 35)]
-        [InlineData("N3", true, "Test0.cs", 22, 35)]
-        public async Task WhenUsingProgramElementNameStringInMethodInvocation(string stringLiteral, bool shouldReportDiagnostic, string diagnosticFilePath, int diagnosticLine, int diagnosticColumn)
+        [InlineData("xyz", false)]
+        [InlineData("NestedClass", true)]
+        [InlineData("SomeStruct", true)]
+        [InlineData("SomeEnum", true)]
+        [InlineData("IInterface", true)]
+        [InlineData("N2", true)]
+        [InlineData("SomeDelegate", true)]
+        [InlineData("readonlyField", true)]
+        [InlineData("ParticularEvent", true)]
+        [InlineData("Property", true)]
+        [InlineData("TypeName", true)]
+        [InlineData("Invoke", true)]
+        [InlineData("N1", true)]
+        [InlineData("N3", true)]
+        public async Task WhenUsingProgramElementNameStringInMethodInvocation(string stringLiteral, bool shouldReportDiagnostic)
         {
             var source = @"
 namespace N1.N2
@@ -177,7 +177,7 @@ namespace N1.N2
             }
             else
             {
-                var expected = CreateNameofDiagnosticResult(stringLiteral, diagnosticLine, diagnosticColumn, diagnosticFilePath);
+                var expected = CreateNameofDiagnosticResult(stringLiteral, 22, 35);
 
                 await VerifyCSharpDiagnosticAsync(source, expected);
             }
@@ -594,14 +594,14 @@ public class TypeName
             await VerifyCSharpFixAllAsync(source, fixtest);
         }
 
-        private static DiagnosticResult CreateNameofDiagnosticResult(string nameofArgument, int diagnosticLine, int diagnosticColumn, string diagnosticFilePath = "Test0.cs")
+        private static DiagnosticResult CreateNameofDiagnosticResult(string nameofArgument, int diagnosticLine, int diagnosticColumn)
         {
             return new DiagnosticResult
             {
                 Id = DiagnosticId.NameOf.ToDiagnosticId(),
                 Message = string.Format("Use 'nameof({0})' instead of specifying the program element name.", nameofArgument),
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation(diagnosticFilePath, diagnosticLine, diagnosticColumn) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", diagnosticLine, diagnosticColumn) }
             };
         }
     }
