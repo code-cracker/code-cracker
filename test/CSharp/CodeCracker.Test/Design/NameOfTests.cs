@@ -376,6 +376,11 @@ namespace N1.N2
                     return variable;
                 }
             }
+
+            public string verbatimString = @""
+verbatim
+string
+lines"";
         }
     }
 }";
