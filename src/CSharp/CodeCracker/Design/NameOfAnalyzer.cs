@@ -59,42 +59,9 @@
                 var symbol = semanticModel.LookupSymbols(stringLiteral.Token.SpanStart, null, literalValueText).FirstOrDefault();
 
                 programElementName = symbol?.ToDisplayParts().LastOrDefault(IncludeOnlyPartsThatAreName).ToString();
-
-                if(!Found(programElementName))
-                {
-                    symbol = GetNamespaceSymbolThatEqualsStringLiteral(stringLiteral, semanticModel);
-
-                    if(symbol != null)
-                    {
-                        programElementName = literalValueText;
-                    }
-                }
             }
 
             return programElementName;
-        }
-
-        private static ISymbol GetNamespaceSymbolThatEqualsStringLiteral(LiteralExpressionSyntax stringLiteral, SemanticModel semanticModel)
-        {
-            ISymbol result = null;
-            var valueText = stringLiteral.Token.ValueText;
-            if (valueText.IndexOf(DotChar) > 0)
-            {
-                var lastPartNamespaceStartIndex = valueText.LastIndexOf(DotChar);
-                if (lastPartNamespaceStartIndex + 1 <= valueText.Length)
-                {
-                    var lastPartNamespace = valueText.Substring(lastPartNamespaceStartIndex + 1);
-
-                    var namespaceSymbol = semanticModel.LookupNamespacesAndTypes(stringLiteral.Token.SpanStart, null, lastPartNamespace).FirstOrDefault();
-
-                    if(namespaceSymbol != null && IsStringLiteralProperPartOfNamespaceName(valueText, namespaceSymbol.ToDisplayString()))
-                    {
-                        result = namespaceSymbol;
-                    }
-                }
-            }
-
-            return result;
         }
 
         private static string GetParameterNameThatMatchStringLiteral(LiteralExpressionSyntax stringLiteral)
@@ -129,31 +96,6 @@
             }
 
             return parameterName;
-        }
-
-        private static bool IsStringLiteralProperPartOfNamespaceName(string stringLiteral, string namespaceName)
-        {
-            var result = false;
-
-            var lastOccurence = namespaceName.LastIndexOf(stringLiteral, StringComparison.Ordinal);
-            var areStringsSameLength = stringLiteral.Length == namespaceName.Length;
-
-            if (!areStringsSameLength || lastOccurence >= 0)
-            {
-                var previousCharEqualsDot = lastOccurence > 0 ? namespaceName[lastOccurence - 1].Equals(DotChar) : true;
-
-                var nextCharIndex = lastOccurence + stringLiteral.Length;
-                var nextCharIndexExists = nextCharIndex < namespaceName.Length;
-                var nextCharEqualsDot = nextCharIndexExists ? namespaceName[nextCharIndex].Equals(DotChar) : true;
-
-                result = previousCharEqualsDot || nextCharEqualsDot;
-            }
-            else
-            {
-                result = lastOccurence >= 0;
-            }
-
-            return result;
         }
 
         private static bool Found(string programElement) => !string.IsNullOrEmpty(programElement);
