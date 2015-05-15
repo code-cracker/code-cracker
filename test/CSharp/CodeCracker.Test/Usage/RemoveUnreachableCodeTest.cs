@@ -378,7 +378,7 @@ class Foo2
         return;
     }
 }";
-            await VerifyFixAllAsync(new[] { source1, source2 }, new[] { fixtest1, fixtest2 });
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { fixtest1, fixtest2 });
         }
     }
 }
