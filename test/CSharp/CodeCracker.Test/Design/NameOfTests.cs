@@ -7,33 +7,43 @@ namespace CodeCracker.Test.CSharp.Design
 {
     public class NameOfTests : CodeFixVerifier<NameOfAnalyzer, NameOfCodeFixProvider>
     {
-        [Fact]
-        public async Task IgnoreIfStringLiteralIsWhiteSpace()
+        [Theory]
+        [InlineData("", "")]
+        [InlineData("", "null")]
+        [InlineData("", "b")]
+        [InlineData("string a", "b")]
+        public async Task WhenStringLiteralInMethodShouldNotReportDiagnostic(string parameters, string stringLiteral)
         {
-            const string test = @"
+            var source = @"
 public class TypeName
 {
-    void Foo()
+    void Foo(" + parameters + @")
     {
-        var whatever = """";
+        var whatever = """ + stringLiteral + @""";
     }
 }";
-            await VerifyCSharpHasNoDiagnosticsAsync(test);
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
-        [Fact]
-        public async Task IgnoreIfStringLiteralIsNull()
+        [Theory]
+        [InlineData("string b", "b", "b")]
+        [InlineData("string @for", "for", "@for")]
+        [InlineData("string @xyz", "xyz", "@xyz")]
+        public async Task WhenStringLiteralInMethodShouldReportDiagnostic(string parameters, string stringLiteral, string nameofArgument)
         {
-            const string test = @"
+            var source = @"
 public class TypeName
 {
-    void Foo()
+    void Foo(" + parameters + @")
     {
-        var whatever = null;
+        var whatever = """ + stringLiteral + @""";
     }
 }";
 
-            await VerifyCSharpHasNoDiagnosticsAsync(test);
+            var expected = CreateNameofDiagnosticResult(nameofArgument, 6, 24);
+
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
@@ -52,98 +62,339 @@ public class TypeName()
         }
 
         [Fact]
-        public async Task IgnoreIfMethodHasNoParameters()
+        public async Task WhenUsingSomeStringInAttributeShouldNotReportDiagnostic()
         {
             const string test = @"
 public class TypeName
 {
-    void Foo()
-    {
-        var whatever = ""b"";
-    }
-}";
-
-            await VerifyCSharpHasNoDiagnosticsAsync(test);
-        }
-
-        [Fact]
-        public async Task IgnoreIfMethodHasParametersUnlikeOfStringLiteral()
-        {
-            const string test = @"
-public class TypeName
-{
+    [Whatever(""a"")]
+    [Whatever(""xyz""]
     void Foo(string a)
     {
-        var whatever = ""b"";
     }
 }";
-
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact]
-        public async Task WhenUsingStringLiteralEqualsParameterNameReturnAnalyzerCreatesDiagnostic()
+        [Theory]
+        [InlineData("xyz", false)]
+        [InlineData("OtherProperty", true)]
+        [InlineData("SomeStruct", true)]
+        [InlineData("readonlyField", true)]
+        [InlineData("Property", true)]
+        public async Task WhenUsingProgramElementNameStringAsIndexerParameter(string stringLiteral, bool shouldReportDiagnostic)
         {
-            const string source = @"
+            var source = @"
 public class TypeName
 {
-    void Foo(string b)
+    private readonly int readonlyField;
+    public int OtherProperty { get; set; }
+    public event EventHandler ParticularEvent;
+    public delegate int SomeDelegate(int c, double d);
+
+    public interface IInterface {}
+    public struct SomeStruct {}
+    public enum SomeEnum {}
+    public class NestedClass {}
+
+    public int Property
     {
-        string whatever = ""b"";
+        set
+        {
+            this[""" + stringLiteral + @"""] = value;
+        }
+    }
+
+    public int this[string s]
+    {
+        get { return 0;}
+        set { }
     }
 }";
-            var expected = new DiagnosticResult
+            if (!shouldReportDiagnostic)
             {
-                Id = DiagnosticId.NameOf.ToDiagnosticId(),
-                Message = "Use 'nameof(b)' instead of specifying the parameter name.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 27) }
+                await VerifyCSharpHasNoDiagnosticsAsync(source);
+            }
+            else
+            {
+                var expected = CreateNameofDiagnosticResult(stringLiteral, 18, 18);
+
+                await VerifyCSharpDiagnosticAsync(source, expected);
+            }
+        }
+
+        [Theory]
+        [InlineData("xyz", false)]
+        [InlineData("NestedClass", true)]
+        [InlineData("SomeStruct", true)]
+        [InlineData("SomeEnum", true)]
+        [InlineData("IInterface", true)]
+        [InlineData("N2", true)]
+        [InlineData("SomeDelegate", true)]
+        [InlineData("readonlyField", true)]
+        [InlineData("ParticularEvent", true)]
+        [InlineData("Property", true)]
+        [InlineData("TypeName", true)]
+        [InlineData("Invoke", true)]
+        [InlineData("N1", true)]
+        [InlineData("N3", true)]
+        public async Task WhenUsingProgramElementNameStringInMethodInvocation(string stringLiteral, bool shouldReportDiagnostic)
+        {
+            var source = @"
+namespace N1.N2
+{
+    namespace N3
+    {
+        public class TypeName
+        {
+            private readonly int readonlyField;
+            public int Property { get; set; }
+            public event EventHandler ParticularEvent;
+            public delegate int SomeDelegate(int c, double d);
+
+            public interface IInterface {}
+            public struct SomeStruct {}
+            public enum SomeEnum {}
+            public class NestedClass {}
+
+            public int Property
+            {
+                set
+                {
+                    Invoke(""abc"", """ + stringLiteral + @""");
+                }
+            }
+
+            private void Invoke(string arg1, string arg2)
+            {
+            }
+        }
+    }
+}";
+            if (!shouldReportDiagnostic)
+            {
+                await VerifyCSharpHasNoDiagnosticsAsync(source);
+            }
+            else
+            {
+                var expected = CreateNameofDiagnosticResult(stringLiteral, 22, 35);
+
+                await VerifyCSharpDiagnosticAsync(source, expected);
+            }
+        }
+
+        [Fact]
+        public async Task WhenUsingProgramElementStringInVariableAssignment()
+        {
+            const string source = @"
+public class TypeName
+{
+    private readonly int readonlyField;
+    public class NestedClass {}
+
+    public int Property
+    {
+        set
+        {
+            string variable = ""NestedClass"";
+            variable = ""xyz"";
+            variable = ""readonlyField"";
+        }
+    }
+}";
+
+            var expectedForFirstAssignment = CreateNameofDiagnosticResult("NestedClass", 11, 31);
+            var expectedForSecondAssignment = CreateNameofDiagnosticResult("readonlyField", 13, 24);
+
+            await VerifyCSharpDiagnosticAsync(source, expectedForFirstAssignment, expectedForSecondAssignment);
+        }
+
+        [Fact]
+        public async Task WhenUsingProgramElementNameStringInAttributeShouldReportDiagnostic()
+        {
+            const string source = @"
+namespace N1.N2
+{
+    public class TypeName
+    {
+        private readonly int readonlyField;
+        public int Property { get; set; }
+        public event EventHandler ParticularEvent;
+        public delegate int SomeDelegate(int c, double d);
+
+        [Whatever(""N2"")]
+        [Whatever(""SomeDelegate"")]
+        [Whatever(""readonlyField"")]
+        [Whatever(""ParticularEvent"")]
+        [Whatever(""Property"")]
+        [Whatever(""TypeName"")]
+        [Whatever(""Foo"")]
+        [Whatever(""N1"")]
+        void Foo(string a)
+        {
+        }
+    }
+}";
+            var expected = new[]
+            {
+                CreateNameofDiagnosticResult("N2", 11, 19),
+                CreateNameofDiagnosticResult("SomeDelegate", 12, 19),
+                CreateNameofDiagnosticResult("readonlyField", 13, 19),
+                CreateNameofDiagnosticResult("ParticularEvent", 14, 19),
+                CreateNameofDiagnosticResult("Property", 15, 19),
+                CreateNameofDiagnosticResult("TypeName", 16, 19),
+                CreateNameofDiagnosticResult("Foo", 17, 19),
+                CreateNameofDiagnosticResult("N1", 18, 19)
             };
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public async Task WhenUsingVerbatimSpecifierWithKeywordEqualsParameterNameReturnAnalyzerCreatesDiagnostic()
+        public async Task WhenUsingStringLiteralInObjectInitializer()
+        {
+            const string source = @"
+namespace N1.N2
+{
+    public class OtherTypeName
+    {
+        public string Property { get; set; }
+        private string Property2 { get; set; }
+        public string Property3 { get; set; }
+    }
+
+    public class TypeName
+    {
+   
+        void Foo(string a)
+        {
+            var instance = new OtherTypeName
+            {
+                Property = ""xyz"",
+                Property2 = ""OtherTypeName"",
+                Property3 = ""Property2""
+            }
+        }
+    }
+}";
+
+            await VerifyCSharpDiagnosticAsync(source, CreateNameofDiagnosticResult("OtherTypeName", 19, 29));
+        }
+
+        [Fact]
+        public async Task WhenUsingProgramElementNameInArrayInitializer()
         {
             const string source = @"
 public class TypeName
 {
-    void Foo(string @for)
+    private readonly int readonlyField;
+    public interface IInterface {}
+    
+    void Foo(string a)
     {
-        string whatever = ""for"";
+        var tab = new[] { ""readonlyField"", ""xyz"", ""IInterface"" };
     }
-}
-";
-            var expected = new DiagnosticResult
+}";
+            var expected = new[]
             {
-                Id = DiagnosticId.NameOf.ToDiagnosticId(),
-                Message = "Use 'nameof(@for)' instead of specifying the parameter name.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 27) }
+                CreateNameofDiagnosticResult("readonlyField", 9, 27),
+                CreateNameofDiagnosticResult("IInterface", 9, 51)
             };
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public async Task WhenUsingVerbatimSpecifierWithSimpleIdentifierEqualsParameterNameReturnAnalyzerCreatesDiagnostic()
+        public async Task WhenCreatingNewObjectWithStringLiterals()
         {
             const string source = @"
-public class TypeName
+public struct TypeName
 {
-    void Foo(string @xyz)
+   
+    void Foo(string a)
     {
-        string whatever = ""xyz"";
+        var instance = new OtherTypeName(""b"", ""xyz"");
+        instance2 = new OtherTypeName(""TypeName"", ""a"");
     }
-}
-";
-            var expected = new DiagnosticResult
+}";
+            var expected = new[]
             {
-                Id = DiagnosticId.NameOf.ToDiagnosticId(),
-                Message = "Use 'nameof(@xyz)' instead of specifying the parameter name.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 27) }
+                CreateNameofDiagnosticResult("TypeName", 8, 39),
+                CreateNameofDiagnosticResult("a", 8, 51)
+            };
+
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenUsingStringLiteralInVariousPlaces()
+        {
+            const string source = @"
+namespace N1.N2
+{
+    namespace @using
+    {
+        public delegate int SomeDelegate(int a, int b);
+
+        public class BaseTypeName
+        {
+            public BaseTypeName(string a)
+            {
+            }
+        }
+
+        public class @class : BaseTypeName
+        {
+            private readonly int readonlyField;
+            public event EventHandler ParticularEvent;
+
+            public string className = ""class"";
+            public string fieldName = ""field"";
+            public string someName = ""variable"";
+            public string namespaceName = ""using"";
+            public string namespaceName2 = ""N2"";
+    
+            void Foo() => string.Format(""{0}"", ""xyz"");
+            void Foo2() => string.Format(""{0}"", ""readonlyField"");
+
+            public @class() : base(""SomeDelegate"") { }
+
+            void Foo3(string a)
+            {
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { ""b"", ""readonlyField"" },
+                    { ""xyz"", ""ParticularEvent"" }
+                };
+            }
+
+            public int Property
+            {
+                get
+                {
+                    var variable = 5;
+                    return variable;
+                }
+            }
+
+            public string namespaceName3 = ""N1.N2"";
+
+            public string verbatimString = @""
+verbatim
+string
+lines"";
+        }
+    }
+}";
+            var expected = new[]
+            {
+                CreateNameofDiagnosticResult("@class", 20, 39),
+                CreateNameofDiagnosticResult("@using", 23, 43),
+                CreateNameofDiagnosticResult("N2", 24, 44),
+                CreateNameofDiagnosticResult("readonlyField", 27, 49),
+                CreateNameofDiagnosticResult("SomeDelegate", 29, 36),
+                CreateNameofDiagnosticResult("readonlyField", 35, 28),
+                CreateNameofDiagnosticResult("ParticularEvent", 36, 30)
             };
 
             await VerifyCSharpDiagnosticAsync(source, expected);
@@ -343,18 +594,65 @@ public class TypeName
             await VerifyCSharpFixAllAsync(source, fixtest);
         }
 
-        [Fact]
-        public async Task IgnoreAttributes()
+        [Theory]
+        [InlineData("NestedClass")]
+        [InlineData("SomeStruct")]
+        [InlineData("SomeEnum")]
+        [InlineData("IInterface")]
+        [InlineData("N2")]
+        [InlineData("SomeDelegate")]
+        [InlineData("readonlyField")]
+        [InlineData("ParticularEvent")]
+        [InlineData("Property")]
+        [InlineData("TypeName")]
+        [InlineData("Invoke")]
+        [InlineData("N1")]
+        [InlineData("N3")]
+        public async Task WhenUsingProgramElementNameStringInMethodInvocationThenFixUpdatesAsExpected(string stringLiteral)
         {
-            const string test = @"
-public class TypeName
+            var source = @"
+namespace N1.N2
 {
-    [Whatever(""a"")]
-    void Foo(string a)
+    namespace N3
     {
+        public class TypeName
+        {
+            private readonly int readonlyField;
+            public int Property { get; set; }
+            public event EventHandler ParticularEvent;
+            public delegate int SomeDelegate(int c, double d);
+
+            public interface IInterface {}
+            public struct SomeStruct {}
+            public enum SomeEnum {}
+            public class NestedClass {}
+
+            public int Property2
+            {
+                set
+                {
+                    Invoke(""abc"", <REPLACE>);
+                }
+            }
+
+            private void Invoke(string arg1, string arg2)
+            {
+            }
+        }
     }
 }";
-            await VerifyCSharpHasNoDiagnosticsAsync(test);
+            await VerifyCSharpFixAllAsync(source.Replace("<REPLACE>", $@"""{stringLiteral}"""), source.Replace("<REPLACE>", $@"nameof({stringLiteral})"));
+        }
+
+        private static DiagnosticResult CreateNameofDiagnosticResult(string nameofArgument, int diagnosticLine, int diagnosticColumn)
+        {
+            return new DiagnosticResult
+            {
+                Id = DiagnosticId.NameOf.ToDiagnosticId(),
+                Message = string.Format("Use 'nameof({0})' instead of specifying the program element name.", nameofArgument),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", diagnosticLine, diagnosticColumn) }
+            };
         }
     }
 }
