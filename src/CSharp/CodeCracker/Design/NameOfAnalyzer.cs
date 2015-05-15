@@ -89,7 +89,7 @@ namespace CodeCracker.CSharp.Design
 
         private static bool Found(string programElement) => !string.IsNullOrEmpty(programElement);
 
-        private static bool IncludeOnlyPartsThatAreName(SymbolDisplayPart displayPart) =>
+        public static bool IncludeOnlyPartsThatAreName(SymbolDisplayPart displayPart) =>
             displayPart.IsAnyKind(SymbolDisplayPartKind.ClassName, SymbolDisplayPartKind.DelegateName, SymbolDisplayPartKind.EnumName, SymbolDisplayPartKind.EventName, SymbolDisplayPartKind.FieldName, SymbolDisplayPartKind.InterfaceName, SymbolDisplayPartKind.LocalName, SymbolDisplayPartKind.MethodName, SymbolDisplayPartKind.NamespaceName, SymbolDisplayPartKind.ParameterName, SymbolDisplayPartKind.PropertyName, SymbolDisplayPartKind.StructName);
 
         private static ParameterSyntax GetParameterWithIdentifierEqualToStringLiteral(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters) =>
