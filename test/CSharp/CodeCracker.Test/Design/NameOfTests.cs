@@ -377,6 +377,8 @@ namespace N1.N2
                 }
             }
 
+            public string namespaceName3 = ""N1.N2"";
+
             public string verbatimString = @""
 verbatim
 string
