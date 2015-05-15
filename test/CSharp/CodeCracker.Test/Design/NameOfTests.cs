@@ -8,7 +8,7 @@ namespace CodeCracker.Test.CSharp.Design
     public class NameOfTests : CodeFixVerifier<NameOfAnalyzer, NameOfCodeFixProvider>
     {
         [Theory]
-        [InlineData("","")]
+        [InlineData("", "")]
         [InlineData("", "null")]
         [InlineData("", "b")]
         [InlineData("string a", "b")]
@@ -28,7 +28,7 @@ public class TypeName
 
         [Theory]
         [InlineData("string b", "b", "b")]
-        [InlineData("string @for","for", "@for")]
+        [InlineData("string @for", "for", "@for")]
         [InlineData("string @xyz", "xyz", "@xyz")]
         public async Task WhenStringLiteralInMethodShouldReportDiagnostic(string parameters, string stringLiteral, string nameofArgument)
         {
@@ -592,6 +592,56 @@ public class TypeName
 }";
 
             await VerifyCSharpFixAllAsync(source, fixtest);
+        }
+
+        [Theory]
+        [InlineData("NestedClass")]
+        [InlineData("SomeStruct")]
+        [InlineData("SomeEnum")]
+        [InlineData("IInterface")]
+        [InlineData("N2")]
+        [InlineData("SomeDelegate")]
+        [InlineData("readonlyField")]
+        [InlineData("ParticularEvent")]
+        [InlineData("Property")]
+        [InlineData("TypeName")]
+        [InlineData("Invoke")]
+        [InlineData("N1")]
+        [InlineData("N3")]
+        public async Task WhenUsingProgramElementNameStringInMethodInvocationThenFixUpdatesAsExpected(string stringLiteral)
+        {
+            var source = @"
+namespace N1.N2
+{
+    namespace N3
+    {
+        public class TypeName
+        {
+            private readonly int readonlyField;
+            public int Property { get; set; }
+            public event EventHandler ParticularEvent;
+            public delegate int SomeDelegate(int c, double d);
+
+            public interface IInterface {}
+            public struct SomeStruct {}
+            public enum SomeEnum {}
+            public class NestedClass {}
+
+            public int Property2
+            {
+                set
+                {
+                    Invoke(""abc"", <REPLACE>);
+                }
+            }
+
+            private void Invoke(string arg1, string arg2)
+            {
+            }
+        }
+    }
+}";
+            await VerifyCSharpFixAllAsync(source.Replace("<REPLACE>", $@"""{stringLiteral}"""), source.Replace("<REPLACE>", $@"nameof({stringLiteral})"));
         }
 
         private static DiagnosticResult CreateNameofDiagnosticResult(string nameofArgument, int diagnosticLine, int diagnosticColumn)
