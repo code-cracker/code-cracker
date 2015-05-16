@@ -152,6 +152,7 @@
     <Compile Include="Style\UseStringEmptyTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
     <Compile Include="Style\RemoveTrailingWhitespaceTests.cs" />
+    <Compile Include="Style\SwitchToAutoPropTests.cs" />
     <Compile Include="Style\StringFormatTests.cs" />
     <Compile Include="Style\AlwaysUseVarTests.cs" />
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupTests.cs" />

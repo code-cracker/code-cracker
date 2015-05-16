@@ -276,7 +276,7 @@ namespace CodeCracker.Test
             if (analyzer != null)
             {
                 var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, project.Documents.ToArray()).ConfigureAwait(true);
-                fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Solution,
+                fixAllContext = NewFixAllContext(project.Documents.First(), project, codeFixProvider, FixAllScope.Solution,
                     null,//code action ids in codecracker are always null
                     codeFixProvider.FixableDiagnosticIds,
                     (doc, diagnosticIds, cancelationToken) => Task.FromResult(analyzerDiagnostics.Where(d => d.Location.SourceTree.FilePath == doc.Name)),
@@ -296,7 +296,7 @@ namespace CodeCracker.Test
                     var diags = await Task.WhenAll(theDocs.Select(d => getDocumentDiagnosticsAsync(d))).ConfigureAwait(true);
                     return diags.SelectMany(d => d);
                 };
-                fixAllContext = NewFixAllContext(null, project, codeFixProvider, FixAllScope.Solution,
+                fixAllContext = NewFixAllContext(project.Documents.First(), project, codeFixProvider, FixAllScope.Solution,
                     null,//code action ids in codecracker are always null
                     codeFixProvider.FixableDiagnosticIds,
                     (doc, diagIds, cancelationToken) => getDocumentDiagnosticsAsync(doc),
