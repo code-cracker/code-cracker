@@ -51,9 +51,9 @@ namespace CodeCracker.CSharp.Usage
 		        return IsMethodUsed(methodTarget, typeDeclaration);
 
 	        var symbol = semanticModel.GetDeclaredSymbol(typeDeclaration);
-	        
-			return 
-				symbol == null || 
+
+			return
+				symbol == null ||
 				symbol.DeclaringSyntaxReferences.Any(reference => IsMethodUsed(methodTarget, reference.GetSyntax()));
         }
 
