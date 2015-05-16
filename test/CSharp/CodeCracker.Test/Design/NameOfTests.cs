@@ -610,7 +610,7 @@ public class TypeName
         [InlineData("N3")]
         public async Task WhenUsingProgramElementNameStringInMethodInvocationThenFixUpdatesAsExpected(string stringLiteral)
         {
-            var source = @"
+            const string source = @"
 namespace N1.N2
 {
     namespace N3
@@ -649,7 +649,7 @@ namespace N1.N2
             return new DiagnosticResult
             {
                 Id = DiagnosticId.NameOf.ToDiagnosticId(),
-                Message = string.Format("Use 'nameof({0})' instead of specifying the program element name.", nameofArgument),
+                Message = $"Use 'nameof({nameofArgument})' instead of specifying the program element name.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", diagnosticLine, diagnosticColumn) }
             };
