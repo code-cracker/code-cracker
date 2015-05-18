@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace CodeCracker.Test.CSharp.Performance
 {
@@ -30,7 +29,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.UseStaticRegexIsMatch.ToDiagnosticId(),
-                Message = "Using static Regex.IsMatch can give better performance",
+                Message = UseStaticRegexIsMatchAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 17) }
             };
@@ -98,7 +97,7 @@ namespace CodeCracker.Test.CSharp.Performance
             }
         }
     }";
-            await VerifyCSharpFixAsync(test, fixtest, 1);
+            await VerifyCSharpFixAsync(test, fixtest, 2);
         }
 
         [Fact]
@@ -119,7 +118,7 @@ namespace CodeCracker.Test.CSharp.Performance
             }
         }
     }";
-            await VerifyCSharpFixAsync(test, fixtest, 2);
+            await VerifyCSharpFixAsync(test, fixtest, 1);
         }
     }
 }
