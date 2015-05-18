@@ -3,20 +3,17 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
-using System.Linq;
-using System;
-using System.Reflection;
 
 namespace CodeCracker.CSharp.Performance
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UseStaticRegexIsMatchAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Use static Regex.IsMatch";
-        internal const string MessageFormat = "Using static Regex.IsMatch can give better performance";
+        internal const string Title = "Use of Regex.IsMatch might be improved";
+        internal const string MessageFormat = "Use of Regex.IsMatch might be improved";
         internal const string Category = SupportedCategories.Performance;
-        const string Description = "Instantiating the Regex object multiple times is bad for performance. "
-            + "Prefer using the static IsMatch method from Regex class";
+        const string Description = "Instantiating the Regex object multiple times might be bad for performance. "
+            + "You may want to use the static IsMatch method from Regex class and/or compile the regex.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UseStaticRegexIsMatch.ToDiagnosticId(),
@@ -38,22 +35,15 @@ namespace CodeCracker.CSharp.Performance
             if (context.IsGenerated()) return;
             var invocationExpression = (InvocationExpressionSyntax)context.Node;
 
-            var memberExpresion = invocationExpression.Expression as MemberAccessExpressionSyntax;
+            var memberExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
+            if (memberExpression?.Name.ToString() != "IsMatch") return;
 
-            if (memberExpresion?.Name.ToString() != "IsMatch") return;
+            var methodSymbol = context.SemanticModel.GetSymbolInfo(memberExpression).Symbol;
+            if (methodSymbol?.ContainingType.ToString() != "System.Text.RegularExpressions.Regex" || methodSymbol.IsStatic) return;
 
-            var methodSymbol = context.SemanticModel.GetSymbolInfo(memberExpresion).Symbol;
-            var variableSymbol = context.SemanticModel.GetSymbolInfo(((IdentifierNameSyntax)memberExpresion.Expression).Identifier.Parent).Symbol;
+            var variableSymbol = context.SemanticModel.GetSymbolInfo(((IdentifierNameSyntax)memberExpression.Expression).Identifier.Parent).Symbol;
+            if (variableSymbol?.Kind != SymbolKind.Local) return;
 
-            if (methodSymbol == null) return;
-            if (variableSymbol == null) return;
-
-            if (methodSymbol.ContainingType.ToString() != "System.Text.RegularExpressions.Regex") return;
-
-            if (methodSymbol.IsStatic) return;
-
-            if (variableSymbol.Kind != SymbolKind.Local) return;
-            
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocationExpression.GetLocation()));
         }
     }

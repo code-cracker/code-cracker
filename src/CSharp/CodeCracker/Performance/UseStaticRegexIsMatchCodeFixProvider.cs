@@ -19,74 +19,64 @@ namespace CodeCracker.CSharp.Performance
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var invocationDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create("Use static Regex.IsMatch", c => UseStaticRegexIsMatch(context.Document, invocationDeclaration, c)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Use Compiled Regex", c => UseCompiledRegex(context.Document, invocationDeclaration, c)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Use compiled and static Regex.IsMatch", c => UseCompiledAndStaticRegex(context.Document, invocationDeclaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use static Regex.IsMatch", c => UseStaticRegexIsMatchAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use static and compiled Regex.IsMatch", c => UseCompiledAndStaticRegexAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use Compiled Regex", c => UseCompiledRegexAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> MakeRegexStatic(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken, bool makeCompiled = false)
+        private async Task<Document> UseStaticRegexIsMatchAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
+            await MakeRegexStaticAsync(document, diagnostic, cancellationToken, makeCompiled: false).ConfigureAwait(false);
+
+        private async Task<Document> UseCompiledAndStaticRegexAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
+            await MakeRegexStaticAsync(document, diagnostic, cancellationToken, makeCompiled: true).ConfigureAwait(false);
+
+        private async Task<Document> MakeRegexStaticAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, bool makeCompiled)
         {
-            var memberExpresion = invocationDeclaration.Expression as MemberAccessExpressionSyntax;
-            var semanticModel = (await document.GetSemanticModelAsync(cancellationToken));
-            var variableSymbol = semanticModel.GetSymbolInfo(((IdentifierNameSyntax)memberExpresion.Expression).Identifier.Parent, cancellationToken).Symbol;
-            var declaratorSyntax = ((VariableDeclaratorSyntax)variableSymbol.DeclaringSyntaxReferences.FirstOrDefault().GetSyntax());
-            var originalDeclarationArgumentList = declaratorSyntax.Initializer.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault().ArgumentList;
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var invocationDeclaration = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+            var originalDeclaration = await GetObjectCreationAsync(document, invocationDeclaration, cancellationToken).ConfigureAwait(false);
 
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
-
-            var newArgumentList = originalDeclarationArgumentList.Arguments.Insert(0, invocationDeclaration.ArgumentList.Arguments.FirstOrDefault());
+            var newArgumentList = originalDeclaration.ArgumentList.Arguments.Insert(0, invocationDeclaration.ArgumentList.Arguments.FirstOrDefault());
             if (makeCompiled)
-            {
                 newArgumentList = newArgumentList.Insert(2, SyntaxFactory.Argument(SyntaxFactory.IdentifierName("RegexOptions.Compiled")));
-            }
 
+            var memberExpression = (MemberAccessExpressionSyntax)invocationDeclaration.Expression;
             var isMatchExpression = SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName("Regex.IsMatch"),
                 SyntaxFactory.ArgumentList(newArgumentList))
-                .WithLeadingTrivia(memberExpresion.GetLeadingTrivia())
-                .WithTrailingTrivia(memberExpresion.GetTrailingTrivia());
+                .WithLeadingTrivia(memberExpression.GetLeadingTrivia())
+                .WithTrailingTrivia(memberExpression.GetTrailingTrivia());
 
             var newRoot = root.ReplaceNode(invocationDeclaration, isMatchExpression);
-            var newDeclaratorSyntax = newRoot.FindToken(declaratorSyntax.SpanStart).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
+            var newDeclaratorSyntax = newRoot.FindToken(originalDeclaration.SpanStart).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
             newRoot = newRoot.RemoveNode(newDeclaratorSyntax, SyntaxRemoveOptions.KeepNoTrivia);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
 
-        private async Task<Document> UseStaticRegexIsMatch(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken)
+        private async Task<Document> UseCompiledRegexAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            return await MakeRegexStatic(document, invocationDeclaration, cancellationToken);
-        }
-
-        private async Task<Document> UseCompiledAndStaticRegex(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken)
-        {
-            return await MakeRegexStatic(document, invocationDeclaration, cancellationToken, true);
-        }
-
-        private async Task<Document> UseCompiledRegex(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken)
-        {
-            var memberExpresion = invocationDeclaration.Expression as MemberAccessExpressionSyntax;
-            var semanticModel = (await document.GetSemanticModelAsync(cancellationToken));
-            var variableSymbol = semanticModel.GetSymbolInfo(((IdentifierNameSyntax)memberExpresion.Expression).Identifier.Parent, cancellationToken).Symbol;
-
-            var declaratorSyntax = ((VariableDeclaratorSyntax)variableSymbol.DeclaringSyntaxReferences.FirstOrDefault().GetSyntax());
-            var originalDeclaration = declaratorSyntax.Initializer.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
-
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
-
-            var argumentList = originalDeclaration.ArgumentList;
-            var newArgumentList = argumentList.AddArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("RegexOptions.Compiled")));
-
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var invocationDeclaration = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+            var originalDeclaration = await GetObjectCreationAsync(document, invocationDeclaration, cancellationToken).ConfigureAwait(false);
+            var newArgumentList = originalDeclaration.ArgumentList.AddArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("RegexOptions.Compiled")));
             var newDeclaration = originalDeclaration.WithArgumentList(newArgumentList);
-
             var newRoot = root.ReplaceNode(originalDeclaration, newDeclaration);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
+        }
+
+        private static async Task<ObjectCreationExpressionSyntax> GetObjectCreationAsync(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken)
+        {
+            var memberExpression = (MemberAccessExpressionSyntax)invocationDeclaration.Expression;
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+            var variableSymbol = semanticModel.GetSymbolInfo(((IdentifierNameSyntax)memberExpression.Expression).Identifier.Parent, cancellationToken).Symbol;
+            var declaratorSyntax = ((VariableDeclaratorSyntax)variableSymbol.DeclaringSyntaxReferences.FirstOrDefault().GetSyntax());
+            var originalDeclaration = declaratorSyntax.Initializer.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
+            return originalDeclaration;
         }
     }
 }
