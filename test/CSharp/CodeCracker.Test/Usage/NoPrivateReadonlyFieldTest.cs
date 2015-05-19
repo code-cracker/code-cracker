@@ -138,7 +138,7 @@ namespace CodeCracker.Test.CSharp.Usage
 				public void Foo()
 				{
 					i = 0;
-				}        
+				}
 			}";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
@@ -238,11 +238,12 @@ namespace CodeCracker.Test.CSharp.Usage
 					internal int l = 1;
 				}
 			}";
-            await VerifyCSharpDiagnosticAsync(source,
+            await VerifyCSharpDiagnosticAsync(source, new[] {
                 CreateExpectedDiagnosticResult(line: 6, column: 17, fieldName: "i"),
                 CreateExpectedDiagnosticResult(line: 7, column: 17, fieldName: "j"),
                 CreateExpectedDiagnosticResult(line: 11, column: 19, fieldName: "k"),
-                CreateExpectedDiagnosticResult(line: 12, column: 19, fieldName: "l"));
+                CreateExpectedDiagnosticResult(line: 12, column: 19, fieldName: "l")
+            });
         }
 
         [Fact]
@@ -268,7 +269,7 @@ namespace CodeCracker.Test.CSharp.Usage
 					}
 				}
 			}";
-            await VerifyCSharpDiagnosticAsync(new[] { source1, source2 }, CreateExpectedDiagnosticResult(line: 6, column: 17));
+            await VerifyCSharpDiagnosticAsync(new[] { source1, source2 }, new[] { CreateExpectedDiagnosticResult(line: 6, column: 17) });
         }
 
         [Fact]
@@ -315,7 +316,7 @@ namespace CodeCracker.Test.CSharp.Usage
 					internal TypeName2(int i)
 					{
 						this.i = i;
-						new TypeName1().j.ToString(); 
+						new TypeName1().j.ToString();
 					}
 				}
 			}";
@@ -376,7 +377,7 @@ namespace CodeCracker.Test.CSharp.Usage
 				public int i;
 				public int k;
 				TypeName()
-				{				
+				{
 					Foo1(ref i);
 					Foo2(out k);
 				}
@@ -412,8 +413,8 @@ namespace CodeCracker.Test.CSharp.Usage
 			}";
 
             await VerifyCSharpDiagnosticAsync(
-                sources: new string[] { source1, source2 },
-                expected: CreateExpectedDiagnosticResult(line: 4, column: 16));
+                sources: new[] { source1, source2 },
+                expected: new[] { CreateExpectedDiagnosticResult(line: 4, column: 16) });
         }
 
         [Fact]
