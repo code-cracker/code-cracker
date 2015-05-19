@@ -193,7 +193,7 @@ namespace CodeCracker.Test.CSharp.Usage
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 25) }
             };
-            await VerifyCSharpDiagnosticAsync(source, expected1, expected2, expected3, expected4);
+            await VerifyCSharpDiagnosticAsync(source, new[] { expected1, expected2, expected3, expected4 });
         }
 
         [Fact]
