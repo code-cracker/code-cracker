@@ -19,7 +19,7 @@ namespace CodeCracker.Test.CSharp.Style
         {
             public void Foo()
             {
-                var a = String.Empty;
+                var a = string.Empty;
             }
         }
     }";
@@ -42,13 +42,43 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-         
+
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.UseStringEmpty.ToDiagnosticId(),
                 Message = "Use 'String.Empty' instead of \"\"",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+
+        [Fact]
+        public async Task MethodNotUsingStringEmpty()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo(string x) => x;
+
+            public void test()
+            {
+                Foo("""");
+            }
+        }
+    }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseStringEmpty.ToDiagnosticId(),
+                Message = "Use 'String.Empty' instead of \"\"",
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 21) }
             };
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -79,7 +109,44 @@ namespace CodeCracker.Test.CSharp.Style
         {
             public void Foo()
             {
-                var a = String.Empty;
+                var a = string.Empty;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task FixChangeMethodToStringEmpty()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void test(string x) => x;
+
+            public void Foo()
+            {
+                test("""");
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void test(string x) => x;
+
+            public void Foo()
+            {
+                test(string.Empty);
             }
         }
     }";
