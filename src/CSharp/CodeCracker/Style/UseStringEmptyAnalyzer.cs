@@ -19,26 +19,28 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Info,
+            DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             description:Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UseStringEmpty));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) =>
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.VariableDeclaration);
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterSyntaxNodeAction(AnalyzeNodeVariableDeclaration, SyntaxKind.StringLiteralExpression);
+        }
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private void AnalyzeNodeVariableDeclaration(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
-            var declarationVariable = context.Node as VariableDeclarationSyntax;
-
-            if (declarationVariable.Variables.First().Initializer.GetLastToken().ToString() == "\"\"")
+            var declarationVariable = context.Node as LiteralExpressionSyntax;
+            if (declarationVariable.GetText().ToString() == "\"\"")
             {
-                var diagnostic = Diagnostic.Create(Rule, declarationVariable.GetLocation(), declarationVariable.Variables.First().Identifier.Text);
+                var diagnostic = Diagnostic.Create(Rule, declarationVariable.GetLocation());
                 context.ReportDiagnostic(diagnostic);
             }
+                
         }
     }
 }
