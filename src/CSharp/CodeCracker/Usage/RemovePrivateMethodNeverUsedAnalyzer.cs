@@ -48,24 +48,24 @@ namespace CodeCracker.CSharp.Usage
             var typeDeclaration = methodTarget.Parent as TypeDeclarationSyntax;
             if (typeDeclaration == null) return true;
 
-	        if (!typeDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
-		        return IsMethodUsed(methodTarget, typeDeclaration);
+            if (!typeDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
+                return IsMethodUsed(methodTarget, typeDeclaration);
 
-	        var symbol = semanticModel.GetDeclaredSymbol(typeDeclaration);
+            var symbol = semanticModel.GetDeclaredSymbol(typeDeclaration);
 
-			return
-				symbol == null ||
-				symbol.DeclaringSyntaxReferences.Any(reference => IsMethodUsed(methodTarget, reference.GetSyntax()));
+            return
+                symbol == null ||
+                symbol.DeclaringSyntaxReferences.Any(reference => IsMethodUsed(methodTarget, reference.GetSyntax()));
         }
 
-		private static bool IsMethodUsed(MethodDeclarationSyntax methodTarget, SyntaxNode typeDeclaration)
-		{
+        private static bool IsMethodUsed(MethodDeclarationSyntax methodTarget, SyntaxNode typeDeclaration)
+        {
             var descendents = typeDeclaration.DescendantNodes();
-			var hasIdentifier = descendents.OfType<IdentifierNameSyntax>();
+            var hasIdentifier = descendents.OfType<IdentifierNameSyntax>();
             if (hasIdentifier.Any(a => a != null && a.Identifier.ValueText.Equals(methodTarget.Identifier.ValueText)))
                 return true;
-			var genericNames = descendents.OfType<GenericNameSyntax>();
+            var genericNames = descendents.OfType<GenericNameSyntax>();
             return genericNames.Any(n => n != null && n.Identifier.ValueText.Equals(methodTarget.Identifier.ValueText));
-		}
-	}
+        }
+    }
 }
