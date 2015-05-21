@@ -26,10 +26,10 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-		[Fact]
-		public async void DoesNotGenerateDiagnosticsWhenPrivateMethodIsInvokedInPartialClasses()
-		{
-			const string test = @"
+        [Fact]
+        public async void DoesNotGenerateDiagnosticsWhenPrivateMethodIsInvokedInPartialClasses()
+        {
+            const string test = @"
 public partial class Foo
 {
     public void PublicFoo()
@@ -46,14 +46,14 @@ public partial class Foo
 }
 ";
 
-			await VerifyCSharpHasNoDiagnosticsAsync(test);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
 
 
-		[Fact]
-		public async void DoesNotGenerateDiagnosticsWhenPrivateMethodIsInvokedInPartialClasses2()
-		{
-			const string test = @"
+        [Fact]
+        public async void DoesNotGenerateDiagnosticsWhenPrivateMethodIsInvokedInPartialClasses2()
+        {
+            const string test = @"
 public partial class foo
 {
     public foo()
@@ -73,14 +73,14 @@ public partial class foo
         test();
     }
 }";
-			await VerifyCSharpHasNoDiagnosticsAsync(test);
-		}
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
 
 
-		[Fact]
-		public async void FixRemovesPrivateMethodWhenItIsNotInvokedInPartialClasses()
-		{
-			const string test = @"
+        [Fact]
+        public async void FixRemovesPrivateMethodWhenItIsNotInvokedInPartialClasses()
+        {
+            const string test = @"
 public partial class Foo
 {
     public void PublicFoo()
@@ -96,7 +96,7 @@ public partial class Foo
 }
 ";
 
-			const string expected = @"
+            const string expected = @"
 public partial class Foo
 {
     public void PublicFoo()
@@ -109,10 +109,10 @@ public partial class Foo
 }
 ";
 
-			await VerifyCSharpFixAsync(test, expected);
-		}
+            await VerifyCSharpFixAsync(test, expected);
+        }
 
-		[Fact]
+        [Fact]
         public async void WhenPrivateMethodUsedDoesNotGenerateDiagnostics()
         {
             const string test = @"
@@ -160,6 +160,72 @@ class Foo
 }";
             await VerifyCSharpFixAsync(source, fixtest);
 
+        }
+
+        [Fact]
+        public async void GenericMethodDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    void PrivateFoo<T>() { }
+    public void Go()
+    {
+        PrivateFoo<int>();
+    }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async void GenericMethodWithConstraintDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    void PrivateFoo<T>() where T : Foo { }
+    public void Go()
+    {
+        PrivateFoo<Foo>();
+    }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async void StaticMethodDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    static void PrivateFoo() { }
+    public void Go()
+    {
+        PrivateFoo();
+    }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async void PrivateGenericStaticWithConstraintDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    private static SymbolAnalysisContext GetSymbolAnalysisContext<T>(string code, string fileName = ""a.cs"") where T : SyntaxNode
+    {
+    }
+    public void Go()
+    {
+        GetSymbolAnalysisContext<ClassDeclarationSyntax>(""class TypeName { }"", ""TemporaryGeneratedFile_.cs"");
+    }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }
