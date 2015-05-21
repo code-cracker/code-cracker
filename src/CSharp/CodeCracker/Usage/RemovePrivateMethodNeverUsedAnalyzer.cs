@@ -35,7 +35,8 @@ namespace CodeCracker.CSharp.Usage
         {
             if (context.IsGenerated()) return;
             var methodDeclaration = (MethodDeclarationSyntax)context.Node;
-            if (!methodDeclaration.Modifiers.Any(a => a.ValueText == SyntaxFactory.Token(SyntaxKind.PrivateKeyword).ValueText)) return;
+            var methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
+            if (methodSymbol.DeclaredAccessibility != Accessibility.Private) return;
             if (IsMethodUsed(methodDeclaration, context.SemanticModel)) return;
             if (methodDeclaration.Modifiers.Any(SyntaxKind.ExternKeyword)) return;
             var diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
@@ -59,9 +60,12 @@ namespace CodeCracker.CSharp.Usage
 
 		private static bool IsMethodUsed(MethodDeclarationSyntax methodTarget, SyntaxNode typeDeclaration)
 		{
-			var hasIdentifier = typeDeclaration.DescendantNodes()?.OfType<IdentifierNameSyntax>();
-			if (hasIdentifier == null || !hasIdentifier.Any()) return false;
-			return hasIdentifier.Any(a => a != null && a.Identifier.ValueText.Equals(methodTarget?.Identifier.ValueText));
+            var descendents = typeDeclaration.DescendantNodes();
+			var hasIdentifier = descendents.OfType<IdentifierNameSyntax>();
+            if (hasIdentifier.Any(a => a != null && a.Identifier.ValueText.Equals(methodTarget.Identifier.ValueText)))
+                return true;
+			var genericNames = descendents.OfType<GenericNameSyntax>();
+            return genericNames.Any(n => n != null && n.Identifier.ValueText.Equals(methodTarget.Identifier.ValueText));
 		}
 	}
 }
