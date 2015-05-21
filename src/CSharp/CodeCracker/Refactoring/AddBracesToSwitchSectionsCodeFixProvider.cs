@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.Formatting;
 namespace CodeCracker.CSharp.Refactoring
 {
     [ExportCodeFixProvider("AddBracesToSwitchCaseCodeFixCodeFixProvider", LanguageNames.CSharp), Shared]
-    public class AddBracesToSwitchSectionsCodeFix : CodeFixProvider
+    public class AddBracesToSwitchSectionsCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId());
 
