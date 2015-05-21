@@ -149,6 +149,7 @@
     <Compile Include="Refactoring\ParameterRefectoryTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.cs" />
+    <Compile Include="Style\UseStringEmptyTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
     <Compile Include="Style\RemoveTrailingWhitespaceTests.cs" />
     <Compile Include="Style\StringFormatTests.cs" />
