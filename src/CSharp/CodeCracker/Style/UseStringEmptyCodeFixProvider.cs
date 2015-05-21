@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Style
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.UseStringEmpty.ToDiagnosticId());
-
+        public readonly static string MessageFormat = "Use 'String.Empty' instead of \"\"";
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
