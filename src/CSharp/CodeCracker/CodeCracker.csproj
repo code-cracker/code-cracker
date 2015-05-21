@@ -40,7 +40,7 @@
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchCodeFixProvider.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsAnalyzer.cs" />
-    <Compile Include="Refactoring\AddBracesToSwitchSectionsCodeFix.cs" />
+    <Compile Include="Refactoring\AddBracesToSwitchSectionsCodeFixProvider.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
