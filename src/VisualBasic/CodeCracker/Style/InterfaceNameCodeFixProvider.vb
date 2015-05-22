@@ -33,9 +33,7 @@ Namespace Style
             Dim newName = "I" & interfaceStatement.Identifier.Text
 
             Dim solution = document.Project.Solution
-            If solution Is Nothing Then Return Nothing
             Dim symbol = semanticModel.GetDeclaredSymbol(interfaceStatement, cancellationToken)
-            If symbol Is Nothing Then Return Nothing
             Dim options = solution.Workspace.Options
             Dim newSolution = Await Renamer.RenameSymbolAsync(solution, symbol, newName, options, cancellationToken).ConfigureAwait(False)
             Return newSolution
