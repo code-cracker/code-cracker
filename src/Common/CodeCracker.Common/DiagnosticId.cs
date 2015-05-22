@@ -67,6 +67,7 @@
         NumericLiteral = 79,
         TernaryOperator_Iif = 80,
         UseStaticRegexIsMatch = 81,
-        ComputeExpression = 82
+        ComputeExpression = 82,
+        UseStringEmpty = 84
     }
 }
