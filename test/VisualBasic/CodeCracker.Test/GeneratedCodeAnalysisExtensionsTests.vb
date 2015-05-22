@@ -7,33 +7,35 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Public Class GeneratedCodeAnalysisExtensionsTests
+    Private Const baseProjectPath = "D:\ClassLibrary11\"
+
     <Theory>
-    <InlineData("A.g.VB")>
-    <InlineData("A.g.vb")>
-    <InlineData("B.g.vb")>
-    <InlineData("A.g.i.vb")>
-    <InlineData("B.g.i.vb")>
-    <InlineData("A.designer.vb")>
-    <InlineData("A.generated.vb")>
-    <InlineData("B.generated.vb")>
-    <InlineData("AssemblyInfo.vb")>
-    <InlineData("A.AssemblyAttributes.vb")>
-    <InlineData("B.AssemblyAttributes.vb")>
-    <InlineData("AssemblyAttributes.vb")>
-    <InlineData("Service.vb")>
-    <InlineData("TemporaryGeneratedFile_.vb")>
-    <InlineData("TemporaryGeneratedFile_A.vb")>
-    <InlineData("TemporaryGeneratedFile_B.vb")>
+    <InlineData(baseProjectPath + "A.g.VB")>
+    <InlineData(baseProjectPath + "A.g.vb")>
+    <InlineData(baseProjectPath + "B.g.vb")>
+    <InlineData(baseProjectPath + "A.g.i.vb")>
+    <InlineData(baseProjectPath + "B.g.i.vb")>
+    <InlineData(baseProjectPath + "A.designer.vb")>
+    <InlineData(baseProjectPath + "A.generated.vb")>
+    <InlineData(baseProjectPath + "B.generated.vb")>
+    <InlineData(baseProjectPath + "AssemblyInfo.vb")>
+    <InlineData(baseProjectPath + "A.AssemblyAttributes.vb")>
+    <InlineData(baseProjectPath + "B.AssemblyAttributes.vb")>
+    <InlineData(baseProjectPath + "AssemblyAttributes.vb")>
+    <InlineData(baseProjectPath + "Service.vb")>
+    <InlineData(baseProjectPath + "TemporaryGeneratedFile_.vb")>
+    <InlineData(baseProjectPath + "TemporaryGeneratedFile_A.vb")>
+    <InlineData(baseProjectPath + "TemporaryGeneratedFile_B.vb")>
     Public Sub IsOnGeneratedFile(fileName As String)
         fileName.IsOnGeneratedFile().Should().BeTrue()
     End Sub
 
     <Theory>
-    <InlineData("TheAssemblyInfo.vb")>
-    <InlineData("A.vb")>
-    <InlineData("TheTemporaryGeneratedFile_A.vb")>
-    <InlineData("TheService.vb")>
-    <InlineData("TheAssemblyAttributes.vb")>
+    <InlineData(baseProjectPath + "TheAssemblyInfo.vb")>
+    <InlineData(baseProjectPath + "A.vb")>
+    <InlineData(baseProjectPath + "TheTemporaryGeneratedFile_A.vb")>
+    <InlineData(baseProjectPath + "TheService.vb")>
+    <InlineData(baseProjectPath + "TheAssemblyAttributes.vb")>
     Public Sub IsNotOnGeneratedFile(fileName As String)
         fileName.IsOnGeneratedFile().Should().BeFalse()
     End Sub
@@ -42,7 +44,7 @@ Public Class GeneratedCodeAnalysisExtensionsTests
     Public Sub IsContextOnGeneratedFile()
         Dim context As SyntaxNodeAnalysisContext = GetContext(
 "Class TypeName
-End Class", "TemporaryGeneratedFile_.vb")
+End Class", baseProjectPath + "TemporaryGeneratedFile_.vb")
         context.IsGenerated().Should().BeTrue()
     End Sub
 
@@ -305,11 +307,11 @@ End Class").IsGenerated().Should().BeTrue()
 '------------------------------------------------------------------------------").IsGenerated().Should().BeTrue()
     End Sub
 
-    Private Shared Function GetContext(code As String, Optional fileName As String = "a.vb") As SyntaxNodeAnalysisContext
+    Private Shared Function GetContext(code As String, Optional fileName As String = baseProjectPath + "a.vb") As SyntaxNodeAnalysisContext
         Return GetContext(Of CompilationUnitSyntax)(code, fileName)
     End Function
 
-    Private Shared Function GetContext(Of T As SyntaxNode)(code As String, Optional fileName As String = "a.vb") As SyntaxNodeAnalysisContext
+    Private Shared Function GetContext(Of T As SyntaxNode)(code As String, Optional fileName As String = baseProjectPath + "a.vb") As SyntaxNodeAnalysisContext
         Dim tree = SyntaxFactory.ParseSyntaxTree(code, path:=fileName)
         Dim compilation = VisualBasicCompilation.Create("comp.dll", New SyntaxTree() {tree})
         Dim root = tree.GetRoot()

@@ -12,7 +12,6 @@ namespace CodeCracker.Test.CSharp
 {
     public class GeneratedCodeAnalysisExtensionsTests
     {
-
         private const string baseProjectPath = @"D:\ClassLibrary11\";
 
         [Theory]
