@@ -138,6 +138,7 @@
     <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzer.vb" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedCodeFixProvider.vb" />
     <Compile Include="Usage\UnusedParametersCodeFixProvider.vb" />
+    <Compile Include="Usage\UriAnalyzer.vb" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Globalization\" />

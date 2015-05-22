@@ -194,6 +194,7 @@
     <Compile Include="Usage\JsonNetTests.vb" />
     <Compile Include="Usage\MustInheritClassShouldNotHavePublicConstructorTests.vb" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzerTest.vb" />
+    <Compile Include="Usage\UriAnalyzerTests.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
