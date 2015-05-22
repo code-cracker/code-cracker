@@ -1,13 +1,14 @@
-using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.CSharp.Refactoring
+namespace CodeCracker.CSharp.Style
 {
     public sealed class UseStringEmptyCodeFixAllProvider : FixAllProvider
     {
@@ -20,14 +21,27 @@ namespace CodeCracker.CSharp.Refactoring
             switch (fixAllContext.Scope)
             {
                 case FixAllScope.Document:
-                    return Task.FromResult(CodeAction.Create(UseStringEmptyCodeFixProvider.MessageFormat,
-                        async ct => fixAllContext.Document.WithSyntaxRoot(await GetFixedDocumentAsync(fixAllContext, fixAllContext.Document))));
+                    {
+                        return Task.FromResult(CodeAction.Create(UseStringEmptyCodeFixProvider.MessageFormat,
+                            async ct =>
+                            {
+                                var newFixAllContext = fixAllContext.WithCancellationToken(ct);
+                                var diagnostics = await newFixAllContext.GetDocumentDiagnosticsAsync(newFixAllContext.Document).ConfigureAwait(false);
+                                var root = await GetFixedDocumentAsync(newFixAllContext.Document, diagnostics, ct).ConfigureAwait(false);
+                                return newFixAllContext.Document.WithSyntaxRoot(root);
+                            }));
+
+                    }
                 case FixAllScope.Project:
                     return Task.FromResult(CodeAction.Create(UseStringEmptyCodeFixProvider.MessageFormat,
-                        ct => GetFixedProjectAsync(fixAllContext, fixAllContext.Project)));
+                        ct =>
+                        {
+                            var newFixAllContext = fixAllContext.WithCancellationToken(ct);
+                            return GetFixedProjectAsync(newFixAllContext, newFixAllContext.WithCancellationToken(ct).Project);
+                        }));
                 case FixAllScope.Solution:
                     return Task.FromResult(CodeAction.Create(UseStringEmptyCodeFixProvider.MessageFormat,
-                        ct => GetFixedSolutionAsync(fixAllContext)));
+                        ct => GetFixedSolutionAsync(fixAllContext.WithCancellationToken(ct))));
             }
             return null;
         }
@@ -43,27 +57,27 @@ namespace CodeCracker.CSharp.Refactoring
         private async Task<Solution> GetFixedProjectAsync(FixAllContext fixAllContext, Project project)
         {
             var solution = project.Solution;
-            var newDocuments = project.Documents.ToDictionary(d => d.Id, d => GetFixedDocumentAsync(fixAllContext, d));
-            await Task.WhenAll(newDocuments.Values).ConfigureAwait(false);
-            foreach (var newDoc in newDocuments)
-                solution = solution.WithDocumentSyntaxRoot(newDoc.Key, newDoc.Value.Result);
+            foreach (var document in project.Documents)
+            {
+                var diagnostics = await fixAllContext.GetDocumentDiagnosticsAsync(document).ConfigureAwait(false);
+                var newRoot = await GetFixedDocumentAsync(document, diagnostics, fixAllContext.CancellationToken).ConfigureAwait(false);
+                solution = solution.WithDocumentSyntaxRoot(document.Id, newRoot);
+            }
             return solution;
         }
 
-        private async Task<SyntaxNode> GetFixedDocumentAsync(FixAllContext fixAllContext, Document document)
+        private async Task<SyntaxNode> GetFixedDocumentAsync(Document document, ImmutableArray<Diagnostic> diagnostics, CancellationToken cancellationToken)
         {
-            var diagnostics = await fixAllContext.GetDocumentDiagnosticsAsync(document).ConfigureAwait(false);
-            var root = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-            var nodes = diagnostics.Select(d => root.FindNode(d.Location.SourceSpan)).Where(n => !n.IsMissing);
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var nodes = diagnostics.Select(d => root.FindNode(d.Location.SourceSpan)).Where(n => !n.IsMissing).Select(n => n.DescendantNodesAndSelf().OfType<LiteralExpressionSyntax>().First());
             var newRoot = root.ReplaceNodes(nodes, (original, rewritten) => original.WithAdditionalAnnotations(useStringEmptyAnnotation));
-            var semanticModel = await document.GetSemanticModelAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
             while (true)
             {
                 var annotatedNodes = newRoot.GetAnnotatedNodes(useStringEmptyAnnotation);
                 var node = annotatedNodes.FirstOrDefault();
                 if (node == null) break;
-                var literalDeclaration = (LiteralExpressionSyntax)node;
-                newRoot = root.ReplaceNode(literalDeclaration, SyntaxFactory.ParseExpression("string.Empty"));
+                var literal = (LiteralExpressionSyntax)node;
+                newRoot = newRoot.ReplaceNode(literal, SyntaxFactory.ParseExpression("string.Empty").WithLeadingTrivia(literal.GetLeadingTrivia()).WithTrailingTrivia(literal.GetTrailingTrivia()));
             }
             return newRoot;
         }

@@ -16,25 +16,24 @@ namespace CodeCracker.CSharp.Style
     [ExportCodeFixProvider("CodeCrackerUseStringEmptyCodeFixProvider", LanguageNames.CSharp), Shared]
     public class UseStringEmptyCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> FixableDiagnosticIds =>
-            ImmutableArray.Create(DiagnosticId.UseStringEmpty.ToDiagnosticId());
-        public readonly static string MessageFormat = "Use 'String.Empty' instead of \"\"";
-        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public const string MessageFormat = "Use 'string.Empty'";
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.UseStringEmpty.ToDiagnosticId());
+
+        public sealed override FixAllProvider GetFixAllProvider() => UseStringEmptyCodeFixAllProvider.Instance;
+
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LiteralExpressionSyntax>().First();
-            const string message = "Use 'String.Empty'";
-            context.RegisterCodeFix(CodeAction.Create(message, c => UseStringEmptyAsync(context.Document, localDeclaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(MessageFormat, c => UseStringEmptyAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> UseStringEmptyAsync(Document document, LiteralExpressionSyntax literalDeclaration, CancellationToken cancellationToken)
+        private async Task<Document> UseStringEmptyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var newRoot = root.ReplaceNode(literalDeclaration,SyntaxFactory.ParseExpression("string.Empty"));
+            var literal = root.FindNode(diagnostic.Location.SourceSpan).DescendantNodesAndSelf().OfType<LiteralExpressionSyntax>().First();
+            var newRoot = root.ReplaceNode(literal, SyntaxFactory.ParseExpression("string.Empty").WithLeadingTrivia(literal.GetLeadingTrivia()).WithTrailingTrivia(literal.GetTrailingTrivia()));
             var newDocument = document.WithSyntaxRoot(newRoot);
             return document.WithSyntaxRoot(newRoot);
         }

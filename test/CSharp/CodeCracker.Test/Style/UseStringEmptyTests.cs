@@ -53,7 +53,6 @@ namespace CodeCracker.Test.CSharp.Style
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-
         [Fact]
         public async Task MethodNotUsingStringEmpty()
         {
@@ -151,6 +150,42 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
             await VerifyCSharpFixAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task FixAllChangeMethodToStringEmpty()
+        {
+            var test = @"var s = """" + """";".WrapInCSharpMethod();
+            var expected = @"var s = string.Empty + string.Empty;".WrapInCSharpMethod();
+            await VerifyCSharpFixAllAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task TwoEmptyStringsGenerateTwoDiagnostics()
+        {
+            var test = @"var s = """" + """";".WrapInCSharpMethod();
+            var expected1 = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseStringEmpty.ToDiagnosticId(),
+                Message = "Use 'String.Empty' instead of \"\"",
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
+            };
+            var expected2 = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseStringEmpty.ToDiagnosticId(),
+                Message = "Use 'String.Empty' instead of \"\"",
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected1, expected2);
+        }
+
+        [Fact]
+        public async Task IgnoreAttribute()
+        {
+            const string test = @"[assembly: System.Reflection.AssemblyDescription("""")]";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }
 }
