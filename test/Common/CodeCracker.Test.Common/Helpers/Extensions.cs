@@ -2,14 +2,14 @@
 {
     public static class Extensions
     {
-        public static string WrapInCSharpMethod(this string code, bool isAsync = false)
+        public static string WrapInCSharpMethod(this string code, bool isAsync = false, string typeName = "TypeName")
         {
             return $@"
     using System;
 
     namespace ConsoleApplication1
     {{
-        class TypeName
+        class {typeName}
         {{
             public {(isAsync ? "async " : "")}void Foo()
             {{
