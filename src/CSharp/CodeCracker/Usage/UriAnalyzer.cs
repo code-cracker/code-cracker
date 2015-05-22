@@ -62,8 +62,8 @@ namespace CodeCracker.CSharp.Usage
             );
 
             var checker = new MethodChecker(context, Rule);
-            checker.AnalyzeConstrutor(mainConstrutor);
-            checker.AnalyzeConstrutor(constructorWithUriKind);
+            checker.AnalyzeConstructor(mainConstrutor);
+            checker.AnalyzeConstructor(constructorWithUriKind);
         }
     }
 }
