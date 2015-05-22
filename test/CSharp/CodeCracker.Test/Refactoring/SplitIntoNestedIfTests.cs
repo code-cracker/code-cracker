@@ -37,7 +37,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 Id = DiagnosticId.SplitIntoNestedIf.ToDiagnosticId(),
                 Message = string.Format(SplitIntoNestedIfAnalyzer.Message),
                 Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] {new DiagnosticResultLocation("Test0.cs", 10, 21)}
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 21) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -123,6 +123,46 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     }
                 }".WrapInCSharpMethod();
             await VerifyCSharpFixAllAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixAllInTheSolution()
+        {
+            const string source = @"
+                var cond1 = System.DateTime.Now.Second > 1;
+                var cond2 = System.DateTime.Now.Second > 5;
+                var cond3 = cond1;
+                var cond4 = cond2;
+                if (cond1 && cond2)
+                {
+                    if (cond3 && cond4)
+                    {
+                        System.Console.Write(1);
+                    }
+                }";
+            var source1 = source.WrapInCSharpMethod();
+            var source2 = source.WrapInCSharpMethod(typeName: "AnotherType");
+            const string expected = @"
+                var cond1 = System.DateTime.Now.Second > 1;
+                var cond2 = System.DateTime.Now.Second > 5;
+                var cond3 = cond1;
+                var cond4 = cond2;
+                if (cond1)
+                {
+                    if (cond2)
+                    {
+                        if (cond3)
+                        {
+                            if (cond4)
+                            {
+                                System.Console.Write(1);
+                            }
+                        }
+                    }
+                }";
+            var expected1 = expected.WrapInCSharpMethod();
+            var expected2 = expected.WrapInCSharpMethod(typeName: "AnotherType");
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { expected1, expected2 });
         }
     }
 }

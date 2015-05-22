@@ -153,11 +153,21 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task FixAllChangeMethodToStringEmpty()
+        public async Task FixAllInDocChangeMethodToStringEmpty()
         {
             var test = @"var s = """" + """";".WrapInCSharpMethod();
             var expected = @"var s = string.Empty + string.Empty;".WrapInCSharpMethod();
             await VerifyCSharpFixAllAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task FixAllInSolutionChangeMethodToStringEmpty()
+        {
+            var test1 = @"var s = """" + """";".WrapInCSharpMethod();
+            var test2 = @"var s = """" + """";".WrapInCSharpMethod(typeName:"AnotherType");
+            var expected1 = @"var s = string.Empty + string.Empty;".WrapInCSharpMethod();
+            var expected2 = @"var s = string.Empty + string.Empty;".WrapInCSharpMethod(typeName:"AnotherType");
+            await VerifyCSharpFixAllAsync(new[] { test1, test2 },new[] { expected1, expected2 });
         }
 
         [Fact]
