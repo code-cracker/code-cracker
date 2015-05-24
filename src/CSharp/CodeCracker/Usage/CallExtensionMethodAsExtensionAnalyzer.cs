@@ -70,7 +70,7 @@ namespace CodeCracker.CSharp.Usage
                     firstArgument, methodName, argumentList)).WithAdditionalAnnotations(introduceExtensionMethodAnnotation);
             var extensionMethodNamespaceUsingDirective = SyntaxFactory.UsingDirective(methodSymbol.ContainingNamespace.ToNameSyntax());
             var speculativeRootWithExtensionMethod = tree.GetCompilationUnitRoot()
-                .InsertNodesAfter(invocationStatement, new[] { newInvocationStatement })
+                .ReplaceNode(invocationStatement, newInvocationStatement)
                 .AddUsings(extensionMethodNamespaceUsingDirective);
             var speculativeModel = compilation.ReplaceSyntaxTree(tree, speculativeRootWithExtensionMethod.SyntaxTree)
                 .GetSemanticModel(speculativeRootWithExtensionMethod.SyntaxTree);
