@@ -27,7 +27,7 @@ namespace CodeCracker.Test
         private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromAssembly(typeof(Compilation).Assembly);
         private static readonly MetadataReference JsonNetReference = MetadataReference.CreateFromAssembly(typeof(JsonConvert).Assembly);
 
-        internal static string DefaultFilePathPrefix = "Test";
+        internal static string DefaultFilePathPrefix = nameof(Test);
         internal static string CSharpDefaultFileExt = "cs";
         internal static string VisualBasicDefaultExt = "vb";
         internal static string CSharpDefaultFilePath = DefaultFilePathPrefix + 0 + "." + CSharpDefaultFileExt;
@@ -104,7 +104,7 @@ namespace CodeCracker.Test
 
             for (int i = 0; i < sources.Length; i++)
             {
-                var fileName = language == LanguageNames.CSharp ? "Test" + i + ".cs" : "Test" + i + ".vb";
+                var fileName = language == LanguageNames.CSharp ? nameof(Test) + i + ".cs" : nameof(Test) + i + ".vb";
             }
 
             var project = CreateProject(sources, language);

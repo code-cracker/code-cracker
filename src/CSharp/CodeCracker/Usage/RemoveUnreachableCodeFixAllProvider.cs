@@ -9,7 +9,7 @@ namespace CodeCracker.CSharp.Usage
 {
     public sealed class RemoveUnreachableCodeFixAllProvider : FixAllProvider
     {
-        private static readonly SyntaxAnnotation removeUnreachableCodeAnnotation = new SyntaxAnnotation("RemoveUnreachableCodeFixAllProvider");
+        private static readonly SyntaxAnnotation removeUnreachableCodeAnnotation = new SyntaxAnnotation(nameof(RemoveUnreachableCodeFixAllProvider));
         private RemoveUnreachableCodeFixAllProvider() { }
         public static RemoveUnreachableCodeFixAllProvider Instance = new RemoveUnreachableCodeFixAllProvider();
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
