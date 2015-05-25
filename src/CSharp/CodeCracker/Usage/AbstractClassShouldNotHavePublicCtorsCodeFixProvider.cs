@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeCracker.CSharp.Usage
 {
-    [ExportCodeFixProvider("CodeCrackerAbstractClassShouldNotHavePublicCtorsCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AbstractClassShouldNotHavePublicCtorsCodeFixProvider)), Shared]
 
     public class AbstractClassShouldNotHavePublicCtorsCodeFixProvider : CodeFixProvider
     {

@@ -5,8 +5,7 @@ Imports System.Collections.Immutable
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Usage
-    <ExportCodeFixProvider("CodeCrackerRemovePrivateMethodNeverUsedCodeFixProvider", LanguageNames.VisualBasic)>
-    <Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(RemovePrivateMethodNeverUsedCodeFixProvider)), Composition.Shared>
     Public Class RemovePrivateMethodNeverUsedCodeFixProvider
         Inherits CodeFixProvider
 

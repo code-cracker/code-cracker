@@ -6,7 +6,7 @@ Imports Microsoft.CodeAnalysis.CodeFixes
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Design
-    <ExportCodeFixProvider("CodeCrackerStaticConstructorExceptionCodeFixProvider", LanguageNames.VisualBasic), Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(StaticConstructorExceptionCodeFixProvider)), Composition.Shared>
     Public Class StaticConstructorExceptionCodeFixProvider
         Inherits CodeFixProvider
 

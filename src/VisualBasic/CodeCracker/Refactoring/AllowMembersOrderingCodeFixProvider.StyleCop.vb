@@ -1,5 +1,4 @@
-﻿Imports System.Composition
-Imports System.Threading
+﻿Imports System.Threading
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeFixes
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -7,8 +6,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Refactoring
 
-    <ExportCodeFixProvider("StyleCopAllowMembersOrderingCodeFixProvider", LanguageNames.VisualBasic)>
-    <[Shared]>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(StyleCopAllowMembersOrderingCodeFixProvider)), Composition.Shared>
     Public Class StyleCopAllowMembersOrderingCodeFixProvider
         Inherits BaseAllowMembersOrderingCodeFixProvider
 

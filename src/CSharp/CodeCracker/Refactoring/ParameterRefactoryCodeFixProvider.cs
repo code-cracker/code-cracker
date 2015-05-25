@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace CodeCracker.CSharp.Refactoring
 {
 
-    [ExportCodeFixProvider(nameof(ParameterRefactoryCodeFixProvider), LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ParameterRefactoryCodeFixProvider)), Shared]
     public class ParameterRefactoryCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

@@ -1,5 +1,4 @@
 ﻿Imports System.Collections.Immutable
-Imports System.Composition
 Imports System.Threading
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeActions
@@ -8,8 +7,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Usage
-    <ExportCodeFixProvider("CodeCrackerAbstractClassShouldNotHavePublicCtorsCodeFixProvider", LanguageNames.VisualBasic)>
-    <[Shared]>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider)), Composition.Shared>
     Public Class MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider
         Inherits CodeFixProvider
 

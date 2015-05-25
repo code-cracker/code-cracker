@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace CodeCracker.CSharp.Usage
 {
-    [ExportCodeFixProvider("CodeCrackerCallExtensionMethodAsExtensionCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CallExtensionMethodAsExtensionCodeFixProvider)), Shared]
     public class CallExtensionMethodAsExtensionCodeFixProvider : CodeFixProvider
     {
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)

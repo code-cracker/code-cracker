@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace CodeCracker.CSharp.Style
 {
 
-    [ExportCodeFixProvider("CodeCrackerAlwaysUseVarCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AlwaysUseVarCodeFixProvider)), Shared]
     public class AlwaysUseVarCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

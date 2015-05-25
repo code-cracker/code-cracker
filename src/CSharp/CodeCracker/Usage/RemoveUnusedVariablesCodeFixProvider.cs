@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Usage
 {
-    [ExportCodeFixProvider(nameof(RemoveUnusedVariablesCodeFixProvider), LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RemoveUnusedVariablesCodeFixProvider)), Shared]
     public class RemoveUnusedVariablesCodeFixProvider : CodeFixProvider
     {
 

@@ -1,5 +1,4 @@
 ﻿Imports System.Collections.Immutable
-Imports System.Composition
 Imports System.Threading
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeActions
@@ -9,8 +8,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Refactoring
-    <ExportCodeFixProvider("ParameterRefactoryCodeFixProvider", LanguageNames.VisualBasic)>
-    <[Shared]>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(ParameterRefactoryCodeFixProvider)), Composition.Shared>
     Public Class ParameterRefactoryCodeFixProvider
         Inherits CodeFixProvider
 

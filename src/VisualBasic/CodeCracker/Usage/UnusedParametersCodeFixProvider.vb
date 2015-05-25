@@ -7,8 +7,7 @@ Imports Microsoft.CodeAnalysis.FindSymbols
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Usage
-    <ExportCodeFixProvider("CodeCrackerUnusedParametersCodeFixProvider", LanguageNames.VisualBasic)>
-    <Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(UnusedParametersCodeFixProvider)), Composition.Shared>
     Public Class UnusedParametersCodeFixProvider
         Inherits CodeFixProvider
 

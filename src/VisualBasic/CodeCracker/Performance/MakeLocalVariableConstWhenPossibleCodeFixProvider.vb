@@ -8,7 +8,7 @@ Imports System.Collections.Immutable
 Imports System.Threading
 
 Namespace Performance
-    <ExportCodeFixProvider("CodeCrackerMakeLocalVariableConstWhenItIsPossibleCodeFixProvider", LanguageNames.VisualBasic), Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(MakeLocalVariableConstWhenPossibleCodeFixProvider)), Composition.Shared>
     Public Class MakeLocalVariableConstWhenPossibleCodeFixProvider
         Inherits CodeFixProvider
 

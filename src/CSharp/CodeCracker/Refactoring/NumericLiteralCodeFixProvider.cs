@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace CodeCracker.CSharp.Refactoring
 {
 
-    [ExportCodeFixProvider("CodeCrackerNumericLiteralCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NumericLiteralCodeFixProvider)), Shared]
     public class NumericLiteralCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
