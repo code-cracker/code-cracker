@@ -9,7 +9,7 @@ namespace CodeCracker.CSharp.Usage
 {
     public sealed class DisposableVariableNotDisposedFixAllProvider : FixAllProvider
     {
-        private static readonly SyntaxAnnotation disposeAnnotation = new SyntaxAnnotation("DisposableVariableNotDisposedFixAllProvider");
+        private static readonly SyntaxAnnotation disposeAnnotation = new SyntaxAnnotation(nameof(DisposableVariableNotDisposedFixAllProvider));
         private DisposableVariableNotDisposedFixAllProvider() { }
         public static DisposableVariableNotDisposedFixAllProvider Instance = new DisposableVariableNotDisposedFixAllProvider();
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)

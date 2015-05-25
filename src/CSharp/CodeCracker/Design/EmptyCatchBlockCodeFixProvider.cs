@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Design
 {
-    [ExportCodeFixProvider("EmptyCatchBlockCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(nameof(EmptyCatchBlockCodeFixProvider), LanguageNames.CSharp), Shared]
     public class EmptyCatchBlockCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

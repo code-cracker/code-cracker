@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-    [ExportCodeFixProvider("StyleCopAllowMembersOrderingCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(nameof(StyleCopAllowMembersOrderingCodeFixProvider), LanguageNames.CSharp), Shared]
     public class StyleCopAllowMembersOrderingCodeFixProvider : BaseAllowMembersOrderingCodeFixProvider
     {
         public StyleCopAllowMembersOrderingCodeFixProvider() :

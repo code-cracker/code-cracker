@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Usage
 {
-    [ExportCodeFixProvider("RemovePrivateMethodNeverUsedCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(nameof(RemovePrivateMethodNeverUsedCodeFixProvider), LanguageNames.CSharp), Shared]
     public class RemovePrivateMethodNeverUsedCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

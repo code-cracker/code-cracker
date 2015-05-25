@@ -57,7 +57,9 @@
     <!-- A reference to the entire .NET Framework and Windows SDK is automatically included -->
     <None Include="app.config" />
     <None Include="CodeCracker.nuspec" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="tools\install.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

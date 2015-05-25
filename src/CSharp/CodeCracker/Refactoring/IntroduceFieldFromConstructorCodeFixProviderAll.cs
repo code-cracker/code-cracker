@@ -9,7 +9,7 @@ namespace CodeCracker.CSharp.Refactoring
 {
     public sealed class IntroduceFieldFromConstructorCodeFixAllProvider : FixAllProvider
     {
-        private static readonly SyntaxAnnotation introduceFieldAnnotation = new SyntaxAnnotation("IntroduceFieldFromConstructorCodeFixAllProvider");
+        private static readonly SyntaxAnnotation introduceFieldAnnotation = new SyntaxAnnotation(nameof(IntroduceFieldFromConstructorCodeFixAllProvider));
         private IntroduceFieldFromConstructorCodeFixAllProvider() { }
         public static IntroduceFieldFromConstructorCodeFixAllProvider Instance = new IntroduceFieldFromConstructorCodeFixAllProvider();
 

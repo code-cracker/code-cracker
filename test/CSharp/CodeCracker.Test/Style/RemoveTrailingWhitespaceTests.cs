@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test.CSharp.Style
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "CC0065", Justification = "This is the remove trailing whitespace test class.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(nameof(Style), "CC0065", Justification = "This is the remove trailing whitespace test class.")]
     public class RemoveTrailingWhitespaceTests : CodeFixVerifier<RemoveTrailingWhitespaceAnalyzer, RemoveTrailingWhitespaceCodeFixProvider>
     {
         [Fact]
