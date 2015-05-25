@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Style
 {
-    [ExportCodeFixProvider("CodeCrackerEmptyObjectInitializerCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(EmptyObjectInitializerCodeFixProvider)), Shared]
     public class EmptyObjectInitializerCodeFixProvider : CodeFixProvider
     {
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)

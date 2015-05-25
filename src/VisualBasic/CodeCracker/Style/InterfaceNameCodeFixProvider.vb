@@ -8,7 +8,7 @@ Imports System.Collections.Immutable
 Imports System.Threading
 
 Namespace Style
-    <ExportCodeFixProvider("CodeCrackerInterfaceNameCodeFixProvider", LanguageNames.VisualBasic)>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(InterfaceNameCodeFixProvider)), Composition.Shared>
     Public Class InterfaceNameCodeFixProvider
         Inherits CodeFixProvider
 

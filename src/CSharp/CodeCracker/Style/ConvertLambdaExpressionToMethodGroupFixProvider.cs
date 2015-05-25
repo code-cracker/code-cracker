@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Style
 {
-    [ExportCodeFixProvider("ConvertSimpleLambdaExpressionToMethodInvocationFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ConvertLambdaExpressionToMethodGroupFixProvider)), Shared]
     public class ConvertLambdaExpressionToMethodGroupFixProvider :CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

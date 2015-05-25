@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Performance
 {
-    [ExportCodeFixProvider("CodeCrackerRemoveWhereWhenItIsPossibleCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RemoveWhereWhenItIsPossibleCodeFixProvider)), Shared]
     public class RemoveWhereWhenItIsPossibleCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
@@ -42,5 +42,5 @@ namespace CodeCracker.CSharp.Performance
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
-   }
+    }
 }

@@ -7,7 +7,7 @@ Imports System.Collections.Immutable
 Imports System.Threading
 
 Namespace Performance
-    <ExportCodeFixProvider("CodeCrackerRemoveWhereWhenItIsPossibleCodeFixProvider", LanguageNames.VisualBasic), Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(RemoveWhereWhenItIsPossibleCodeFixProvider)), Composition.Shared>
     Public Class RemoveWhereWhenItIsPossibleCodeFixProvider
         Inherits CodeFixProvider
 

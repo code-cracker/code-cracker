@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Performance
 {
-    [ExportCodeFixProvider("CodeCrackerUseStaticRegexIsMatchCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseStaticRegexIsMatchCodeFixProvider)), Shared]
     public class UseStaticRegexIsMatchCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

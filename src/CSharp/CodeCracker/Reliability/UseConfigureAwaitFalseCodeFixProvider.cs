@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace CodeCracker.CSharp.Reliability
 {
-    [ExportCodeFixProvider("CodeCrackerUseConfigureAwaitFalseCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseConfigureAwaitFalseCodeFixProvider)), Shared]
     public class UseConfigureAwaitFalseCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId());

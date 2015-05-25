@@ -8,7 +8,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Design
-    <ExportCodeFixProvider("CodeCrackerNameOfCodeFixProvider", LanguageNames.VisualBasic), Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(NameOfCodeFixProvider)), Composition.Shared>
     Public Class NameOfCodeFixProvider
         Inherits CodeFixProvider
 
