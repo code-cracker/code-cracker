@@ -210,7 +210,7 @@ class C
         }
 
         [Fact]
-        [SuppressMessage("Style", "CC0065", Justification = "Necessary for test")]
+        [SuppressMessage(nameof(Style), "CC0065", Justification = "Necessary for test")]
         public Task StringToVerbatimHandleCrLf()
         {
             const string before = @"

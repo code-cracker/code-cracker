@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.Formatting;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-    [ExportCodeFixProvider("AddBracesToSwitchCaseCodeFixCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AddBracesToSwitchSectionsCodeFixProvider)), Shared]
     public class AddBracesToSwitchSectionsCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId());
@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Refactoring
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var @switch = (SwitchStatementSyntax) root.FindNode(diagnostic.Location.SourceSpan);
+            var @switch = (SwitchStatementSyntax)root.FindNode(diagnostic.Location.SourceSpan);
             context.RegisterCodeFix(CodeAction.Create("Add braces to each switch section", ct => AddBracesAsync(context.Document, root, @switch)), diagnostic);
         }
 

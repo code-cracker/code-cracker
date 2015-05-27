@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Style
 {
-    [ExportCodeFixProvider("CodeCrackerRemoveCommentedCodeCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RemoveCommentedCodeCodeFixProvider)), Shared]
     public class RemoveCommentedCodeCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

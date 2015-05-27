@@ -13,10 +13,10 @@ using System.Composition;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-    [ExportCodeFixProvider(Id, LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, nameof(StringRepresentationCodeFixProvider)), Shared]
     public class StringRepresentationCodeFixProvider : CodeFixProvider
     {
-        public const string Id = "CodeCrackerStringRepresentationCodeFixProvider";
+        public const string Id = nameof(StringRepresentationCodeFixProvider);
         public const string ToRegularId = Id + "ToRegularString";
         public const string ToVerbatimId = Id + "ToVerbatimString";
 

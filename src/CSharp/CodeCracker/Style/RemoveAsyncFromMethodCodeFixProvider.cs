@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Style
 {
-    [ExportCodeFixProvider("CodeCrackerRemoveAsyncFromMethodCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RemoveAsyncFromMethodCodeFixProvider)), Shared]
     public class RemoveAsyncFromMethodCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

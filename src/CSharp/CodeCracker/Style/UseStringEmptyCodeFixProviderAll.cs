@@ -12,7 +12,7 @@ namespace CodeCracker.CSharp.Style
 {
     public sealed class UseStringEmptyCodeFixAllProvider : FixAllProvider
     {
-        private static readonly SyntaxAnnotation useStringEmptyAnnotation = new SyntaxAnnotation("UseStringEmptyCodeFixAllProvider");
+        private static readonly SyntaxAnnotation useStringEmptyAnnotation = new SyntaxAnnotation(nameof(UseStringEmptyCodeFixAllProvider));
         private UseStringEmptyCodeFixAllProvider() { }
         public static UseStringEmptyCodeFixAllProvider Instance = new UseStringEmptyCodeFixAllProvider();
 

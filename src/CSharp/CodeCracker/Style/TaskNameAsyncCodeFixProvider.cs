@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Style
 {
-    [ExportCodeFixProvider("CodeCrackerTaskNameAsyncCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TaskNameAsyncCodeFixProvider)), Shared]
     public class TaskNameAsyncCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.TaskNameAsync.ToDiagnosticId());

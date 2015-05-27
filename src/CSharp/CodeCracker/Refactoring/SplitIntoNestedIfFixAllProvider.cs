@@ -9,7 +9,7 @@ namespace CodeCracker.CSharp.Refactoring
 {
     public sealed class SplitIntoNestedIfFixAllProvider : FixAllProvider
     {
-        private static readonly SyntaxAnnotation nestedIfAnnotation = new SyntaxAnnotation("SplitIntoNestedIfFixAllProvider");
+        private static readonly SyntaxAnnotation nestedIfAnnotation = new SyntaxAnnotation(nameof(SplitIntoNestedIfFixAllProvider));
         private SplitIntoNestedIfFixAllProvider() { }
         public static SplitIntoNestedIfFixAllProvider Instance = new SplitIntoNestedIfFixAllProvider();
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)

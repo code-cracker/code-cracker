@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 namespace CodeCracker.CSharp.Refactoring
 {
 
-    [ExportCodeFixProvider("CodeCrackerComputeExpressionCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ComputeExpressionCodeFixProvider)), Shared]
     public class ComputeExpressionCodeFixProvider : CodeFixProvider
     {
 

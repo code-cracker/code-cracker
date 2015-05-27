@@ -6,7 +6,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Performance
-    <ExportCodeFixProvider("CodeCrackerSealedAttributeCodeFixProvider", LanguageNames.VisualBasic), Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(SealedAttributeCodeFixProvider)), Composition.Shared>
     Public Class SealedAttributeCodeFixProvider
         Inherits CodeFixProvider
 

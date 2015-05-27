@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Design
 {
-    [ExportCodeFixProvider("CodeCrackerCopyEventToVariableBeforeFireCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CopyEventToVariableBeforeFireCodeFixProvider)), Shared]
     public class CopyEventToVariableBeforeFireCodeFixProvider : CodeFixProvider
     {
         private const string SyntaxAnnotatinKind = "CC-CopyEvent";

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Style
 {
-    [ExportCodeFixProvider("CodeCrackerRemoveTrailingWhitespaceCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RemoveTrailingWhitespaceCodeFixProvider)), Shared]
     public class RemoveTrailingWhitespaceCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.RemoveTrailingWhitespace.ToDiagnosticId());

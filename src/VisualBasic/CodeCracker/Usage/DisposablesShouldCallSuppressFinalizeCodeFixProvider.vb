@@ -8,8 +8,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Usage
-    <ExportCodeFixProvider("CodeCrackerDisposablesShouldCallSuppressFinalizeCodeFixProvider", LanguageNames.VisualBasic)>
-    <Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(DisposablesShouldCallSuppressFinalizeCodeFixProvider)), Composition.Shared>
     Public Class DisposablesShouldCallSuppressFinalizeCodeFixProvider
         Inherits CodeFixProvider
 

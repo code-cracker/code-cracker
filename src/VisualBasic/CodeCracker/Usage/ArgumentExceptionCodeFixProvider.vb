@@ -1,5 +1,4 @@
 ﻿Imports System.Collections.Immutable
-Imports System.Composition
 Imports System.Threading
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeActions
@@ -9,8 +8,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Usage
 
-    <ExportCodeFixProvider("CodeCrackerArgumentExceptionCodeFixProvider", LanguageNames.VisualBasic)>
-    <[Shared]>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(ArgumentExceptionCodeFixProvider)), Composition.Shared>
     Public Class ArgumentExceptionCodeFixProvider
         Inherits CodeFixProvider
 
@@ -18,7 +16,7 @@ Namespace Usage
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.ArgumentException.ToDiagnosticId())
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.ArgumentException.ToDiagnosticId())
 
         Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)

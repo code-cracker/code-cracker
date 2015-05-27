@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-    [ExportCodeFixProvider("CodeCrackerIntroduceFieldFromConstructorCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name =nameof(IntroduceFieldFromConstructorCodeFixProvider)), Shared]
     public class IntroduceFieldFromConstructorCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.IntroduceFieldFromConstructor.ToDiagnosticId());

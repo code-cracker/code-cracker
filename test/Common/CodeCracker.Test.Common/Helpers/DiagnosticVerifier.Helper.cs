@@ -27,7 +27,7 @@ namespace CodeCracker.Test
         private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromAssembly(typeof(Compilation).Assembly);
         private static readonly MetadataReference JsonNetReference = MetadataReference.CreateFromAssembly(typeof(JsonConvert).Assembly);
 
-        internal static string DefaultFilePathPrefix = "Test";
+        internal static string DefaultFilePathPrefix = nameof(Test);
         internal static string CSharpDefaultFileExt = "cs";
         internal static string VisualBasicDefaultExt = "vb";
         internal static string CSharpDefaultFilePath = DefaultFilePathPrefix + 0 + "." + CSharpDefaultFileExt;
@@ -52,7 +52,6 @@ namespace CodeCracker.Test
         /// </summary>
         /// <param name="analyzer">The analyzer to run on the documents</param>
         /// <param name="documents">The Documents that the analyzer will be run on</param>
-        /// <param name="spans">Optional TextSpan indicating where a Diagnostic will be found</param>
         /// <returns>An IEnumerable of Diagnostics that surfaced in teh source code, sorted by Location</returns>
         protected async static Task<Diagnostic[]> GetSortedDiagnosticsFromDocumentsAsync(DiagnosticAnalyzer analyzer, Document[] documents)
         {
@@ -105,7 +104,7 @@ namespace CodeCracker.Test
 
             for (int i = 0; i < sources.Length; i++)
             {
-                var fileName = language == LanguageNames.CSharp ? "Test" + i + ".cs" : "Test" + i + ".vb";
+                var fileName = language == LanguageNames.CSharp ? nameof(Test) + i + ".cs" : nameof(Test) + i + ".vb";
             }
 
             var project = CreateProject(sources, language);
@@ -135,7 +134,7 @@ namespace CodeCracker.Test
         /// </summary>
         /// <param name="sources">Classes in the form of strings</param>
         /// <param name="language">The language the source code is in</param>
-        /// <param name="solution">The created workspace containing the project</param>
+        /// <param name="workspace">The created workspace containing the project</param>
         /// <returns>A Project created out of the Douments created from the source strings</returns>
         public static Project CreateProject(string[] sources,
             out AdhocWorkspace workspace, string language = LanguageNames.CSharp)

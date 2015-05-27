@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Design
 {
-    [ExportCodeFixProvider("CodeCrackerRethrowExceptionCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NameOfCodeFixProvider)), Shared]
     public class NameOfCodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.NameOf.ToDiagnosticId());

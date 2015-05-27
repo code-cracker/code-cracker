@@ -57,7 +57,9 @@
     <!-- A reference to the entire .NET Framework and Windows SDK is automatically included -->
     <None Include="app.config" />
     <None Include="CodeCracker.nuspec" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="tools\install.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -156,7 +158,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha5-0544\tools\analyzers\CodeCracker.VisualBasic.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.VisualBasic.1.0.0-alpha5-0574\tools\analyzers\CodeCracker.VisualBasic.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\VB.NET\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\VB.NET\Microsoft.CodeAnalysis.VisualBasic.Analyzers.dll" />
   </ItemGroup>

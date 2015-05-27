@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Usage
 {
-    [ExportCodeFixProvider("RemoveUnreachableCodeCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RemoveUnreachableCodeCodeFixProvider)), Shared]
     public class RemoveUnreachableCodeCodeFixProvider : CodeFixProvider
     {
         public const string Message = "Remove unreacheable code";

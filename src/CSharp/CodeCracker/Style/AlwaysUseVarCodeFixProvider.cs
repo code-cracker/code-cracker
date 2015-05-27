@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace CodeCracker.CSharp.Style
 {
 
-    [ExportCodeFixProvider("CodeCrackerAlwaysUseVarCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AlwaysUseVarCodeFixProvider)), Shared]
     public class AlwaysUseVarCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
@@ -36,7 +36,9 @@ namespace CodeCracker.CSharp.Style
                 .OfType<VariableDeclarationSyntax>()
                 .FirstOrDefault();
             var root = await document.GetSyntaxRootAsync(cancellationToken);
+#pragma warning disable CC0021 //todo: related to bug #359, remove pragma when fixed
             var @var = SyntaxFactory.IdentifierName("var")
+#pragma warning restore CC0021
                 .WithLeadingTrivia(variableDeclaration.Type.GetLeadingTrivia())
                 .WithTrailingTrivia(variableDeclaration.Type.GetTrailingTrivia());
             var newRoot = root.ReplaceNode(variableDeclaration.Type, @var);

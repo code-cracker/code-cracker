@@ -8,7 +8,7 @@ Imports System.Collections.Immutable
 Imports System.Threading
 
 Namespace Design
-    <ExportCodeFixProvider("CodeCrackerCatchEmptyCodeFixProvider", LanguageNames.VisualBasic), Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(CatchEmptyCodeFixProvider)), Composition.Shared>
     Public Class CatchEmptyCodeFixProvider
         Inherits CodeFixProvider
 

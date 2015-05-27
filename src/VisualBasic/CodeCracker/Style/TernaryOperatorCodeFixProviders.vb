@@ -8,8 +8,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Style
-    <ExportCodeFixProvider("CodeCrackerTernaryOperatorWithReturnCodeFixProvider", LanguageNames.VisualBasic)>
-    <Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(TernaryOperatorWithReturnCodeFixProvider)), Composition.Shared>
     Public Class TernaryOperatorWithReturnCodeFixProvider
         Inherits CodeFixProvider
 
@@ -47,8 +46,7 @@ Namespace Style
         End Function
     End Class
 
-    <ExportCodeFixProvider("CodeCrackerTernaryOperatorWithAssignentCodeFixProvider", LanguageNames.VisualBasic)>
-    <Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(TernaryOperatorWithAssignmentCodeFixProvider)), Composition.Shared>
     Public Class TernaryOperatorWithAssignmentCodeFixProvider
         Inherits CodeFixProvider
 
@@ -90,8 +88,7 @@ Namespace Style
         End Function
     End Class
 
-    <ExportCodeFixProvider("CodeCrackerTernaryOperatorFromIifCodeFixProvider", LanguageNames.VisualBasic)>
-    <Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(TernaryOperatorFromIifCodeFixProvider)), Composition.Shared>
     Public Class TernaryOperatorFromIifCodeFixProvider
         Inherits CodeFixProvider
 
