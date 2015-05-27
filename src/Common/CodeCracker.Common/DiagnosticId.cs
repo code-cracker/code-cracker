@@ -19,7 +19,6 @@
         TernaryOperator_Assignment = 14,
         UnnecessaryParenthesis = 15,
         CopyEventToVariableBeforeFire = 16,
-        SwitchToAutoProp = 17,
         ExistenceOperator = 18,
         ConvertToSwitch = 19,
         ConvertLambdaExpressionToMethodGroup = 20,
@@ -68,8 +67,8 @@
         NumericLiteral = 79,
         TernaryOperator_Iif = 80,
         UseStaticRegexIsMatch = 81,
-        ComputeExpression = 82
+        ComputeExpression = 82,
         UseStringEmpty = 84,
-        RemoveRedundantElseClause = 89
+        UseEmptyString = 85
     }
 }
