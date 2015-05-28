@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Style
 {
-    [ExportCodeFixProvider("CodeCrackerPropertyPrivateSetCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PropertyPrivateSetCodeFixProvider)), Shared]
     public class PropertyPrivateSetCodeFixProvider : CodeFixProvider
     {
         private enum FixType

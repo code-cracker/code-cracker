@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Design
 {
-    [ExportCodeFixProvider("CodeCrackerUseInvokeMethodToFireEventCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseInvokeMethodToFireEventCodeFixProvider)), Shared]
     public class UseInvokeMethodToFireEventCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

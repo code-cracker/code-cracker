@@ -35,7 +35,7 @@ namespace CodeCracker.CSharp.Usage
         {
             if (context.IsGenerated()) return;
             var mainConstrutor = new MethodInformation(
-                "Uri",
+                nameof(Uri),
                 "System.Uri.Uri(string)",
                 args =>
                 {
@@ -49,7 +49,7 @@ namespace CodeCracker.CSharp.Usage
                 }
             );
             var constructorWithUriKind = new MethodInformation(
-                "Uri",
+                nameof(Uri),
                 "System.Uri.Uri(string, System.UriKind)",
                 args =>
                 {
@@ -62,8 +62,8 @@ namespace CodeCracker.CSharp.Usage
             );
 
             var checker = new MethodChecker(context, Rule);
-            checker.AnalyzeConstrutor(mainConstrutor);
-            checker.AnalyzeConstrutor(constructorWithUriKind);
+            checker.AnalyzeConstructor(mainConstrutor);
+            checker.AnalyzeConstructor(constructorWithUriKind);
         }
     }
 }

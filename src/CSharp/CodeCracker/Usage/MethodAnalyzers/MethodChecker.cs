@@ -18,12 +18,10 @@ namespace CodeCracker.CSharp.Usage.MethodAnalyzers
             this.diagnosticDescriptor = diagnosticDescriptor;
         }
 
-        public void AnalyzeConstrutor(MethodInformation methodInformation)
+        public void AnalyzeConstructor(MethodInformation methodInformation)
         {
             if (ConstructorNameNotFound(methodInformation) || MethodFullNameNotFound(methodInformation.MethodFullDefinition))
-            {
                 return;
-            }
             var argumentList = ((ObjectCreationExpressionSyntax)context.Node).ArgumentList;
             var arguments = GetArguments(argumentList);
             Execute(methodInformation, arguments, argumentList);

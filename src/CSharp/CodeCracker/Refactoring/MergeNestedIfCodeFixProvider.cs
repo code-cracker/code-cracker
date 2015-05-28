@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace CodeCracker.CSharp.Refactoring
 {
 
-    [ExportCodeFixProvider("CodeCrackerMergeNestedIfCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MergeNestedIfCodeFixProvider)), Shared]
     public class MergeNestedIfCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

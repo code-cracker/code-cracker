@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test.CSharp.Refactoring
 {
-    public class AddBracesToSwitchSectionsTests : CodeFixVerifier<AddBracesToSwitchSectionsAnalyzer, AddBracesToSwitchSectionsCodeFix>
+    public class AddBracesToSwitchSectionsTests : CodeFixVerifier<AddBracesToSwitchSectionsAnalyzer, AddBracesToSwitchSectionsCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresWhenSingleSwitchSectionAlreadyHasBraces()

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Usage
 {
-    [ExportCodeFixProvider("CodeCrackerCodeCrackerIfReturnTrueCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DisposableVariableNotDisposedCodeFixProvider)), Shared]
     public class DisposableVariableNotDisposedCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>

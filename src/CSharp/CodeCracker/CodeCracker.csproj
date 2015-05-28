@@ -35,10 +35,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
+    <Compile Include="Performance\UseStaticRegexIsMatchAnalyzer.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
+    <Compile Include="Performance\UseStaticRegexIsMatchCodeFixProvider.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsAnalyzer.cs" />
-    <Compile Include="Refactoring\AddBracesToSwitchSectionsCodeFix.cs" />
+    <Compile Include="Refactoring\AddBracesToSwitchSectionsCodeFixProvider.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
@@ -57,6 +59,9 @@
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.cs" />
+    <Compile Include="Style\UseStringEmptyCodeFixProviderAll.cs" />
+    <Compile Include="Style\UseStringEmptyCodeFixProvider.cs" />
+    <Compile Include="Style\UseStringEmptyAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupAnalyzer.cs" />
@@ -163,7 +168,9 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="tools\install.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -233,7 +240,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha5-0544\tools\analyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha5-0574\tools\analyzers\CodeCracker.CSharp.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\C#\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\C#\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>

@@ -137,6 +137,7 @@
     <Compile Include="ChangeCultureTests.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
     <Compile Include="Performance\StringBuilderInLoopTests.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Refactoring\ParameterRefectoryTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.cs" />
+    <Compile Include="Style\UseStringEmptyTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
     <Compile Include="Style\RemoveTrailingWhitespaceTests.cs" />
     <Compile Include="Style\StringFormatTests.cs" />
@@ -233,7 +235,7 @@
     <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha5-0544\tools\analyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha5-0574\tools\analyzers\CodeCracker.CSharp.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\C#\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\C#\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>

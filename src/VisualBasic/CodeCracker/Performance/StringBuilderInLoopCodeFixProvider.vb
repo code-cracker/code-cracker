@@ -9,7 +9,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Performance
-    <ExportCodeFixProvider("StringBuilderInLoopCodeFixProvider", LanguageNames.VisualBasic), Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(StringBuilderInLoopCodeFixProvider)), Composition.Shared>
     Public Class StringBuilderInLoopCodeFixProvider
         Inherits CodeFixProvider
 

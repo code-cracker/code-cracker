@@ -10,8 +10,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports Microsoft.CodeAnalysis.VisualBasic.VisualBasicExtensions
 
 Namespace Usage
-    <ExportCodeFixProvider("DispsableFieldNotDisposedCodeFixProvider", LanguageNames.VisualBasic)>
-    <Composition.Shared>
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(DisposableFieldNotDisposedCodeFixProvider)), Composition.Shared>
     Public Class DisposableFieldNotDisposedCodeFixProvider
         Inherits CodeFixProvider
 

@@ -11,11 +11,12 @@ using System.Threading;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-    [ExportCodeFixProvider("StyleCopAllowMembersOrderingCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(StyleCopAllowMembersOrderingCodeFixProvider)), Shared]
     public class StyleCopAllowMembersOrderingCodeFixProvider : BaseAllowMembersOrderingCodeFixProvider
     {
         public StyleCopAllowMembersOrderingCodeFixProvider() :
-            base("Order {0}'s members following StyleCop patterns") { }
+            base("Order {0}'s members following StyleCop patterns")
+        { }
 
         protected override IComparer<MemberDeclarationSyntax> GetMemberDeclarationComparer(Document d, CancellationToken c) =>
             new StyleCopMembersComparer();

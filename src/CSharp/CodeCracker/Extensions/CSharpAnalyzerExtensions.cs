@@ -84,7 +84,6 @@ namespace CodeCracker
                 .OfType<TypeDeclarationSyntax>();
         }
 
-#pragma warning disable CC0026 //todo: related to bug #262, remove pragma when fixed
         public static bool IsKind(this SyntaxToken token, params SyntaxKind[] kinds)
         {
             foreach (var kind in kinds)
@@ -112,6 +111,5 @@ namespace CodeCracker
                 if (Microsoft.CodeAnalysis.CSharpExtensions.IsKind(nodeOrToken, kind)) return true;
             return false;
         }
-#pragma warning restore CC0026
     }
 }

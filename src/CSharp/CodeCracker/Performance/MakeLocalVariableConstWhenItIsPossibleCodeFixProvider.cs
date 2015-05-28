@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Performance
 {
-    [ExportCodeFixProvider("CodeCrackerMakeLocalVariableConstWhenItIsPossibleCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MakeLocalVariableConstWhenItIsPossibleCodeFixProvider)), Shared]
 
     public class MakeLocalVariableConstWhenItIsPossibleCodeFixProvider : CodeFixProvider
     {

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace CodeCracker.CSharp.Refactoring
 {
 
-    [ExportCodeFixProvider("CodeCrackerSplitIntoNestedIfCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SplitIntoNestedIfCodeFixProvider)), Shared]
     public class SplitIntoNestedIfCodeFixProvider : CodeFixProvider
     {
         internal const string MessageFormat = "Split into nested ifs";

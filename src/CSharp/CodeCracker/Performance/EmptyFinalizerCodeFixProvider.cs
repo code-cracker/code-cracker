@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Performance
 {
-    [ExportCodeFixProvider("CodeCrackerEmptyFinalizerCodeFixProvider", LanguageNames.CSharp), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(EmptyFinalizerCodeFixProvider)), Shared]
     public class EmptyFinalizerCodeFixProvider : CodeFixProvider
     {
 

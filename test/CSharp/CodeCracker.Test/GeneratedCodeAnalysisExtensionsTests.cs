@@ -12,44 +12,46 @@ namespace CodeCracker.Test.CSharp
 {
     public class GeneratedCodeAnalysisExtensionsTests
     {
+        private const string baseProjectPath = @"D:\ClassLibrary11\";
+
         [Theory]
-        [InlineData("A.g.CS")]
-        [InlineData("A.g.cs")]
-        [InlineData("B.g.cs")]
-        [InlineData("A.g.i.cs")]
-        [InlineData("B.g.i.cs")]
-        [InlineData("A.designer.cs")]
-        [InlineData("A.generated.cs")]
-        [InlineData("B.generated.cs")]
-        [InlineData("AssemblyInfo.cs")]
-        [InlineData("A.AssemblyAttributes.cs")]
-        [InlineData("B.AssemblyAttributes.cs")]
-        [InlineData("AssemblyAttributes.cs")]
-        [InlineData("Service.cs")]
-        [InlineData("TemporaryGeneratedFile_.cs")]
-        [InlineData("TemporaryGeneratedFile_A.cs")]
-        [InlineData("TemporaryGeneratedFile_B.cs")]
+        [InlineData(baseProjectPath + "A.g.CS")]
+        [InlineData(baseProjectPath + "A.g.cs")]
+        [InlineData(baseProjectPath + "B.g.cs")]
+        [InlineData(baseProjectPath + "A.g.i.cs")]
+        [InlineData(baseProjectPath + "B.g.i.cs")]
+        [InlineData(baseProjectPath + "A.designer.cs")]
+        [InlineData(baseProjectPath + "A.generated.cs")]
+        [InlineData(baseProjectPath + "B.generated.cs")]
+        [InlineData(baseProjectPath + "AssemblyInfo.cs")]
+        [InlineData(baseProjectPath + "A.AssemblyAttributes.cs")]
+        [InlineData(baseProjectPath + "B.AssemblyAttributes.cs")]
+        [InlineData(baseProjectPath + "AssemblyAttributes.cs")]
+        [InlineData(baseProjectPath + "Service.cs")]
+        [InlineData(baseProjectPath + "TemporaryGeneratedFile_.cs")]
+        [InlineData(baseProjectPath + "TemporaryGeneratedFile_A.cs")]
+        [InlineData(baseProjectPath + "TemporaryGeneratedFile_B.cs")]
         public void IsOnGeneratedFile(string fileName) => fileName.IsOnGeneratedFile().Should().BeTrue();
 
         [Theory]
-        [InlineData("TheAssemblyInfo.cs")]
-        [InlineData("A.cs")]
-        [InlineData("TheTemporaryGeneratedFile_A.cs")]
-        [InlineData("TheService.cs")]
-        [InlineData("TheAssemblyAttributes.cs")]
+        [InlineData(baseProjectPath + "TheAssemblyInfo.cs")]
+        [InlineData(baseProjectPath + "A.cs")]
+        [InlineData(baseProjectPath + "TheTemporaryGeneratedFile_A.cs")]
+        [InlineData(baseProjectPath + "TheService.cs")]
+        [InlineData(baseProjectPath + "TheAssemblyAttributes.cs")]
         public void IsNotOnGeneratedFile(string fileName) => fileName.IsOnGeneratedFile().Should().BeFalse();
 
         [Fact]
         public void SyntaxNodeAnalysis_IsContextOnGeneratedFile() =>
-            GetSyntaxNodeAnalysisContext("class TypeName { }", "TemporaryGeneratedFile_.cs").IsGenerated().Should().BeTrue();
+            GetSyntaxNodeAnalysisContext("class TypeName { }", baseProjectPath + "TemporaryGeneratedFile_.cs").IsGenerated().Should().BeTrue();
 
         [Fact]
         public void SymbolicAnalysis_IsContextOnGeneratedFile() =>
-            GetSymbolAnalysisContext<ClassDeclarationSyntax>("class TypeName { }", "TemporaryGeneratedFile_.cs").IsGenerated().Should().BeTrue();
+            GetSymbolAnalysisContext<ClassDeclarationSyntax>("class TypeName { }", baseProjectPath + "TemporaryGeneratedFile_.cs").IsGenerated().Should().BeTrue();
 
         [Fact]
         public void SyntaxTreeAnalysis_IsContextOnGeneratedFile() =>
-            GetSyntaxTreeAnalysisContext("class TypeName { }", "TemporaryGeneratedFile_.cs").IsGenerated().Should().BeTrue();
+            GetSyntaxTreeAnalysisContext("class TypeName { }", baseProjectPath + "TemporaryGeneratedFile_.cs").IsGenerated().Should().BeTrue();
 
         [Fact]
         public void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAClass() =>
@@ -288,9 +290,9 @@ namespace WebApplication3
 // </auto-generated>
 //------------------------------------------------------------------------------").IsGenerated().Should().BeTrue();
 
-        private static SyntaxNodeAnalysisContext GetSyntaxNodeAnalysisContext(string code, string fileName = "a.cs") => GetSyntaxNodeAnalysisContext<CompilationUnitSyntax>(code, fileName);
+        private static SyntaxNodeAnalysisContext GetSyntaxNodeAnalysisContext(string code, string fileName = baseProjectPath + "a.cs") => GetSyntaxNodeAnalysisContext<CompilationUnitSyntax>(code, fileName);
 
-        private static SyntaxNodeAnalysisContext GetSyntaxNodeAnalysisContext<T>(string code, string fileName = "a.cs") where T : SyntaxNode
+        private static SyntaxNodeAnalysisContext GetSyntaxNodeAnalysisContext<T>(string code, string fileName = baseProjectPath + "a.cs") where T : SyntaxNode
         {
             var tree = SyntaxFactory.ParseSyntaxTree(code, path: fileName);
             var compilation = CSharpCompilation.Create("comp.dll", new[] { tree });
@@ -302,7 +304,7 @@ namespace WebApplication3
             return context;
         }
 
-        private static SymbolAnalysisContext GetSymbolAnalysisContext<T>(string code, string fileName = "a.cs") where T : SyntaxNode
+        private static SymbolAnalysisContext GetSymbolAnalysisContext<T>(string code, string fileName = baseProjectPath + "a.cs") where T : SyntaxNode
         {
             var tree = SyntaxFactory.ParseSyntaxTree(code, path: fileName);
             var compilation = CSharpCompilation.Create("comp.dll", new[] { tree });
@@ -316,7 +318,7 @@ namespace WebApplication3
             return context;
         }
 
-        private static SyntaxTreeAnalysisContext GetSyntaxTreeAnalysisContext(string code, string fileName = "a.cs")
+        private static SyntaxTreeAnalysisContext GetSyntaxTreeAnalysisContext(string code, string fileName = baseProjectPath + "a.cs")
         {
             var tree = SyntaxFactory.ParseSyntaxTree(code, path: fileName);
             var analyzerOptions = new AnalyzerOptions(ImmutableArray<AdditionalText>.Empty);
