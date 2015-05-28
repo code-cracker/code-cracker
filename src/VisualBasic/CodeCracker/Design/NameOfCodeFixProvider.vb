@@ -12,7 +12,7 @@ Namespace Design
     Public Class NameOfCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(NameOfAnalyzer.Id)
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(NameOfAnalyzer.Id)
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
@@ -24,18 +24,19 @@ Namespace Design
             Dim diagnosticspan = diagnostic.Location.SourceSpan
             Dim stringLiteral = root.FindToken(diagnosticspan.Start).Parent.AncestorsAndSelf.OfType(Of LiteralExpressionSyntax).FirstOrDefault
             If stringLiteral IsNot Nothing Then
-                context.RegisterCodeFix(CodeAction.Create("use NameOf()", Function(c) MakeNameOfAsync(context.Document, stringLiteral, c)), diagnostic)
+                context.RegisterCodeFix(CodeAction.Create("use NameOf()", Function(c) MakeNameOf(context.Document, stringLiteral, root, diagnostic, c)), diagnostic)
             End If
         End Function
 
-        Private Async Function MakeNameOfAsync(document As Document, stringLiteral As LiteralExpressionSyntax, cancellationToken As CancellationToken) As Task(Of Document)
-            Dim newNameof = SyntaxFactory.ParseExpression(String.Format("NameOf({0})", stringLiteral.Token.ValueText)).
-            WithLeadingTrivia(stringLiteral.GetLeadingTrivia).
-            WithTrailingTrivia(stringLiteral.GetTrailingTrivia).
-            WithAdditionalAnnotations(Formatter.Annotation)
-            Dim root = Await document.GetSyntaxRootAsync(cancellationToken)
+        Private Function MakeNameOf(document As Document, stringLiteral As LiteralExpressionSyntax, root As SyntaxNode, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim newNameof = SyntaxFactory.ParseExpression($"NameOf({stringLiteral.Token.ToString().Replace("""", "")})").
+                WithLeadingTrivia(stringLiteral.GetLeadingTrivia).
+                WithTrailingTrivia(stringLiteral.GetTrailingTrivia).
+                WithAdditionalAnnotations(Formatter.Annotation)
+
             Dim newRoot = root.ReplaceNode(stringLiteral, newNameof)
-            Return document.WithSyntaxRoot(newRoot)
+            Return Task.FromResult(document.WithSyntaxRoot(newRoot))
         End Function
+
     End Class
 End Namespace
