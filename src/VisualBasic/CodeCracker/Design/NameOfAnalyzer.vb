@@ -11,10 +11,10 @@ Namespace Design
         Inherits DiagnosticAnalyzer
 
         Public Shared ReadOnly Id As String = DiagnosticId.NameOf.ToDiagnosticId()
-        Public Const Title As String = "You should use nameof instead of the parameter string"
-        Public Const MessageFormat As String = "Use 'NameOf({0})' instead of specifying the parameter name."
+        Public Const Title As String = "You should use nameof instead of the parameter element name string"
+        Public Const MessageFormat As String = "Use 'NameOf({0})' instead of specifying the program element name."
         Public Const Category As String = SupportedCategories.Design
-        Public Const Description As String = "The NameOf() operator should be used to specify the name of a parameter instead of a string literal as it produces code that is easier to refactor."
+        Public Const Description As String = "In VB14 the NameOf() operator should be used to specify the name of a program element instead of a string literal as it produces code that is easier to refactor."
         Protected Shared Rule As DiagnosticDescriptor = New DiagnosticDescriptor(
             Id,
             Title,
@@ -35,34 +35,55 @@ Namespace Design
             If (context.IsGenerated()) Then Return
             Dim stringLiteral = DirectCast(context.Node, LiteralExpressionSyntax)
             If String.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText) Then Return
-            Dim parameters = GetParameters(stringLiteral)
-            If Not parameters.Any() Then Return
-            Dim attribute = stringLiteral.FirstAncestorOfType(Of AttributeSyntax)()
-            Dim method = TryCast(stringLiteral.FirstAncestorOfType(GetType(MethodBlockSyntax), GetType(ConstructorBlockSyntax)), MethodBlockBaseSyntax)
-            If attribute IsNot Nothing AndAlso method.BlockStatement.AttributeLists.Any(Function(a) a.Attributes.Contains(attribute)) Then Return
-            If Not AreEqual(stringLiteral, parameters) Then Return
-            Dim diag = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.Value)
-            context.ReportDiagnostic(diag)
+
+            Dim programElementName = GetProgramElementNameThatMatchesStringLiteral(stringLiteral, context.SemanticModel)
+            If (Found(programElementName)) Then
+                Dim diag = Diagnostic.Create(Rule, stringLiteral.GetLocation(), programElementName)
+                context.ReportDiagnostic(diag)
+            End If
         End Sub
 
-        Private Function AreEqual(stringLiteral As LiteralExpressionSyntax, paramaters As SeparatedSyntaxList(Of ParameterSyntax)) As Boolean
-            Return paramaters.Any(Function(p) p.Identifier?.Identifier.ValueText = stringLiteral.Token.ValueText)
+        Private Shared Function GetProgramElementNameThatMatchesStringLiteral(stringLiteral As LiteralExpressionSyntax, model As SemanticModel) As String
+            Dim programElementName = GetParameterNameThatMatchesStringLiteral(stringLiteral)
+            If Not Found(programElementName) Then
+                Dim literalValueText = stringLiteral.Token.ValueText
+                Dim symbol = model.LookupSymbols(stringLiteral.Token.SpanStart, Nothing, literalValueText).FirstOrDefault()
+                programElementName = symbol?.ToDisplayParts().
+                    Where(AddressOf IncludeOnlyPartsThatAreName).
+                    LastOrDefault(Function(displayPart) displayPart.ToString() = literalValueText).
+                    ToString()
+            End If
+            Return programElementName
         End Function
 
-        Public Function GetParameters(node As SyntaxNode) As SeparatedSyntaxList(Of ParameterSyntax)
-            Dim methodDeclaration = node.FirstAncestorOfType(Of MethodBlockSyntax)()
-            Dim parameters As SeparatedSyntaxList(Of ParameterSyntax)
-            If methodDeclaration IsNot Nothing Then
-                parameters = methodDeclaration.SubOrFunctionStatement.ParameterList.Parameters
-            Else
-                Dim constructorDeclaration = node.FirstAncestorOfType(Of ConstructorBlockSyntax)()
-                If constructorDeclaration IsNot Nothing Then
-                    parameters = constructorDeclaration.SubNewStatement.ParameterList.Parameters
-                Else
-                    Return New SeparatedSyntaxList(Of ParameterSyntax)()
-                End If
+        Private Shared Function GetParameterNameThatMatchesStringLiteral(stringLiteral As LiteralExpressionSyntax) As String
+            Dim ancestorThatMightHaveParameters = stringLiteral.FirstAncestorOfType(GetType(AttributeListSyntax), GetType(MethodBlockSyntax), GetType(SubNewStatementSyntax), GetType(InvocationExpressionSyntax))
+            Dim parameterName = String.Empty
+            If ancestorThatMightHaveParameters IsNot Nothing Then
+                Dim parameters = New SeparatedSyntaxList(Of ParameterSyntax)()
+                Select Case ancestorThatMightHaveParameters.Kind
+                    Case SyntaxKind.SubBlock, SyntaxKind.FunctionBlock
+                        Dim method = DirectCast(ancestorThatMightHaveParameters, MethodBlockSyntax)
+                        parameters = method.SubOrFunctionStatement.ParameterList.Parameters
+                    Case SyntaxKind.AttributeList
+                End Select
+                parameterName = GetParameterWithIdentifierEqualToStringLiteral(stringLiteral, parameters)?.Identifier.Identifier.Text
+
             End If
-            Return parameters
+            Return parameterName
         End Function
+
+        Private Shared Function Found(programElement As String) As Boolean
+            Return Not String.IsNullOrEmpty(programElement)
+        End Function
+
+        Public Shared Function IncludeOnlyPartsThatAreName(displayPart As SymbolDisplayPart) As Boolean
+            Return displayPart.IsAnyKind(SymbolDisplayPartKind.ClassName, SymbolDisplayPartKind.DelegateName, SymbolDisplayPartKind.EnumName, SymbolDisplayPartKind.EventName, SymbolDisplayPartKind.FieldName, SymbolDisplayPartKind.InterfaceName, SymbolDisplayPartKind.LocalName, SymbolDisplayPartKind.MethodName, SymbolDisplayPartKind.NamespaceName, SymbolDisplayPartKind.ParameterName, SymbolDisplayPartKind.PropertyName, SymbolDisplayPartKind.StructName)
+        End Function
+
+        Private Shared Function GetParameterWithIdentifierEqualToStringLiteral(stringLiteral As LiteralExpressionSyntax, parameters As SeparatedSyntaxList(Of ParameterSyntax)) As ParameterSyntax
+            Return parameters.FirstOrDefault(Function(m) String.Equals(m.Identifier.Identifier.Text, stringLiteral.Token.ValueText, StringComparison.Ordinal))
+        End Function
+
     End Class
 End Namespace
