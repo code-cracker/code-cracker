@@ -68,6 +68,7 @@
         TernaryOperator_Iif = 80,
         UseStaticRegexIsMatch = 81,
         ComputeExpression = 82,
-        UseStringEmpty = 84
+        UseStringEmpty = 84,
+        UseEmptyString = 85
     }
 }
