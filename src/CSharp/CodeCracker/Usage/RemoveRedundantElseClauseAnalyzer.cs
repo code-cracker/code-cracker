@@ -12,6 +12,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Title = "Remove redundant else.";
         internal const string MessageFormat = "Remove redundant else";
         internal const string Category = SupportedCategories.Usage;
+        const string Description = "An empty else clause only adds complexity. You may safely remove it.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RemoveRedundantElseClause.ToDiagnosticId(),
@@ -20,6 +21,7 @@ namespace CodeCracker.CSharp.Usage
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
+            description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveRedundantElseClause));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
