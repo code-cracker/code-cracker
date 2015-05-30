@@ -69,6 +69,6 @@
         UseStaticRegexIsMatch = 81,
         ComputeExpression = 82,
         UseStringEmpty = 84,
-        UseEmptyString = 85
+        UseEmptyString = 88
     }
 }
