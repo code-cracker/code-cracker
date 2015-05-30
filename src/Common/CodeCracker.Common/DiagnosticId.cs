@@ -69,6 +69,7 @@
         UseStaticRegexIsMatch = 81,
         ComputeExpression = 82,
         UseStringEmpty = 84,
-        UseEmptyString = 88
+        UseEmptyString = 88,
+        RemoveRedundantElseClause = 89
     }
 }
