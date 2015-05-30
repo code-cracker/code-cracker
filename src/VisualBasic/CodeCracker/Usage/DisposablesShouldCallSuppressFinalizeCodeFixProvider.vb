@@ -31,7 +31,7 @@ Namespace Usage
                     SyntaxFactory.ExpressionStatement(
                         SyntaxFactory.InvocationExpression(
                             SyntaxFactory.SimpleMemberAccessExpression(
-                                    SyntaxFactory.IdentifierName("GC"),
+                                    SyntaxFactory.IdentifierName(NameOf(GC)),
                                     SyntaxFactory.IdentifierName("SuppressFinalize"))).
                             WithArgumentList(SyntaxFactory.ArgumentList().AddArguments(SyntaxFactory.SimpleArgument(SyntaxFactory.MeExpression)))).
                             WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)

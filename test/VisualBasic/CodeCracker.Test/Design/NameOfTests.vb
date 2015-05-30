@@ -94,14 +94,14 @@ End Class"
         <InlineData("readonlyField", True)>
         <InlineData("ParticularEvent", True)>
         <InlineData("Prop", True)>
-        <InlineData("TypeName", True)>
+        <InlineData("TheTypeName", True)>
         <InlineData("Invoke", True)>
         <InlineData("N1", True)>
         <InlineData("N3", True)>
         Public Async Function WhenUsingProgramElementNameStringInMethodInvocation(stringLiteral As String, shouldReportDiatnostic As Boolean) As Task
             Dim source = $"Namespace N1.N2
     Namespace N3
-        Public Class TypeName
+        Public Class TheTypeName
             Private ReadOnly readonlyField As Integer
             Public Property Prop As Integer
             Public Event ParticularEvent As EventHandler
@@ -165,7 +165,7 @@ End Class"
         Public Async Function WhenUsingProgramElementNameStringInAttributeShouldReportDiagnostic() As Task
             Const source = "
 Namespace N1.N2
-    Public Class TypeName
+    Public Class TheTypeName
         Private ReadOnly readonlyField As Integer
         Public Property Prop As Integer
         Public Event ParticularEvent As EventHandler
@@ -175,7 +175,7 @@ Namespace N1.N2
         <Whatever(""readonlyField"")>
         <Whatever(""ParticularEvent"")>
         <Whatever(""Prop"")>
-        <Whatever(""TypeName"")>
+        <Whatever(""TheTypeName"")>
         <Whatever(""Foo"")>
         <Whatever(""N1"")>
         Sub Foo(a As String)
@@ -189,7 +189,7 @@ End Namespace"
                 CreateNameofDiagnosticResult("readonlyField", 10, 19),
                 CreateNameofDiagnosticResult("ParticularEvent", 11, 19),
                 CreateNameofDiagnosticResult("Prop", 12, 19),
-                CreateNameofDiagnosticResult("TypeName", 13, 19),
+                CreateNameofDiagnosticResult("TheTypeName", 13, 19),
                 CreateNameofDiagnosticResult("Foo", 14, 19),
                 CreateNameofDiagnosticResult("N1", 15, 19)
             }
@@ -208,7 +208,7 @@ Namespace N1.N2
     End Class
     Public Class TypeName
         Sub Foo(a As String)
-            Dim instance As New OtherTypeName 
+            Dim instance As New OtherTypeName
             {
                 Prop = ""xyz""
                 Prop2 = ""OtherTypeName""
@@ -245,17 +245,17 @@ End Class"
         <Fact>
         Public Async Function WhenCreatingNewObjectWithStringLiterals() As Task
             Const source = "
-Public Structure TypeName
+Public Structure TheTypeName
     Sub Foo(a As String)
         Dim instance = New OtherTypeName(""b"", ""xyz"")
-        instance2 = New OtherTypeName(""TypeName"", ""a"")
+        instance2 = New OtherTypeName(""TheTypeName"", ""a"")
     End Sub
 End Structure"
 
             Dim expected =
             {
-                CreateNameofDiagnosticResult("TypeName", 5, 39),
-                CreateNameofDiagnosticResult("a", 5, 51)
+                CreateNameofDiagnosticResult("TheTypeName", 5, 39),
+                CreateNameofDiagnosticResult("a", 5, 54)
             }
 
             Await VerifyBasicDiagnosticAsync(source, expected)
@@ -274,12 +274,12 @@ Namespace N1.N2
             End Sub
         End Class
 
-        Public Class TypeName
+        Public Class TheTypeName
             Inherits BaseTypeName
 
             Private ReadOnly readonlyField As Integer
             Public Event ParticularEvent As EventHandler
-            Public className As String = ""TypeName""
+            Public className As String = ""TheTypeName""
             Public fieldName As String = ""field""
             Public someName As String = ""variable""
             Public namespaceName As String = ""N3""
@@ -323,7 +323,7 @@ End Namespace
 "
             Dim expected =
                 {
-                    CreateNameofDiagnosticResult("TypeName", 17, 42),
+                    CreateNameofDiagnosticResult("TheTypeName", 17, 42),
                     CreateNameofDiagnosticResult("N3", 20, 46),
                     CreateNameofDiagnosticResult("N2", 21, 47),
                     CreateNameofDiagnosticResult("readonlyField", 27, 38),
@@ -525,15 +525,15 @@ End Class"
         <InlineData("readonlyField")>
         <InlineData("ParticularEvent")>
         <InlineData("Prop")>
-        <InlineData("TypeName")>
+        <InlineData("TheTypeName")>
         <InlineData("Invoke")>
         <InlineData("N1")>
         <InlineData("N3")>
         Public Async Function WhenUsingProgramElementNameStringInMethodInvocationThenFixUpdatesAsExpected(stringLiteral As String) As Task
-            Dim source = "
+            Const source = "
 Namespace N1.N2
     Namespace N3
-        Public Class TypeName
+        Public Class TheTypeName
 
             Private ReadOnly readonlyField As Integer
             Public Property Prop As Integer

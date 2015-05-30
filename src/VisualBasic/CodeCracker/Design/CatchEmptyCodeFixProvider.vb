@@ -33,7 +33,7 @@ Namespace Design
             Dim newCatch = SyntaxFactory.CatchBlock(
             SyntaxFactory.CatchStatement(
                 SyntaxFactory.IdentifierName("ex"),
-                SyntaxFactory.SimpleAsClause(SyntaxFactory.IdentifierName("Exception")),
+                SyntaxFactory.SimpleAsClause(SyntaxFactory.IdentifierName(NameOf(Exception))),
                 Nothing)).
                 WithStatements(catchStatement.Statements).
                 WithLeadingTrivia(catchStatement.GetLeadingTrivia).

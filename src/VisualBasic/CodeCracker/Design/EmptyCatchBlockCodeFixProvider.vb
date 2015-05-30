@@ -46,7 +46,7 @@ Namespace Design
 
             Dim catchStatement = SyntaxFactory.CatchStatement(
             SyntaxFactory.IdentifierName("ex"),
-            SyntaxFactory.SimpleAsClause(SyntaxFactory.IdentifierName("Exception")),
+            SyntaxFactory.SimpleAsClause(SyntaxFactory.IdentifierName(NameOf(Exception))),
             Nothing)
 
             Dim catchClause = SyntaxFactory.CatchBlock(catchStatement, statements).
