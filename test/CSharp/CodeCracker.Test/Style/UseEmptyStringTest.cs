@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
-
-using CodeCracker.CSharp.Style;
-
+﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
-
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Style
@@ -135,7 +132,7 @@ namespace CodeCracker.Test.CSharp.Style
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
-        
+
 
         [Fact]
         public async Task FixChangeMethodToStringEmpty()
