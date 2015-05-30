@@ -84,6 +84,19 @@ namespace CodeCracker
                 .OfType<TypeDeclarationSyntax>();
         }
 
+        public static SyntaxNode GetAncestor(this SyntaxToken token, Func<SyntaxNode, bool> predicate)
+        {
+            return token.GetAncestor<SyntaxNode>(predicate);
+        }
+
+        public static T GetAncestor<T>(this SyntaxToken token, Func<T, bool> predicate = null)
+            where T : SyntaxNode
+        {
+            return token.Parent != null
+                ? token.Parent.FirstAncestorOrSelf(predicate)
+                : default(T);
+        }
+
         public static bool IsKind(this SyntaxToken token, params SyntaxKind[] kinds)
         {
             foreach (var kind in kinds)
