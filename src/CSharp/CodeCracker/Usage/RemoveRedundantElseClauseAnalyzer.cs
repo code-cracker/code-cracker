@@ -33,7 +33,10 @@ namespace CodeCracker.CSharp.Usage
             if (context.IsGenerated()) return;
             var @else = (ElseClauseSyntax)context.Node;
             if (((@else.Parent as IfStatementSyntax)?.Statement as BlockSyntax)?.Statements.Count == 0) return;
-            if ((@else.Statement as BlockSyntax)?.Statements.Count > 0) return;
+            if (@else.Statement == null) return;
+            var elseBlock = @else.Statement as BlockSyntax;
+            if (elseBlock == null) return;
+            if (elseBlock.Statements.Count > 0) return;
             var diagnostic = Diagnostic.Create(Rule, @else.GetLocation(), MessageFormat);
             context.ReportDiagnostic(diagnostic);
         }
