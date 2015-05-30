@@ -19,6 +19,7 @@
         TernaryOperator_Assignment = 14,
         UnnecessaryParenthesis = 15,
         CopyEventToVariableBeforeFire = 16,
+        SwitchToAutoProp = 17,
         ExistenceOperator = 18,
         ConvertToSwitch = 19,
         ConvertLambdaExpressionToMethodGroup = 20,

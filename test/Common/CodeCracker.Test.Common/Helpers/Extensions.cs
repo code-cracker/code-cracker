@@ -2,6 +2,20 @@
 {
     public static class Extensions
     {
+        public static string WrapInCSharpClass(this string code, string typeName = "TypeName")
+        {
+            return $@"
+    using System;
+
+    namespace ConsoleApplication1
+    {{
+        class {typeName}
+        {{
+            {code}
+        }}
+    }}";
+        }
+
         public static string WrapInCSharpMethod(this string code, bool isAsync = false, string typeName = "TypeName")
         {
             return $@"

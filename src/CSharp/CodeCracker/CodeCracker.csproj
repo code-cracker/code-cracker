@@ -71,6 +71,8 @@
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupFixProvider.cs" />
     <Compile Include="Style\RemoveAsyncFromMethodAnalyzer.cs" />
     <Compile Include="Style\RemoveAsyncFromMethodCodeFixProvider.cs" />
+    <Compile Include="Style\SwitchToAutoPropCodeFixProvider.cs" />
+    <Compile Include="Style\SwitchToAutoPropAnalyzer.cs" />
     <Compile Include="Style\TaskNameAsyncCodeFixProvider.cs" />
     <Compile Include="Style\TaskNameAsyncAnalyzer.cs" />
     <Compile Include="Style\PropertyPrivateSetAnalyzer.cs" />
