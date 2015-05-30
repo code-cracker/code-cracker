@@ -60,6 +60,47 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async Task IgnoreSingleStatementElse()
+        {
+            var test = @"
+            if (System.DateTime.Now.Second > 5)
+            {
+                var a = 2;
+                a++;
+            }
+            else
+                System.Diagnostics.Debug.WriteLine("""");".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task IgnoreElseIf()
+        {
+            if (System.DateTime.Now.Second > 5)
+            {
+                var a = 2;
+                a++;
+            }
+            else if (System.DateTime.Now.Second > 10)
+            {
+                var b = 3;
+                b++;
+            }
+            var test = @"
+            if (System.DateTime.Now.Second > 5)
+            {
+                var a = 2;
+                a++;
+            }
+            else if (System.DateTime.Now.Second > 10)
+            {
+                var b = 3;
+                b++;
+            }".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async Task IgnoreWhenThereIsNoSignificantCodeInsideIfBlock()
         {
             var test = @"
@@ -85,6 +126,22 @@ namespace CodeCracker.Test.CSharp.Usage
                 Message = "Remove redundant else",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 41) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task CreateDiagnosticsWhenEmptyElseWithoutBlockOnIf()
+        {
+            var test = @"if(1 == 2) return 1; else { }".WrapInCSharpMethod();
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.RemoveRedundantElseClause.ToDiagnosticId(),
+                Message = "Remove redundant else",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 38) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
