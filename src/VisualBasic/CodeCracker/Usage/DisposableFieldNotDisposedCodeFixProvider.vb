@@ -44,7 +44,7 @@ Namespace Usage
         End Function
 
         Private Shared Function AddIDisposableImplementationToType(type As ClassBlockSyntax, typeSymbol As INamedTypeSymbol) As ClassBlockSyntax
-            Dim iDisposableInterface = typeSymbol.AllInterfaces.FirstOrDefault(Function(i) i.ToString.EndsWith("IDisposable"))
+            Dim iDisposableInterface = typeSymbol.AllInterfaces.FirstOrDefault(Function(i) i.ToString.EndsWith(NameOf(IDisposable)))
             If iDisposableInterface IsNot Nothing Then Return type
             Dim implementIdisposable = SyntaxFactory.ImplementsStatement(SyntaxFactory.ParseName("System.IDisposable")).
                 WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed).
@@ -69,7 +69,7 @@ Namespace Usage
             If disposableMethod Is Nothing Then
                 Dim disposeMethod = SyntaxFactory.SubBlock(SyntaxFactory.SubStatement("Dispose").
                     WithParameterList(SyntaxFactory.ParameterList()).
-                    WithImplementsClause(SyntaxFactory.ImplementsClause(SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName("IDisposable"), SyntaxFactory.IdentifierName("Dispose")))).
+                    WithImplementsClause(SyntaxFactory.ImplementsClause(SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName(NameOf(IDisposable)), SyntaxFactory.IdentifierName("Dispose")))).
                     WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword))),
                     New SyntaxList(Of StatementSyntax)().Add(disposeStatment)).
                     WithAdditionalAnnotations(Formatter.Annotation)
@@ -87,7 +87,7 @@ Namespace Usage
                     If disposeStatement.ImplementsClause Is Nothing Then
                         disposeStatement = disposeStatement.
                         WithoutTrailingTrivia().
-                        WithImplementsClause(SyntaxFactory.ImplementsClause(SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName("IDisposable"), SyntaxFactory.IdentifierName("Dispose")))).
+                        WithImplementsClause(SyntaxFactory.ImplementsClause(SyntaxFactory.QualifiedName(SyntaxFactory.IdentifierName(NameOf(IDisposable)), SyntaxFactory.IdentifierName("Dispose")))).
                         NormalizeWhitespace(" ").
                         WithTrailingTrivia(disposeStatementTrailingTrivia).
                         WithAdditionalAnnotations(Formatter.Annotation)

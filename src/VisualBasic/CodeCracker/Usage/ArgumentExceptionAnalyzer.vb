@@ -38,7 +38,7 @@ It can be either specified directly or using nameof() (VB 14 and above only)."
             Dim objectCreationExpression = DirectCast(context.Node, ObjectCreationExpressionSyntax)
             Dim type = TryCast(objectCreationExpression.Type, IdentifierNameSyntax)
             If type Is Nothing Then Exit Sub
-            If Not type.Identifier.ValueText.EndsWith("ArgumentException", StringComparison.OrdinalIgnoreCase) Then Exit Sub
+            If Not type.Identifier.ValueText.EndsWith(NameOf(ArgumentException), StringComparison.OrdinalIgnoreCase) Then Exit Sub
 
             Dim argumentList = objectCreationExpression.ArgumentList
             If If(argumentList?.Arguments.Count, 0) < 2 Then Exit Sub

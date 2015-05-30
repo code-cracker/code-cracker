@@ -57,7 +57,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
                     If invocation IsNot Nothing Then
                         Dim method = TryCast(invocation.Expression, MemberAccessExpressionSyntax)
                         If method IsNot Nothing Then
-                            If DirectCast(method.Expression, IdentifierNameSyntax).Identifier.ToString = "GC" AndAlso method.Name.ToString() = "SuppressFinalize" Then
+                            If DirectCast(method.Expression, IdentifierNameSyntax).Identifier.ToString = NameOf(GC) AndAlso method.Name.ToString() = "SuppressFinalize" Then
                                 Exit Sub
                             End If
                         End If
@@ -74,7 +74,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         End Function
 
         Private Shared Function ContainsUserDefinedFinalizer(symbol As INamedTypeSymbol) As Boolean
-            Return symbol.GetMembers().Any(Function(x) x.ToString().Contains("Finalize"))
+            Return symbol.GetMembers().Any(Function(x) x.ToString().Contains(NameOf(Finalize)))
         End Function
 
         Private Shared Function ContainsNonPrivateConstructors(symbol As INamedTypeSymbol) As Boolean

@@ -29,13 +29,13 @@ Namespace Usage
 
         Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
             If context.IsGenerated() Then Return
-            Dim mainConstrutor = New MethodInformation("Uri",
+            Dim mainConstrutor = New MethodInformation(NameOf(Uri),
                                                        "Public Overloads Sub New(uriString As String)",
                                                        Sub(args)
                                                            If args(0) Is Nothing Then Return
                                                            Dim a = New Uri(args(0).ToString())
                                                        End Sub)
-            Dim constructorWithUriKind = New MethodInformation("Uri",
+            Dim constructorWithUriKind = New MethodInformation(NameOf(Uri),
                                                                "Public Overloads Sub New(uriString As String, uriKind As System.UriKind)",
                                                                Sub(args)
                                                                    If args(0) Is Nothing Then Return

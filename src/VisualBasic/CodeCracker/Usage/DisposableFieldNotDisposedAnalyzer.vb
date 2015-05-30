@@ -47,7 +47,7 @@ Namespace Usage
         Private Sub AnalyzeField(context As SymbolAnalysisContext)
             If (context.IsGenerated()) Then Return
             Dim fieldSymbol = DirectCast(context.Symbol, IFieldSymbol)
-            If Not fieldSymbol.Type.AllInterfaces.Any(Function(i) i.ToString().EndsWith("IDisposable")) AndAlso Not fieldSymbol.Type.ToString().EndsWith("IDisposable") Then Exit Sub
+            If Not fieldSymbol.Type.AllInterfaces.Any(Function(i) i.ToString().EndsWith(NameOf(IDisposable))) AndAlso Not fieldSymbol.Type.ToString().EndsWith(NameOf(IDisposable)) Then Exit Sub
             Dim fieldSyntaxRef = fieldSymbol.DeclaringSyntaxReferences.FirstOrDefault
             If fieldSyntaxRef Is Nothing Then Exit Sub
             Dim variableDeclarator = TryCast(fieldSyntaxRef.GetSyntax().Parent, VariableDeclaratorSyntax)
@@ -64,7 +64,7 @@ Namespace Usage
 
         Private Function ContainingTypeImplementsIDisposableAndCallsItOnTheField(context As SymbolAnalysisContext, fieldSymbol As IFieldSymbol, typeSymbol As INamedTypeSymbol) As Boolean
             If typeSymbol Is Nothing Then Return False
-            Dim disposableInterface = typeSymbol.AllInterfaces.FirstOrDefault(Function(i) i.ToString().EndsWith("IDisposable"))
+            Dim disposableInterface = typeSymbol.AllInterfaces.FirstOrDefault(Function(i) i.ToString().EndsWith(NameOf(IDisposable)))
             If disposableInterface Is Nothing Then Return False
 
             Dim disposableMethod = disposableInterface.GetMembers("Dispose").OfType(Of IMethodSymbol).FirstOrDefault(Function(d) d.Arity = 0)
