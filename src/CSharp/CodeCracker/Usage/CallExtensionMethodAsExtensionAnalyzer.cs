@@ -26,10 +26,6 @@ namespace CodeCracker.CSharp.Usage
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.CallExtensionMethodAsExtension));
 
-#pragma warning disable RS1008//todo: how to solve this without storing compilation?
-        private Compilation compilation;
-#pragma warning restore RS1008
-
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context) =>
@@ -37,13 +33,13 @@ namespace CodeCracker.CSharp.Usage
 
         private void AnalyzeCompilation(CompilationStartAnalysisContext compilationContext)
         {
-            compilation = compilationContext.Compilation;
-            compilationContext.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
+            var compilation = compilationContext.Compilation;
+            compilationContext.RegisterSyntaxNodeAction(context => AnalyzeInvocation(context, compilation), SyntaxKind.InvocationExpression);
         }
 
         private static readonly SyntaxAnnotation introduceExtensionMethodAnnotation = new SyntaxAnnotation("CallExtensionMethodAsExtensionAnalyzerIntroduceExtensionMethod");
 
-        private void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
+        private void AnalyzeInvocation(SyntaxNodeAnalysisContext context, Compilation compilation)
         {
             if (context.IsGenerated()) return;
             var methodInvokeSyntax = context.Node as InvocationExpressionSyntax;
@@ -56,11 +52,11 @@ namespace CodeCracker.CSharp.Usage
             var methodSymbol = GetCallerMethodSymbol(context.SemanticModel, methodCaller.Name, argumentsCount);
             if (methodSymbol == null || !methodSymbol.IsExtensionMethod) return;
             if (ContainsDynamicArgument(context.SemanticModel, childNodes)) return;
-            if (IsSelectingADifferentMethod(childNodes, methodCaller.Name, context.Node.SyntaxTree, methodSymbol, methodInvokeSyntax.FirstAncestorOrSelfThatIsAStatement())) return;
+            if (IsSelectingADifferentMethod(childNodes, methodCaller.Name, context.Node.SyntaxTree, methodSymbol, methodInvokeSyntax.FirstAncestorOrSelfThatIsAStatement(), compilation)) return;
             context.ReportDiagnostic(Diagnostic.Create(Rule, methodCaller.GetLocation(), methodSymbol.Name, classSymbol.Name));
         }
 
-        private bool IsSelectingADifferentMethod(IEnumerable<SyntaxNode> childNodes, SimpleNameSyntax methodName, SyntaxTree tree, IMethodSymbol methodSymbol, StatementSyntax invocationStatement)
+        private bool IsSelectingADifferentMethod(IEnumerable<SyntaxNode> childNodes, SimpleNameSyntax methodName, SyntaxTree tree, IMethodSymbol methodSymbol, StatementSyntax invocationStatement, Compilation compilation)
         {
             var parameterExpressions = CallExtensionMethodAsExtensionCodeFixProvider.GetParameterExpressions(childNodes);
             var firstArgument = parameterExpressions.FirstOrDefault();
