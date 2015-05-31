@@ -1,5 +1,4 @@
-﻿#pragma warning disable CC0022 //todo: remove this pragma as soon as CC0022 is fixed (issue #319)
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp
@@ -18,4 +17,3 @@ namespace CodeCracker.Test.CSharp
         }
     }
 }
-#pragma warning restore CC0022

@@ -41,7 +41,7 @@ namespace CodeCracker.CSharp.Style
         {
             if (context.IsGenerated()) return;
             var property = (PropertyDeclarationSyntax)context.Node;
-            if (property.AccessorList.Accessors.Count != 2) return;
+            if (property.AccessorList?.Accessors.Count != 2) return;
             if (property.AccessorList.Accessors.Any(a => a.Body == null)) return;
             if (property.AccessorList.Accessors.Any(a => a.Body.Statements.Count != 1)) return;
             if (property.AccessorList.Accessors.Any(a => a.Body.Statements.Count != 1)) return;

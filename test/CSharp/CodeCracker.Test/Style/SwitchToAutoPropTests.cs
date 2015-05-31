@@ -267,13 +267,6 @@ namespace ConsoleApplication1
             await VerifyCSharpHasNoDiagnosticsAsync(source, LanguageVersion.CSharp5);
         }
 
-        private int id;
-        public int Id
-        {
-            get { return id; }
-            set { id = value; }
-        }//comment 1
-
         [Fact]
         public async Task SimplePropertyCreatesDiagnostic()
         {
@@ -288,7 +281,7 @@ namespace ConsoleApplication1
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.SwitchToAutoProp.ToDiagnosticId(),
-                Message = string.Format(SwitchToAutoPropAnalyzer.MessageFormat, nameof(Id)),
+                Message = string.Format(SwitchToAutoPropAnalyzer.MessageFormat, "Id"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 9) }
             };
