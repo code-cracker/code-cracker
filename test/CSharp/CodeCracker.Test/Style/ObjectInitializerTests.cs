@@ -293,6 +293,38 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task WhenInitializerHasAConditionalExpressionDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    class Person
+    {
+        public string Name { get; set; }
+        public void Bar()
+        {
+            var p = System.DateTime.Now.Second > 2 ? null : new Person();
+            p.Name = ""Giovanni"";
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WhenInitializerHasANullCoalesceDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    class Person
+    {
+        public string Name { get; set; }
+        public void Bar()
+        {
+            var p = null ?? new Person();
+            p.Name = ""Giovanni"";
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 
     public class ObjectInitializerWithAssignmentTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
