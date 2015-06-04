@@ -43,36 +43,34 @@ namespace CodeCracker.CSharp.Style
 
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterSyntaxNodeAction(AnalyzerLocalDeclaration, SyntaxKind.LocalDeclarationStatement);
-            context.RegisterSyntaxNodeAction(AnalyzerAssignment, SyntaxKind.ExpressionStatement);
+            context.RegisterSyntaxNodeAction(AnalyzeLocalDeclaration, SyntaxKind.LocalDeclarationStatement);
+            context.RegisterSyntaxNodeAction(AnalyzeAssignment, SyntaxKind.ExpressionStatement);
         }
 
-        private void AnalyzerAssignment(SyntaxNodeAnalysisContext context)
+        private void AnalyzeAssignment(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var semanticModel = context.SemanticModel;
             var expressionStatement = context.Node as ExpressionStatementSyntax;
-            if (!expressionStatement?.Expression?.IsKind(SyntaxKind.SimpleAssignmentExpression) ?? false) return;
+            if (expressionStatement?.Expression?.IsNotKind(SyntaxKind.SimpleAssignmentExpression) ?? true) return;
             var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
+            if (assignmentExpression.Right.IsNotKind(SyntaxKind.ObjectCreationExpression)) return;
             var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
-            if (!assignmentExpression.Right.IsKind(SyntaxKind.ObjectCreationExpression)) return;
             var assignmentExpressions = FindAssignmentExpressions(semanticModel, expressionStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
-
             var diagnostic = Diagnostic.Create(RuleAssignment, expressionStatement.GetLocation(), "You can use initializers in here.");
             context.ReportDiagnostic(diagnostic);
         }
 
-        private void AnalyzerLocalDeclaration(SyntaxNodeAnalysisContext context)
+        private void AnalyzeLocalDeclaration(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var semanticModel = context.SemanticModel;
             var localDeclarationStatement = context.Node as LocalDeclarationStatementSyntax;
             if (localDeclarationStatement == null) return;
-            var objectCreationExpressions = localDeclarationStatement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().ToList();
-            if (objectCreationExpressions.Count != 1) return;
-            if (localDeclarationStatement.Declaration.Variables.Count > 1) return;
+            if (localDeclarationStatement.Declaration?.Variables.Count != 1) return;
             var variable = localDeclarationStatement.Declaration.Variables.Single();
+            if ((variable.Initializer as EqualsValueClauseSyntax)?.Value.IsNotKind(SyntaxKind.ObjectCreationExpression) ?? true) return;
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
             var assignmentExpressionStatements = FindAssignmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
             if (!assignmentExpressionStatements.Any()) return;
