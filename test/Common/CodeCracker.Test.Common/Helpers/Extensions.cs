@@ -16,10 +16,10 @@
     }}";
         }
 
-        public static string WrapInCSharpMethod(this string code, bool isAsync = false, string typeName = "TypeName")
+        public static string WrapInCSharpMethod(this string code, bool isAsync = false, string typeName = "TypeName", string usings = "")
         {
             return $@"
-    using System;
+    using System;{usings}
 
     namespace ConsoleApplication1
     {{
