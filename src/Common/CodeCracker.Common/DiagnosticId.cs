@@ -19,6 +19,7 @@
         TernaryOperator_Assignment = 14,
         UnnecessaryParenthesis = 15,
         CopyEventToVariableBeforeFire = 16,
+        SwitchToAutoProp = 17,
         ExistenceOperator = 18,
         ConvertToSwitch = 19,
         ConvertLambdaExpressionToMethodGroup = 20,
@@ -39,6 +40,7 @@
         ConvertToExpressionBodiedMember = 38,
         StringBuilderInLoop = 39,
         InvertFor = 42,
+        ChangeAnyToAll = 43,
         ParameterRefactory = 44,
         StringRepresentation_RegularString = 45,
         StringRepresentation_VerbatimString = 46,
@@ -69,6 +71,8 @@
         UseStaticRegexIsMatch = 81,
         ComputeExpression = 82,
         UseStringEmpty = 84,
-        UseEmptyString = 88
+        UseEmptyString = 88,
+        RemoveRedundantElseClause = 89,
+        ChangeAllToAny = 92,
     }
 }
