@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Design\InconsistentAccessibilityCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchAnalyzer.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
