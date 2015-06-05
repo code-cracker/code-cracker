@@ -123,5 +123,7 @@ namespace CodeCracker
                 if (Microsoft.CodeAnalysis.CSharpExtensions.IsKind(nodeOrToken, kind)) return true;
             return false;
         }
+
+        public static bool IsNotKind(this SyntaxNode node, params SyntaxKind[] kinds) => !node.IsKind(kinds);
     }
 }
