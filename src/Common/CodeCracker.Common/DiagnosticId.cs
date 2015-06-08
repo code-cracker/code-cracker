@@ -40,6 +40,7 @@
         ConvertToExpressionBodiedMember = 38,
         StringBuilderInLoop = 39,
         InvertFor = 42,
+        ChangeAnyToAll = 43,
         ParameterRefactory = 44,
         StringRepresentation_RegularString = 45,
         StringRepresentation_VerbatimString = 46,
@@ -71,6 +72,7 @@
         ComputeExpression = 82,
         UseStringEmpty = 84,
         UseEmptyString = 88,
-        RemoveRedundantElseClause = 89
+        RemoveRedundantElseClause = 89,
+        ChangeAllToAny = 92,
     }
 }

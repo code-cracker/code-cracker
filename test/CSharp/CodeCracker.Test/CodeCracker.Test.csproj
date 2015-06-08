@@ -142,6 +142,7 @@
     <Compile Include="Refactoring\AddBracesToSwitchSectionsTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.cs" />
+    <Compile Include="Refactoring\ChangeAnyToAllTests.cs" />
     <Compile Include="Refactoring\MergeNestedIfTest.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorTest.cs" />
     <Compile Include="Refactoring\ComputeExpressionTests.cs" />
