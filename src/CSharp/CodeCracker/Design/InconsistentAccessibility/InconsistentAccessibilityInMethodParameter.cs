@@ -11,25 +11,25 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
     public sealed class InconsistentAccessibilityInMethodParameter : InconsistentAccessibilityInfoProvider
     {
-        public InconsistentAccessibilityInfo GetInconsistentAccessibilityInfo(SyntaxNode syntaxRoot, Diagnostic diagnostic)
+        public async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var result = new InconsistentAccessibilityInfo();
-
+            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var methodThatRaisedError = syntaxRoot.FindNode(diagnostic.Location.SourceSpan).DescendantNodesAndSelf().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
             if (methodThatRaisedError != null)
             {
                 var parameterTypeFromMessage = ExtractParameterTypeFromErrorMessage(diagnostic.ToString());
 
-                var parameterTypeName = parameterTypeFromMessage;
-                var parameterTypeDotIndex = parameterTypeName.LastIndexOf('.');
+                var parameterTypeLastIdentifier = parameterTypeFromMessage;
+                var parameterTypeDotIndex = parameterTypeLastIdentifier.LastIndexOf('.');
                 if (parameterTypeDotIndex > 0)
                 {
-                    parameterTypeName = parameterTypeName.Substring(parameterTypeDotIndex + 1);
+                    parameterTypeLastIdentifier = parameterTypeLastIdentifier.Substring(parameterTypeDotIndex + 1);
                 }
 
+                result.TypeToChangeAccessibility = FindTypeSyntaxFromParametersList(methodThatRaisedError.ParameterList.Parameters, parameterTypeLastIdentifier);
                 result.CodeActionMessage = $"Change parameter type '{parameterTypeFromMessage}' accessibility to be as accessible as method '{GetMethodIdentifierValueText(methodThatRaisedError)}'";
                 result.NewAccessibilityModifiers = CreateAccessibilityModifiersFromMethod(methodThatRaisedError);
-                result.InconsistentAccessibilityTypeName = parameterTypeName;
             }
 
             return result;
@@ -42,6 +42,49 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             var parameterTypeNameStart = compilerErrorMessage.IndexOf(InconsistentAccessibilityCodeFixProvider.InconsistentAccessibilityInMethodParameterCompilerErrorNumber, StringComparison.Ordinal) + parameterTypeStartShift;
             var parameterTypeNameLength = compilerErrorMessage.IndexOf('\'', parameterTypeNameStart) - parameterTypeNameStart;
             return compilerErrorMessage.Substring(parameterTypeNameStart, parameterTypeNameLength);
+        }
+
+        private static TypeSyntax FindTypeSyntaxFromParametersList(SeparatedSyntaxList<ParameterSyntax> parameterList, string typeName)
+        {
+            TypeSyntax result = null;
+            foreach(var parameter in parameterList)
+            {
+                var valueText = GetLastIdentifierValueText(parameter.Type);
+
+                if (!string.IsNullOrEmpty(valueText))
+                {
+                    if (string.Equals(valueText, typeName, StringComparison.Ordinal))
+                    {
+                        result = parameter.Type;
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static string GetLastIdentifierValueText(CSharpSyntaxNode node)
+        {
+            var result = string.Empty;
+            switch (node.Kind())
+            {
+                case SyntaxKind.IdentifierName:
+                    result = ((IdentifierNameSyntax)node).Identifier.ValueText;
+                    break;
+                case SyntaxKind.QualifiedName:
+                    result = GetLastIdentifierValueText(((QualifiedNameSyntax)node).Right);
+                    break;
+                case SyntaxKind.GenericName:
+                    var genericNameSyntax = ((GenericNameSyntax)node);
+                    result = $"{genericNameSyntax.Identifier.ValueText}{genericNameSyntax.TypeArgumentList.ToString()}";
+                    break;
+                case SyntaxKind.AliasQualifiedName:
+                    result = ((AliasQualifiedNameSyntax)node).Name.Identifier.ValueText;
+                    break;
+            }
+
+            return result;
         }
 
         private static string GetMethodIdentifierValueText(BaseMethodDeclarationSyntax method) => method.IsKind(SyntaxKind.MethodDeclaration) ? ((MethodDeclarationSyntax)method).Identifier.ValueText : ((ConstructorDeclarationSyntax)method).Identifier.ValueText;
