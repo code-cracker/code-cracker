@@ -6,6 +6,6 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
     public interface InconsistentAccessibilityInfoProvider
     {
-        InconsistentAccessibilityInfo GetInconsistentAccessibilityInfo(SyntaxNode syntaxRoot, Diagnostic diagnostic);
+        Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken);
     }
 }

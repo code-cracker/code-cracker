@@ -140,6 +140,34 @@ public class Dependent
         }
 
         [Fact]
+        public async Task ShouldChangeAccessibilityWhenAliasQualifiedNameIsUsedForParameterType()
+        {
+            const string sourceCode = @"
+public class Dependent
+{
+    public Dependent(global::DependendedUpon d)
+    {
+    }
+}
+internal class DependendedUpon
+{
+}";
+
+            const string fixedCode = @"
+public class Dependent
+{
+    public Dependent(global::DependendedUpon d)
+    {
+    }
+}
+public class DependendedUpon
+{
+}";
+
+            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task ShouldChangeAccessibilityWhenUsingDelegateAsParameter()
         {
             const string sourceCode = @"
@@ -207,6 +235,30 @@ public class Dependent
     }
 }
 public interface DependedUpon {}";
+
+            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task ShouldChangeAccessibilityWhenUsingGenericClassAsParameter()
+        {
+            const string sourceCode = @"
+public class Dependent
+{
+    public Dependent(DependedUpon<int> d)
+    {
+    }
+}
+class DependedUpon<T> {}";
+
+            const string fixedCode = @"
+public class Dependent
+{
+    public Dependent(DependedUpon<int> d)
+    {
+    }
+}
+public class DependedUpon<T> {}";
 
             await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
