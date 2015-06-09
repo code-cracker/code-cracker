@@ -1,21 +1,10 @@
-﻿using CodeCracker.CSharp.Design;
+﻿using CodeCracker.CSharp.Design.InconsistentAccessibility;
 using Microsoft.CodeAnalysis.CodeFixes;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Design
 {
-    public class Dependent
-    {
-        void SomeMethod(DependendedUpon d)
-        {
-        }
-
-        protected class DependendedUpon
-        {
-        }
-    }
-
     public class InconsistentAccessibilityTests : CodeFixVerifier
     {
         [Theory]
@@ -23,7 +12,7 @@ namespace CodeCracker.Test.CSharp.Design
         [InlineData("class","")]
         [InlineData("struct", "internal")]
         [InlineData("struct", "")]
-        public async Task ShouldChangeAccessibilityInConstructor(string type, string dependedUponModfifier)
+        public async Task ShouldChangeAccessibilityWhenErrorInConstructor(string type, string dependedUponModfifier)
         {
             var sourceCode = @"
 public " + type + @" Dependent
@@ -51,8 +40,8 @@ public class DependendedUpon
         }
 
         [Theory]
-        [InlineData("public", "", "public")]
-        [InlineData("public static", "internal", "public")]
+        [InlineData("public", "sealed", "public sealed")]
+        [InlineData("public static", "sealed internal", "sealed public")]
         [InlineData("public", "private", "public")]
         [InlineData("public", "protected", "public")]
         [InlineData("public", "/* a */ protected /* b */ internal /* c */", "/* a */ public /* b */  /* c */")]
@@ -65,7 +54,7 @@ public class DependendedUpon
         [InlineData("internal protected", "private", "protected internal")]
         [InlineData("internal", "protected", "internal")]
         [InlineData("internal", "private", "internal")]
-        public async Task ShouldChangeAccessibilityInMethod(string methodModifier, string dependedUponModifier, string fixedDependedUponModifier)
+        public async Task ShouldChangeAccessibilityWhenErrrorInMethod(string methodModifier, string dependedUponModifier, string fixedDependedUponModifier)
         {
             var sourceCode = @"
 public class Dependent
@@ -97,7 +86,7 @@ public class Dependent
         [Theory]
         [InlineData("public", "internal", "public")]
         [InlineData("public", "", "public")]
-        public async Task ShouldChangeAccessibilityInInterface(string interfaceAccessibilityModifier, string dependedUponModifier, string fixedDependedUponModifier)
+        public async Task ShouldChangeAccessibilityWhenErrorInInterface(string interfaceAccessibilityModifier, string dependedUponModifier, string fixedDependedUponModifier)
         {
             var sourceCode = @"
 " + interfaceAccessibilityModifier + @" interface Dependent
