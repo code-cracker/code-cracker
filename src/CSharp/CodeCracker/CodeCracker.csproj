@@ -39,6 +39,8 @@
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodParameter.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfoProvider.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodReturnType.cs" />
+    <Compile Include="Design\MakeMethodStaticAnalyzer.cs" />
+    <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchAnalyzer.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
