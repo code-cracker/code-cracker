@@ -25,28 +25,17 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
         {
             var diagnostic = context.Diagnostics.First();
 
-            var inconsistentAccessibilityProvider = GetInconsistentAccessibilityProvider(diagnostic);
+            var inconsistentAccessibilityInfo = await GetInconsistentAccessibilityInfoAsync(context.Document, diagnostic, context.CancellationToken).ConfigureAwait(false);
 
-            var info = await inconsistentAccessibilityProvider.GetInconsistentAccessibilityInfoAsync(context.Document, diagnostic, context.CancellationToken).ConfigureAwait(false);
+            var typeLocation = await FindTypeLocationInSourceCodeAsync(context.Document, inconsistentAccessibilityInfo.TypeToChangeAccessibility, context.CancellationToken).ConfigureAwait(false);
 
-            if(info.TypeToChangeAccessibility != null)
+            if(typeLocation != Location.None)
             {
-                var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-                var typeSymbol = semanticModel.GetSymbolInfo(info.TypeToChangeAccessibility, context.CancellationToken).Symbol;
-
-                if(typeSymbol != null)
-                {
-                    var document = context.Document.Project.Solution.GetDocument(typeSymbol.Locations[0].SourceTree);
-
-                    if(document != null)
-                    {
-                        context.RegisterCodeFix(CodeAction.Create(info.CodeActionMessage, c => ChangeTypeAccessibilityInDocument(document, info.NewAccessibilityModifiers, typeSymbol.Locations[0].SourceSpan, c)), diagnostic);
-                    }
-                }
+                context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocation, c)), diagnostic);
             }
         }
 
-        private static InconsistentAccessibilityInfoProvider GetInconsistentAccessibilityProvider(Diagnostic diagnostic)
+        private static async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             InconsistentAccessibilityInfoProvider inconsistentAccessibilityProvider = null;
 
@@ -57,15 +46,36 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
                     break;
             }
 
-            return inconsistentAccessibilityProvider;
+            return await inconsistentAccessibilityProvider.GetInconsistentAccessibilityInfoAsync(document, diagnostic, cancellationToken).ConfigureAwait(false);
         }
 
-        private static async Task<Document> ChangeTypeAccessibilityInDocument(Document document, SyntaxTokenList newAccessibilityModifiers, TextSpan typeLocation, CancellationToken cancellationToken)
+        private static async Task<Location> FindTypeLocationInSourceCodeAsync(Document document, TypeSyntax type, CancellationToken cancellationToken)
         {
+            var result = Location.None;
+
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+            var typeSymbol = semanticModel.GetSymbolInfo(type, cancellationToken).Symbol;
+
+            if(typeSymbol != null)
+            {
+                var locationInSource = typeSymbol.Locations.FirstOrDefault(location => location.IsInSource);
+                if(locationInSource != null)
+                {
+                    result = locationInSource;
+                }
+            }
+
+            return result;
+        }
+
+        private static async Task<Document> ChangeTypeAccessibilityAsync(Solution solution, SyntaxTokenList newAccessibilityModifiers, Location typeLocation, CancellationToken cancellationToken)
+        {
+            var document = solution.GetDocument(typeLocation.SourceTree);
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+
             var result = document;
 
-            var declaration = syntaxRoot.FindNode(typeLocation) as MemberDeclarationSyntax;
+            var declaration = syntaxRoot.FindNode(typeLocation.SourceSpan) as MemberDeclarationSyntax;
             if (declaration != null)
             {
                 var newDeclaration = declaration;
