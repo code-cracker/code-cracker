@@ -22,21 +22,20 @@ namespace CodeCracker.CSharp.Design
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var sourceSpan = diagnostic.Location.SourceSpan;
-            var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-
             context.RegisterCodeFix(
-                CodeAction.Create("Copy event reference to a variable", ct => CreateVariableAsync(context.Document, invocation, ct)), diagnostic);
+                CodeAction.Create("Copy event reference to a variable", ct => CreateVariableAsync(context.Document, diagnostic, ct)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> CreateVariableAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
+        private async Task<Document> CreateVariableAsync(Document document, Diagnostic diagnostic, CancellationToken ct)
         {
+            var root = await document.GetSyntaxRootAsync(ct).ConfigureAwait(false);
+            var sourceSpan = diagnostic.Location.SourceSpan;
+            var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
             const string handlerName = "handler";
-
             var variable =
                     SyntaxFactory.LocalDeclarationStatement(
                         SyntaxFactory.VariableDeclaration(
@@ -50,7 +49,6 @@ namespace CodeCracker.CSharp.Design
                                         SyntaxFactory.EqualsValueClause(invocation.Expression.WithoutLeadingTrivia().WithoutTrailingTrivia()))
                                 })))
                     .WithLeadingTrivia(invocation.Parent.GetLeadingTrivia());
-
             var newInvocation =
                     SyntaxFactory.IfStatement(
                         SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression,
@@ -61,15 +59,10 @@ namespace CodeCracker.CSharp.Design
                                 SyntaxFactory.IdentifierName(handlerName),
                                 invocation.ArgumentList)))
                     .WithTrailingTrivia(invocation.Parent.GetTrailingTrivia());
-
-            var root = await document.GetSyntaxRootAsync(ct);
-
             var oldNode = invocation.Parent;
             var newNode = invocation.Parent.WithAdditionalAnnotations(new SyntaxAnnotation(SyntaxAnnotatinKind));
-
             if (oldNode.Parent.IsEmbeddedStatementOwner())
                 newNode = SyntaxFactory.Block((StatementSyntax)newNode);
-
             var newRoot = root.ReplaceNode(oldNode, newNode);
             newRoot = newRoot.InsertNodesAfter(GetMark(newRoot), new SyntaxNode[] { variable, newInvocation });
             newRoot = newRoot.RemoveNode(GetMark(newRoot), SyntaxRemoveOptions.KeepNoTrivia);

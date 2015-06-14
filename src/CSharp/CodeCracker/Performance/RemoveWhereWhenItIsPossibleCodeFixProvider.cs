@@ -19,20 +19,21 @@ namespace CodeCracker.CSharp.Performance
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
+            var name = diagnostic.Properties["methodName"];
+            var message = $"Remove 'Where' moving predicate to '{name}'";
+            context.RegisterCodeFix(CodeAction.Create(message, c => RemoveWhereAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
+        }
+
+        private async Task<Document> RemoveWhereAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var whereInvoke = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
             var nextMethodInvoke = whereInvoke.Parent.FirstAncestorOrSelf<InvocationExpressionSyntax>();
-            var message = "Remove 'Where' moving predicate to '" + RemoveWhereWhenItIsPossibleAnalyzer.GetNameOfTheInvokedMethod(nextMethodInvoke) + "'";
-            context.RegisterCodeFix(CodeAction.Create(message, c => RemoveWhereAsync(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic);
-        }
-
-        private async Task<Document> RemoveWhereAsync(Document document, InvocationExpressionSyntax whereInvoke, InvocationExpressionSyntax nextMethodInvoke, CancellationToken cancellationToken)
-        {
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var whereMemberAccess = whereInvoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             var nextMethodMemberAccess = nextMethodInvoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             var newNextMethodInvoke = SyntaxFactory.InvocationExpression(

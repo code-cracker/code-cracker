@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -54,8 +55,8 @@ namespace CodeCracker.CSharp.Performance
             if (!supportedMethods.Contains(candidate)) return;
 
             if (nextMethodInvoke.ArgumentList.Arguments.Any()) return;
-
-            var diagnostic = Diagnostic.Create(Rule, GetNameExpressionOfTheInvokedMethod(whereInvoke).GetLocation(), candidate);
+            var properties = new Dictionary<string, string> { { "methodName", candidate } }.ToImmutableDictionary();
+            var diagnostic = Diagnostic.Create(Rule, GetNameExpressionOfTheInvokedMethod(whereInvoke).GetLocation(), properties, candidate);
             context.ReportDiagnostic(diagnostic);
         }
 
