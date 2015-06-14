@@ -20,20 +20,20 @@ namespace CodeCracker.CSharp.Performance
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var sourceSpan = diagnostic.Location.SourceSpan;
-            var type = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
-
-            context.RegisterCodeFix(CodeAction.Create("Mark as sealed", ct => MarkClassAsSealedAsync(context.Document, type, ct)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Mark as sealed", ct => MarkClassAsSealedAsync(context.Document, diagnostic, ct)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> MarkClassAsSealedAsync(Document document, ClassDeclarationSyntax type, CancellationToken ct)
+        private async Task<Document> MarkClassAsSealedAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var sourceSpan = diagnostic.Location.SourceSpan;
+            var type = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
             return document
-                .WithSyntaxRoot((await document.GetSyntaxRootAsync(ct))
+                .WithSyntaxRoot(root
                 .ReplaceNode(
                     type,
                     type

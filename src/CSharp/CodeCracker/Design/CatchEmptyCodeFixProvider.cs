@@ -20,17 +20,18 @@ namespace CodeCracker.CSharp.Design
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create("Add an Exception class", c => MakeCatchEmptyAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Add an Exception class", c => MakeCatchEmptyAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> MakeCatchEmptyAsync(Document document, CatchClauseSyntax catchStatement, CancellationToken cancellationToken)
+        private async Task<Document> MakeCatchEmptyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var catchStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
             var newCatch = SyntaxFactory.CatchClause().WithDeclaration(
@@ -40,7 +41,6 @@ namespace CodeCracker.CSharp.Design
                 .WithLeadingTrivia(catchStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(catchStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(catchStatement, newCatch);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
