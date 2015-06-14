@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -44,8 +45,9 @@ namespace CodeCracker.CSharp.Refactoring
                 var parSymbol = context.SemanticModel.GetDeclaredSymbol(par);
                 if(!analysis.ReadInside.Any(s => s.Equals(parSymbol)))
                 {
-                    var errorMessage = par.Identifier.Text;
-                    var diag = Diagnostic.Create(Rule, par.GetLocation(), errorMessage);
+                    var parameterName = par.Identifier.Text;
+                    var properties = new Dictionary<string, string> { { nameof(parameterName), parameterName } }.ToImmutableDictionary();
+                    var diag = Diagnostic.Create(Rule, par.GetLocation(), properties, parameterName);
                     context.ReportDiagnostic(diag);
                 }
             }

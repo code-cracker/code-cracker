@@ -20,17 +20,18 @@ namespace CodeCracker.CSharp.Refactoring
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var @for = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ForStatementSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create("Invert For Loop.", c => InvertForAsync(context.Document, @for, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Invert For Loop.", c => InvertForAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> InvertForAsync(Document document, ForStatementSyntax @for, CancellationToken cancellationToken)
+        private async Task<Document> InvertForAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var @for = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ForStatementSyntax>().First();
             if (InvertForAnalyzer.IsPostIncrement(@for.Incrementors[0]))
                 return await ConvertToDecrementingCounterForLoopAsync(document, @for, cancellationToken);
             return await ConvertToIncrementingCounterForLoopAsync(document, @for, cancellationToken);
