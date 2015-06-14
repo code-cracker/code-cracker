@@ -37,7 +37,8 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             return result;
         }
 
-        private static string ExtractParameterTypeFromDiagnosticMessage(Diagnostic diagnostic) => Regex.Match(diagnostic.GetMessage(CultureInfo.InvariantCulture), diagnostic.Descriptor.MessageFormat.ToString(CultureInfo.InvariantCulture).Replace("{0}", "(.*)").Replace("{1}", "(.*)")).Groups[1].Value;
+        private static string ExtractParameterTypeFromDiagnosticMessage(Diagnostic diagnostic) =>
+            Regex.Match(diagnostic.GetMessage(CultureInfo.InvariantCulture), "Inconsistent accessibility: parameter type '(.*)' is less accessible than method '(.*)'").Groups[1].Value;
 
         private static TypeSyntax FindTypeSyntaxFromParametersList(SeparatedSyntaxList<ParameterSyntax> parameterList, string typeName)
         {
