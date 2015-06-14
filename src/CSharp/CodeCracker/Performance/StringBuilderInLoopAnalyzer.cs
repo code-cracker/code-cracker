@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace CodeCracker.CSharp.Usage
@@ -64,7 +65,9 @@ namespace CodeCracker.CSharp.Usage
                 if (!symbolForAssignment.Equals(symbolOnIdentifierOnConcatExpression)) return;
             }
             else if (!assignmentExpression.IsKind(SyntaxKind.AddAssignmentExpression)) return;
-            var diagnostic = Diagnostic.Create(Rule, assignmentExpression.GetLocation(), assignmentExpression.Left.ToString());
+            var assignmentExpressionLeft = assignmentExpression.Left.ToString();
+            var properties = new Dictionary<string, string> { { nameof(assignmentExpressionLeft), assignmentExpressionLeft } }.ToImmutableDictionary();
+            var diagnostic = Diagnostic.Create(Rule, assignmentExpression.GetLocation(), properties, assignmentExpressionLeft);
             context.ReportDiagnostic(diagnostic);
         }
     }

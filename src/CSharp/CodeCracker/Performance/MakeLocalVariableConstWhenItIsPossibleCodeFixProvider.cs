@@ -21,18 +21,19 @@ namespace CodeCracker.CSharp.Performance
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
             const string message = "Make constant";
-            context.RegisterCodeFix(CodeAction.Create(message, c => MakeConstantAsync(context.Document, localDeclaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(message, c => MakeConstantAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> MakeConstantAsync(Document document, LocalDeclarationStatementSyntax localDeclaration, CancellationToken cancellationToken)
+        private async Task<Document> MakeConstantAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
             var declaration = localDeclaration.Declaration;
             var typeName = declaration.Type;
 
@@ -62,8 +63,6 @@ namespace CodeCracker.CSharp.Performance
                 .WithDeclaration(declaration.WithoutLeadingTrivia())
                 .WithTrailingTrivia(localDeclaration.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(localDeclaration, newLocalDeclaration);
             return document.WithSyntaxRoot(newRoot);
         }
