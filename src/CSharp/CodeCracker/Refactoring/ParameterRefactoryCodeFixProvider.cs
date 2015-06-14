@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ParameterRefactoryCodeFixProvider)), Shared]
     public class ParameterRefactoryCodeFixProvider : CodeFixProvider
     {
@@ -22,68 +21,43 @@ namespace CodeCracker.CSharp.Refactoring
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-            var diagnosticClass = context.Diagnostics.First();
-            var diagnosticSpanClass = diagnosticClass.Location.SourceSpan;
-            var declarationClass = root.FindToken(diagnosticSpanClass.Start).Parent.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
-
-            var diagnosticNameSpace = context.Diagnostics.First();
-            var diagnosticSpanNameSpace = diagnosticNameSpace.Location.SourceSpan;
-            var declarationNameSpace = root.FindToken(diagnosticSpanNameSpace.Start).Parent.AncestorsAndSelf().OfType<NamespaceDeclarationSyntax>().FirstOrDefault();
-
-
-            var diagnosticMethod = context.Diagnostics.First();
-            var diagnosticSpanMethod = diagnosticMethod.Location.SourceSpan;
-            var declarationMethod = root.FindToken(diagnosticSpanClass.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
-
-            context.RegisterCodeFix(CodeAction.Create("Change to new CLass", c => NewClassAsync(context.Document, declarationNameSpace, declarationClass, declarationMethod, c)), diagnosticClass);
-
+            var diagnostic = context.Diagnostics.First();
+            context.RegisterCodeFix(CodeAction.Create("Change to new Class", c => NewClassAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> NewClassAsync(Document document, NamespaceDeclarationSyntax OldNameSpace, ClassDeclarationSyntax oldClass, MethodDeclarationSyntax oldMethod, CancellationToken cancellationToken)
+        private async Task<Document> NewClassAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var oldClass = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
+            var oldNamespace = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<NamespaceDeclarationSyntax>().FirstOrDefault();
+            var oldMethod = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
             SyntaxNode newRootParameter = null;
-
-
-            if (OldNameSpace == null)
+            if (oldNamespace == null)
             {
                 var newCompilation = NewCompilationFactory((CompilationUnitSyntax)oldClass.Parent, oldClass, oldMethod);
-
-                newRootParameter = root.ReplaceNode((CompilationUnitSyntax)oldClass.Parent, newCompilation);
-
+                newRootParameter = root.ReplaceNode(oldClass.Parent, newCompilation);
                 return document.WithSyntaxRoot(newRootParameter);
-
             }
-
-            var newNameSpace = NewNameSpaceFactory(OldNameSpace, oldClass, oldMethod);
-
-            newRootParameter = root.ReplaceNode(OldNameSpace, newNameSpace);
-
+            var newNameSpace = NewNameSpaceFactory(oldNamespace, oldClass, oldMethod);
+            newRootParameter = root.ReplaceNode(oldNamespace, newNameSpace);
             return document.WithSyntaxRoot(newRootParameter);
-
         }
 
         private static List<PropertyDeclarationSyntax> NewPropertyClassFactory(MethodDeclarationSyntax methodOld)
         {
             var newGetSyntax = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                                            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-
-
             var newSetSyntax = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                                             .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-
             var acessorSyntax = SyntaxFactory.AccessorList(
                                 SyntaxFactory.Token(SyntaxKind.OpenBraceToken),
                                 SyntaxFactory.List(new[] { newGetSyntax, newSetSyntax }),
                                 SyntaxFactory.Token(SyntaxKind.CloseBraceToken));
-
-
-            var propertys = new List<PropertyDeclarationSyntax>();
-
+            var properties = new List<PropertyDeclarationSyntax>();
             foreach (ParameterSyntax param in methodOld.ParameterList.Parameters)
             {
                 var property = SyntaxFactory.PropertyDeclaration(
@@ -93,12 +67,10 @@ namespace CodeCracker.CSharp.Refactoring
                                 default(ExplicitInterfaceSpecifierSyntax),
                                 SyntaxFactory.Identifier(FirstLetteToUpper(param.Identifier.Text)),
                                 acessorSyntax);
-
-                propertys.Add(property);
+                properties.Add(property);
 
             }
-
-            return propertys;
+            return properties;
         }
 
         private static ClassDeclarationSyntax NewClassParameterFactory(string newNameClass, List<PropertyDeclarationSyntax> Property)
@@ -112,26 +84,17 @@ namespace CodeCracker.CSharp.Refactoring
 
         private static NamespaceDeclarationSyntax NewNameSpaceFactory(NamespaceDeclarationSyntax OldNameSpace, ClassDeclarationSyntax OldClass, MethodDeclarationSyntax OldMethod)
         {
-
-
             var newNameSpace = OldNameSpace;
-
             var className = $"NewClass{OldMethod.Identifier.Text}";
-
             var memberNameSpaceOld = (from member in OldNameSpace.Members
                                       where member == OldClass
                                       select member).FirstOrDefault();
-
             newNameSpace = OldNameSpace.ReplaceNode(memberNameSpaceOld, NewClassFactory(className, OldClass, OldMethod));
-
             var newParameterClass = NewClassParameterFactory(className, NewPropertyClassFactory(OldMethod));
-
             newNameSpace = newNameSpace
                             .WithMembers(newNameSpace.Members.Add(newParameterClass))
                             .WithAdditionalAnnotations(Formatter.Annotation);
-
             return newNameSpace;
-
         }
 
         private static ClassDeclarationSyntax NewClassFactory(string className, ClassDeclarationSyntax classOld, MethodDeclarationSyntax methodOld)
@@ -157,31 +120,21 @@ namespace CodeCracker.CSharp.Refactoring
         private static CompilationUnitSyntax NewCompilationFactory(CompilationUnitSyntax OldCompilation, ClassDeclarationSyntax OldClass, MethodDeclarationSyntax OldMethod)
         {
             var newNameSpace = OldCompilation;
-
-
             var className = $"NewClass{OldMethod.Identifier.Text}";
-
             var OldMemberNameSpace = (from member in OldCompilation.Members
                                       where member == OldClass
                                       select member).FirstOrDefault();
-
             newNameSpace = OldCompilation.ReplaceNode(OldMemberNameSpace, NewClassFactory(className, OldClass, OldMethod));
-
             var newParameterClass = NewClassParameterFactory(className, NewPropertyClassFactory(OldMethod));
-
             return newNameSpace.WithMembers(newNameSpace.Members.Add(newParameterClass))
                                 .WithAdditionalAnnotations(Formatter.Annotation);
 
         }
 
-        private static string FirstLetteToUpper(string text)
-        {
-            return string.Concat(text.Replace(text[0].ToString(), text[0].ToString().ToUpper()));
-        }
+        private static string FirstLetteToUpper(string text) =>
+            string.Concat(text.Replace(text[0].ToString(), text[0].ToString().ToUpper()));
 
-        private static string FirstLetteToLower(string text)
-        {
-            return string.Concat(text.Replace(text[0].ToString(), text[0].ToString().ToLower()));
-        }
+        private static string FirstLetteToLower(string text) =>
+            string.Concat(text.Replace(text[0].ToString(), text[0].ToString().ToLower()));
     }
 }

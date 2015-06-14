@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using System.Threading;
 
 namespace CodeCracker.CSharp.Refactoring
 {
@@ -19,16 +20,17 @@ namespace CodeCracker.CSharp.Refactoring
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var @switch = (SwitchStatementSyntax)root.FindNode(diagnostic.Location.SourceSpan);
-            context.RegisterCodeFix(CodeAction.Create("Add braces to each switch section", ct => AddBracesAsync(context.Document, root, @switch)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Add braces to each switch section", ct => AddBracesAsync(context.Document, diagnostic, ct)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private static Task<Document> AddBracesAsync(Document document, SyntaxNode root, SwitchStatementSyntax @switch)
+        private static async Task<Document> AddBracesAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var @switch = (SwitchStatementSyntax)root.FindNode(diagnostic.Location.SourceSpan);
             var sections = new List<SwitchSectionSyntax>();
             foreach (var section in @switch.Sections)
             {
@@ -45,7 +47,7 @@ namespace CodeCracker.CSharp.Refactoring
             var newSwitch = @switch.WithSections(SyntaxFactory.List(sections)).WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = root.ReplaceNode(@switch, newSwitch);
             var newDocument = document.WithSyntaxRoot(newRoot);
-            return Task.FromResult(newDocument);
+            return newDocument;
         }
 
         private static SwitchSectionSyntax AddBraces(SwitchSectionSyntax section)

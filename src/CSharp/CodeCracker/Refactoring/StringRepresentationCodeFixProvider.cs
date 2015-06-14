@@ -4,12 +4,12 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Composition;
+using System.Threading;
 
 namespace CodeCracker.CSharp.Refactoring
 {
@@ -25,50 +25,43 @@ namespace CodeCracker.CSharp.Refactoring
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-
-            foreach (var diagnostic in context.Diagnostics)
-            {
-                var literalExpression = root.FindNode(diagnostic.Location.SourceSpan,
-                    getInnermostNodeForTie: true) as LiteralExpressionSyntax;
-
-                if (literalExpression == null) continue;
-
-                var isVerbatim = literalExpression.Token.Text.Length > 0
-                    && literalExpression.Token.Text.StartsWith("@\"");
-
-                Func<SyntaxNode, Task<Document>> createChangedDocument =
-                    replacement =>
-                    {
-                        var finalReplacement = replacement.WithSameTriviaAs(literalExpression);
-                        var newRoot = root.ReplaceNode(literalExpression, finalReplacement);
-                        return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
-                    };
-
-                var truncatedString = Truncate((string)literalExpression.Token.Value, 20);
-
-                var codeAction = isVerbatim
-                    ? CodeAction.Create(
-                        $"Convert \"{truncatedString}\" to regular string",
-                        ct => createChangedDocument(ToStringLiteral(literalExpression)),
-                        ToRegularId)
-                    : CodeAction.Create(
-                        $"Convert \"{truncatedString}\" to verbatim string",
-                        ct => createChangedDocument(ToVerbatimStringLiteral(literalExpression)),
-                        ToVerbatimId);
-
-                context.RegisterCodeFix(codeAction, diagnostic);
-            }
+            var diagnostic = context.Diagnostics.First();
+            var truncated = diagnostic.Properties["truncatedString"];
+            var isVerbatimString = diagnostic.Properties["isVerbatim"] == "1";
+            var message = isVerbatimString ? $"Convert \"{truncated}\" to regular string" : $"Convert \"{truncated}\" to verbatim string";
+            var equivalenceKey = isVerbatimString ? ToRegularId : ToVerbatimId;
+            context.RegisterCodeFix(
+                CodeAction.Create(message, ct => CreateChangedDocument(context.Document, diagnostic, isVerbatimString, ct), equivalenceKey), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private static string Truncate(string text, int length)
+        private static async Task<Document> CreateChangedDocument(Document document, Diagnostic diagnostic, bool isVerbatim, CancellationToken cancellationToken)
         {
-            var normalized = new string(text.Cast<char>().Where(c => !char.IsControl(c)).ToArray());
-            return normalized.Length <= length
-                ? normalized
-                : normalized.Substring(0, length - 1) + "\u2026";
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
+            var literalExpression = (LiteralExpressionSyntax)root.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true);
+            var replacement = isVerbatim ? ToStringLiteral(literalExpression) : ToVerbatimStringLiteral(literalExpression);
+            var finalReplacement = replacement.WithSameTriviaAs(literalExpression);
+            var newRoot = root.ReplaceNode(literalExpression, finalReplacement);
+            return document.WithSyntaxRoot(newRoot);
+        }
+
+        private static ExpressionSyntax ToStringLiteral(LiteralExpressionSyntax expression)
+        {
+            var str = (string)expression.Token.Value;
+            return LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(str));
+        }
+
+        private static ExpressionSyntax ToVerbatimStringLiteral(LiteralExpressionSyntax expression)
+        {
+            var str = (string)expression.Token.Value;
+            return LiteralExpression(SyntaxKind.StringLiteralExpression,
+                Literal(
+                    TriviaList(),
+                    StringToVerbatimText(str),
+                    str,
+                    TriviaList()));
         }
 
         private static string StringToVerbatimText(string s)
@@ -84,23 +77,6 @@ namespace CodeCracker.CSharp.Refactoring
             }
             builder.Append("\"");
             return builder.ToString();
-        }
-
-        private static ExpressionSyntax ToVerbatimStringLiteral(LiteralExpressionSyntax expression)
-        {
-            var str = (string)expression.Token.Value;
-            return LiteralExpression(SyntaxKind.StringLiteralExpression,
-                Literal(
-                    TriviaList(),
-                    StringToVerbatimText(str),
-                    str,
-                    TriviaList()));
-        }
-
-        private static ExpressionSyntax ToStringLiteral(LiteralExpressionSyntax expression)
-        {
-            var str = (string)expression.Token.Value;
-            return LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(str));
         }
     }
 }

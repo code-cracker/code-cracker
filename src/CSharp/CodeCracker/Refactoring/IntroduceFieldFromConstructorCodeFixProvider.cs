@@ -21,19 +21,21 @@ namespace CodeCracker.CSharp.Refactoring
 
         public sealed override FixAllProvider GetFixAllProvider() => IntroduceFieldFromConstructorCodeFixAllProvider.Instance;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
-            var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create(string.Format(MessageFormat, parameter), c => IntroduceFieldFromConstructorDocumentAsync(context.Document, declaration, parameter, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(
+                string.Format(MessageFormat, diagnostic.Properties["parameterName"]), c => IntroduceFieldFromConstructorDocumentAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
-        public async Task<Document> IntroduceFieldFromConstructorDocumentAsync(Document document, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter, CancellationToken cancellationToken)
+
+        public async Task<Document> IntroduceFieldFromConstructorDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var newRoot = IntroduceFieldFromConstructor(root, constructorStatement, parameter);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
+            var constructor = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
+            var newRoot = IntroduceFieldFromConstructor(root, constructor, parameter);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return document.WithSyntaxRoot(newRoot);
         }
