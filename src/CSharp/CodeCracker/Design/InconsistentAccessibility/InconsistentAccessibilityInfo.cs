@@ -8,5 +8,10 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
         public string CodeActionMessage { get; set; }
         public TypeSyntax TypeToChangeAccessibility { get; set; }
         public SyntaxTokenList NewAccessibilityModifiers { get; set; }
+
+        public bool TypeToChangeFound()
+        {
+            return TypeToChangeAccessibility != null;
+        }
     }
 }

@@ -263,6 +263,34 @@ public class DependedUpon<T> {}";
             await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
+        [Fact]
+        public async Task ShouldChangeAccessibilityToAllPartialDeclarationsAsync()
+        {
+            const string sourceCode = @"
+public class Dependent
+{
+    public Dependent(DependedUpon d)
+    {
+    }
+}
+partial class DependedUpon {}
+class SomeClass {}
+partial class DependedUpon {}";
+
+            const string fixedCode = @"
+public class Dependent
+{
+    public Dependent(DependedUpon d)
+    {
+    }
+}
+public partial class DependedUpon {}
+class SomeClass {}
+public partial class DependedUpon {}";
+
+            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+        }
+
         protected override CodeFixProvider GetCodeFixProvider() => new InconsistentAccessibilityCodeFixProvider();
     }
 }
