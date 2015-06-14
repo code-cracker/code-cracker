@@ -19,6 +19,8 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
     {
         internal const string InconsistentAccessibilityInMethodParameterCompilerErrorNumber = "CS0051";
 
+        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(InconsistentAccessibilityInMethodParameterCompilerErrorNumber);
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -27,11 +29,18 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 
             var inconsistentAccessibilityInfo = await GetInconsistentAccessibilityInfoAsync(context.Document, diagnostic, context.CancellationToken).ConfigureAwait(false);
 
-            var typeLocation = await FindTypeLocationInSourceCodeAsync(context.Document, inconsistentAccessibilityInfo.TypeToChangeAccessibility, context.CancellationToken).ConfigureAwait(false);
-
-            if(typeLocation != Location.None)
+            if (inconsistentAccessibilityInfo.TypeToChangeFound())
             {
-                context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocation, c)), diagnostic);
+                var typeLocations = await FindTypeLocationsInSourceCodeAsync(context.Document, inconsistentAccessibilityInfo.TypeToChangeAccessibility, context.CancellationToken).ConfigureAwait(false);
+
+                if (typeLocations.Length == 1)
+                {
+                    context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInDocumentAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations[0], c)), diagnostic);
+                }
+                else if (typeLocations.Length > 1)
+                {
+                    context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInSolutionAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations, c)), diagnostic);
+                }
             }
         }
 
@@ -49,74 +58,105 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             return await inconsistentAccessibilityProvider.GetInconsistentAccessibilityInfoAsync(document, diagnostic, cancellationToken).ConfigureAwait(false);
         }
 
-        private static async Task<Location> FindTypeLocationInSourceCodeAsync(Document document, TypeSyntax type, CancellationToken cancellationToken)
+        private static async Task<Location[]> FindTypeLocationsInSourceCodeAsync(Document document, TypeSyntax type, CancellationToken cancellationToken)
         {
-            var result = Location.None;
+            var result = new Location[] { };
 
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             var typeSymbol = semanticModel.GetSymbolInfo(type, cancellationToken).Symbol;
 
             if(typeSymbol != null)
             {
-                var locationInSource = typeSymbol.Locations.FirstOrDefault(location => location.IsInSource);
-                if(locationInSource != null)
-                {
-                    result = locationInSource;
-                }
+                result = typeSymbol.Locations.Where(location => location.IsInSource).ToArray();
             }
 
             return result;
         }
 
-        private static async Task<Document> ChangeTypeAccessibilityAsync(Solution solution, SyntaxTokenList newAccessibilityModifiers, Location typeLocation, CancellationToken cancellationToken)
+        private static async Task<Document> ChangeTypeAccessibilityInDocumentAsync(Solution solution, SyntaxTokenList newAccessibilityModifiers, Location typeLocation, CancellationToken cancellationToken)
         {
             var document = solution.GetDocument(typeLocation.SourceTree);
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-            var result = document;
+            var newRoot = ChangeTypeAccessibilityInSyntaxRoot(syntaxRoot, newAccessibilityModifiers, typeLocation, cancellationToken);
 
-            var declaration = syntaxRoot.FindNode(typeLocation.SourceSpan) as MemberDeclarationSyntax;
-            if (declaration != null)
+            return document.WithSyntaxRoot(newRoot);
+        }
+
+        private static async Task<Solution> ChangeTypeAccessibilityInSolutionAsync(Solution solution, SyntaxTokenList newAccessibilityModifiers, IEnumerable<Location> typeLocations, CancellationToken cancellationToken)
+        {
+            var updatedSolution = solution;
+            var typeLocationsGroupedByDocument = typeLocations.GroupBy(location => solution.GetDocument(location.SourceTree));
+
+            foreach(var typeLocationsWithinDocument in typeLocationsGroupedByDocument)
             {
-                var newDeclaration = declaration;
+                var document = typeLocationsWithinDocument.Key;
+                var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+                var newRoot = ChangeTypesAccessibilityInSyntaxRoot(syntaxRoot, newAccessibilityModifiers, typeLocationsWithinDocument, cancellationToken);
+                updatedSolution = updatedSolution.WithDocumentSyntaxRoot(document.Id, newRoot);
+            }
 
-                var actualTypeAccessibilityModifiers = GetAccessibilityModifiersFromMember(declaration);
-                var hasAccessibilityModifiers = actualTypeAccessibilityModifiers.Any();
+            return updatedSolution;
+        }
 
-                var leadingTrivias = default(SyntaxTriviaList);
-                var trailingTrivias = default(SyntaxTriviaList);
-                if (!hasAccessibilityModifiers)
+        private static SyntaxNode ChangeTypeAccessibilityInSyntaxRoot(SyntaxNode syntaxRoot, SyntaxTokenList newAccessibilityModifiers, Location typeLocation, CancellationToken cancellationToken)
+        {
+            var declaration = (MemberDeclarationSyntax)syntaxRoot.FindNode(typeLocation.SourceSpan);
+
+            var newDeclaration = ChangeAccessibilityModifiersInDeclaration(declaration, newAccessibilityModifiers);
+
+            return syntaxRoot.ReplaceNode(declaration, newDeclaration);
+        }
+
+        private static SyntaxNode ChangeTypesAccessibilityInSyntaxRoot(SyntaxNode syntaxRoot, SyntaxTokenList newAccessibilityModifiers, IEnumerable<Location> typeLocations, CancellationToken cancellationToken)
+        {
+            var declarations =  typeLocations.Select(typeLocation => (MemberDeclarationSyntax)syntaxRoot.FindNode(typeLocation.SourceSpan)).ToList();
+            var newDeclarations = new Dictionary<MemberDeclarationSyntax, MemberDeclarationSyntax>();
+
+            foreach (var declaration in declarations)
+            {
+                newDeclarations.Add(declaration, ChangeAccessibilityModifiersInDeclaration(declaration, newAccessibilityModifiers));
+            }
+
+            return syntaxRoot.ReplaceNodes(declarations, (original, rewritten) => newDeclarations[original]);
+        }
+
+        private static MemberDeclarationSyntax ChangeAccessibilityModifiersInDeclaration(MemberDeclarationSyntax declaration, SyntaxTokenList newAccessibilityModifiers)
+        {
+            var newDeclaration = declaration;
+
+            var actualTypeAccessibilityModifiers = GetAccessibilityModifiersFromMember(declaration);
+            var hasAccessibilityModifiers = actualTypeAccessibilityModifiers.Any();
+
+            var leadingTrivias = default(SyntaxTriviaList);
+            var trailingTrivias = default(SyntaxTriviaList);
+            if (!hasAccessibilityModifiers)
+            {
+                var modifiers = declaration.GetModifiers();
+                if (modifiers.Count > 0)
                 {
-                    var modifiers = declaration.GetModifiers();
-                    if (modifiers.Count > 0)
-                    {
-                        var firstModifier = modifiers.First();
-                        leadingTrivias = firstModifier.LeadingTrivia;
-                        newDeclaration = RemoveLeadingTriviasFromFirstDeclarationModifier(declaration, modifiers, firstModifier);
-                    }
-                    else
-                    {
-                        leadingTrivias = declaration.GetLeadingTrivia();
-                        newDeclaration = RemoveLeadingTriviasFromDeclaration(declaration);
-                    }
-                    trailingTrivias = SyntaxFactory.TriviaList(SyntaxFactory.Space);
+                    var firstModifier = modifiers.First();
+                    leadingTrivias = firstModifier.LeadingTrivia;
+                    newDeclaration = RemoveLeadingTriviasFromFirstDeclarationModifier(declaration, modifiers, firstModifier);
                 }
                 else
                 {
-                    leadingTrivias = actualTypeAccessibilityModifiers.First().LeadingTrivia;
-                    trailingTrivias = GetAllTriviasAfterFirstModifier(actualTypeAccessibilityModifiers);
+                    leadingTrivias = declaration.GetLeadingTrivia();
+                    newDeclaration = RemoveLeadingTriviasFromDeclaration(declaration);
                 }
-
-                newAccessibilityModifiers = MergeActualTriviasIntoNewAccessibilityModifiers(newAccessibilityModifiers, leadingTrivias, trailingTrivias);
-
-                newDeclaration = ReplaceDeclarationModifiers(newDeclaration, actualTypeAccessibilityModifiers.ToList(), newAccessibilityModifiers);
-
-                var newRoot = syntaxRoot.ReplaceNode(declaration, newDeclaration);
-
-                result = document.WithSyntaxRoot(newRoot);
+                trailingTrivias = SyntaxFactory.TriviaList(SyntaxFactory.Space);
+            }
+            else
+            {
+                leadingTrivias = actualTypeAccessibilityModifiers.First().LeadingTrivia;
+                trailingTrivias = GetAllTriviasAfterFirstModifier(actualTypeAccessibilityModifiers);
             }
 
-            return result;
+            newAccessibilityModifiers = MergeActualTriviasIntoNewAccessibilityModifiers(newAccessibilityModifiers, leadingTrivias, trailingTrivias);
+
+            newDeclaration = ReplaceDeclarationModifiers(newDeclaration, actualTypeAccessibilityModifiers.ToList(), newAccessibilityModifiers);
+
+            return newDeclaration;
         }
 
         private static IEnumerable<SyntaxToken> GetAccessibilityModifiersFromMember(MemberDeclarationSyntax member) => member.GetModifiers().Where(token => token.IsKind(SyntaxKind.PublicKeyword, SyntaxKind.ProtectedKeyword, SyntaxKind.InternalKeyword, SyntaxKind.PrivateKeyword));

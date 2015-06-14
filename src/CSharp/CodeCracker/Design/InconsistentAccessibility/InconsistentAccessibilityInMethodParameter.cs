@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
@@ -18,7 +20,7 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             var methodThatRaisedError = syntaxRoot.FindNode(diagnostic.Location.SourceSpan).DescendantNodesAndSelf().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
             if (methodThatRaisedError != null)
             {
-                var parameterTypeFromMessage = ExtractParameterTypeFromErrorMessage(diagnostic.ToString());
+                var parameterTypeFromMessage = ExtractParameterTypeFromDiagnosticMessage(diagnostic);
 
                 var parameterTypeLastIdentifier = parameterTypeFromMessage;
                 var parameterTypeDotIndex = parameterTypeLastIdentifier.LastIndexOf('.');
@@ -35,14 +37,7 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             return result;
         }
 
-        private static string ExtractParameterTypeFromErrorMessage(string compilerErrorMessage)
-        {
-            const int parameterTypeStartShift = 52;
-
-            var parameterTypeNameStart = compilerErrorMessage.IndexOf(InconsistentAccessibilityCodeFixProvider.InconsistentAccessibilityInMethodParameterCompilerErrorNumber, StringComparison.Ordinal) + parameterTypeStartShift;
-            var parameterTypeNameLength = compilerErrorMessage.IndexOf('\'', parameterTypeNameStart) - parameterTypeNameStart;
-            return compilerErrorMessage.Substring(parameterTypeNameStart, parameterTypeNameLength);
-        }
+        private static string ExtractParameterTypeFromDiagnosticMessage(Diagnostic diagnostic) => Regex.Match(diagnostic.GetMessage(CultureInfo.InvariantCulture), diagnostic.Descriptor.MessageFormat.ToString(CultureInfo.InvariantCulture).Replace("{0}", "(.*)").Replace("{1}", "(.*)")).Groups[1].Value;
 
         private static TypeSyntax FindTypeSyntaxFromParametersList(SeparatedSyntaxList<ParameterSyntax> parameterList, string typeName)
         {
