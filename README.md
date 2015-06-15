@@ -114,17 +114,18 @@ how they interpret these levels.
 The DoD is still evolving. At the present time the checklist is as follows:
 
 1. Builds
-2. Has tests for analyzers, code fixes and refactoring (analyzers have to include test cases where they do not provide diagnostics as well)
+2. Has tests for analyzers, code fixes (including fix all providers) and refactoring
 3. All tests pass
 4. Analyzers follow the guidelines for names
   1. Always named `<featurename>Analyzer`
   2. Always add the diagnostic id to the `DiagnosticIds.cs` file.
 5. Code fixes should follow the guidelines for names
   1. Always named `<featurename>CodeFixProvider`
-  2. Always export the name in the format `CodeCracker<featurename>CodeFixProvider`
-  3. Always use the same diagnostic id added to the `DiagnosticIds.cs` file, unless you are writing a code fix for a diagnostic id raised by the C# compiler itself (staring with `CS`).
+  2. Always use the same diagnostic id added to the `DiagnosticIds.cs` file, unless you are writing a code fix for a diagnostic id raised by the C# compiler itself (staring with `CS`).
 6. Fix all scenarios (fix all in document, fix all in project and fix all in solution) work. You might need to write a `FixAllProvider`. Check the `DisposableVariableNotDisposedFixAllProvider` as an example.
 7. Follow the coding standards present on the project code files.
+8. Works in Visual Studio
+9. Uses localizable strings
 
 ### Start working
 
