@@ -33,11 +33,11 @@ namespace CodeCracker.CSharp.Refactoring
             var message = isVerbatimString ? $"Convert \"{truncated}\" to regular string" : $"Convert \"{truncated}\" to verbatim string";
             var equivalenceKey = isVerbatimString ? ToRegularId : ToVerbatimId;
             context.RegisterCodeFix(
-                CodeAction.Create(message, ct => CreateChangedDocument(context.Document, diagnostic, isVerbatimString, ct), equivalenceKey), diagnostic);
+                CodeAction.Create(message, ct => CreateChangedDocumentAsync(context.Document, diagnostic, isVerbatimString, ct), equivalenceKey), diagnostic);
             return Task.FromResult(0);
         }
 
-        private static async Task<Document> CreateChangedDocument(Document document, Diagnostic diagnostic, bool isVerbatim, CancellationToken cancellationToken)
+        private static async Task<Document> CreateChangedDocumentAsync(Document document, Diagnostic diagnostic, bool isVerbatim, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var literalExpression = (LiteralExpressionSyntax)root.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true);
