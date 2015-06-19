@@ -135,7 +135,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeCultureTests.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.MethodParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.MethodReturnType.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />

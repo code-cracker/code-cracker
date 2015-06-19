@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test.CSharp.Design
 {
-    public class InconsistentAccessibilityTests : CodeFixVerifier
+    public partial class InconsistentAccessibilityTests : CodeFixVerifier
     {
         [Theory]
         [InlineData("class","internal")]

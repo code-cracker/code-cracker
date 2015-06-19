@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="InconsistentAccessibilityInMethodParameter_CodeActionMessage" xml:space="preserve">
+    <value>Change parameter type '{0}' accessibility to be as accessible as method '{1}'</value>
+  </data>
+  <data name="InconsistentAccessibilityInMethodReturnType_CodeActionMessage" xml:space="preserve">
+    <value>Change return type '{0}' accessibility to be as accessible as method '{1}'</value>
+  </data>
   <data name="NameOfAnalyzer_Description" xml:space="preserve">
     <value>In C#6 the nameof() operator should be used to specify the name of a program element instead of a string literal as it produce code that is easier to refactor.</value>
   </data>

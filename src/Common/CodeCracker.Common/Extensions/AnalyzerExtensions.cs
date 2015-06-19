@@ -209,6 +209,26 @@ namespace CodeCracker
             );
         }
 
+        public static SyntaxToken GetIdentifier(this BaseMethodDeclarationSyntax method)
+        {
+            var result = default(SyntaxToken);
+
+            switch(method.Kind())
+            {
+                case SyntaxKind.MethodDeclaration:
+                    result = ((MethodDeclarationSyntax)method).Identifier;
+                    break;
+                case SyntaxKind.ConstructorDeclaration:
+                    result = ((ConstructorDeclarationSyntax)method).Identifier;
+                    break;
+                case SyntaxKind.DestructorDeclaration:
+                    result = ((DestructorDeclarationSyntax)method).Identifier;
+                    break;
+            }
+
+            return result;
+        }
+
         public static MemberDeclarationSyntax WithModifiers(this MemberDeclarationSyntax declaration, SyntaxTokenList newModifiers)
         {
             var result = declaration;
@@ -300,5 +320,20 @@ namespace CodeCracker
 
             return result;
         }
+
+        public static SyntaxTokenList CloneAccessibilityModifiers(this BaseMethodDeclarationSyntax method)
+        {
+            var modifiers = method.Modifiers;
+            if (method.Parent.IsKind(SyntaxKind.InterfaceDeclaration))
+            {
+                modifiers = ((InterfaceDeclarationSyntax)method.Parent).Modifiers;
+            }
+
+            var accessibilityModifiers = modifiers.Where(token => token.IsKind(SyntaxKind.PublicKeyword) || token.IsKind(SyntaxKind.ProtectedKeyword) || token.IsKind(SyntaxKind.InternalKeyword) || token.IsKind(SyntaxKind.PrivateKeyword)).Select(token => SyntaxFactory.Token(token.Kind()));
+
+            return SyntaxFactory.TokenList(EnsureProtectedBeforeInternal(accessibilityModifiers));
+        }
+
+        private static IEnumerable<SyntaxToken> EnsureProtectedBeforeInternal(IEnumerable<SyntaxToken> modifiers) => modifiers.OrderByDescending(token => token.RawKind);
     }
 }
