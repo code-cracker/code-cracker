@@ -8,11 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using CodeCracker.Properties;
 
 namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
     public sealed class InconsistentAccessibilityInMethodParameter : InconsistentAccessibilityInfoProvider
     {
+        private static readonly LocalizableString CodeActionMessage = new LocalizableResourceString(nameof(Resources.InconsistentAccessibilityInMethodParameter_CodeActionMessage), Resources.ResourceManager, typeof(Resources));
+
         public async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var result = new InconsistentAccessibilityInfo();
@@ -30,8 +33,8 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
                 }
 
                 result.TypeToChangeAccessibility = FindTypeSyntaxFromParametersList(methodThatRaisedError.ParameterList.Parameters, parameterTypeLastIdentifier);
-                result.CodeActionMessage = $"Change parameter type '{parameterTypeFromMessage}' accessibility to be as accessible as method '{GetMethodIdentifierValueText(methodThatRaisedError)}'";
-                result.NewAccessibilityModifiers = CreateAccessibilityModifiersFromMethod(methodThatRaisedError);
+                result.CodeActionMessage = string.Format(CodeActionMessage.ToString(), parameterTypeFromMessage, methodThatRaisedError.GetIdentifier().ValueText);
+                result.NewAccessibilityModifiers = methodThatRaisedError.CloneAccessibilityModifiers();
             }
 
             return result;
@@ -82,22 +85,5 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 
             return result;
         }
-
-        private static string GetMethodIdentifierValueText(BaseMethodDeclarationSyntax method) => method.IsKind(SyntaxKind.MethodDeclaration) ? ((MethodDeclarationSyntax)method).Identifier.ValueText : ((ConstructorDeclarationSyntax)method).Identifier.ValueText;
-
-        private static SyntaxTokenList CreateAccessibilityModifiersFromMethod(BaseMethodDeclarationSyntax method)
-        {
-            var modifiers = method.Modifiers;
-            if (method.Parent.IsKind(SyntaxKind.InterfaceDeclaration))
-            {
-                modifiers = ((InterfaceDeclarationSyntax)method.Parent).Modifiers;
-            }
-
-            var accessibilityModifiers = modifiers.Where(token => token.IsKind(SyntaxKind.PublicKeyword, SyntaxKind.ProtectedKeyword, SyntaxKind.InternalKeyword)).Select(token => SyntaxFactory.Token(token.Kind()));
-
-            return SyntaxFactory.TokenList(EnsureProtectedBeforeInternal(accessibilityModifiers));
-        }
-
-        private static IEnumerable<SyntaxToken> EnsureProtectedBeforeInternal(IEnumerable<SyntaxToken> modifiers) => modifiers.OrderByDescending(token => token.RawKind);
     }
 }

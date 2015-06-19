@@ -17,29 +17,30 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(InconsistentAccessibilityCodeFixProvider)), Shared]
     public sealed class InconsistentAccessibilityCodeFixProvider : CodeFixProvider
     {
+        internal const string InconsistentAccessibilityInMethodReturnTypeCompilerErrorNumber = "CS0050";
         internal const string InconsistentAccessibilityInMethodParameterCompilerErrorNumber = "CS0051";
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(InconsistentAccessibilityInMethodParameterCompilerErrorNumber);
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var diagnostic = context.Diagnostics.First();
-
-            var inconsistentAccessibilityInfo = await GetInconsistentAccessibilityInfoAsync(context.Document, diagnostic, context.CancellationToken).ConfigureAwait(false);
-
-            if (inconsistentAccessibilityInfo.TypeToChangeFound())
+            foreach (var diagnostic in context.Diagnostics)
             {
-                var typeLocations = await FindTypeLocationsInSourceCodeAsync(context.Document, inconsistentAccessibilityInfo.TypeToChangeAccessibility, context.CancellationToken).ConfigureAwait(false);
+                var inconsistentAccessibilityInfo = await GetInconsistentAccessibilityInfoAsync(context.Document, diagnostic, context.CancellationToken).ConfigureAwait(false);
 
-                if (typeLocations.Length == 1)
+                if (inconsistentAccessibilityInfo.TypeToChangeFound())
                 {
-                    context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInDocumentAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations[0], c)), diagnostic);
-                }
-                else if (typeLocations.Length > 1)
-                {
-                    context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInSolutionAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations, c)), diagnostic);
+                    var typeLocations = await FindTypeLocationsInSourceCodeAsync(context.Document, inconsistentAccessibilityInfo.TypeToChangeAccessibility, context.CancellationToken).ConfigureAwait(false);
+
+                    if (typeLocations.Length == 1)
+                    {
+                        context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInDocumentAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations[0], c)), diagnostic);
+                    }
+                    else if (typeLocations.Length > 1)
+                    {
+                        context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInSolutionAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations, c)), diagnostic);
+                    }
                 }
             }
         }
