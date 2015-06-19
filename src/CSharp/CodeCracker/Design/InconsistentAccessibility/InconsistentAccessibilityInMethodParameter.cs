@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
     public sealed class InconsistentAccessibilityInMethodParameter : InconsistentAccessibilityInfoProvider
     {
-        private static readonly LocalizableString CodeActionMessage = new LocalizableResourceString(nameof(Resources.InconsistentAccessibilityInMethodParameter_CodeActionMessage), Resources.ResourceManager, typeof(Resources));
+        private static readonly LocalizableString CodeActionMessage = new LocalizableResourceString(nameof(Resources.InconsistentAccessibilityInMethodParameter_Title), Resources.ResourceManager, typeof(Resources));
 
         public async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
