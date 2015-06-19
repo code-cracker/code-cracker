@@ -22,6 +22,7 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(InconsistentAccessibilityInMethodReturnTypeCompilerErrorNumber, InconsistentAccessibilityInMethodParameterCompilerErrorNumber);
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -51,6 +52,9 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 
             switch (diagnostic.Id)
             {
+                case InconsistentAccessibilityInMethodReturnTypeCompilerErrorNumber:
+                    inconsistentAccessibilityProvider = new InconsistentAccessibilityInMethodReturnType();
+                    break;
                 case InconsistentAccessibilityInMethodParameterCompilerErrorNumber:
                     inconsistentAccessibilityProvider = new InconsistentAccessibilityInMethodParameter();
                     break;
