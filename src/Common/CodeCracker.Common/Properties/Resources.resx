@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InconsistentAccessibilityInMethodParameter_CodeActionMessage" xml:space="preserve">
+  <data name="InconsistentAccessibilityInMethodParameter_Title" xml:space="preserve">
     <value>Change parameter type '{0}' accessibility to be as accessible as method '{1}'</value>
   </data>
-  <data name="InconsistentAccessibilityInMethodReturnType_CodeActionMessage" xml:space="preserve">
+  <data name="InconsistentAccessibilityInMethodReturnType_Title" xml:space="preserve">
     <value>Change return type '{0}' accessibility to be as accessible as method '{1}'</value>
   </data>
   <data name="NameOfAnalyzer_Description" xml:space="preserve">

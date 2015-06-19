@@ -64,18 +64,18 @@ namespace CodeCracker.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Change parameter type &apos;{0}&apos; accessibility to be as accessible as method &apos;{1}&apos;.
         /// </summary>
-        public static string InconsistentAccessibilityInMethodParameter_CodeActionMessage {
+        public static string InconsistentAccessibilityInMethodParameter_Title {
             get {
-                return ResourceManager.GetString("InconsistentAccessibilityInMethodParameter_CodeActionMessage", resourceCulture);
+                return ResourceManager.GetString("InconsistentAccessibilityInMethodParameter_Title", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Change return type &apos;{0}&apos; accessibility to be as accessible as method &apos;{1}&apos;.
         /// </summary>
-        public static string InconsistentAccessibilityInMethodReturnType_CodeActionMessage {
+        public static string InconsistentAccessibilityInMethodReturnType_Title {
             get {
-                return ResourceManager.GetString("InconsistentAccessibilityInMethodReturnType_CodeActionMessage", resourceCulture);
+                return ResourceManager.GetString("InconsistentAccessibilityInMethodReturnType_Title", resourceCulture);
             }
         }
         
