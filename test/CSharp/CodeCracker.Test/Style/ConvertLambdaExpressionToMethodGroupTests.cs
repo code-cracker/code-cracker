@@ -6,7 +6,7 @@ using Xunit;
 namespace CodeCracker.Test.CSharp.Style
 {
     public class ConvertLambdaExpressionToMethodGroupTests
-        : CodeFixVerifier<ConvertLambdaExpressionToMethodGroupAnalyzer, ConvertLambdaExpressionToMethodGroupFixProvider>
+        : CodeFixVerifier<ConvertLambdaExpressionToMethodGroupAnalyzer, ConvertLambdaExpressionToMethodGroupCodeFixProvider>
     {
         [Fact]
         public async Task CreateDiagnosticForSimpleLambdaExpression()

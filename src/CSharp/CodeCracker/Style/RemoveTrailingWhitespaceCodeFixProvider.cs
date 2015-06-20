@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Style
@@ -18,17 +19,17 @@ namespace CodeCracker.CSharp.Style
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var trivia = root.FindTrivia(diagnostic.Location.SourceSpan.End - 1);
-            var newRoot = RemoveTrailingWhiteSpace(root, trivia);
-            context.RegisterCodeFix(CodeAction.Create("Remove trailing whitespace", ct => Task.FromResult(context.Document.WithSyntaxRoot(newRoot))), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove trailing whitespace", ct => RemoveTrailingWhiteSpace(context.Document, diagnostic, ct)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private static SyntaxNode RemoveTrailingWhiteSpace(SyntaxNode root, SyntaxTrivia trivia)
+        private static async Task<Document> RemoveTrailingWhiteSpace(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var trivia = root.FindTrivia(diagnostic.Location.SourceSpan.End - 1);
             SyntaxNode newRoot;
             if (trivia.IsKind(SyntaxKind.WhitespaceTrivia))
             {
@@ -55,7 +56,7 @@ namespace CodeCracker.CSharp.Style
                 var triviaNoTrailingWhiteSpace = Regex.Replace(trivia.ToFullString(), @"\s+$", "");
                 newRoot = root.ReplaceTrivia(trivia, SyntaxFactory.ParseTrailingTrivia(triviaNoTrailingWhiteSpace));
             }
-            return newRoot;
+            return document.WithSyntaxRoot(newRoot);
         }
     }
 }

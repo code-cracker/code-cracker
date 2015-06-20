@@ -20,29 +20,30 @@ namespace CodeCracker.CSharp.Style
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
+            context.RegisterCodeFix(CodeAction.Create(
+                "Convert to an expression bodied member.", c => ConvertToExpressionBodiedMemberAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
+        }
+        private static async Task<Document> ConvertToExpressionBodiedMemberAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-            const string message = "Convert to an expression bodied member.";
-
             var methodDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
             if (methodDeclaration != null)
             {
-                context.RegisterCodeFix(CodeAction.Create(message, c => ConvertToExpressionBodiedMemberAsync(context.Document, methodDeclaration, c)), diagnostic);
+                return await ConvertToExpressionBodiedMemberAsync(document, methodDeclaration, cancellationToken);
             }
             else
             {
                 var basePropertyDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<BasePropertyDeclarationSyntax>().First();
-                context.RegisterCodeFix(CodeAction.Create(message, c => ConvertToExpressionBodiedMemberAsync(context.Document, basePropertyDeclaration, c)), diagnostic);
+                return await ConvertToExpressionBodiedMemberAsync(document, basePropertyDeclaration, cancellationToken);
             }
         }
 
-        private async Task<Document> ConvertToExpressionBodiedMemberAsync(
-            Document document,
-            BasePropertyDeclarationSyntax declaration,
-            CancellationToken cancellationToken)
+        private static async Task<Document> ConvertToExpressionBodiedMemberAsync(Document document, BasePropertyDeclarationSyntax declaration, CancellationToken cancellationToken)
         {
             var accessors = declaration.AccessorList.Accessors;
             var body = accessors[0].Body;
@@ -63,7 +64,7 @@ namespace CodeCracker.CSharp.Style
             return await ReplaceNodeAsync(document, declaration, newDeclaration, cancellationToken);
         }
 
-        public async Task<Document> ReplaceNodeAsync(Document document, SyntaxNode @old, SyntaxNode @new, CancellationToken cancellationToken)
+        public static async Task<Document> ReplaceNodeAsync(Document document, SyntaxNode @old, SyntaxNode @new, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(@old, @new);
@@ -71,10 +72,10 @@ namespace CodeCracker.CSharp.Style
             return newDocument;
         }
 
-        private async Task<Document> ConvertToExpressionBodiedMemberAsync(
+        private static async Task<Document> ConvertToExpressionBodiedMemberAsync(
             Document document,
             BaseMethodDeclarationSyntax declaration,
-            CancellationToken cancellationToken )
+            CancellationToken cancellationToken)
         {
             var body = declaration.Body;
             var returnStatement = body.Statements[0] as ReturnStatementSyntax;

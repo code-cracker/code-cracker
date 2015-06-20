@@ -21,41 +21,44 @@ namespace CodeCracker.CSharp.Style
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
+            context.RegisterCodeFix(CodeAction.Create("Use object initializer", c => MakeObjectInitializerAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
+        }
+
+        private async Task<Document> MakeObjectInitializerAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var expressionStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ExpressionStatementSyntax>().FirstOrDefault();
-            var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().FirstOrDefault();
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             if (expressionStatement != null)
-                context.RegisterCodeFix(CodeAction.Create("Use object initializer", c => MakeObjectInitializerAsync(context.Document, expressionStatement, c)), diagnostic);
-            else if (localDeclaration != null)
-                context.RegisterCodeFix(CodeAction.Create("Use object initializer", c => MakeObjectInitializerAsync(context.Document, localDeclaration, c)), diagnostic);
+                return MakeObjectInitializer(document, root, semanticModel, expressionStatement);
+            var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().FirstOrDefault();
+            return MakeObjectInitializer(document, root, semanticModel, localDeclaration);
         }
 
-        private async Task<Document> MakeObjectInitializerAsync(Document document, LocalDeclarationStatementSyntax localDeclarationStatement, CancellationToken cancellationToken)
+        private Document MakeObjectInitializer(Document document, SyntaxNode root, SemanticModel semanticModel, LocalDeclarationStatementSyntax localDeclarationStatement)
         {
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var variable = localDeclarationStatement.Declaration.Variables.Single();
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
-            return await MakeObjectInitializerAsync(document, localDeclarationStatement, variableSymbol, semanticModel, cancellationToken);
+            return MakeObjectInitializer(document, root, localDeclarationStatement, variableSymbol, semanticModel);
         }
 
-        private async Task<Document> MakeObjectInitializerAsync(Document document, ExpressionStatementSyntax expressionStatement, CancellationToken cancellationToken)
+        private Document MakeObjectInitializer(Document document, SyntaxNode root, SemanticModel semanticModel, ExpressionStatementSyntax expressionStatement)
         {
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
             var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
-            return await MakeObjectInitializerAsync(document, expressionStatement, variableSymbol, semanticModel, cancellationToken);
+            return MakeObjectInitializer(document, root, expressionStatement, variableSymbol, semanticModel);
         }
 
-        private async Task<Document> MakeObjectInitializerAsync(Document document, StatementSyntax statement, ISymbol variableSymbol, SemanticModel semanticModel, CancellationToken cancellationToken)
+        private Document MakeObjectInitializer(Document document, SyntaxNode root, StatementSyntax statement, ISymbol variableSymbol, SemanticModel semanticModel)
         {
             var blockParent = statement.FirstAncestorOrSelf<BlockSyntax>();
             var objectCreationExpression = statement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Single();
             var newBlockParent = CreateNewBlockParent(statement, semanticModel, objectCreationExpression, variableSymbol);
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(blockParent, newBlockParent);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
