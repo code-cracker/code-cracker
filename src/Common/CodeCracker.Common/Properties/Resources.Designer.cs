@@ -62,6 +62,24 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change parameter type &apos;{0}&apos; accessibility to be as accessible as method &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInMethodParameter_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInMethodParameter_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change return type &apos;{0}&apos; accessibility to be as accessible as method &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInMethodReturnType_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInMethodReturnType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In C#6 the nameof() operator should be used to specify the name of a program element instead of a string literal as it produce code that is easier to refactor..
         /// </summary>
         public static string NameOfAnalyzer_Description {
