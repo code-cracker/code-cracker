@@ -22,18 +22,17 @@ namespace CodeCracker.CSharp.Style
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var ifStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().First();
-            const string message = "Convert to 'switch'";
-            context.RegisterCodeFix(CodeAction.Create(message, c => ConvertToSwitchAsync(context.Document, ifStatement, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Convert to 'switch'", c => ConvertToSwitchAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> ConvertToSwitchAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)
+        private static async Task<Document> ConvertToSwitchAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var ifStatement = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().First();
             var nestedIfs = ConvertToSwitchAnalyzer.FindNestedIfs(ifStatement).ToArray();
 
             var sections = new List<SwitchSectionSyntax>();
@@ -68,13 +67,12 @@ namespace CodeCracker.CSharp.Style
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ifStatement, switchStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
 
-        static SwitchSectionSyntax CreateSection(SwitchLabelSyntax label, StatementSyntax statement)
+        private static SwitchSectionSyntax CreateSection(SwitchLabelSyntax label, StatementSyntax statement)
         {
             var labels = new SyntaxList<SwitchLabelSyntax>();
             labels = labels.Add(label);
@@ -84,7 +82,7 @@ namespace CodeCracker.CSharp.Style
                 );
         }
 
-        static SyntaxList<StatementSyntax> CreateSectionStatements(StatementSyntax source)
+        private static SyntaxList<StatementSyntax> CreateSectionStatements(StatementSyntax source)
         {
             var result = new SyntaxList<StatementSyntax>();
 

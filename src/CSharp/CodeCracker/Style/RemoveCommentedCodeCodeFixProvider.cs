@@ -17,22 +17,18 @@ namespace CodeCracker.CSharp.Style
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var start = diagnostic.Location.SourceSpan.Start;
             context.RegisterCodeFix(CodeAction.Create(
                 "Remove commented code.",
                 c => RemoveCommentedCodeAsync(context.Document, start, c)),
                 diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> RemoveCommentedCodeAsync(
-            Document document,
-            int start,
-            CancellationToken cancellationToken
-            )
+        private async Task<Document> RemoveCommentedCodeAsync(Document document, int start, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var firstComment = root.FindTrivia(start);

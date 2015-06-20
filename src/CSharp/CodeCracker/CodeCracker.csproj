@@ -77,7 +77,7 @@
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupAnalyzer.cs" />
-    <Compile Include="Style\ConvertLambdaExpressionToMethodGroupFixProvider.cs" />
+    <Compile Include="Style\ConvertLambdaExpressionToMethodGroupCodeFixProvider.cs" />
     <Compile Include="Style\RemoveAsyncFromMethodAnalyzer.cs" />
     <Compile Include="Style\RemoveAsyncFromMethodCodeFixProvider.cs" />
     <Compile Include="Style\SwitchToAutoPropCodeFixProvider.cs" />
