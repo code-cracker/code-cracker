@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -47,10 +48,11 @@ namespace CodeCracker.CSharp.Usage
             var variableDeclarator = fieldSyntaxRef.GetSyntax() as VariableDeclaratorSyntax;
             if (variableDeclarator == null) return;
             if (ContainingTypeImplementsIDisposableAndCallsItOnTheField(context, fieldSymbol, fieldSymbol.ContainingType)) return;
+            var props = new Dictionary<string, string> { { "variableIdentifier", variableDeclarator.Identifier.ValueText } }.ToImmutableDictionary();
             if (variableDeclarator.Initializer?.Value is InvocationExpressionSyntax)
-                context.ReportDiagnostic(Diagnostic.Create(RuleForReturned, variableDeclarator.GetLocation(), fieldSymbol.Name));
+                context.ReportDiagnostic(Diagnostic.Create(RuleForReturned, variableDeclarator.GetLocation(), props, fieldSymbol.Name));
             else if (variableDeclarator.Initializer?.Value is ObjectCreationExpressionSyntax)
-                context.ReportDiagnostic(Diagnostic.Create(RuleForCreated, variableDeclarator.GetLocation(), fieldSymbol.Name));
+                context.ReportDiagnostic(Diagnostic.Create(RuleForCreated, variableDeclarator.GetLocation(), props, fieldSymbol.Name));
         }
 
         private bool ContainingTypeImplementsIDisposableAndCallsItOnTheField(SymbolAnalysisContext context, IFieldSymbol fieldSymbol, INamedTypeSymbol typeSymbol)

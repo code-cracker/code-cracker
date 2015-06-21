@@ -74,7 +74,8 @@ namespace CodeCracker.CSharp.Usage
                 }
                 foreach (var readonlyVariable in variablesToMakeReadonly.Values)
                 {
-                    var diagnostic = Diagnostic.Create(Rule, readonlyVariable.GetLocation(), readonlyVariable.Identifier.Text);
+                    var props = new Dictionary<string, string> { { "identifier", readonlyVariable.Identifier.Text } }.ToImmutableDictionary();
+                    var diagnostic = Diagnostic.Create(Rule, readonlyVariable.GetLocation(), props, readonlyVariable.Identifier.Text);
                     context.ReportDiagnostic(diagnostic);
                 }
             }

@@ -21,17 +21,18 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create($"Remove unused parameter: '{parameter.Identifier.ValueText}'", c => RemoveParameterAsync(root, context.Document, parameter, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(
+                $"Remove unused parameter: '{diagnostic.Properties["identifier"]}'", c => RemoveParameterAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Solution> RemoveParameterAsync(SyntaxNode root, Document document, ParameterSyntax parameter, CancellationToken cancellationToken)
+        private async Task<Solution> RemoveParameterAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var parameter = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
             var solution = document.Project.Solution;
             var parameterList = (ParameterListSyntax)parameter.Parent;
             var parameterPosition = parameterList.Parameters.IndexOf(parameter);

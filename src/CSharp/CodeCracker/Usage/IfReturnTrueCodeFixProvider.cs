@@ -20,18 +20,17 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var statement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().FirstOrDefault();
-            if (statement != null)
-                context.RegisterCodeFix(CodeAction.Create("Return directly", c => ReturnConditionDirectlyAsync(context.Document, statement, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Return directly", c => ReturnConditionDirectlyAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> ReturnConditionDirectlyAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)
+        private async Task<Document> ReturnConditionDirectlyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var ifStatement = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().FirstOrDefault();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var statementInsideIf = ifStatement.Statement.GetSingleStatementFromPossibleBlock();
             var statementInsideElse = ifStatement.Else.Statement.GetSingleStatementFromPossibleBlock();
@@ -47,7 +46,6 @@ namespace CodeCracker.CSharp.Usage
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(ifStatement, newReturn);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

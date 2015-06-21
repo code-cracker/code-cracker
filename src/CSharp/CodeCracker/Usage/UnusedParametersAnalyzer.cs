@@ -138,7 +138,8 @@ namespace CodeCracker.CSharp.Usage
 
         private static SyntaxNodeAnalysisContext ReportDiagnostic(SyntaxNodeAnalysisContext context, ParameterSyntax parameter)
         {
-            var diagnostic = Diagnostic.Create(Rule, parameter.GetLocation(), parameter.Identifier.ValueText);
+            var props = new Dictionary<string, string> { { "identifier", parameter.Identifier.Text } }.ToImmutableDictionary();
+            var diagnostic = Diagnostic.Create(Rule, parameter.GetLocation(), props, parameter.Identifier.ValueText);
             context.ReportDiagnostic(diagnostic);
             return context;
         }

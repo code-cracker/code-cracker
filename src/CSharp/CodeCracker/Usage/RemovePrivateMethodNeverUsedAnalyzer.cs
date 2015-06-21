@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -39,7 +40,8 @@ namespace CodeCracker.CSharp.Usage
             if (methodSymbol.DeclaredAccessibility != Accessibility.Private) return;
             if (IsMethodUsed(methodDeclaration, context.SemanticModel)) return;
             if (methodDeclaration.Modifiers.Any(SyntaxKind.ExternKeyword)) return;
-            var diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
+            var props = new Dictionary<string, string> { { "identifier", methodDeclaration.Identifier.Text } }.ToImmutableDictionary();
+            var diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation(), props);
             context.ReportDiagnostic(diagnostic);
         }
 
