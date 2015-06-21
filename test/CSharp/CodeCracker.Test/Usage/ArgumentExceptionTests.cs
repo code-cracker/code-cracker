@@ -216,7 +216,7 @@ namespace CodeCracker.Test.CSharp.Usage
             ");
             await VerifyCSharpFixAsync(test, fixtest, 0);
         }
-        
+
 
         [Fact]
         public async Task WhenThrowingArgumentExceptionInLambdaArgumentNameShouldBeInParameterList()

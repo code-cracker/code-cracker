@@ -20,27 +20,22 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-
-            var ctor = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
-
-            context.RegisterCodeFix(CodeAction.Create("Use 'protected' instead of 'public'", c => ReplacePublicWithProtectedAsync(context.Document, ctor, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use 'protected' instead of 'public'", c => ReplacePublicWithProtectedAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> ReplacePublicWithProtectedAsync(Document document, ConstructorDeclarationSyntax ctor, CancellationToken cancellationToken)
+        private async Task<Document> ReplacePublicWithProtectedAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var ctor = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
             var @public = ctor.Modifiers.First(m => m.IsKind(SyntaxKind.PublicKeyword));
             var @protected = SyntaxFactory.Token(@public.LeadingTrivia, SyntaxKind.ProtectedKeyword,
                 @public.TrailingTrivia);
-
             var newModifiers = ctor.Modifiers.Replace(@public, @protected);
             var newCtor = ctor.WithModifiers(newModifiers);
-
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
             var newRoot = root.ReplaceNode(ctor, newCtor);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

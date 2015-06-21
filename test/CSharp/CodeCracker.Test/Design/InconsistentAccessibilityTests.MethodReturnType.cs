@@ -8,7 +8,7 @@ namespace CodeCracker.Test.CSharp.Design
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInMethodReturnTypeAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     public DependedUpon Method()
     {
@@ -19,7 +19,7 @@ namespace CodeCracker.Test.CSharp.Design
     internal class DependedUpon
     {
     }";
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public DependedUpon Method()
     {
@@ -37,7 +37,7 @@ namespace CodeCracker.Test.CSharp.Design
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInMethodReturnTypeWhenQualifiedNameAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     public Dependent.DependedUpon Method()
     {
@@ -48,7 +48,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
     }
 }";
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public Dependent.DependedUpon Method()
     {

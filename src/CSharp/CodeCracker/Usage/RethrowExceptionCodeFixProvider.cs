@@ -21,31 +21,32 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create("Rethrow as inner exception", c => MakeThrowAsInnerAsync(context.Document, declaration, c)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Throw original exception", c => MakeThrowAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Rethrow as inner exception", c => MakeThrowAsInnerAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Throw original exception", c => MakeThrowAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> MakeThrowAsync(Document document, ThrowStatementSyntax throwStatement, CancellationToken cancellationToken)
+        private async Task<Document> MakeThrowAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var throwStatement = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var newThrow = (ThrowStatementSyntax)SyntaxFactory.ParseStatement("throw;")
                 .WithLeadingTrivia(throwStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(throwStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(throwStatement, newThrow);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
 
-        private async Task<Document> MakeThrowAsInnerAsync(Document document, ThrowStatementSyntax throwStatement, CancellationToken cancellationToken)
+        private async Task<Document> MakeThrowAsInnerAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var throwStatement = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var ident = throwStatement.Expression as IdentifierNameSyntax;
             var exSymbol = semanticModel.GetSymbolInfo(ident).Symbol as ILocalSymbol;
@@ -62,7 +63,6 @@ namespace CodeCracker.CSharp.Usage
                 .WithLeadingTrivia(throwStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(throwStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(throwStatement, newThrow);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

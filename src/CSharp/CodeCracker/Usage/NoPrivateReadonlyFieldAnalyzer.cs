@@ -47,10 +47,14 @@ namespace CodeCracker.CSharp.Usage
                 {
                     var fieldsWithoutAssignment = candidateFields.Distinct().Where(field => HasNoAssignment(field, assignedFields));
                     foreach (var candidateField in fieldsWithoutAssignment)
+                    {
+                        var props = new Dictionary<string, string> { { "identifier", candidateField.Variable.Identifier.Text } }.ToImmutableDictionary();
                         compilationEndContext.ReportDiagnostic(Diagnostic.Create(
                             Rule,
                             candidateField.Variable.Identifier.GetLocation(),
+                            props,
                             candidateField.Variable.Identifier.Text));
+                    }
                 });
             });
         }

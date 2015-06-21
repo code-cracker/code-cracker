@@ -22,24 +22,24 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var variableDeclarators = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<VariableDeclaratorSyntax>();
-            foreach (var variableDeclarator in variableDeclarators)
-                context.RegisterCodeFix(CodeAction.Create($"Dispose field '{variableDeclarator.Identifier.Value}'", c => DisposeFieldAsync(context.Document, variableDeclarator, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(
+                $"Dispose field '{diagnostic.Properties["variableIdentifier"]}'", c => DisposeFieldAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> DisposeFieldAsync(Document document, VariableDeclaratorSyntax variableDeclarator, CancellationToken cancellationToken)
+        private static async Task<Document> DisposeFieldAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var variableDeclarator = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<VariableDeclaratorSyntax>().FirstOrDefault();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var type = variableDeclarator.FirstAncestorOrSelf<TypeDeclarationSyntax>();
             var typeSymbol = semanticModel.GetDeclaredSymbol(type);
             var newTypeImplementingIDisposable = AddIDisposableImplementationToType(type, typeSymbol);
             var newTypeWithDisposeMethod = AddDisposeDeclarationToDisposeMethod(variableDeclarator, newTypeImplementingIDisposable, typeSymbol);
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(type, newTypeWithDisposeMethod);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

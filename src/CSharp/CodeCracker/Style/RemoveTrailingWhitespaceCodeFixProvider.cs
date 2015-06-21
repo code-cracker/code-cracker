@@ -22,11 +22,11 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Remove trailing whitespace", ct => RemoveTrailingWhiteSpace(context.Document, diagnostic, ct)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove trailing whitespace", ct => RemoveTrailingWhiteSpaceAsync(context.Document, diagnostic, ct)), diagnostic);
             return Task.FromResult(0);
         }
 
-        private static async Task<Document> RemoveTrailingWhiteSpace(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private static async Task<Document> RemoveTrailingWhiteSpaceAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var trivia = root.FindTrivia(diagnostic.Location.SourceSpan.End - 1);

@@ -20,20 +20,19 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var comparison = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<BinaryExpressionSyntax>().First();
-
-            context.RegisterCodeFix(CodeAction.Create("Removes redundant comparision", c => RemoveRedundantComparisonAsync(context.Document, comparison, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(
+                "Removes redundant comparision", c => RemoveRedundantComparisonAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private static async Task<Document> RemoveRedundantComparisonAsync(Document document, BinaryExpressionSyntax comparison, CancellationToken cancellationToken)
+        private static async Task<Document> RemoveRedundantComparisonAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var comparison = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<BinaryExpressionSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
             bool constValue;
             ExpressionSyntax replacer;
             var rightConst = semanticModel.GetConstantValue(comparison.Right);
@@ -54,7 +53,6 @@ namespace CodeCracker.CSharp.Usage
                 replacer = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, replacer);
             replacer = replacer.WithAdditionalAnnotations(Formatter.Annotation);
 
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(comparison, replacer);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -32,14 +33,10 @@ namespace CodeCracker.CSharp.Usage
 
         private static void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
         {
-            
             if (context.IsGenerated()) return;
             var objectCreation = context.Node as ObjectCreationExpressionSyntax;
             if (objectCreation == null) return;
-            if (objectCreation?.Parent is UsingStatementSyntax)
-            {
-                return;
-            }
+            if (objectCreation?.Parent is UsingStatementSyntax) return;
 
             var semanticModel = context.SemanticModel;
             var type = semanticModel.GetSymbolInfo(objectCreation.Type).Symbol as INamedTypeSymbol;
@@ -70,14 +67,16 @@ namespace CodeCracker.CSharp.Usage
             }
             else
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.GetLocation(), type.Name.ToString()));
+                var props = new Dictionary<string, string> { { "typeName", type.Name } }.ToImmutableDictionary();
+                context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.GetLocation(), props, type.Name.ToString()));
                 return;
             }
             if (statement != null && identitySymbol != null)
             {
                 var isDisposeOrAssigned = IsDisposedOrAssigned(semanticModel, statement, (ILocalSymbol)identitySymbol);
                 if (isDisposeOrAssigned) return;
-                context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.GetLocation(), type.Name.ToString()));
+                var props = new Dictionary<string, string> { { "typeName", type.Name } }.ToImmutableDictionary();
+                context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.GetLocation(), props, type.Name.ToString()));
             }
         }
 

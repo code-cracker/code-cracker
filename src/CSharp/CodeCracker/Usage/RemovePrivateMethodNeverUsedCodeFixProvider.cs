@@ -19,25 +19,20 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
             var diagnostic = context.Diagnostics.First();
-
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-
-            var methodNotUsed = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
-
-            context.RegisterCodeFix(CodeAction.Create($"Remove unused private method : '{methodNotUsed.Identifier.Text}'", c => RemoveMethodAsync(context.Document, methodNotUsed, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(
+                $"Remove unused private method : '{diagnostic.Properties["identifier"]}'", c => RemoveMethodAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> RemoveMethodAsync(Document document, MethodDeclarationSyntax methodNotUsed, CancellationToken cancellationToken)
+        private static async Task<Document> RemoveMethodAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
-
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var methodNotUsed = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
             var newRoot = root.RemoveNode(methodNotUsed, SyntaxRemoveOptions.KeepNoTrivia);
-
             return document.WithSyntaxRoot(newRoot);
         }
     }
