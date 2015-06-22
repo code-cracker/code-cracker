@@ -43,16 +43,27 @@ namespace CodeCracker.CSharp.Design
                 SyntaxKind.NewKeyword,
                 SyntaxKind.AbstractKeyword,
                 SyntaxKind.OverrideKeyword)) return;
+            var semanticModel = context.SemanticModel;
+            var methodSymbol = semanticModel.GetDeclaredSymbol(method);
+            var theClass = methodSymbol.ContainingType;
+            if (theClass.TypeKind == TypeKind.Interface) return;
+            var interfaceMembersWithSameName = theClass.AllInterfaces.SelectMany(i => i.GetMembers(methodSymbol.Name));
+            foreach (var memberSymbol in interfaceMembersWithSameName)
+            {
+                if (memberSymbol.Kind != SymbolKind.Method) continue;
+                var implementation = theClass.FindImplementationForInterfaceMember(memberSymbol);
+                if (implementation != null && implementation.Equals(methodSymbol)) return;
+            }
             if (method.Body == null)
             {
                 if (method.ExpressionBody?.Expression == null) return;
-                var dataFlowAnalysis = context.SemanticModel.AnalyzeDataFlow(method.ExpressionBody.Expression);
+                var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(method.ExpressionBody.Expression);
                 if (!dataFlowAnalysis.Succeeded) return;
                 if (dataFlowAnalysis.DataFlowsIn.Any(inSymbol => inSymbol.Name == "this")) return;
             }
             else if (method.Body.Statements.Count > 0)
             {
-                var dataFlowAnalysis = context.SemanticModel.AnalyzeDataFlow(method.Body);
+                var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(method.Body);
                 if (!dataFlowAnalysis.Succeeded) return;
                 if (dataFlowAnalysis.DataFlowsIn.Any(inSymbol => inSymbol.Name == "this")) return;
             }

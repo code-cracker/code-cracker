@@ -41,7 +41,7 @@ namespace CodeCracker.CSharp.Design
             var references = await SymbolFinder.FindReferencesAsync(methodSymbol, document.Project.Solution, cancellationToken).ConfigureAwait(false);
             var documentGroups = references.SelectMany(r => r.Locations).GroupBy(loc => loc.Document);
             var newSolution = UpdateMainDocument(document, root, method, documentGroups);
-            newSolution = await UpdateReferencingDocuments(document, methodClassName, documentGroups, newSolution, cancellationToken);
+            newSolution = await UpdateReferencingDocumentsAsync(document, methodClassName, documentGroups, newSolution, cancellationToken);
             return newSolution;
         }
 
@@ -63,9 +63,10 @@ namespace CodeCracker.CSharp.Design
                     var token = newRoot.FindToken(diagnosticNode.GetLocation().SourceSpan.Start);
                     var tokenParent = token.Parent;
                     if (token.Parent.IsKind(SyntaxKind.IdentifierName)) continue;
-                    var invocationExpression = newRoot.GetCurrentNode(diagnosticNode).FirstAncestorOrSelfOfType<InvocationExpressionSyntax>().Expression;
-                    if (invocationExpression == null) continue;
-                    var memberAccess = (MemberAccessExpressionSyntax)invocationExpression;
+                    var invocationExpression = newRoot.GetCurrentNode(diagnosticNode).FirstAncestorOrSelfOfType<InvocationExpressionSyntax>()?.Expression;
+                    if (invocationExpression == null || invocationExpression.IsKind(SyntaxKind.IdentifierName)) continue;
+                    var memberAccess = invocationExpression as MemberAccessExpressionSyntax;
+                    if (memberAccess == null) continue;
                     var newMemberAccessParent = memberAccess.Parent.ReplaceNode(memberAccess, memberAccess.Name)
                         .WithAdditionalAnnotations(Formatter.Annotation);
                     newRoot = newRoot.ReplaceNode(memberAccess.Parent, newMemberAccessParent);
@@ -75,7 +76,7 @@ namespace CodeCracker.CSharp.Design
             return newSolution;
         }
 
-        private static async Task<Solution> UpdateReferencingDocuments(Document document, string methodClassName, IEnumerable<IGrouping<Document, ReferenceLocation>> documentGroups, Solution newSolution, CancellationToken cancellationToken)
+        private static async Task<Solution> UpdateReferencingDocumentsAsync(Document document, string methodClassName, IEnumerable<IGrouping<Document, ReferenceLocation>> documentGroups, Solution newSolution, CancellationToken cancellationToken)
         {
             var methodIdentifier = SyntaxFactory.IdentifierName(methodClassName);
             foreach (var documentGroup in documentGroups)
