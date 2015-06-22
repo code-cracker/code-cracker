@@ -275,5 +275,24 @@ void Bar()
     }";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task NoDiagnosticWhenImplementingInterface()
+        {
+            var source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        interface ITypeName
+        {
+            int Bar();
+        }
+        class TypeName : ITypeName
+        {
+            public int Bar() => 1;
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
