@@ -31,26 +31,17 @@ namespace CodeCracker.CSharp.Refactoring
         {
             if (context.IsGenerated()) return;
             var method = (MethodDeclarationSyntax)context.Node;
-
             if (method.Modifiers.Any(SyntaxKind.ExternKeyword)) return;
-
             var contentParameter = method.ParameterList;
-
             if (!contentParameter.Parameters.Any() || contentParameter.Parameters.Count <= 3) return;
-
             if (contentParameter.Parameters.SelectMany(parameter => parameter.Modifiers)
                     .Any(modifier => modifier.IsKind(SyntaxKind.RefKeyword) ||
                                      modifier.IsKind(SyntaxKind.OutKeyword) ||
                                      modifier.IsKind(SyntaxKind.ThisKeyword) ||
                                      modifier.IsKind(SyntaxKind.ParamsKeyword))) return;
-
             if (method.Body?.ChildNodes().Count() > 0) return;
-
-
             var diagnostic = Diagnostic.Create(Rule, contentParameter.GetLocation());
-
             context.ReportDiagnostic(diagnostic);
         }
     }
 }
-

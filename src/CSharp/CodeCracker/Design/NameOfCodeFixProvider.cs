@@ -1,10 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeCracker.Properties;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -20,18 +20,18 @@ namespace CodeCracker.CSharp.Design
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var stringLiteral = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LiteralExpressionSyntax>().FirstOrDefault();
-            if (stringLiteral != null)
-                context.RegisterCodeFix(CodeAction.Create("Use nameof()", c => MakeNameOfAsync(context.Document, stringLiteral, root, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(Resources.NameOfCodeFixProvider_Title, c => MakeNameOfAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private static async Task<Document> MakeNameOfAsync(Document document, LiteralExpressionSyntax stringLiteral, SyntaxNode root, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private static async Task<Document> MakeNameOfAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var stringLiteral = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LiteralExpressionSyntax>().FirstOrDefault();
             var nameofArgument = await GetIdentifierAsync(document, stringLiteral, root, diagnostic, cancellationToken).ConfigureAwait(false);
             var newNameof = SyntaxFactory.ParseExpression($"nameof({nameofArgument})")
                                     .WithLeadingTrivia(stringLiteral.GetLeadingTrivia())

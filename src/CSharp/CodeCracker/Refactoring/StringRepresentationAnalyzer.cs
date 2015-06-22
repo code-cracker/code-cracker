@@ -2,14 +2,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-    /// <summary>
-    /// This analyzer produce 2 different hidden diagnostics one for regular string literals like
-    /// "Hello" and another for verbatim string literalis like @"Hello".
-    /// </summary>
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StringRepresentationAnalyzer : DiagnosticAnalyzer
     {
@@ -42,10 +40,23 @@ namespace CodeCracker.CSharp.Refactoring
             var isVerbatim = literalExpression.Token.Text.Length > 0
                 && literalExpression.Token.Text.StartsWith("@\"");
 
-            context.ReportDiagnostic(
-                Diagnostic.Create(
+            var properties = new Dictionary<string, string>
+            {
+                { nameof(isVerbatim), isVerbatim ? "1" : "0" },
+                { "truncatedString", Truncate((string)literalExpression.Token.Value, 20) }
+            }.ToImmutableDictionary();
+            context.ReportDiagnostic(Diagnostic.Create(
                     isVerbatim ? VerbatimStringRule : RegularStringRule,
-                    literalExpression.GetLocation()));
+                    literalExpression.GetLocation(),
+                    properties));
+        }
+
+        private static string Truncate(string text, int length)
+        {
+            var normalized = new string(text.Cast<char>().Where(c => !char.IsControl(c)).ToArray());
+            return normalized.Length <= length
+                ? normalized
+                : normalized.Substring(0, length - 1) + "\u2026";
         }
     }
 }

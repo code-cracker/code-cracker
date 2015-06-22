@@ -20,18 +20,18 @@ namespace CodeCracker.CSharp.Style
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var statement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().FirstOrDefault();
-            if (statement != null)
-                context.RegisterCodeFix(CodeAction.Create("Use the existence operator", c => UseExistenceOperatorAsync(context.Document, statement, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use the existence operator", c => UseExistenceOperatorAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> UseExistenceOperatorAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken)
+        private static async Task<Document> UseExistenceOperatorAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var ifStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().FirstOrDefault();
             var statementInsideIf = ifStatement.Statement.GetSingleStatementFromPossibleBlock();
             var statementInsideElse = ifStatement.Else.Statement.GetSingleStatementFromPossibleBlock();
             var returnIf = statementInsideIf as ReturnStatementSyntax;
@@ -41,7 +41,7 @@ namespace CodeCracker.CSharp.Style
             return await UseExistenceOperatorAsyncWithAssignmentAsync(document, ifStatement, cancellationToken, (ExpressionStatementSyntax)statementInsideIf);
         }
 
-        private async Task<Document> UseExistenceOperatorAsyncWithReturnAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ReturnStatementSyntax returnIf)
+        private static async Task<Document> UseExistenceOperatorAsyncWithReturnAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ReturnStatementSyntax returnIf)
         {
             var newMemberAccess = ((MemberAccessExpressionSyntax)returnIf.Expression).ToConditionalAccessExpression();
             var newReturn = SyntaxFactory.ReturnStatement(newMemberAccess)
@@ -54,7 +54,7 @@ namespace CodeCracker.CSharp.Style
             return newDocument;
         }
 
-        private async Task<Document> UseExistenceOperatorAsyncWithAssignmentAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ExpressionStatementSyntax expressionIf)
+        private static async Task<Document> UseExistenceOperatorAsyncWithAssignmentAsync(Document document, IfStatementSyntax ifStatement, CancellationToken cancellationToken, ExpressionStatementSyntax expressionIf)
         {
             var memberAccessAssignment = (AssignmentExpressionSyntax)expressionIf.Expression;
             var newMemberAccess = ((MemberAccessExpressionSyntax)memberAccessAssignment.Right).ToConditionalAccessExpression();

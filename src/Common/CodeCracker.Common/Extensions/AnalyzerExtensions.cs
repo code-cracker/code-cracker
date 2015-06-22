@@ -208,5 +208,132 @@ namespace CodeCracker
                 ToNameSyntax(names.Skip(count - 1)) as IdentifierNameSyntax
             );
         }
+
+        public static SyntaxToken GetIdentifier(this BaseMethodDeclarationSyntax method)
+        {
+            var result = default(SyntaxToken);
+
+            switch(method.Kind())
+            {
+                case SyntaxKind.MethodDeclaration:
+                    result = ((MethodDeclarationSyntax)method).Identifier;
+                    break;
+                case SyntaxKind.ConstructorDeclaration:
+                    result = ((ConstructorDeclarationSyntax)method).Identifier;
+                    break;
+                case SyntaxKind.DestructorDeclaration:
+                    result = ((DestructorDeclarationSyntax)method).Identifier;
+                    break;
+            }
+
+            return result;
+        }
+
+        public static MemberDeclarationSyntax WithModifiers(this MemberDeclarationSyntax declaration, SyntaxTokenList newModifiers)
+        {
+            var result = declaration;
+
+            switch (declaration.Kind())
+            {
+                case SyntaxKind.ClassDeclaration:
+                    result = ((ClassDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.StructDeclaration:
+                    result = ((StructDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.InterfaceDeclaration:
+                    result = ((InterfaceDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.EnumDeclaration:
+                    result = ((EnumDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.DelegateDeclaration:
+                    result = ((DelegateDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.FieldDeclaration:
+                    result = ((FieldDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.EventFieldDeclaration:
+                    result = ((EventFieldDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.MethodDeclaration:
+                    result = ((MethodDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.OperatorDeclaration:
+                    result = ((OperatorDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.ConversionOperatorDeclaration:
+                    result = ((ConversionOperatorDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.ConstructorDeclaration:
+                    result = ((ConstructorDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.DestructorDeclaration:
+                    result = ((DestructorDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.PropertyDeclaration:
+                    result = ((PropertyDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.IndexerDeclaration:
+                    result = ((IndexerDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+                case SyntaxKind.EventDeclaration:
+                    result = ((EventDeclarationSyntax)declaration).WithModifiers(newModifiers);
+                    break;
+            }
+
+            return result;
+        }
+
+        public static SyntaxTokenList GetModifiers(this MemberDeclarationSyntax memberDeclaration)
+        {
+            var result = default(SyntaxTokenList);
+
+            switch (memberDeclaration.Kind())
+            {
+                case SyntaxKind.ClassDeclaration:
+                case SyntaxKind.StructDeclaration:
+                case SyntaxKind.InterfaceDeclaration:
+                case SyntaxKind.EnumDeclaration:
+                    result = ((BaseTypeDeclarationSyntax)memberDeclaration).Modifiers;
+                    break;
+                case SyntaxKind.DelegateDeclaration:
+                    result = ((DelegateDeclarationSyntax)memberDeclaration).Modifiers;
+                    break;
+                case SyntaxKind.FieldDeclaration:
+                case SyntaxKind.EventFieldDeclaration:
+                    result = ((BaseFieldDeclarationSyntax)memberDeclaration).Modifiers;
+                    break;
+                case SyntaxKind.MethodDeclaration:
+                case SyntaxKind.OperatorDeclaration:
+                case SyntaxKind.ConversionOperatorDeclaration:
+                case SyntaxKind.ConstructorDeclaration:
+                case SyntaxKind.DestructorDeclaration:
+                    result = ((BaseMethodDeclarationSyntax)memberDeclaration).Modifiers;
+                    break;
+                case SyntaxKind.PropertyDeclaration:
+                case SyntaxKind.IndexerDeclaration:
+                case SyntaxKind.EventDeclaration:
+                    result = ((BasePropertyDeclarationSyntax)memberDeclaration).Modifiers;
+                    break;
+            }
+
+            return result;
+        }
+
+        public static SyntaxTokenList CloneAccessibilityModifiers(this BaseMethodDeclarationSyntax method)
+        {
+            var modifiers = method.Modifiers;
+            if (method.Parent.IsKind(SyntaxKind.InterfaceDeclaration))
+            {
+                modifiers = ((InterfaceDeclarationSyntax)method.Parent).Modifiers;
+            }
+
+            var accessibilityModifiers = modifiers.Where(token => token.IsKind(SyntaxKind.PublicKeyword) || token.IsKind(SyntaxKind.ProtectedKeyword) || token.IsKind(SyntaxKind.InternalKeyword) || token.IsKind(SyntaxKind.PrivateKeyword)).Select(token => SyntaxFactory.Token(token.Kind()));
+
+            return SyntaxFactory.TokenList(EnsureProtectedBeforeInternal(accessibilityModifiers));
+        }
+
+        private static IEnumerable<SyntaxToken> EnsureProtectedBeforeInternal(IEnumerable<SyntaxToken> modifiers) => modifiers.OrderByDescending(token => token.RawKind);
     }
 }

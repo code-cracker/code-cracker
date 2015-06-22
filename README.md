@@ -72,6 +72,34 @@ If it is not being worked on, before you start check if the item is `Ready`.
 If the issue has the `Working` tag (working swimlane on Huboard) and has no Assignee
 then it is not being worked on by somebody on the core team. Check the issue's
 description to find out who it is (if it is not there it has to be on the comments).
+We are adding people that want to contribute to the `Contributors` team so we can
+always assign them to the issues, so during your first contribution you probably will
+be assigned to this team.
+
+The easiest way to start is looking into the issues that are
+[up for grabs](https://github.com/code-cracker/code-cracker/labels/up-for-grabs). You
+may ask to work on any of them, read below to see how.
+
+If you are just starting with Roslyn, want to contribute, and feel you are not yet ready
+to start working on full analyzers or code fixes, you can start helping with areas that are
+less demanding. We have identified a few:
+
+* Fixing bugs
+
+  Still demands knowledge of Roslyn internals but it is easier than coming up with a full
+  analyzer or code fix. Look for the [bugs that are up for grabs](https://github.com/code-cracker/code-cracker/issues?utf8=%E2%9C%93&q=is%3Aopen+label%3Abug+label%3Aup-for-grabs).
+
+* Documentation
+
+  We are documenting all analyzers on the [CodeCracker user site](http://code-cracker.github.io/diagnostics.html).
+  There are lots of analyzers and code fixes to document.
+
+* Localization/Translation
+
+  We are starting to translate the analyzers and code fixes messages to other languages. If you want CodeCracker
+  on your language feel free to create an issue and start working on it. If you want to help with an ongoing translation,
+  comment on the existing issue and say you are ready to help. We also need to update existing analyzers, which were
+  not created ready for localization.
 
 ## Issues and task board
 
@@ -114,17 +142,18 @@ how they interpret these levels.
 The DoD is still evolving. At the present time the checklist is as follows:
 
 1. Builds
-2. Has tests for analyzers, code fixes and refactoring (analyzers have to include test cases where they do not provide diagnostics as well)
+2. Has tests for analyzers, code fixes (including fix all providers) and refactoring
 3. All tests pass
 4. Analyzers follow the guidelines for names
   1. Always named `<featurename>Analyzer`
   2. Always add the diagnostic id to the `DiagnosticIds.cs` file.
 5. Code fixes should follow the guidelines for names
   1. Always named `<featurename>CodeFixProvider`
-  2. Always export the name in the format `CodeCracker<featurename>CodeFixProvider`
-  3. Always use the same diagnostic id added to the `DiagnosticIds.cs` file, unless you are writing a code fix for a diagnostic id raised by the C# compiler itself (staring with `CS`).
+  2. Always use the same diagnostic id added to the `DiagnosticIds.cs` file, unless you are writing a code fix for a diagnostic id raised by the C# compiler itself (staring with `CS`).
 6. Fix all scenarios (fix all in document, fix all in project and fix all in solution) work. You might need to write a `FixAllProvider`. Check the `DisposableVariableNotDisposedFixAllProvider` as an example.
 7. Follow the coding standards present on the project code files.
+8. Works in Visual Studio
+9. Uses localizable strings
 
 ### Start working
 

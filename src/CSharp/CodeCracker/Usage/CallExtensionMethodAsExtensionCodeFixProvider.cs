@@ -15,38 +15,35 @@ namespace CodeCracker.CSharp.Usage
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CallExtensionMethodAsExtensionCodeFixProvider)), Shared]
     public class CallExtensionMethodAsExtensionCodeFixProvider : CodeFixProvider
     {
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId());
 
+        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+
+        public override Task RegisterCodeFixesAsync(CodeFixContext context)
+        {
+            var diagnostic = context.Diagnostics.First();
+            context.RegisterCodeFix(CodeAction.Create(
+                "Use extension method as an extension",
+                cancellationToken => CallAsExtensionAsync(context.Document, diagnostic, cancellationToken)),
+                diagnostic);
+            return Task.FromResult(0);
+        }
+
+        private static async Task<Document> CallAsExtensionAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        {
+            var root = (CompilationUnitSyntax)await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
             var staticInvocationExpression = root
                 .FindToken(diagnosticSpan.Start)
                 .Parent.AncestorsAndSelf()
                 .OfType<InvocationExpressionSyntax>()
                 .First();
 
-            context.RegisterCodeFix(
-                CodeAction.Create(
-                    "Use extension method as an extension",
-                    cancellationToken => CallAsExtensionAsync(context.Document, staticInvocationExpression, cancellationToken)),
-                    diagnostic);
-        }
-
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId());
-
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
-        private async Task<Document> CallAsExtensionAsync(Document document, InvocationExpressionSyntax staticInvocationExpression, CancellationToken cancellationToken)
-        {
             var childNodes = staticInvocationExpression.ChildNodes();
             var parameterExpressions = GetParameterExpressions(childNodes);
 
             var firstArgument = parameterExpressions.FirstOrDefault();
             var callerMethod = childNodes.OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
-
-            var root = await document.GetSyntaxRootAsync(cancellationToken) as CompilationUnitSyntax;
 
             root = ReplaceStaticCallWithExtionMethodCall(
                         root,
@@ -71,7 +68,7 @@ namespace CodeCracker.CSharp.Usage
         public static ArgumentListSyntax CreateArgumentListSyntaxFrom(IEnumerable<ExpressionSyntax> expressions) =>
             SyntaxFactory.ArgumentList().AddArguments(expressions.Select(s => SyntaxFactory.Argument(s)).ToArray());
 
-        private CompilationUnitSyntax ReplaceStaticCallWithExtionMethodCall(CompilationUnitSyntax root, InvocationExpressionSyntax staticInvocationExpression, ExpressionSyntax sourceExpression, SimpleNameSyntax methodName, ArgumentListSyntax argumentList)
+        private static CompilationUnitSyntax ReplaceStaticCallWithExtionMethodCall(CompilationUnitSyntax root, InvocationExpressionSyntax staticInvocationExpression, ExpressionSyntax sourceExpression, SimpleNameSyntax methodName, ArgumentListSyntax argumentList)
         {
             var extensionInvocationExpression = CreateInvocationExpression(sourceExpression, methodName, argumentList)
                 .WithLeadingTrivia(staticInvocationExpression.GetLeadingTrivia());
@@ -86,7 +83,7 @@ namespace CodeCracker.CSharp.Usage
                 methodName),
                 argumentList);
 
-        private CompilationUnitSyntax ImportNeededNamespace(CompilationUnitSyntax root, SemanticModel semanticModel, MemberAccessExpressionSyntax callerMethod)
+        private static CompilationUnitSyntax ImportNeededNamespace(CompilationUnitSyntax root, SemanticModel semanticModel, MemberAccessExpressionSyntax callerMethod)
         {
             var symbolInfo = semanticModel.GetSymbolInfo(callerMethod.Name);
             var methodSymbol = symbolInfo.Symbol as IMethodSymbol;

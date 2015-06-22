@@ -20,21 +20,20 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var sourceSpan = diagnostic.Location.SourceSpan;
-            var method = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
-
             context.RegisterCodeFix(
-                CodeAction.Create("Call GC.SuppressFinalize", ct => AddSuppressFinalizeAsync(context.Document, method, ct)), diagnostic);
+                CodeAction.Create("Call GC.SuppressFinalize", ct => AddSuppressFinalizeAsync(context.Document, diagnostic, ct)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> AddSuppressFinalizeAsync(Document document, MethodDeclarationSyntax method, CancellationToken ct)
+        private async Task<Document> AddSuppressFinalizeAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var method = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
             return document
-                .WithSyntaxRoot((await document.GetSyntaxRootAsync(ct))
+                .WithSyntaxRoot(root
                 .ReplaceNode(method, method.AddBodyStatements(
                     SyntaxFactory.ExpressionStatement(
                         SyntaxFactory.InvocationExpression(

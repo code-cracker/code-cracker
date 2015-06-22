@@ -28,9 +28,9 @@ namespace CodeCracker.CSharp.Usage
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context) =>
-            context.RegisterSymbolAction(AnalyzeAsync, SymbolKind.NamedType);
+            context.RegisterSymbolAction(Analyze, SymbolKind.NamedType);
 
-        private async void AnalyzeAsync(SymbolAnalysisContext context)
+        private void Analyze(SymbolAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var symbol = (INamedTypeSymbol)context.Symbol;
@@ -40,7 +40,7 @@ namespace CodeCracker.CSharp.Usage
             if (!ContainsNonPrivateConstructors(symbol)) return;
             var disposeMethod = FindDisposeMethod(symbol);
             if (disposeMethod == null) return;
-            var syntaxTree = await disposeMethod.DeclaringSyntaxReferences[0]?.GetSyntaxAsync(context.CancellationToken);
+            var syntaxTree = disposeMethod.DeclaringSyntaxReferences[0]?.GetSyntax();
 
             var statements = ((MethodDeclarationSyntax)syntaxTree)?.Body?.Statements.OfType<ExpressionStatementSyntax>();
             if (statements != null)

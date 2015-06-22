@@ -15,28 +15,25 @@ namespace CodeCracker.CSharp.Style
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PropertyPrivateSetCodeFixProvider)), Shared]
     public class PropertyPrivateSetCodeFixProvider : CodeFixProvider
     {
-        private enum FixType
-        {
-            PrivateFix,
-            ProtectedFix
-        }
+        private enum FixType { PrivateFix, ProtectedFix }
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.PropertyPrivateSet.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create("Change property to 'private set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.PrivateFix)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Change property to 'protected set'", c => ChangePropertySetAsync(context.Document, declaration, c, FixType.ProtectedFix)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change property to 'private set'", c => ChangePropertySetAsync(context.Document, diagnostic, c, FixType.PrivateFix)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change property to 'protected set'", c => ChangePropertySetAsync(context.Document, diagnostic, c, FixType.ProtectedFix)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> ChangePropertySetAsync(Document document, PropertyDeclarationSyntax propertyStatement, CancellationToken cancellationToken, FixType fixType)
+        private async Task<Document> ChangePropertySetAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, FixType fixType)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var propertyStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
             var getAcessor = (propertyStatement.AccessorList.Accessors[0].Keyword.Text == "get") ? propertyStatement.AccessorList.Accessors[0] : propertyStatement.AccessorList.Accessors[1];
@@ -53,7 +50,6 @@ namespace CodeCracker.CSharp.Style
                 .WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List<AccessorDeclarationSyntax>(new AccessorDeclarationSyntax[] { getAcessor, setAcessor })))
                 .WithLeadingTrivia(propertyStatement.GetLeadingTrivia()).WithTrailingTrivia(propertyStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(propertyStatement, newProperty);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

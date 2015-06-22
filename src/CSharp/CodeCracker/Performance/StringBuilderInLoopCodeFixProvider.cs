@@ -21,17 +21,19 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => null; //todo: allow for a fixall but only if we can fix the clash on the builder name in a nice way
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var assignmentExpression = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<AssignmentExpressionSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create($"Use StringBuilder to create a value for '{assignmentExpression.Left.ToString()}'", c => UseStringBuilderAsync(context.Document, assignmentExpression, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create($"Use StringBuilder to create a value for '{diagnostic.Properties["assignmentExpressionLeft"]}'",
+                c => UseStringBuilderAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> UseStringBuilderAsync(Document document, AssignmentExpressionSyntax assignmentExpression, CancellationToken cancellationToken)
+        private async Task<Document> UseStringBuilderAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var assignmentExpression = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<AssignmentExpressionSyntax>().First();
             var expressionStatement = assignmentExpression.Parent;
             var expressionStatementParent = expressionStatement.Parent;
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
@@ -65,7 +67,6 @@ namespace CodeCracker.CSharp.Usage
                     newLoopStatement,
                     stringBuilderToString
                 }).WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(loopParent, newLoopParent);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

@@ -19,21 +19,19 @@ namespace CodeCracker.CSharp.Style
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
-            context.RegisterCodeFix(
-                CodeAction.Create("Remove Async termination for method name.", c => RemoveAsyncTerminationAsync(context.Document, declaration, c)),
-                diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove Async termination for method name.",
+                c => RemoveAsyncTerminationAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Solution> RemoveAsyncTerminationAsync(Document document, MethodDeclarationSyntax method, CancellationToken cancellationToken)
+        private async Task<Solution> RemoveAsyncTerminationAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var method = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
             var newName = method.Identifier.Text.Replace("Async", "");
-            var root = await document.GetSyntaxRootAsync();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var symbol = semanticModel.GetDeclaredSymbol(method, cancellationToken);
             var solution = document.Project.Solution;

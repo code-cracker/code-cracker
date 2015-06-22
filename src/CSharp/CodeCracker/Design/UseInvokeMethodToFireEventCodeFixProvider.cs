@@ -20,22 +20,22 @@ namespace CodeCracker.CSharp.Design
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var sourceSpan = diagnostic.Location.SourceSpan;
-            var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-
             context.RegisterCodeFix(
-                CodeAction.Create("Use ?.Invoke operator and method to fire an event.", ct => UseInvokeAsync(context.Document, invocation, ct)), diagnostic);
+                CodeAction.Create("Use ?.Invoke operator and method to fire an event.", ct => UseInvokeAsync(context.Document, diagnostic, ct)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> UseInvokeAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken ct)
+        private async Task<Document> UseInvokeAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var sourceSpan = diagnostic.Location.SourceSpan;
+            var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
             var newInvocation =
                     SyntaxFactory.ConditionalAccessExpression(
-                        (IdentifierNameSyntax)invocation.Expression,
+                        invocation.Expression,
                         SyntaxFactory.Token(SyntaxKind.QuestionToken),
                         SyntaxFactory.InvocationExpression(
                             SyntaxFactory.MemberBindingExpression(
@@ -43,10 +43,7 @@ namespace CodeCracker.CSharp.Design
                                 SyntaxFactory.IdentifierName("Invoke")),
                                 invocation.ArgumentList))
                     .WithAdditionalAnnotations(Formatter.Annotation);
-
-            return document
-                        .WithSyntaxRoot((await document.GetSyntaxRootAsync(ct))
-                        .ReplaceNode(invocation, newInvocation).WithTrailingTrivia(invocation.GetTrailingTrivia()));
+            return document.WithSyntaxRoot(root.ReplaceNode(invocation, newInvocation).WithTrailingTrivia(invocation.GetTrailingTrivia()));
         }
     }
 }

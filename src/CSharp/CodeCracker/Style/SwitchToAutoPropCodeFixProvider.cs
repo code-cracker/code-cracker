@@ -30,7 +30,6 @@ namespace CodeCracker.CSharp.Style
 
         private async Task<Solution> MakeAutoPropertyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var property = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);

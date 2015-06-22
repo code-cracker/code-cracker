@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeCracker.Properties;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -11,11 +12,10 @@ namespace CodeCracker.CSharp.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class NameOfAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "You should use nameof instead of program element name string";
-        internal const string MessageFormat = "Use 'nameof({0})' instead of specifying the program element name.";
+        internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.NameOfAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.NameOfAnalyzer_MessageFormat), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.NameOfAnalyzer_Description), Resources.ResourceManager, typeof(Resources));
         internal const string Category = SupportedCategories.Design;
-        const string Description = "In C#6 the nameof() operator should be used to specify the name of a program element instead of "
-            + "a string literal as it produce code that is easier to refactor.";
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.NameOf.ToDiagnosticId(),
             Title,
