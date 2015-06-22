@@ -182,6 +182,7 @@
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.vb" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Stylecop.vb" />
+    <Compile Include="Refactoring\ChangeAnyToAllTests.vb" />
     <Compile Include="Refactoring\ParameterRefactoryTests.vb" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.vb" />
     <Compile Include="Style\InterfaceNameTests.vb" />
