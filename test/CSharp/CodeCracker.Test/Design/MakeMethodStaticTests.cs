@@ -197,5 +197,83 @@ void Bar()
             var fixtest2 = @"public static int Foo() { return 1; }".WrapInCSharpClass("LargeTypeName");
             await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { fixtest1, fixtest2 });
         }
+
+        [Fact]
+        public async Task MakeMethodStaticWhenReferencingAsAMethodGroup()
+        {
+            var source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public virtual void Foo()
+            {
+                Func<int> i = Bar;
+            }
+            public int Bar() => 1;
+        }
+        class Context
+        {
+            private int i;
+            public void Register(Func<int> f) { i++; }
+        }
+    }";
+            var fixtest = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public virtual void Foo()
+            {
+                Func<int> i = Bar;
+            }
+            public static int Bar() => 1;
+        }
+        class Context
+        {
+            private int i;
+            public void Register(Func<int> f) { i++; }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task MakeMethodStaticWhenReferencingAsAMethodGroupPassedToAFunction()
+        {
+            var source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public virtual void Foo(Context c) => c.Register(Bar);
+            public int Bar() => 1;
+        }
+        class Context
+        {
+            private int i;
+            public void Register(Func<int> f) { i++; }
+        }
+    }";
+            var fixtest = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public virtual void Foo(Context c) => c.Register(Bar);
+            public static int Bar() => 1;
+        }
+        class Context
+        {
+            private int i;
+            public void Register(Func<int> f) { i++; }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }
