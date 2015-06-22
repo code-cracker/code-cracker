@@ -60,8 +60,11 @@ namespace CodeCracker.CSharp.Design
                 newRoot = newRoot.ReplaceNode(newRoot.GetCurrentNode(method), method.AddModifiers(staticToken));
                 foreach (var diagnosticNode in diagnosticNodes)
                 {
+                    var token = newRoot.FindToken(diagnosticNode.GetLocation().SourceSpan.Start);
+                    var tokenParent = token.Parent;
+                    if (token.Parent.IsKind(SyntaxKind.IdentifierName)) continue;
                     var invocationExpression = newRoot.GetCurrentNode(diagnosticNode).FirstAncestorOrSelfOfType<InvocationExpressionSyntax>().Expression;
-                    if (invocationExpression.IsKind(SyntaxKind.IdentifierName)) continue;
+                    if (invocationExpression == null) continue;
                     var memberAccess = (MemberAccessExpressionSyntax)invocationExpression;
                     var newMemberAccessParent = memberAccess.Parent.ReplaceNode(memberAccess, memberAccess.Name)
                         .WithAdditionalAnnotations(Formatter.Annotation);
