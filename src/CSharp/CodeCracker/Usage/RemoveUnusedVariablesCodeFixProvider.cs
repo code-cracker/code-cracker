@@ -32,7 +32,7 @@ namespace CodeCracker.CSharp.Usage
             context.RegisterCodeFix(CodeAction.Create($"Remove unused variable : '{ variableUnused.Declaration.Variables.First()}'", c => RemoveVariableAsync(context.Document, variableUnused, c)), diagnostic);
         }
 
-        private async Task<Document> RemoveVariableAsync(Document document, LocalDeclarationStatementSyntax variableUnused, CancellationToken cancellationToken)
+        private async static Task<Document> RemoveVariableAsync(Document document, LocalDeclarationStatementSyntax variableUnused, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
 

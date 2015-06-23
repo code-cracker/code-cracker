@@ -27,7 +27,7 @@ namespace CodeCracker.CSharp.Refactoring
             return Task.FromResult(0);
         }
 
-        private async Task<Document> InvertForAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> InvertForAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;

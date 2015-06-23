@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Design
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.InvocationExpression);
 
-        private void Analyzer(SyntaxNodeAnalysisContext context)
+        private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var invocation = (InvocationExpressionSyntax)context.Node;

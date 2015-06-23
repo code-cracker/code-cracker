@@ -59,13 +59,13 @@ namespace CodeCracker.CSharp.Usage
             });
         }
 
-        private void CaptureAssignedFields(TypeDeclarationSyntax typeDeclaration, SemanticModel semanticModel, List<ISymbol> assignedFields)
+        private static void CaptureAssignedFields(TypeDeclarationSyntax typeDeclaration, SemanticModel semanticModel, List<ISymbol> assignedFields)
         {
             var t = new TypeDeclarationWithSymbol { TypeDeclaration = typeDeclaration, NamedTypeSymbol = semanticModel.GetDeclaredSymbol(typeDeclaration) };
             var fields = GetAssignedFieldsFromType(t, semanticModel);
             assignedFields.AddRange(fields);
         }
-        private void CaptureCandidateFields(FieldDeclarationSyntax field, SemanticModel semanticModel, List<FieldCandidate> candidateFields)
+        private static void CaptureCandidateFields(FieldDeclarationSyntax field, SemanticModel semanticModel, List<FieldCandidate> candidateFields)
         {
 
             if (!CanBecameReadOnlyField(field)) return;
@@ -77,7 +77,7 @@ namespace CodeCracker.CSharp.Usage
             candidateFields.AddRange(currentAnalysisCandidateFields);
         }
 
-        private bool CanBecameReadOnlyField(FieldDeclarationSyntax field)
+        private static bool CanBecameReadOnlyField(FieldDeclarationSyntax field)
         {
             var noPrivate = field.Modifiers.Any(p => p.IsKind(SyntaxKind.PublicKeyword) || p.IsKind(SyntaxKind.ProtectedKeyword) || p.IsKind(SyntaxKind.InternalKeyword));
             return noPrivate ? !field.Modifiers.Any(p => p.IsKind(SyntaxKind.ConstKeyword) || p.IsKind(SyntaxKind.ReadOnlyKeyword)) : false;
@@ -85,7 +85,7 @@ namespace CodeCracker.CSharp.Usage
 
         #region GetAssignedField
 
-        private IEnumerable<ISymbol> GetAssignedFieldsFromType(TypeDeclarationWithSymbol typeDeclarationWithSymbol, SemanticModel model)
+        private static IEnumerable<ISymbol> GetAssignedFieldsFromType(TypeDeclarationWithSymbol typeDeclarationWithSymbol, SemanticModel model)
         {
             var typeDeclaration = typeDeclarationWithSymbol.TypeDeclaration;
             var descendants = typeDeclaration.DescendantNodes(p => SkipNestedTypes(typeDeclaration, p));
@@ -113,10 +113,10 @@ namespace CodeCracker.CSharp.Usage
                 .Select(s => s.Symbol);
         }
 
-        private bool SkipNestedTypes(TypeDeclarationSyntax typeDeclaration, SyntaxNode node) =>
+        private static bool SkipNestedTypes(TypeDeclarationSyntax typeDeclaration, SyntaxNode node) =>
             node is TypeDeclarationSyntax ? node == typeDeclaration : true;
 
-        private bool SkipFieldsFromItsOwnConstructor(TypeDeclarationWithSymbol type, ExpressionSyntax assignmentExpression, ISymbol assignmentSymbol)
+        private static bool SkipFieldsFromItsOwnConstructor(TypeDeclarationWithSymbol type, ExpressionSyntax assignmentExpression, ISymbol assignmentSymbol)
         {
             var parentConstructor = assignmentExpression.Ancestors().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
 
@@ -130,7 +130,7 @@ namespace CodeCracker.CSharp.Usage
 
         #endregion
 
-        private bool HasNoAssignment(FieldCandidate field, List<ISymbol> assignedFields) =>
+        private static bool HasNoAssignment(FieldCandidate field, List<ISymbol> assignedFields) =>
             !assignedFields.Any(assignedField => assignedField == field.FieldSymbol);
 
         private sealed class FieldCandidate

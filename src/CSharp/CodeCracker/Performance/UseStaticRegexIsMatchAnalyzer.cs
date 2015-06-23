@@ -30,7 +30,7 @@ namespace CodeCracker.CSharp.Performance
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
 
-        private void Analyzer(SyntaxNodeAnalysisContext context)
+        private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var invocationExpression = (InvocationExpressionSyntax)context.Node;

@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Usage
             return Task.FromResult(0);
         }
 
-        private async Task<Document> FixParamAsync(Document document, Diagnostic diagnostic, string newParamName, CancellationToken cancellationToken)
+        private async static Task<Document> FixParamAsync(Document document, Diagnostic diagnostic, string newParamName, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var objectCreation = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().First();

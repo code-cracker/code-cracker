@@ -32,7 +32,7 @@ namespace CodeCracker.CSharp.Usage
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.ThrowStatement);
 
-        private void Analyzer(SyntaxNodeAnalysisContext context)
+        private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var throwStatement = (ThrowStatementSyntax)context.Node;

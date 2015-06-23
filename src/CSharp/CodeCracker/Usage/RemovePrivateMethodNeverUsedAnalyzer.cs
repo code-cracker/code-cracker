@@ -33,7 +33,7 @@ namespace CodeCracker.CSharp.Usage
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration);
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var methodDeclaration = (MethodDeclarationSyntax)context.Node;

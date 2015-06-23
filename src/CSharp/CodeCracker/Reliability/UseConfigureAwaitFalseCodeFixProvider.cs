@@ -28,7 +28,7 @@ namespace CodeCracker.CSharp.Reliability
             return Task.FromResult(0);
         }
 
-        private async Task<Document> CreateUseConfigureAwaitAsync(Document document, TextSpan textSpan, CancellationToken cancellationToken)
+        private async static Task<Document> CreateUseConfigureAwaitAsync(Document document, TextSpan textSpan, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var awaitExpression = (AwaitExpressionSyntax)root.FindNode(textSpan);

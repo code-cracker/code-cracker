@@ -38,7 +38,7 @@ namespace CodeCracker.CSharp.Usage
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ConstructorDeclaration);
         }
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context) {
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context) {
             var ctor = (ConstructorDeclarationSyntax)context.Node;
             if (ctor.Body == null) return;
             var methodInvocations = ctor.Body.DescendantNodes().OfType<InvocationExpressionSyntax>();

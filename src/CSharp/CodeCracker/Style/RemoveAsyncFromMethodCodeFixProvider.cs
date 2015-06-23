@@ -27,7 +27,7 @@ namespace CodeCracker.CSharp.Style
             return Task.FromResult(0);
         }
 
-        private async Task<Solution> RemoveAsyncTerminationAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Solution> RemoveAsyncTerminationAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var method = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();

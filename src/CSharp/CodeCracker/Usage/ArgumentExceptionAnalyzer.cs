@@ -32,7 +32,7 @@ namespace CodeCracker.CSharp.Usage
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ObjectCreationExpression);
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var objectCreationExpression = (ObjectCreationExpressionSyntax)context.Node;
@@ -59,7 +59,7 @@ namespace CodeCracker.CSharp.Usage
             context.ReportDiagnostic(diagnostic);
         }
 
-        private bool IsParamNameCompatibleWithCreatingContext(SyntaxNode node, string paramName, out IList<string> parameters)
+        private static bool IsParamNameCompatibleWithCreatingContext(SyntaxNode node, string paramName, out IList<string> parameters)
         {
             parameters = GetParameterNamesFromCreationContext(node);
             if (parameters == null) return true;

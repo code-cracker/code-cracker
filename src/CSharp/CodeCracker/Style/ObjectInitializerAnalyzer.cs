@@ -47,7 +47,7 @@ namespace CodeCracker.CSharp.Style
             context.RegisterSyntaxNodeAction(AnalyzeAssignment, SyntaxKind.ExpressionStatement);
         }
 
-        private void AnalyzeAssignment(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeAssignment(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var semanticModel = context.SemanticModel;
@@ -62,7 +62,7 @@ namespace CodeCracker.CSharp.Style
             context.ReportDiagnostic(diagnostic);
         }
 
-        private void AnalyzeLocalDeclaration(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeLocalDeclaration(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var semanticModel = context.SemanticModel;
@@ -79,7 +79,7 @@ namespace CodeCracker.CSharp.Style
             context.ReportDiagnostic(diagnostic);
         }
 
-        public bool HasAssignmentUsingDeclaredVariable(SemanticModel semanticModel, ISymbol variableSymbol, IEnumerable<ExpressionStatementSyntax> assignmentExpressionStatements)
+        public static bool HasAssignmentUsingDeclaredVariable(SemanticModel semanticModel, ISymbol variableSymbol, IEnumerable<ExpressionStatementSyntax> assignmentExpressionStatements)
         {
             foreach (var assignmentExpressionStatement in assignmentExpressionStatements)
             {

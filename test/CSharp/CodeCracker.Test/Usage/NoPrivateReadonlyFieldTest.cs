@@ -7,7 +7,7 @@ namespace CodeCracker.Test.CSharp.Usage
 {
     public class NoPrivateReadonlyFieldTests : CodeFixVerifier<NoPrivateReadonlyFieldAnalyzer, ReadonlyFieldCodeFixProvider>
     {
-        DiagnosticResult CreateExpectedDiagnosticResult(int line, int column, string fieldName = "i") =>
+        static DiagnosticResult CreateExpectedDiagnosticResult(int line, int column, string fieldName = "i") =>
             new DiagnosticResult
             {
                 Id = DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(),

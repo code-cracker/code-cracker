@@ -29,7 +29,7 @@ namespace CodeCracker.CSharp.Style
             return Task.FromResult(0);
         }
 
-        private async Task<Document> ChangePropertySetAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, FixType fixType)
+        private async static Task<Document> ChangePropertySetAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, FixType fixType)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;

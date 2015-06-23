@@ -47,7 +47,7 @@ namespace CodeCracker.CSharp.Style
             context.ReportDiagnostic(diagnostic);
         }
 
-        private void AnalyzeBasePropertyNode(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeBasePropertyNode(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var declaration = (BasePropertyDeclarationSyntax)context.Node;

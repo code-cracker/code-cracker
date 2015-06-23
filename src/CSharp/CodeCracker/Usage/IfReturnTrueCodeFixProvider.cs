@@ -27,7 +27,7 @@ namespace CodeCracker.CSharp.Usage
             return Task.FromResult(0);
         }
 
-        private async Task<Document> ReturnConditionDirectlyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> ReturnConditionDirectlyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var ifStatement = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<IfStatementSyntax>().FirstOrDefault();

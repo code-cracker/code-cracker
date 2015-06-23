@@ -27,7 +27,7 @@ namespace CodeCracker.CSharp.Style
 
         public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.IfStatement);
 
-        private void Analyzer(SyntaxNodeAnalysisContext context)
+        private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var ifStatement = context.Node as IfStatementSyntax;
@@ -50,7 +50,7 @@ namespace CodeCracker.CSharp.Style
                 semanticModel.GetSymbolInfo(memberAccessIdentifier));
         }
 
-        private ExpressionSyntax GetMemberAccessIdentifierFromStatements(SemanticModel semanticModel, StatementSyntax statementInsideIf, StatementSyntax statementInsideElse)
+        private static ExpressionSyntax GetMemberAccessIdentifierFromStatements(SemanticModel semanticModel, StatementSyntax statementInsideIf, StatementSyntax statementInsideElse)
         {
             var expressionIf = statementInsideIf as ExpressionStatementSyntax;
             var expressionElse = statementInsideElse as ExpressionStatementSyntax;
@@ -60,7 +60,7 @@ namespace CodeCracker.CSharp.Style
             return memberAccessExpression?.Expression;
         }
 
-        private MemberAccessExpressionSyntax GetMemberAccessExpressionFromReturn(ReturnStatementSyntax returnIf, ReturnStatementSyntax returnElse)
+        private static MemberAccessExpressionSyntax GetMemberAccessExpressionFromReturn(ReturnStatementSyntax returnIf, ReturnStatementSyntax returnElse)
         {
             if (returnIf?.Expression == null || returnElse?.Expression == null) return null;
             var nullLiteral = returnElse.Expression as LiteralExpressionSyntax;
@@ -70,7 +70,7 @@ namespace CodeCracker.CSharp.Style
             return memberAccessExpression;
         }
 
-        private MemberAccessExpressionSyntax GetMemberAccessExpressionFromAssignment(SemanticModel semanticModel, AssignmentExpressionSyntax assignmentExpression, AssignmentExpressionSyntax nullLiteralAssignment)
+        private static MemberAccessExpressionSyntax GetMemberAccessExpressionFromAssignment(SemanticModel semanticModel, AssignmentExpressionSyntax assignmentExpression, AssignmentExpressionSyntax nullLiteralAssignment)
         {
             if (assignmentExpression == null || nullLiteralAssignment == null
                 || !assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression)

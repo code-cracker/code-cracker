@@ -92,7 +92,7 @@ namespace Foo
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
-        public DiagnosticResult CreateDiagnostic(int line, int column)
+        public static DiagnosticResult CreateDiagnostic(int line, int column)
         {
             var diagnostic = new DiagnosticResult
             {

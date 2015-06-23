@@ -28,7 +28,7 @@ namespace CodeCracker.CSharp.Style
             return Task.FromResult(0);
         }
 
-        private async Task<Document> UseStringEmptyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> UseStringEmptyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var literal = root.FindNode(diagnostic.Location.SourceSpan).DescendantNodesAndSelf().OfType<LiteralExpressionSyntax>().First();

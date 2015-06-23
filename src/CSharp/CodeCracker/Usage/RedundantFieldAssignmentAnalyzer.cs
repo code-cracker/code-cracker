@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Usage
 
         public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeFieldDeclaration, SyntaxKind.FieldDeclaration);
 
-        private void AnalyzeFieldDeclaration(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeFieldDeclaration(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var fieldDeclaration = context.Node as FieldDeclarationSyntax;

@@ -29,7 +29,7 @@ namespace CodeCracker.CSharp.Design
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.CatchClause);
 
-        private void Analyzer(SyntaxNodeAnalysisContext context)
+        private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var catchStatement = (CatchClauseSyntax)context.Node;

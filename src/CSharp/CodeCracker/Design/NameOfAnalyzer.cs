@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Design
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyze, SyntaxKind.StringLiteralExpression);
 
-        private void Analyze(SyntaxNodeAnalysisContext context)
+        private static void Analyze(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var stringLiteral = context.Node as LiteralExpressionSyntax;

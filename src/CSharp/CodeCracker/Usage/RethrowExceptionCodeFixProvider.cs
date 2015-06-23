@@ -29,7 +29,7 @@ namespace CodeCracker.CSharp.Usage
             return Task.FromResult(0);
         }
 
-        private async Task<Document> MakeThrowAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> MakeThrowAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var throwStatement = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();
@@ -43,7 +43,7 @@ namespace CodeCracker.CSharp.Usage
             return newDocument;
         }
 
-        private async Task<Document> MakeThrowAsInnerAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> MakeThrowAsInnerAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var throwStatement = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ThrowStatementSyntax>().First();

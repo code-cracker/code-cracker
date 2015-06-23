@@ -28,7 +28,7 @@ namespace CodeCracker.CSharp.Performance
 
         public override void Initialize(AnalysisContext context) => context.RegisterSymbolAction(Analyze, SymbolKind.NamedType);
 
-        private void Analyze(SymbolAnalysisContext context)
+        private static void Analyze(SymbolAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var type = (INamedTypeSymbol)context.Symbol;

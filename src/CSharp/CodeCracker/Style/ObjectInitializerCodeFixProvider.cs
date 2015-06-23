@@ -28,7 +28,7 @@ namespace CodeCracker.CSharp.Style
             return Task.FromResult(0);
         }
 
-        private async Task<Document> MakeObjectInitializerAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> MakeObjectInitializerAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;
@@ -40,21 +40,21 @@ namespace CodeCracker.CSharp.Style
             return MakeObjectInitializer(document, root, semanticModel, localDeclaration);
         }
 
-        private Document MakeObjectInitializer(Document document, SyntaxNode root, SemanticModel semanticModel, LocalDeclarationStatementSyntax localDeclarationStatement)
+        private static Document MakeObjectInitializer(Document document, SyntaxNode root, SemanticModel semanticModel, LocalDeclarationStatementSyntax localDeclarationStatement)
         {
             var variable = localDeclarationStatement.Declaration.Variables.Single();
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
             return MakeObjectInitializer(document, root, localDeclarationStatement, variableSymbol, semanticModel);
         }
 
-        private Document MakeObjectInitializer(Document document, SyntaxNode root, SemanticModel semanticModel, ExpressionStatementSyntax expressionStatement)
+        private static Document MakeObjectInitializer(Document document, SyntaxNode root, SemanticModel semanticModel, ExpressionStatementSyntax expressionStatement)
         {
             var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
             var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
             return MakeObjectInitializer(document, root, expressionStatement, variableSymbol, semanticModel);
         }
 
-        private Document MakeObjectInitializer(Document document, SyntaxNode root, StatementSyntax statement, ISymbol variableSymbol, SemanticModel semanticModel)
+        private static Document MakeObjectInitializer(Document document, SyntaxNode root, StatementSyntax statement, ISymbol variableSymbol, SemanticModel semanticModel)
         {
             var blockParent = statement.FirstAncestorOrSelf<BlockSyntax>();
             var objectCreationExpression = statement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Single();
