@@ -326,5 +326,24 @@ class Foo
 ";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async void MainMethodEntryPointWithDifferentReturnTypeShouldCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    static string Main(string[] args)
+    {
+    }
+}
+";
+            const string fixtest = @"
+class Foo
+{
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }
