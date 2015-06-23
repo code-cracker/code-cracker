@@ -39,7 +39,7 @@ namespace CodeCracker.CSharp.Usage
 
         public override void Initialize(AnalysisContext context) => context.RegisterSymbolAction(AnalyzeField, SymbolKind.Field);
 
-        private void AnalyzeField(SymbolAnalysisContext context)
+        private static void AnalyzeField(SymbolAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var fieldSymbol = (IFieldSymbol)context.Symbol;
@@ -55,7 +55,7 @@ namespace CodeCracker.CSharp.Usage
                 context.ReportDiagnostic(Diagnostic.Create(RuleForCreated, variableDeclarator.GetLocation(), props, fieldSymbol.Name));
         }
 
-        private bool ContainingTypeImplementsIDisposableAndCallsItOnTheField(SymbolAnalysisContext context, IFieldSymbol fieldSymbol, INamedTypeSymbol typeSymbol)
+        private static bool ContainingTypeImplementsIDisposableAndCallsItOnTheField(SymbolAnalysisContext context, IFieldSymbol fieldSymbol, INamedTypeSymbol typeSymbol)
         {
             if (typeSymbol == null) return false;
             var iDisposableInterface = typeSymbol.AllInterfaces.FirstOrDefault(i => i.ToString() == "System.IDisposable");

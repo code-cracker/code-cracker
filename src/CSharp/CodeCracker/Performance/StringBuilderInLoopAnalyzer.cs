@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Usage
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeAssignment, SyntaxKind.AddAssignmentExpression, SyntaxKind.SimpleAssignmentExpression);
 
-        private void AnalyzeAssignment(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeAssignment(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var assignmentExpression = (AssignmentExpressionSyntax)context.Node;

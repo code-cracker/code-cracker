@@ -31,7 +31,7 @@ void Foo()
         [Fact]
         public async Task NoDiagnosticOnNew()
         {
-            var source = @"
+            const string source = @"
         class B
         {
             private int i = 1;
@@ -47,7 +47,7 @@ void Foo()
         [Fact]
         public async Task NoDiagnosticOnOverrideAndAbstract()
         {
-            var source = @"
+            const string source = @"
         abstract class B
         {
             public abstract void Foo();
@@ -62,7 +62,7 @@ void Foo()
         [Fact]
         public async Task NoDiagnosticOnPartial()
         {
-            var source = @"
+            const string source = @"
         partial class C
         {
             partial void Foo() { }
@@ -201,7 +201,7 @@ void Bar()
         [Fact]
         public async Task MakeMethodStaticWhenReferencingAsAMethodGroup()
         {
-            var source = @"
+            const string source = @"
     using System;
     namespace ConsoleApplication1
     {
@@ -219,7 +219,7 @@ void Bar()
             public void Register(Func<int> f) { i++; }
         }
     }";
-            var fixtest = @"
+            const string fixtest = @"
     using System;
     namespace ConsoleApplication1
     {
@@ -243,7 +243,7 @@ void Bar()
         [Fact]
         public async Task MakeMethodStaticWhenReferencingAsAMethodGroupPassedToAFunction()
         {
-            var source = @"
+            const string source = @"
     using System;
     namespace ConsoleApplication1
     {
@@ -258,7 +258,7 @@ void Bar()
             public void Register(Func<int> f) { i++; }
         }
     }";
-            var fixtest = @"
+            const string fixtest = @"
     using System;
     namespace ConsoleApplication1
     {
@@ -279,7 +279,7 @@ void Bar()
         [Fact]
         public async Task NoDiagnosticWhenImplementingInterface()
         {
-            var source = @"
+            const string source = @"
     using System;
     namespace ConsoleApplication1
     {

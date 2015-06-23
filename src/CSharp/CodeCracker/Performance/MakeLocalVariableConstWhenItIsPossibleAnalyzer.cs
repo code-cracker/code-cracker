@@ -30,7 +30,7 @@ namespace CodeCracker.CSharp.Performance
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LocalDeclarationStatement);
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var localDeclaration = (LocalDeclarationStatementSyntax)context.Node;

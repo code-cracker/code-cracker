@@ -28,7 +28,7 @@ namespace CodeCracker.CSharp.Style
             return Task.FromResult(0);
         }
 
-        private async Task<Document> RemoveCommentedCodeAsync(Document document, int start, CancellationToken cancellationToken)
+        private async static Task<Document> RemoveCommentedCodeAsync(Document document, int start, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var firstComment = root.FindTrivia(start);

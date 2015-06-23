@@ -168,7 +168,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        private string WrapInCSharpMethod(string code)
+        private static string WrapInCSharpMethod(string code)
         {
             return @"
     using System;

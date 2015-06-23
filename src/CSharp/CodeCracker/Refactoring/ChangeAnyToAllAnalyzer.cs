@@ -39,7 +39,7 @@ namespace CodeCracker.CSharp.Refactoring
         public static readonly SimpleNameSyntax allName = (SimpleNameSyntax)SyntaxFactory.ParseName("All");
         public static readonly SimpleNameSyntax anyName = (SimpleNameSyntax)SyntaxFactory.ParseName("Any");
 
-        private void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var invocation = context.Node as InvocationExpressionSyntax;

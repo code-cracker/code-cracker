@@ -33,7 +33,7 @@ namespace CodeCracker.CSharp.Style
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNodeVariableDeclaration, SyntaxKind.SimpleMemberAccessExpression);
 
-        private void AnalyzeNodeVariableDeclaration(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeNodeVariableDeclaration(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var expression = context.Node as MemberAccessExpressionSyntax;

@@ -87,7 +87,7 @@ namespace CodeCracker.CSharp.Refactoring
                 return points;
             }
 
-            private SyntaxTokenList GetModifiers(MemberDeclarationSyntax node)
+            private static SyntaxTokenList GetModifiers(MemberDeclarationSyntax node)
             {
                 var nodeType = node.GetType();
 
@@ -110,7 +110,7 @@ namespace CodeCracker.CSharp.Refactoring
 
             private int GetAccessLevelPoints(SyntaxTokenList tokenList) => SumRankPoints(tokenList, accessLevelRank, accessLevelRank[SyntaxKind.PrivateKeyword]);
 
-            private int SumRankPoints(SyntaxTokenList tokenList, Dictionary<SyntaxKind, int> rank, int defaultSumValue)
+            private static int SumRankPoints(SyntaxTokenList tokenList, Dictionary<SyntaxKind, int> rank, int defaultSumValue)
             {
                 var points = tokenList
                         .Select(s => s.Kind())
@@ -118,7 +118,7 @@ namespace CodeCracker.CSharp.Refactoring
                 return points == 0 ? defaultSumValue : points;
             }
 
-            private string GetName(SyntaxNode node)
+            private static string GetName(SyntaxNode node)
             {
                 if (node is FieldDeclarationSyntax)
                     return GetName((node as FieldDeclarationSyntax).Declaration);
@@ -156,7 +156,7 @@ namespace CodeCracker.CSharp.Refactoring
                 return "";
             }
 
-            private string GetName(VariableDeclarationSyntax declaration)
+            private static string GetName(VariableDeclarationSyntax declaration)
             {
                 var str = new StringBuilder();
                 declaration.Variables.Aggregate(str, (accumulate, seed) => accumulate.Append(seed.Identifier.Text));

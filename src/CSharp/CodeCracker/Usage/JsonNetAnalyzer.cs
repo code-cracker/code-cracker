@@ -36,7 +36,7 @@ namespace CodeCracker.CSharp.Usage
             context.RegisterSyntaxNodeAction(c => Analyzer(c, "Parse", "Newtonsoft.Json.Linq.JArray.Parse(string)"), SyntaxKind.InvocationExpression);
         }
 
-        private void Analyzer(SyntaxNodeAnalysisContext context, string methodName, string methodFullDefinition)
+        private static void Analyzer(SyntaxNodeAnalysisContext context, string methodName, string methodFullDefinition)
         {
             if (context.IsGenerated()) return;
             var invocationExpression = (InvocationExpressionSyntax)context.Node;

@@ -56,7 +56,7 @@ namespace CodeCracker.CSharp.Refactoring
 
         protected abstract IComparer<MemberDeclarationSyntax> GetMemberDeclarationComparer(Document document, CancellationToken cancellationToken);
 
-        private bool TryReplaceTypeMembers(TypeDeclarationSyntax typeDeclarationSyntax, IEnumerable<MemberDeclarationSyntax> membersDeclaration, IEnumerable<MemberDeclarationSyntax> sortedMembers, out TypeDeclarationSyntax orderedType)
+        private static bool TryReplaceTypeMembers(TypeDeclarationSyntax typeDeclarationSyntax, IEnumerable<MemberDeclarationSyntax> membersDeclaration, IEnumerable<MemberDeclarationSyntax> sortedMembers, out TypeDeclarationSyntax orderedType)
         {
             var sortedMembersQueue = new Queue<MemberDeclarationSyntax>(sortedMembers);
             var orderChanged = false;

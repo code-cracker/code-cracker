@@ -30,7 +30,7 @@ namespace CodeCracker.CSharp.Refactoring
             return null;
         }
 
-        private async Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)
+        private async static Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)
         {
             var newSolution = fixAllContext.Solution;
             foreach (var projectId in newSolution.ProjectIds)
@@ -38,7 +38,7 @@ namespace CodeCracker.CSharp.Refactoring
             return newSolution;
         }
 
-        private async Task<Solution> GetFixedProjectAsync(FixAllContext fixAllContext, Project project)
+        private async static Task<Solution> GetFixedProjectAsync(FixAllContext fixAllContext, Project project)
         {
             var solution = project.Solution;
             var newDocuments = project.Documents.ToDictionary(d => d.Id, d => GetFixedDocumentAsync(fixAllContext, d));
@@ -48,7 +48,7 @@ namespace CodeCracker.CSharp.Refactoring
             return solution;
         }
 
-        private async Task<SyntaxNode> GetFixedDocumentAsync(FixAllContext fixAllContext, Document document)
+        private async static Task<SyntaxNode> GetFixedDocumentAsync(FixAllContext fixAllContext, Document document)
         {
             var diagnostics = await fixAllContext.GetDocumentDiagnosticsAsync(document).ConfigureAwait(false);
             var root = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);

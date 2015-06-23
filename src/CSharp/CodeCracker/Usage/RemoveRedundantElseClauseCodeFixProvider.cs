@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             context.RegisterCodeFix(CodeAction.Create(RemoveRedundantElseClauseAnalyzer.MessageFormat, c => RemoveElseAsync(context.Document, diagnostic, c)), diagnostic);
             return Task.FromResult(0);
         }
-        private async Task<Document> RemoveElseAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> RemoveElseAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;

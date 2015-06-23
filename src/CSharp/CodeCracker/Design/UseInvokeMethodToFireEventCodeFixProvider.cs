@@ -28,7 +28,7 @@ namespace CodeCracker.CSharp.Design
             return Task.FromResult(0);
         }
 
-        private async Task<Document> UseInvokeAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> UseInvokeAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var sourceSpan = diagnostic.Location.SourceSpan;

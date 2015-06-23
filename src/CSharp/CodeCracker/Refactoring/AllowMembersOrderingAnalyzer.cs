@@ -27,7 +27,7 @@ namespace CodeCracker.CSharp.Refactoring
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
 
-        private void Analyze(SyntaxNodeAnalysisContext context)
+        private static void Analyze(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var typeDeclarationSyntax = context.Node as TypeDeclarationSyntax;

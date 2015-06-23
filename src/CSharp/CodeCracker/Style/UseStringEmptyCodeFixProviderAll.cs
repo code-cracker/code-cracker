@@ -46,7 +46,7 @@ namespace CodeCracker.CSharp.Style
             return null;
         }
 
-        private async Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)
+        private async static Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)
         {
             var newSolution = fixAllContext.Solution;
             foreach (var projectId in newSolution.ProjectIds)
@@ -54,7 +54,7 @@ namespace CodeCracker.CSharp.Style
             return newSolution;
         }
 
-        private async Task<Solution> GetFixedProjectAsync(FixAllContext fixAllContext, Project project)
+        private async static Task<Solution> GetFixedProjectAsync(FixAllContext fixAllContext, Project project)
         {
             var solution = project.Solution;
             foreach (var document in project.Documents)
@@ -66,7 +66,7 @@ namespace CodeCracker.CSharp.Style
             return solution;
         }
 
-        private async Task<SyntaxNode> GetFixedDocumentAsync(Document document, ImmutableArray<Diagnostic> diagnostics, CancellationToken cancellationToken)
+        private async static Task<SyntaxNode> GetFixedDocumentAsync(Document document, ImmutableArray<Diagnostic> diagnostics, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var nodes = diagnostics.Select(d => root.FindNode(d.Location.SourceSpan)).Where(n => !n.IsMissing).Select(n => n.DescendantNodesAndSelf().OfType<LiteralExpressionSyntax>().First());

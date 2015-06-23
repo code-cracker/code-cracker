@@ -30,13 +30,13 @@ namespace CodeCracker.CSharp.Usage
 
         public override void Initialize(AnalysisContext context) => context.RegisterCompilationStartAction(AnalyzeCompilation);
 
-        private void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartAnalysisContext)
+        private static void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartAnalysisContext)
         {
             var compilation = compilationStartAnalysisContext.Compilation;
             compilationStartAnalysisContext.RegisterSyntaxTreeAction(context => AnalyzeTree(context, compilation));
         }
 
-        private void AnalyzeTree(SyntaxTreeAnalysisContext context, Compilation compilation)
+        private static void AnalyzeTree(SyntaxTreeAnalysisContext context, Compilation compilation)
         {
             if (context.IsGenerated()) return;
             if (!compilation.SyntaxTrees.Contains(context.Tree)) return;
