@@ -19,10 +19,14 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
     {
         internal const string InconsistentAccessibilityInMethodReturnTypeCompilerErrorNumber = "CS0050";
         internal const string InconsistentAccessibilityInMethodParameterCompilerErrorNumber = "CS0051";
+        internal const string InconsistentAccessibilityInFieldTypeCompilerErrorNumber = "CS0052";
+        internal const string InconsistentAccessibilityInPropertyTypeCompilerErrorNumber = "CS0053";
+        internal const string InconsistentAccessibilityInIndexerReturnTypeCompilerErrorNumber = "CS0054";
+        internal const string InconsistentAccessibilityInIndexerParameterCompilerErrorNumber = "CS0055";
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(InconsistentAccessibilityInMethodReturnTypeCompilerErrorNumber, InconsistentAccessibilityInMethodParameterCompilerErrorNumber);
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(InconsistentAccessibilityInMethodReturnTypeCompilerErrorNumber, InconsistentAccessibilityInMethodParameterCompilerErrorNumber, InconsistentAccessibilityInFieldTypeCompilerErrorNumber, InconsistentAccessibilityInPropertyTypeCompilerErrorNumber, InconsistentAccessibilityInIndexerReturnTypeCompilerErrorNumber, InconsistentAccessibilityInIndexerParameterCompilerErrorNumber);
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -57,6 +61,18 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
                     break;
                 case InconsistentAccessibilityInMethodParameterCompilerErrorNumber:
                     inconsistentAccessibilityProvider = new InconsistentAccessibilityInMethodParameter();
+                    break;
+                case InconsistentAccessibilityInFieldTypeCompilerErrorNumber:
+                    inconsistentAccessibilityProvider = new InconsistentAccessibilityInFieldType();
+                    break;
+                case InconsistentAccessibilityInPropertyTypeCompilerErrorNumber:
+                    inconsistentAccessibilityProvider = new InconsistentAccessibilityInPropertyType();
+                    break;
+                case InconsistentAccessibilityInIndexerReturnTypeCompilerErrorNumber:
+                    inconsistentAccessibilityProvider = new InconsistentAccessibilityInIndexerReturnType();
+                    break;
+                case InconsistentAccessibilityInIndexerParameterCompilerErrorNumber:
+                    inconsistentAccessibilityProvider = new InconsistentAccessibilityInIndexerParameter();
                     break;
             }
 

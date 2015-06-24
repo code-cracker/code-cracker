@@ -135,9 +135,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeCultureTests.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.MethodParameter.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.MethodReturnType.cs" />
-    <Compile Include="Design\MakeMethodStaticTests.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
@@ -153,7 +152,6 @@
     <Compile Include="Refactoring\ParameterRefectoryTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.cs" />
-    <Compile Include="Style\ConsoleWriteLineTests.cs" />
     <Compile Include="Style\UseEmptyStringTest.cs" />
     <Compile Include="Style\UseStringEmptyTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
@@ -214,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Compile Include="Design\InconsistentAccessibilityTests.FieldPropertyType.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -243,7 +242,7 @@
     <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha6-0630\tools\analyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha5-0589\tools\analyzers\CodeCracker.CSharp.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\C#\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\C#\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>

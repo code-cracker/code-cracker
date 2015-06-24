@@ -36,11 +36,13 @@
   <ItemGroup>
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFixProvider.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfo.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodParameter.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfoProvider.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodReturnType.cs" />
-    <Compile Include="Design\MakeMethodStaticAnalyzer.cs" />
-    <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInFieldType.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInPropertyType.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchAnalyzer.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
@@ -68,8 +70,6 @@
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.cs" />
-    <Compile Include="Style\ConsoleWriteLineAnalyzer.cs" />
-    <Compile Include="Style\ConsoleWriteLineCodeFixProvider.cs" />
     <Compile Include="Style\UseEmptyStringAnalyzer.cs" />
     <Compile Include="Style\UseEmptyStringCodeFixProvider.cs" />
     <Compile Include="Style\UseEmptyStringCodeFixProviderAll.cs" />
@@ -79,7 +79,7 @@
     <Compile Include="Style\AlwaysUseVarAnalyzer.cs" />
     <Compile Include="Style\AlwaysUseVarCodeFixProvider.cs" />
     <Compile Include="Style\ConvertLambdaExpressionToMethodGroupAnalyzer.cs" />
-    <Compile Include="Style\ConvertLambdaExpressionToMethodGroupCodeFixProvider.cs" />
+    <Compile Include="Style\ConvertLambdaExpressionToMethodGroupFixProvider.cs" />
     <Compile Include="Style\RemoveAsyncFromMethodAnalyzer.cs" />
     <Compile Include="Style\RemoveAsyncFromMethodCodeFixProvider.cs" />
     <Compile Include="Style\SwitchToAutoPropCodeFixProvider.cs" />
@@ -258,7 +258,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha6-0630\tools\analyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-alpha5-0589\tools\analyzers\CodeCracker.CSharp.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\C#\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc2\tools\analyzers\C#\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
