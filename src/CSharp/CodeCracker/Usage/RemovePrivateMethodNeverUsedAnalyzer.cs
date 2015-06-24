@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -39,6 +40,7 @@ namespace CodeCracker.CSharp.Usage
             var methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
             if (methodSymbol.DeclaredAccessibility != Accessibility.Private) return;
             if (IsMethodUsed(methodDeclaration, context.SemanticModel)) return;
+            if (IsMainMethodEntryPoint(methodDeclaration, context.SemanticModel)) return;
             if (methodDeclaration.Modifiers.Any(SyntaxKind.ExternKeyword)) return;
             var props = new Dictionary<string, string> { { "identifier", methodDeclaration.Identifier.Text } }.ToImmutableDictionary();
             var diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation(), props);
@@ -68,6 +70,25 @@ namespace CodeCracker.CSharp.Usage
                 return true;
             var genericNames = descendents.OfType<GenericNameSyntax>();
             return genericNames.Any(n => n != null && n.Identifier.ValueText.Equals(methodTarget.Identifier.ValueText));
+        }
+
+        private static bool IsMainMethodEntryPoint(MethodDeclarationSyntax methodTarget, SemanticModel semanticModel)
+        {
+            if (!methodTarget.Identifier.Text.Equals("Main", StringComparison.Ordinal)) return false;
+            if (!methodTarget.Modifiers.Any(SyntaxKind.StaticKeyword)) return false;
+
+            var returnType = semanticModel.GetTypeInfo(methodTarget.ReturnType).Type;
+            if (returnType == null) return false;
+            if (!returnType.Name.Equals("Void", StringComparison.OrdinalIgnoreCase) &&
+                !returnType.Name.Equals("Int32", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            var parameters = methodTarget.ParameterList.Parameters;
+            if (parameters.Count > 1) return false;
+            if (parameters.Count == 0) return true;
+            var parameterType = semanticModel.GetTypeInfo(parameters.First().Type).Type;
+            if (!parameterType.OriginalDefinition.ToString().Equals("String[]", StringComparison.OrdinalIgnoreCase)) return false;
+            return true;
         }
     }
 }
