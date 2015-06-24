@@ -28,7 +28,7 @@ Namespace Refactoring
             Dim diag = context.Diagnostics.First
             Dim message = If(diag.Id = DiagnosticId.ChangeAnyToAll.ToDiagnosticId, "Change Any to All", "Change All to Any")
             context.RegisterCodeFix(CodeAction.Create(message, Function(c) ConvertAsync(context.Document, diag.Location, c)), diag)
-            Await Task.Yield
+            Await Task.FromResult(0)
         End Function
 
         Private Shared Async Function ConvertAsync(Document As Document, diagnosticLocation As Location, cancellationToken As CancellationToken) As Task(Of Document)
