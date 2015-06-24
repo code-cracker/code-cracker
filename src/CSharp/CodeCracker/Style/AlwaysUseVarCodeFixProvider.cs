@@ -20,22 +20,21 @@ namespace CodeCracker.CSharp.Style
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
-            const string message = "Use 'var'";
-            context.RegisterCodeFix(CodeAction.Create(message, c => UseVarAsync(context.Document, localDeclaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use 'var'", c => UseVarAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> UseVarAsync(Document document, LocalDeclarationStatementSyntax localDeclaration, CancellationToken cancellationToken)
+        private async static Task<Document> UseVarAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
             var variableDeclaration = localDeclaration.ChildNodes()
                 .OfType<VariableDeclarationSyntax>()
                 .FirstOrDefault();
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
 #pragma warning disable CC0021 //todo: related to bug #359, remove pragma when fixed
             var @var = SyntaxFactory.IdentifierName("var")
 #pragma warning restore CC0021

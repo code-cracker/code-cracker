@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Usage
             return Task.FromResult(0);
         }
 
-        private async Task<Document> RemoveAssignmentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> RemoveAssignmentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var variable = root.FindNode(diagnostic.Location.SourceSpan) as VariableDeclaratorSyntax;

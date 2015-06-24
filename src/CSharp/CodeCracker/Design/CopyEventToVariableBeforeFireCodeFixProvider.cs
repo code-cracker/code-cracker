@@ -30,7 +30,7 @@ namespace CodeCracker.CSharp.Design
             return Task.FromResult(0);
         }
 
-        private async Task<Document> CreateVariableAsync(Document document, Diagnostic diagnostic, CancellationToken ct)
+        private async static Task<Document> CreateVariableAsync(Document document, Diagnostic diagnostic, CancellationToken ct)
         {
             var root = await document.GetSyntaxRootAsync(ct).ConfigureAwait(false);
             var sourceSpan = diagnostic.Location.SourceSpan;

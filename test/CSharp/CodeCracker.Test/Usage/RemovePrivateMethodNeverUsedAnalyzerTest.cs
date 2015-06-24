@@ -227,5 +227,123 @@ class Foo
 ";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async void MainMethodEntryPointReturningVoidDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    static void Main(String[] args)
+    {
+    }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async void MainMethodEntryPointReturningIntegerDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    static int Main(string[] args)
+    {
+    }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async void MainMethodEntryPointWithoutParameterDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    static int Main()
+    {
+    }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async void MainMethodEntryPointWithoutStaticModifierShouldCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    int Main(string[] args)
+    {
+    }
+}
+";
+            const string fixtest = @"
+class Foo
+{
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async void MainMethodEntryPointWithMoreThanOneParameterShouldCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    static int Main(string[] args, string[] args2)
+    {
+    }
+}
+";
+            const string fixtest = @"
+class Foo
+{
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async void MainMethodEntryPointWithDifferentParameterShouldCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    static int Main(string args)
+    {
+    }
+}
+";
+            const string fixtest = @"
+class Foo
+{
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async void MainMethodEntryPointWithDifferentReturnTypeShouldCreateDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    static string Main(string[] args)
+    {
+    }
+}
+";
+            const string fixtest = @"
+class Foo
+{
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }

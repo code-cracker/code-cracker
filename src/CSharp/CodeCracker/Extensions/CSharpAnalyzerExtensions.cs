@@ -125,5 +125,16 @@ namespace CodeCracker
         }
 
         public static bool IsNotKind(this SyntaxNode node, params SyntaxKind[] kinds) => !node.IsKind(kinds);
+
+        public static bool Any(this SyntaxTokenList list, SyntaxKind kind1, SyntaxKind kind2) =>
+            list.IndexOf(kind1) >= 0 || list.IndexOf(kind2) >= 0;
+
+        public static bool Any(this SyntaxTokenList list, SyntaxKind kind1, SyntaxKind kind2, params SyntaxKind[] kinds)
+        {
+            if (list.Any(kind1, kind2)) return true;
+            for (int i = 0; i < kinds.Length; i++)
+                if (list.IndexOf(kinds[i]) >= 0) return true;
+            return false;
+        }
     }
 }

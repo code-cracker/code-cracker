@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Usage
         public override void Initialize(AnalysisContext context) =>
             context.RegisterCompilationStartAction(AnalyzeCompilation);
 
-        private void AnalyzeCompilation(CompilationStartAnalysisContext compilationContext)
+        private static void AnalyzeCompilation(CompilationStartAnalysisContext compilationContext)
         {
             var compilation = compilationContext.Compilation;
             compilationContext.RegisterSyntaxNodeAction(context => AnalyzeInvocation(context, compilation), SyntaxKind.InvocationExpression);
@@ -39,7 +39,7 @@ namespace CodeCracker.CSharp.Usage
 
         private static readonly SyntaxAnnotation introduceExtensionMethodAnnotation = new SyntaxAnnotation("CallExtensionMethodAsExtensionAnalyzerIntroduceExtensionMethod");
 
-        private void AnalyzeInvocation(SyntaxNodeAnalysisContext context, Compilation compilation)
+        private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context, Compilation compilation)
         {
             if (context.IsGenerated()) return;
             var methodInvokeSyntax = context.Node as InvocationExpressionSyntax;
@@ -56,7 +56,7 @@ namespace CodeCracker.CSharp.Usage
             context.ReportDiagnostic(Diagnostic.Create(Rule, methodCaller.GetLocation(), methodSymbol.Name, classSymbol.Name));
         }
 
-        private bool IsSelectingADifferentMethod(IEnumerable<SyntaxNode> childNodes, SimpleNameSyntax methodName, SyntaxTree tree, IMethodSymbol methodSymbol, StatementSyntax invocationStatement, Compilation compilation)
+        private static bool IsSelectingADifferentMethod(IEnumerable<SyntaxNode> childNodes, SimpleNameSyntax methodName, SyntaxTree tree, IMethodSymbol methodSymbol, StatementSyntax invocationStatement, Compilation compilation)
         {
             var parameterExpressions = CallExtensionMethodAsExtensionCodeFixProvider.GetParameterExpressions(childNodes);
             var firstArgument = parameterExpressions.FirstOrDefault();
@@ -79,7 +79,7 @@ namespace CodeCracker.CSharp.Usage
         private static int CountArguments(IEnumerable<SyntaxNode> childNodes) =>
             childNodes.OfType<ArgumentListSyntax>().Select(s => s.Arguments.Count).FirstOrDefault();
 
-        private IMethodSymbol GetCallerMethodSymbol(SemanticModel semanticModel, SimpleNameSyntax name, int argumentsCount)
+        private static IMethodSymbol GetCallerMethodSymbol(SemanticModel semanticModel, SimpleNameSyntax name, int argumentsCount)
         {
             var symbolInfo = semanticModel.GetSymbolInfo(name);
             return symbolInfo.Symbol as IMethodSymbol ??

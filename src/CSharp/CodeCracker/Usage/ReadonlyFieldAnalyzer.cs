@@ -30,13 +30,13 @@ namespace CodeCracker.CSharp.Usage
 
         public override void Initialize(AnalysisContext context) => context.RegisterCompilationStartAction(AnalyzeCompilation);
 
-        private void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartAnalysisContext)
+        private static void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartAnalysisContext)
         {
             var compilation = compilationStartAnalysisContext.Compilation;
             compilationStartAnalysisContext.RegisterSyntaxTreeAction(context => AnalyzeTree(context, compilation));
         }
 
-        private void AnalyzeTree(SyntaxTreeAnalysisContext context, Compilation compilation)
+        private static void AnalyzeTree(SyntaxTreeAnalysisContext context, Compilation compilation)
         {
             if (context.IsGenerated()) return;
             if (!compilation.SyntaxTrees.Contains(context.Tree)) return;
@@ -74,7 +74,8 @@ namespace CodeCracker.CSharp.Usage
                 }
                 foreach (var readonlyVariable in variablesToMakeReadonly.Values)
                 {
-                    var diagnostic = Diagnostic.Create(Rule, readonlyVariable.GetLocation(), readonlyVariable.Identifier.Text);
+                    var props = new Dictionary<string, string> { { "identifier", readonlyVariable.Identifier.Text } }.ToImmutableDictionary();
+                    var diagnostic = Diagnostic.Create(Rule, readonlyVariable.GetLocation(), props, readonlyVariable.Identifier.Text);
                     context.ReportDiagnostic(diagnostic);
                 }
             }

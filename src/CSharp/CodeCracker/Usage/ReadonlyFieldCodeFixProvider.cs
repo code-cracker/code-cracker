@@ -17,24 +17,24 @@ namespace CodeCracker.CSharp.Usage
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(
-				DiagnosticId.ReadonlyField.ToDiagnosticId(),
-				DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId());
+                DiagnosticId.ReadonlyField.ToDiagnosticId(),
+                DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var variableDeclarator = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<VariableDeclaratorSyntax>().FirstOrDefault();
-            if (variableDeclarator != null)
-                context.RegisterCodeFix(CodeAction.Create($"Make readonly: '{variableDeclarator.Identifier.Text}'", c => MakeFieldReadonlyAsync(context.Document, variableDeclarator, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(
+                $"Make readonly: '{diagnostic.Properties["identifier"]}'", c => MakeFieldReadonlyAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> MakeFieldReadonlyAsync(Document document, VariableDeclaratorSyntax variable, CancellationToken cancellationToken)
+        private async static Task<Document> MakeFieldReadonlyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var variable = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<VariableDeclaratorSyntax>().FirstOrDefault();
             var fieldDeclaration = (FieldDeclarationSyntax)variable.Parent.Parent;
             var newRoot = fieldDeclaration.Declaration.Variables.Count == 1
                 ? MakeSingleFieldReadonly(root, fieldDeclaration)

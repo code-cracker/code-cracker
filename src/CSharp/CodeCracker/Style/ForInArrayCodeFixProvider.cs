@@ -20,21 +20,22 @@ namespace CodeCracker.CSharp.Style
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ForStatementSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create("Change to foreach", c => MakeForeachAsync(context.Document, declaration, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change to foreach", c => MakeForeachAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> MakeForeachAsync(Document document, ForStatementSyntax forStatement, CancellationToken cancellationToken)
+        private async static Task<Document> MakeForeachAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var forStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ForStatementSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var forBlock = forStatement.Statement as BlockSyntax;
-            var condition = forStatement.Condition as BinaryExpressionSyntax;
-            var arrayAccessor = condition.Right as MemberAccessExpressionSyntax;
+            var forBlock = (BlockSyntax)forStatement.Statement;
+            var condition = (BinaryExpressionSyntax)forStatement.Condition;
+            var arrayAccessor = (MemberAccessExpressionSyntax)condition.Right;
             var arrayId = semanticModel.GetSymbolInfo(arrayAccessor.Expression).Symbol as ILocalSymbol;
             var controlVarId = semanticModel.GetDeclaredSymbol(forStatement.Declaration.Variables.Single());
             var arrayDeclarations = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
@@ -53,7 +54,6 @@ namespace CodeCracker.CSharp.Style
                 .WithLeadingTrivia(forStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(forStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(forStatement, forEachStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

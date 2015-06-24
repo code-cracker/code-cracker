@@ -19,24 +19,22 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
-
-            var parameters = ArgumentExceptionAnalyzer.GetParameterNamesFromCreationContext(objectCreation);
+            var parameters = diagnostic.Properties.Where(p => p.Key.StartsWith("param"));
             foreach (var param in parameters)
             {
-                var message = "Use '" + param + "'";
-                context.RegisterCodeFix(CodeAction.Create(message, c => FixParamAsync(context.Document, objectCreation, param, c)), diagnostic);
+                var message = "Use '" + param.Value + "'";
+                context.RegisterCodeFix(CodeAction.Create(message, c => FixParamAsync(context.Document, diagnostic, param.Value, c)), diagnostic);
             }
+            return Task.FromResult(0);
         }
 
-        private async Task<Document> FixParamAsync(Document document, ObjectCreationExpressionSyntax objectCreation, string newParamName, CancellationToken cancellationToken)
+        private async static Task<Document> FixParamAsync(Document document, Diagnostic diagnostic, string newParamName, CancellationToken cancellationToken)
         {
-
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var objectCreation = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var type = objectCreation.Type;
             var typeSymbol = semanticModel.GetSymbolInfo(type).Symbol as ITypeSymbol;
@@ -45,7 +43,6 @@ namespace CodeCracker.CSharp.Usage
             var paramNameOpt = semanticModel.GetConstantValue(paramNameLiteral);
             var currentParamName = paramNameOpt.Value as string;
             var newLiteral = SyntaxFactory.ParseExpression($"\"{newParamName}\"");
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = root.ReplaceNode(paramNameLiteral, newLiteral);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

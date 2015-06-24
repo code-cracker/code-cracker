@@ -29,13 +29,13 @@ namespace CodeCracker.CSharp.Design
             return Task.FromResult(0);
         }
 
-        private async Task<Document> RemoveEmptyCatchBlockAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
+        private async static Task<Document> RemoveEmptyCatchBlockAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
             await RemoveTryAsync(document, diagnostic, cancellationToken, insertComment: false);
 
-        private async Task<Document> RemoveEmptyCatchBlockPutCommentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
+        private async static Task<Document> RemoveEmptyCatchBlockPutCommentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
             await RemoveTryAsync(document, diagnostic, cancellationToken, insertComment: true);
 
-        private async Task<Document> RemoveTryAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, bool insertComment)
+        private async static Task<Document> RemoveTryAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, bool insertComment)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;
@@ -54,7 +54,7 @@ namespace CodeCracker.CSharp.Design
             return newDocument;
         }
 
-        private async Task<Document> InsertExceptionClassCommentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> InsertExceptionClassCommentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;

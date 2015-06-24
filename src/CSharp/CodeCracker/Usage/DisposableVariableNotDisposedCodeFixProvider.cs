@@ -24,20 +24,20 @@ namespace CodeCracker.CSharp.Usage
 
         public sealed override FixAllProvider GetFixAllProvider() => DisposableVariableNotDisposedFixAllProvider.Instance;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
-            if (objectCreation != null)
-                context.RegisterCodeFix(CodeAction.Create(string.Format(MessageFormat, objectCreation.Type.ToString()), c => CreateUsingAsync(context.Document, objectCreation, c)), diagnostic);
+            var title = string.Format(MessageFormat, diagnostic.Properties["typeName"]);
+            context.RegisterCodeFix(CodeAction.Create(title, c => CreateUsingAsync(context.Document, diagnostic, c)), diagnostic);
+            return Task.FromResult(0);
         }
 
-        private static async Task<Document> CreateUsingAsync(Document document, ObjectCreationExpressionSyntax objectCreation, CancellationToken cancellationToken)
+        private static async Task<Document> CreateUsingAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var objectCreation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var root = await document.GetSyntaxRootAsync();
             var newRoot = CreateUsing(root, objectCreation, semanticModel);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;

@@ -30,7 +30,7 @@ namespace CodeCracker.CSharp.Style
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression);
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var lambda = context.Node as ExpressionSyntax;
@@ -75,7 +75,7 @@ namespace CodeCracker.CSharp.Style
                 .FirstOrDefault();
         }
 
-        private ParameterListSyntax BuildParameters(SyntaxNode node)
+        private static ParameterListSyntax BuildParameters(SyntaxNode node)
         {
             if (node is SimpleLambdaExpressionSyntax)
                 return SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(new ParameterSyntax[] { ((SimpleLambdaExpressionSyntax)node).Parameter }));
@@ -84,7 +84,7 @@ namespace CodeCracker.CSharp.Style
             return null;
         }
 
-        private bool MatchArguments(ParameterListSyntax parameters, ArgumentListSyntax arguments)
+        private static bool MatchArguments(ParameterListSyntax parameters, ArgumentListSyntax arguments)
         {
             if (arguments.Arguments.Count != parameters.Parameters.Count) return false;
 
@@ -96,7 +96,7 @@ namespace CodeCracker.CSharp.Style
             return paramNameList.SequenceEqual(argNameList);
         }
 
-        private SyntaxNode GetSemanticRootForSpeculation(SyntaxNode expression)
+        private static SyntaxNode GetSemanticRootForSpeculation(SyntaxNode expression)
         {
             var parentNodeToSpeculate = expression
                 .AncestorsAndSelf(ascendOutOfTrivia: false)
@@ -104,7 +104,7 @@ namespace CodeCracker.CSharp.Style
             return parentNodeToSpeculate ?? expression;
         }
 
-        private SyntaxNode GetNodeRootForAnalysis(ExpressionSyntax expression)
+        private static SyntaxNode GetNodeRootForAnalysis(ExpressionSyntax expression)
         {
             var parentNodeToSpeculate = expression
                 .Ancestors(ascendOutOfTrivia: false)
@@ -125,7 +125,7 @@ namespace CodeCracker.CSharp.Style
                 node.Kind() == SyntaxKind.ArrowExpressionClause;
         }
 
-        private bool ReplacementChangesSemantics(SyntaxNode originalExpression, SyntaxNode replacedExpression, SemanticModel semanticModel)
+        private static bool ReplacementChangesSemantics(SyntaxNode originalExpression, SyntaxNode replacedExpression, SemanticModel semanticModel)
         {
             SemanticModel speculativeModel;
 #pragma warning disable CC0026

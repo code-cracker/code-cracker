@@ -32,7 +32,7 @@ namespace CodeCracker.CSharp.Usage
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ObjectCreationExpression);
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var objectCreationExpression = (ObjectCreationExpressionSyntax)context.Node;
@@ -52,56 +52,53 @@ namespace CodeCracker.CSharp.Usage
 
             var paramName = paramNameOpt.Value as string;
 
-            if (IsParamNameCompatibleWithCreatingContext(objectCreationExpression, paramName)) return;
-
-            var diagnostic = Diagnostic.Create(Rule, paramNameLiteral.GetLocation(), paramName);
+            IList<string> parameters;
+            if (IsParamNameCompatibleWithCreatingContext(objectCreationExpression, paramName, out parameters)) return;
+            var props = parameters.ToImmutableDictionary(p => $"param{p}", p => p);
+            var diagnostic = Diagnostic.Create(Rule, paramNameLiteral.GetLocation(), props.ToImmutableDictionary(), paramName);
             context.ReportDiagnostic(diagnostic);
         }
 
-        private bool IsParamNameCompatibleWithCreatingContext(SyntaxNode node, string paramName)
+        private static bool IsParamNameCompatibleWithCreatingContext(SyntaxNode node, string paramName, out IList<string> parameters)
         {
-            var parameters = GetParameterNamesFromCreationContext(node);
+            parameters = GetParameterNamesFromCreationContext(node);
             if (parameters == null) return true;
             return parameters.Contains(paramName);
         }
 
-        internal static IEnumerable<string> GetParameterNamesFromCreationContext(SyntaxNode node)
+        private static IList<string> GetParameterNamesFromCreationContext(SyntaxNode node)
         {
             var creationContext =
                 node.FirstAncestorOrSelf<SimpleLambdaExpressionSyntax>() ??
                 node.FirstAncestorOrSelf<ParenthesizedLambdaExpressionSyntax>() ??
                 node.FirstAncestorOrSelf<AccessorDeclarationSyntax>() ??
                 (SyntaxNode)node.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>();
-
             return GetParameterNames(creationContext);
         }
 
-        internal static IEnumerable<string> GetParameterNames(SyntaxNode node)
+        internal static IList<string> GetParameterNames(SyntaxNode node)
         {
             var simpleLambda = node as SimpleLambdaExpressionSyntax;
             if (simpleLambda != null)
             {
                 return new[] { simpleLambda.Parameter.Identifier.ToString() };
             }
-
             var method = node as BaseMethodDeclarationSyntax;
             if (method != null)
             {
                 var parameterList = method.ParameterList;
                 return (parameterList == null)
-                    ? Enumerable.Empty<string>()
-                    : parameterList.Parameters.Select(p => p.Identifier.ToString());
+                    ? new List<string>()
+                    : parameterList.Parameters.Select(p => p.Identifier.ToString()).ToList();
             }
-
             var lambda = node as ParenthesizedLambdaExpressionSyntax;
             if (lambda != null)
             {
                 var parameterList = lambda.ParameterList;
                 return (parameterList == null)
-                    ? Enumerable.Empty<string>()
-                    : parameterList.Parameters.Select(p => p.Identifier.ToString());
+                    ? new List<string>()
+                    : parameterList.Parameters.Select(p => p.Identifier.ToString()).ToList();
             }
-
             var accessor = node as AccessorDeclarationSyntax;
             if (accessor != null)
             {
@@ -113,15 +110,13 @@ namespace CodeCracker.CSharp.Usage
                     {
                         result = result.Concat(new[] { "value" });
                     }
-                    return result;
+                    return result.ToList();
                 }
-
                 if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
                 {
-                    return new[] { "value" };
+                    return new List<string> { "value" };
                 }
             }
-
             return null;
         }
 

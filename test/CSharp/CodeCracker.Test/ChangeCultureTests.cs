@@ -6,7 +6,7 @@ namespace CodeCracker.Test.CSharp
     public class ChangeCultureTests
     {
         [Fact]
-        public void ChangesCulture()
+        public static void ChangesCulture()
         {
             using (new ChangeCulture("en-US"))
                 2.5.ToString().Should().Be("2.5");

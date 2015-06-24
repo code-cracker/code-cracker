@@ -28,13 +28,13 @@ namespace CodeCracker.CSharp.Performance
             return Task.FromResult(0);
         }
 
-        private async Task<Document> UseStaticRegexIsMatchAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
+        private async static Task<Document> UseStaticRegexIsMatchAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
             await MakeRegexStaticAsync(document, diagnostic, cancellationToken, makeCompiled: false).ConfigureAwait(false);
 
-        private async Task<Document> UseCompiledAndStaticRegexAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
+        private async static Task<Document> UseCompiledAndStaticRegexAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
             await MakeRegexStaticAsync(document, diagnostic, cancellationToken, makeCompiled: true).ConfigureAwait(false);
 
-        private async Task<Document> MakeRegexStaticAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, bool makeCompiled)
+        private async static Task<Document> MakeRegexStaticAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, bool makeCompiled)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var invocationDeclaration = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
@@ -57,7 +57,7 @@ namespace CodeCracker.CSharp.Performance
             return newDocument;
         }
 
-        private async Task<Document> UseCompiledRegexAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> UseCompiledRegexAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var invocationDeclaration = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();

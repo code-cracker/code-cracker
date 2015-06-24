@@ -33,7 +33,7 @@ namespace CodeCracker.CSharp.Design
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.ConstructorDeclaration);
 
-        private void Analyzer(SyntaxNodeAnalysisContext context)
+        private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             var ctor = (ConstructorDeclarationSyntax)context.Node;

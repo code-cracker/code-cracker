@@ -73,6 +73,8 @@
         UseStringEmpty = 84,
         UseEmptyString = 88,
         RemoveRedundantElseClause = 89,
+        MakeMethodStatic = 91,
         ChangeAllToAny = 92,
+        ConsoleWriteLine = 95,
     }
 }

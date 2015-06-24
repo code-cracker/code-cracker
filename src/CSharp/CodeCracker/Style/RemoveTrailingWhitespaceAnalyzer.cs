@@ -30,7 +30,7 @@ namespace CodeCracker.CSharp.Style
 
         public override void Initialize(AnalysisContext context) => context.RegisterSyntaxTreeAction(AnalyzeTrailingTrivia);
 
-        private void AnalyzeTrailingTrivia(SyntaxTreeAnalysisContext context)
+        private static void AnalyzeTrailingTrivia(SyntaxTreeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
             SourceText text;
