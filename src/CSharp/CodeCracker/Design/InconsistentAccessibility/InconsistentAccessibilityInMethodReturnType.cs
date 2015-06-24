@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             {
                 result.TypeToChangeAccessibility = methodThatRaisedError.ReturnType;
                 result.CodeActionMessage = string.Format(CodeActionMessage.ToString(), methodThatRaisedError.ReturnType, methodThatRaisedError.GetIdentifier().ValueText);
-                result.NewAccessibilityModifiers = methodThatRaisedError.CloneAccessibilityModifiers();
+                result.NewAccessibilityModifiers = methodThatRaisedError.Modifiers.CloneAccessibilityModifiers();
             }
 
             return result;

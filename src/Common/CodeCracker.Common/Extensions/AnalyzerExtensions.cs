@@ -209,6 +209,63 @@ namespace CodeCracker
             );
         }
 
+        public static TypeSyntax FindTypeInParametersList(this SeparatedSyntaxList<ParameterSyntax> parameterList, string typeName)
+        {
+            TypeSyntax result = null;
+            var lastIdentifierOfTypeName = GetLastIdentifierIfQualiedTypeName(typeName);
+            foreach (var parameter in parameterList)
+            {
+                var valueText = GetLastIdentifierValueText(parameter.Type);
+
+                if (!string.IsNullOrEmpty(valueText))
+                {
+                    if (string.Equals(valueText, lastIdentifierOfTypeName, StringComparison.Ordinal))
+                    {
+                        result = parameter.Type;
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static string GetLastIdentifierIfQualiedTypeName(string typeName)
+        {
+            var result = typeName;
+
+            var parameterTypeDotIndex = typeName.LastIndexOf('.');
+            if (parameterTypeDotIndex > 0)
+            {
+                result = typeName.Substring(parameterTypeDotIndex + 1);
+            }
+
+            return result;
+        }
+
+        private static string GetLastIdentifierValueText(CSharpSyntaxNode node)
+        {
+            var result = string.Empty;
+            switch (node.Kind())
+            {
+                case SyntaxKind.IdentifierName:
+                    result = ((IdentifierNameSyntax)node).Identifier.ValueText;
+                    break;
+                case SyntaxKind.QualifiedName:
+                    result = GetLastIdentifierValueText(((QualifiedNameSyntax)node).Right);
+                    break;
+                case SyntaxKind.GenericName:
+                    var genericNameSyntax = ((GenericNameSyntax)node);
+                    result = $"{genericNameSyntax.Identifier.ValueText}{genericNameSyntax.TypeArgumentList.ToString()}";
+                    break;
+                case SyntaxKind.AliasQualifiedName:
+                    result = ((AliasQualifiedNameSyntax)node).Name.Identifier.ValueText;
+                    break;
+            }
+
+            return result;
+        }
+
         public static SyntaxToken GetIdentifier(this BaseMethodDeclarationSyntax method)
         {
             var result = default(SyntaxToken);
@@ -329,6 +386,11 @@ namespace CodeCracker
                 modifiers = ((InterfaceDeclarationSyntax)method.Parent).Modifiers;
             }
 
+            return modifiers.CloneAccessibilityModifiers();
+        }
+
+        public static SyntaxTokenList CloneAccessibilityModifiers(this SyntaxTokenList modifiers)
+        {
             var accessibilityModifiers = modifiers.Where(token => token.IsKind(SyntaxKind.PublicKeyword) || token.IsKind(SyntaxKind.ProtectedKeyword) || token.IsKind(SyntaxKind.InternalKeyword) || token.IsKind(SyntaxKind.PrivateKeyword)).Select(token => SyntaxFactory.Token(token.Kind()));
 
             return SyntaxFactory.TokenList(EnsureProtectedBeforeInternal(accessibilityModifiers));

@@ -135,8 +135,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeCultureTests.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.MethodParameter.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.MethodReturnType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
@@ -212,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Compile Include="Design\InconsistentAccessibilityTests.FieldPropertyType.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

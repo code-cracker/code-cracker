@@ -62,5 +62,67 @@ namespace CodeCracker.Test.CSharp.Design
 
             await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
+
+        [Fact]
+        public async Task ShouldFixInconsistentAccessibilityErrorInIndexerReturnTypeAsync()
+        {
+            var testCode = @"public class Dependent
+{
+    public DependedUpon this[int a]
+    {
+        get { return null; }
+        set { }
+    }
+}
+
+    internal class DependedUpon
+    {
+    }";
+            var fixedCode = @"public class Dependent
+{
+    public DependedUpon this[int a]
+    {
+        get { return null; }
+        set { }
+    }
+}
+
+    public class DependedUpon
+    {
+    }";
+
+            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task ShouldFixInconsistentAccessibilityErrorInIndexerReturnTypeWhenQualifiedNameAsync()
+        {
+            var testCode = @"public class Dependent
+{
+    public Dependent.DependedUpon this[int a]
+    {
+        get { return null; }
+        set { }
+    }
+
+    internal class DependedUpon
+    {
+    }
+}";
+            var fixedCode = @"public class Dependent
+{
+    public Dependent.DependedUpon this[int a]
+    {
+        get { return null; }
+        set { }
+    }
+
+    public class DependedUpon
+    {
+    }
+}";
+
+            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+        }
     }
 }
