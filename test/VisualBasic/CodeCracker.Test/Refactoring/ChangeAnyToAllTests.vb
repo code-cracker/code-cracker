@@ -82,87 +82,87 @@ Imports System.Linq")
             Await VerifyBasicHasNoDiagnosticsAsync(original)
         End Function
 
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) i > 1)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) i <= 1)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) i >= 1)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) i < 1)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) i < 1)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) i >= 1)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) i <> 1)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) i = 1)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) Not True)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) True)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) i > Not(i = 1))", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) i <= Not (i = 1))")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) True)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) False)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) False)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) True)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) True = (i = 1))", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) False = (i = 1))")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) (i = 1) = False)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) i = 1)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) False = (i = 1))", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) i = 1)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) (i = 1) <> True)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) i = 1)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) True <> (i = 1))", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) i = 1)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) (i = 1) <> False)", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) (i = 1) = False)")>
-        '<InlineData("
-        '    Dim ints = {1, 2}
-        '    Dim query = ints.Any(Function(i) False <> (i = 1))", "
-        '    Dim ints = {1, 2}
-        '    Dim query = Not ints.All(Function(i) False = (i = 1))")>
-        <Theory>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) i > 1)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) i <= 1)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) i >= 1)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) i < 1)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) i < 1)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) i >= 1)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) i <> 1)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) i = 1)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) Not True)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) True)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) i > Not(i = 1))", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) i <= Not (i = 1))")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) True)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) False)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) False)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) True)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) True = (i = 1))", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) False = (i = 1))")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) (i = 1) = False)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) i = 1)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) False = (i = 1))", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) i = 1)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) (i = 1) <> True)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) i = 1)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) True <> (i = 1))", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) i = 1)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) (i = 1) <> False)", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) (i = 1) = False)")>
+        <InlineData("
+            Dim ints = {1, 2}
+            Dim query = ints.Any(Function(i) False <> (i = 1))", "
+            Dim ints = {1, 2}
+            Dim query = Not ints.All(Function(i) False = (i = 1))")>
         <InlineData("
             Dim ints = {1, 2}
             Dim query = ints.Any(Function(i) i = 1)", "
             Dim ints = {1, 2}
             Dim query = Not ints.All(Function(i) i <> 1)")>
+        <Theory>
         Public Async Function ConvertsSpecialCases(original As String, fix As String) As Task
             Await VerifyBasicFixAsync(original.WrapInVBMethod([imports]:="
 Imports System.Linq"), fix.WrapInVBMethod([imports]:="
