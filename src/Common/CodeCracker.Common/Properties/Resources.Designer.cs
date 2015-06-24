@@ -62,6 +62,42 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to String interpolation allows for better reading of the resulting string when compared to Console.WriteLine arguments. You should use Console.WriteLine with arguments only when another method is supplying the format string..
+        /// </summary>
+        public static string ConsoleWriteLineAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("ConsoleWriteLineAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use string interpolation.
+        /// </summary>
+        public static string ConsoleWriteLineAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("ConsoleWriteLineAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use string interpolation instead of arguments on Console.WriteLine.
+        /// </summary>
+        public static string ConsoleWriteLineAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("ConsoleWriteLineAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change to string interpolation.
+        /// </summary>
+        public static string ConsoleWriteLineCodeFixProvider_Title {
+            get {
+                return ResourceManager.GetString("ConsoleWriteLineCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change parameter type &apos;{0}&apos; accessibility to be as accessible as method &apos;{1}&apos;.
         /// </summary>
         public static string InconsistentAccessibilityInMethodParameter_Title {
@@ -112,6 +148,42 @@ namespace CodeCracker.Properties {
         public static string NameOfCodeFixProvider_Title {
             get {
                 return ResourceManager.GetString("NameOfCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String interpolation allows for better reading of the resulting string when compared to String.Format. You should use String.Format only when another method is supplying the format string..
+        /// </summary>
+        public static string StringFormatAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("StringFormatAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use string interpolation.
+        /// </summary>
+        public static string StringFormatAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("StringFormatAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use string interpolation instead of String.Format.
+        /// </summary>
+        public static string StringFormatAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("StringFormatAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change to string interpolation.
+        /// </summary>
+        public static string StringFormatCodeFixProvider_Title {
+            get {
+                return ResourceManager.GetString("StringFormatCodeFixProvider_Title", resourceCulture);
             }
         }
     }

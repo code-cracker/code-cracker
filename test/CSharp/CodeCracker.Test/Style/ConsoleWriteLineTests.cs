@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test.CSharp.Style
 {
-    public class StringFormatTests : CodeFixVerifier<StringFormatAnalyzer, StringFormatCodeFixProvider>
+    public class ConsoleWriteLineTests : CodeFixVerifier<ConsoleWriteLineAnalyzer, ConsoleWriteLineCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresRegularStrings()
@@ -26,7 +26,7 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task IgnoresStringMethodsThatAreNotStringFormat()
+        public async Task IgnoresConsoleMethodsThatAreNotConsoleWriteLine()
         {
             const string source = @"
     using System;
@@ -36,7 +36,7 @@ namespace CodeCracker.Test.CSharp.Style
         {
             void Foo()
             {
-                var result = string.Compare(""a"", ""b"");
+                Console.Write(1);
             }
         }
     }";
@@ -44,18 +44,18 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task IgnoresMethodsCalledFormatThatAreNotStringFormat()
+        public async Task IgnoresMethodsCalledWriteLineThatAreNotConsoleWriteLine()
         {
             const string source = @"
     using System;
     namespace ConsoleApplication1
     {
-        class OtherString { public static string Format(string a, string b) { throw new NotImplementedException(); } }
+        class OtherString { public static string WriteLine(string a, string b) { throw new NotImplementedException(); } }
         class TypeName
         {
             void Foo()
             {
-                var result = OtherString.Format(""a"", ""b"");
+                var result = OtherString.WriteLine(""a"", ""b"");
             }
         }
     }";
@@ -63,7 +63,7 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task IgnoresStringFormatWithArrayArgWith1Object()
+        public async Task IgnoresConsoleWriteLineWithArrayArgWith1Object()
         {
             const string source = @"
     using System;
@@ -75,7 +75,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var args = new object[] { noun };
-                var s = string.Format(""This {0} is nice."", args);
+                Console.WriteLine(""This {0} is nice."", args);
             }
         }
     }";
@@ -83,7 +83,7 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task IgnoresStringFormatWithArrayArgWith2Objects()
+        public async Task IgnoresConsoleWriteLineWithArrayArgWith2Objects()
         {
             const string source = @"
     using System;
@@ -96,7 +96,7 @@ namespace CodeCracker.Test.CSharp.Style
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
                 var args = new object[] { noun, adjective };
-                var s = string.Format(""This {0} is {1}"", args);
+                Console.WriteLine(""This {0} is {1}"", args);
             }
         }
     }";
@@ -114,7 +114,7 @@ namespace CodeCracker.Test.CSharp.Style
         {
             void Foo()
             {
-                var result = string.Format(""a"");
+                Console.WriteLine(""a"");
             }
         }
     }";
@@ -132,7 +132,7 @@ namespace CodeCracker.Test.CSharp.Style
         {
             void Foo()
             {
-                var result = string.Format(1, ""b"");
+                Console.WriteLine(1, ""b"");
             }
         }
     }";
@@ -150,7 +150,7 @@ namespace CodeCracker.Test.CSharp.Style
         {
             void Foo()
             {
-                var result = string.Format(""one {0} two {1}"", ""a"");
+                Console.WriteLine(""one {0} two {1}"", ""a"");
             }
         }
     }";
@@ -158,7 +158,7 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task StringFormatWithMoreThan2ArgsProducesDiagnostic()
+        public async Task ConsoleWriteLineWithMoreThan2ArgsProducesDiagnostic()
         {
             const string source = @"
     using System;
@@ -170,22 +170,22 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = string.Format(""This {0} is {1}"", noun, adjective);
+                Console.WriteLine(""This {0} is {1}"", noun, adjective);
             }
         }
     }";
             var expected = new DiagnosticResult
             {
-                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
-                Message = StringFormatAnalyzer.MessageFormat.ToString(),
+                Id = DiagnosticId.ConsoleWriteLine.ToDiagnosticId(),
+                Message = ConsoleWriteLineAnalyzer.MessageFormat.ToString(),
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 17) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public async Task StringFormatWithFullStringNameProducesDiagnostic()
+        public async Task ConsoleWriteLineWithFullStringNameProducesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -196,22 +196,22 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = System.String.Format(""This {0} is {1}"", noun, adjective);
+                System.Console.WriteLine(""This {0} is {1}"", noun, adjective);
             }
         }
     }";
             var expected = new DiagnosticResult
             {
-                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
-                Message = StringFormatAnalyzer.MessageFormat.ToString(),
+                Id = DiagnosticId.ConsoleWriteLine.ToDiagnosticId(),
+                Message = ConsoleWriteLineAnalyzer.MessageFormat.ToString(),
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
-        public async Task StringFormatChangesToStringInterpolation()
+        public async Task ConsoleWriteLineChangesToStringInterpolation()
         {
             const string source = @"
     using System;
@@ -224,7 +224,7 @@ namespace CodeCracker.Test.CSharp.Style
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
                 //comment before
-                var s = string.Format(""This {0} is {1}"", noun, adjective);//comment right after
+                Console.WriteLine(""This {0} is {1}"", noun, adjective);//comment right after
                 //comment after
             }
         }
@@ -240,7 +240,7 @@ namespace CodeCracker.Test.CSharp.Style
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
                 //comment before
-                var s = $""This {noun} is {adjective}"";//comment right after
+                Console.WriteLine($""This {noun} is {adjective}"");//comment right after
                 //comment after
             }
         }
@@ -249,7 +249,7 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task WhenStringFormatHasMoreArgumentsThanNecessaryChangesToStringInterpolationAndIgnoresExtraArgument()
+        public async Task WhenConsoleWriteLineHasMoreArgumentsThanNecessaryChangesToStringInterpolationAndIgnoresExtraArgument()
         {
             const string source = @"
     using System;
@@ -262,7 +262,7 @@ namespace CodeCracker.Test.CSharp.Style
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
                 var otherAdjective = ""loves c#"";
-                var s = string.Format(""This {0} is {1}"", noun, adjective, otherAdjective);
+                Console.WriteLine(""This {0} is {1}"", noun, adjective, otherAdjective);
             }
         }
     }";
@@ -277,7 +277,7 @@ namespace CodeCracker.Test.CSharp.Style
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
                 var otherAdjective = ""loves c#"";
-                var s = $""This {noun} is {adjective}"";
+                Console.WriteLine($""This {noun} is {adjective}"");
             }
         }
     }";
@@ -285,7 +285,7 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task WhenStringFormatHasEscapingItChangesToStringInterpolationAndRemovesEscapingSequence()
+        public async Task WhenConsoleWriteLineHasEscapingItChangesToStringInterpolationAndRemovesEscapingSequence()
         {
             const string source = @"
     using System;
@@ -297,7 +297,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = string.Format(""This {{0}} {0} is {1}"", noun, adjective);
+                Console.WriteLine(""This {{0}} {0} is {1}"", noun, adjective);
             }
         }
     }";
@@ -311,7 +311,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = $""This {{0}} {noun} is {adjective}"";
+                Console.WriteLine($""This {{0}} {noun} is {adjective}"");
             }
         }
     }";
@@ -331,7 +331,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = string.Format(""This {0} is\n \r\f \f \r {1}"", noun, adjective);
+                Console.WriteLine(""This {0} is\n \r\f \f \r {1}"", noun, adjective);
             }
         }
     }";
@@ -345,7 +345,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = $""This {noun} is\n \r\f \f \r {adjective}"";
+                Console.WriteLine($""This {noun} is\n \r\f \f \r {adjective}"");
             }
         }
     }";
@@ -365,7 +365,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = string.Format(""This {0} is \""{1}\"""", noun, adjective);
+                Console.WriteLine(""This {0} is \""{1}\"""", noun, adjective);
             }
         }
     }";
@@ -379,7 +379,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = $""This {noun} is \""{adjective}\"""";
+                Console.WriteLine($""This {noun} is \""{adjective}\"""");
             }
         }
     }";
@@ -387,7 +387,7 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task VerbatimStringWithStringFormatCreatesDiagnostic()
+        public async Task VerbatimStringWithConsoleWriteLineCreatesDiagnostic()
         {
             const string source = @"
     using System;
@@ -399,17 +399,17 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = string.Format(@""This {0} is
+                Console.WriteLine(@""This {0} is
 """"{1}""""."", noun, adjective);
             }
         }
     }";
             var expected = new DiagnosticResult
             {
-                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
-                Message = StringFormatAnalyzer.MessageFormat.ToString(),
+                Id = DiagnosticId.ConsoleWriteLine.ToDiagnosticId(),
+                Message = ConsoleWriteLineAnalyzer.MessageFormat.ToString(),
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 17) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -427,7 +427,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = string.Format(@""This {0} is
+                Console.WriteLine(@""This {0} is
 """"{1}""""."", noun, adjective);
             }
         }
@@ -442,8 +442,8 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = $@""This {noun} is
-""""{adjective}""""."";
+                Console.WriteLine($@""This {noun} is
+""""{adjective}""""."");
             }
         }
     }";
@@ -461,7 +461,7 @@ namespace CodeCracker.Test.CSharp.Style
         {
             void Foo()
             {
-                var s = string.Format("" |{0, -15 :N5}| "", System.Math.PI);
+                Console.WriteLine("" |{0, -15 :N5}| "", System.Math.PI);
             }
         }
     }";
@@ -473,7 +473,7 @@ namespace CodeCracker.Test.CSharp.Style
         {
             void Foo()
             {
-                var s = $"" |{System.Math.PI, -15 :N5}| "";
+                Console.WriteLine($"" |{System.Math.PI, -15 :N5}| "");
             }
         }
     }";
@@ -481,7 +481,7 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task StringFormatChangesToStringInterpolationWithInvertedIndexes()
+        public async Task ConsoleWriteLineChangesToStringInterpolationWithInvertedIndexes()
         {
             const string source = @"
     using System;
@@ -494,7 +494,7 @@ namespace CodeCracker.Test.CSharp.Style
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
                 //comment before
-                var s = string.Format(""This {1} is {0}"", noun, adjective);//comment right after
+                Console.WriteLine(""This {1} is {0}"", noun, adjective);//comment right after
                 //comment after
             }
         }
@@ -510,7 +510,7 @@ namespace CodeCracker.Test.CSharp.Style
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
                 //comment before
-                var s = $""This {adjective} is {noun}"";//comment right after
+                Console.WriteLine($""This {adjective} is {noun}"");//comment right after
                 //comment after
             }
         }
@@ -519,9 +519,10 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task StringFormatWithTernaryOperatorFixesWithParenthesis()
+        public async Task ConsoleWriteLineWithTernaryOperatorFixesWithParenthesis()
         {
             const string source = @"
+    using System;
     namespace ConsoleApplication1
     {
         class TypeName
@@ -530,11 +531,12 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = string.Format(""This {0} is {1}"", noun, true ? adjective : noun);
+                Console.WriteLine(""This {0} is {1}"", noun, true ? adjective : noun);
             }
         }
     }";
             const string expected = @"
+    using System;
     namespace ConsoleApplication1
     {
         class TypeName
@@ -543,7 +545,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var noun = ""Giovanni"";
                 var adjective = ""smart"";
-                var s = $""This {noun} is {(true ? adjective : noun)}"";
+                Console.WriteLine($""This {noun} is {(true ? adjective : noun)}"");
             }
         }
     }";

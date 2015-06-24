@@ -123,6 +123,18 @@
   <data name="InconsistentAccessibilityInMethodReturnType_Title" xml:space="preserve">
     <value>Change return type '{0}' accessibility to be as accessible as method '{1}'</value>
   </data>
+  <data name="ConsoleWriteLineAnalyzer_Description" xml:space="preserve">
+    <value>String interpolation allows for better reading of the resulting string when compared to Console.WriteLine arguments. You should use Console.WriteLine with arguments only when another method is supplying the format string.</value>
+  </data>
+  <data name="ConsoleWriteLineAnalyzer_MessageFormat" xml:space="preserve">
+    <value>Use string interpolation</value>
+  </data>
+  <data name="ConsoleWriteLineAnalyzer_Title" xml:space="preserve">
+    <value>Use string interpolation instead of arguments on Console.WriteLine</value>
+  </data>
+  <data name="ConsoleWriteLineCodeFixProvider_Title" xml:space="preserve">
+    <value>Change to string interpolation</value>
+  </data>
   <data name="NameOfAnalyzer_Description" xml:space="preserve">
     <value>In C#6 the nameof() operator should be used to specify the name of a program element instead of a string literal as it produce code that is easier to refactor.</value>
   </data>
@@ -134,5 +146,17 @@
   </data>
   <data name="NameOfCodeFixProvider_Title" xml:space="preserve">
     <value>Use nameof()</value>
+  </data>
+  <data name="StringFormatAnalyzer_Description" xml:space="preserve">
+    <value>String interpolation allows for better reading of the resulting string when compared to String.Format. You should use String.Format only when another method is supplying the format string.</value>
+  </data>
+  <data name="StringFormatAnalyzer_MessageFormat" xml:space="preserve">
+    <value>Use string interpolation</value>
+  </data>
+  <data name="StringFormatAnalyzer_Title" xml:space="preserve">
+    <value>Use string interpolation instead of String.Format</value>
+  </data>
+  <data name="StringFormatCodeFixProvider_Title" xml:space="preserve">
+    <value>Change to string interpolation</value>
   </data>
 </root>
