@@ -36,9 +36,13 @@
   <ItemGroup>
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFixProvider.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfo.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodParameter.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfoProvider.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodReturnType.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInFieldType.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInPropertyType.cs" />
     <Compile Include="Design\MakeMethodStaticAnalyzer.cs" />
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />

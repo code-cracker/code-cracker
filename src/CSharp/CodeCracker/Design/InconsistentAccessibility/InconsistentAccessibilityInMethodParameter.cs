@@ -25,14 +25,7 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             {
                 var parameterTypeFromMessage = ExtractParameterTypeFromDiagnosticMessage(diagnostic);
 
-                var parameterTypeLastIdentifier = parameterTypeFromMessage;
-                var parameterTypeDotIndex = parameterTypeLastIdentifier.LastIndexOf('.');
-                if (parameterTypeDotIndex > 0)
-                {
-                    parameterTypeLastIdentifier = parameterTypeLastIdentifier.Substring(parameterTypeDotIndex + 1);
-                }
-
-                result.TypeToChangeAccessibility = FindTypeSyntaxFromParametersList(methodThatRaisedError.ParameterList.Parameters, parameterTypeLastIdentifier);
+                result.TypeToChangeAccessibility = methodThatRaisedError.ParameterList.Parameters.FindTypeInParametersList(parameterTypeFromMessage);
                 result.CodeActionMessage = string.Format(CodeActionMessage.ToString(), parameterTypeFromMessage, methodThatRaisedError.GetIdentifier().ValueText);
                 result.NewAccessibilityModifiers = methodThatRaisedError.CloneAccessibilityModifiers();
             }
@@ -42,48 +35,5 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 
         private static string ExtractParameterTypeFromDiagnosticMessage(Diagnostic diagnostic) =>
             Regex.Match(diagnostic.GetMessage(CultureInfo.InvariantCulture), "Inconsistent accessibility: parameter type '(.*)' is less accessible than method '(.*)'").Groups[1].Value;
-
-        private static TypeSyntax FindTypeSyntaxFromParametersList(SeparatedSyntaxList<ParameterSyntax> parameterList, string typeName)
-        {
-            TypeSyntax result = null;
-            foreach(var parameter in parameterList)
-            {
-                var valueText = GetLastIdentifierValueText(parameter.Type);
-
-                if (!string.IsNullOrEmpty(valueText))
-                {
-                    if (string.Equals(valueText, typeName, StringComparison.Ordinal))
-                    {
-                        result = parameter.Type;
-                        break;
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private static string GetLastIdentifierValueText(CSharpSyntaxNode node)
-        {
-            var result = string.Empty;
-            switch (node.Kind())
-            {
-                case SyntaxKind.IdentifierName:
-                    result = ((IdentifierNameSyntax)node).Identifier.ValueText;
-                    break;
-                case SyntaxKind.QualifiedName:
-                    result = GetLastIdentifierValueText(((QualifiedNameSyntax)node).Right);
-                    break;
-                case SyntaxKind.GenericName:
-                    var genericNameSyntax = ((GenericNameSyntax)node);
-                    result = $"{genericNameSyntax.Identifier.ValueText}{genericNameSyntax.TypeArgumentList.ToString()}";
-                    break;
-                case SyntaxKind.AliasQualifiedName:
-                    result = ((AliasQualifiedNameSyntax)node).Name.Identifier.ValueText;
-                    break;
-            }
-
-            return result;
-        }
     }
 }

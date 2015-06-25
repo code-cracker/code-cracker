@@ -96,6 +96,32 @@ namespace CodeCracker.Properties {
                 return ResourceManager.GetString("ConsoleWriteLineCodeFixProvider_Title", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to Change field type &apos;{0}&apos; accessibility to be as accessible as field &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInFieldType_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInFieldType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change parameter type &apos;{0}&apos; accessibility to be as accessible as indexer &apos;this[{1}]&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInIndexerParameter_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInIndexerParameter_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change indexer return type &apos;{0}&apos; accessibility to be as accessible as indexer &apos;this[{1}]&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInIndexerReturnType_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInIndexerReturnType_Title", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Change parameter type &apos;{0}&apos; accessibility to be as accessible as method &apos;{1}&apos;.
@@ -112,6 +138,15 @@ namespace CodeCracker.Properties {
         public static string InconsistentAccessibilityInMethodReturnType_Title {
             get {
                 return ResourceManager.GetString("InconsistentAccessibilityInMethodReturnType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change property type &apos;{0}&apos; accessibility to be as accessible as property &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInPropertyType_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInPropertyType_Title", resourceCulture);
             }
         }
         
