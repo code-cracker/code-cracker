@@ -24,11 +24,11 @@ Namespace Refactoring
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diag = context.Diagnostics.First
             Dim message = If(diag.Id = DiagnosticId.ChangeAnyToAll.ToDiagnosticId, "Change Any to All", "Change All to Any")
             context.RegisterCodeFix(CodeAction.Create(message, Function(c) ConvertAsync(context.Document, diag.Location, c)), diag)
-            Await Task.FromResult(0)
+            Return Task.FromResult(0)
         End Function
 
         Private Shared Async Function ConvertAsync(Document As Document, diagnosticLocation As Location, cancellationToken As CancellationToken) As Task(Of Document)
