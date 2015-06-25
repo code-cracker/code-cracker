@@ -39,11 +39,25 @@ namespace CodeCracker.CSharp.Design
 
             var programElementName = GetProgramElementNameThatMatchStringLiteral(stringLiteral, context.SemanticModel);
 
-            if (Found(programElementName))
+            if (Found(programElementName) && OutSideOfDeclarationSideWithSameName(stringLiteral))
             {
                 var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), programElementName);
                 context.ReportDiagnostic(diagnostic);
             }
+        }
+
+        private static bool OutSideOfDeclarationSideWithSameName(LiteralExpressionSyntax stringLiteral)
+        {
+            var variableDeclaration = stringLiteral.FirstAncestorOfType<VariableDeclaratorSyntax>();
+            if (variableDeclaration != null)
+            {
+                return !string.Equals(variableDeclaration.Identifier.ValueText, stringLiteral.Token.ValueText, StringComparison.Ordinal);
+            }
+
+            var propertyDeclaration = stringLiteral.FirstAncestorOfType<PropertyDeclarationSyntax>();
+            var outSideOfAccessors = null == stringLiteral.FirstAncestorOfType<AccessorListSyntax>();
+            if (!outSideOfAccessors) return true;
+            return !string.Equals(propertyDeclaration?.Identifier.ValueText, stringLiteral.Token.ValueText, StringComparison.Ordinal);
         }
 
         private static string GetProgramElementNameThatMatchStringLiteral(LiteralExpressionSyntax stringLiteral, SemanticModel semanticModel)
