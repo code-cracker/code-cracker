@@ -62,6 +62,33 @@ public class TypeName()
         }
 
         [Fact]
+        public async Task IgnoreInVariableDeclaration()
+        {
+            const string test = @"
+public class TypeName()
+{
+    public TypeName()
+    {
+        var @var = string.IsNullOrEmpty(""var"");
+    }
+}";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task IgnoreOnPropertyDeclaration()
+        {
+            const string test = @"
+public class TypeName
+{
+    public string MyProperty { get; set; } = ""MyProperty"";
+}";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async Task WhenUsingSomeStringInAttributeShouldNotReportDiagnostic()
         {
             const string test = @"
