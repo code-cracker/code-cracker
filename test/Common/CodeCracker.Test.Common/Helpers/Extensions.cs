@@ -32,10 +32,12 @@
         }}
     }}";
         }
-        public static string WrapInVBMethod(this string code, bool isAsync = false)
+        public static string WrapInVBMethod(this string code, 
+            bool isAsync = false,
+            string imports = "")
         {
             return $@"
-Imports System
+Imports System{imports}
 Namespace ConsoleApplication1
     Class TypeName
         Public {(isAsync ? "Async " : "")}{(isAsync ? "Function" : "Sub")} Foo(){(isAsync ? " As Task" : "")}
