@@ -171,4 +171,7 @@
   <data name="StringFormatCodeFixProvider_Title" xml:space="preserve">
     <value>Change to string interpolation</value>
   </data>
+  <data name="MakeMethodNonAsyncCodeFixProvider_Title" xml:space="preserve">
+    <value>Make method non async</value>
+  </data>
 </root>
