@@ -97,6 +97,10 @@ namespace CodeCracker.CSharp.Style
                         .WithLeadingTrivia(objectCreationExpression.GetLeadingTrivia())
                         .WithTrailingTrivia(objectCreationExpression.GetTrailingTrivia())
                         .WithAdditionalAnnotations(Formatter.Annotation);
+                    if (newObjectCreationExpression.ArgumentList?.Arguments.Count == 0)
+                    {
+                        newObjectCreationExpression = newObjectCreationExpression.WithArgumentList(null);
+                    }
                     var newLocalDeclarationStatement = statement.ReplaceNode(objectCreationExpression, newObjectCreationExpression)
                         .WithLeadingTrivia(statement.GetLeadingTrivia())
                         .WithTrailingTrivia(statement.GetTrailingTrivia())
