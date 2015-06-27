@@ -153,7 +153,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 string a;
                 //some comment before
-                var p = new Person()
+                var p = new Person
                 {
                     Name = ""Giovanni"",
                     Age = 25
@@ -447,7 +447,7 @@ namespace CodeCracker.Test.CSharp.Style
                 string a;
                 //some comment before
                 Person p;
-                p = new Person()
+                p = new Person
                 {
                     Name = ""Giovanni"",
                     Age = 25
