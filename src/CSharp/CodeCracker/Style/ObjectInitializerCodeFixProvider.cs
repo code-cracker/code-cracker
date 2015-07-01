@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -72,25 +73,42 @@ namespace CodeCracker.CSharp.Style
                 .WithLeadingTrivia(blockParent.GetLeadingTrivia())
                 .WithTrailingTrivia(blockParent.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            var newAssignmentExpressions = new List<ExpressionStatementSyntax>();
+            
             for (int i = 0; i < blockParent.Statements.Count; i++)
             {
                 var blockStatement = blockParent.Statements[i];
                 if (blockStatement.Equals(statement))
                 {
                     var initializationExpressions = new List<AssignmentExpressionSyntax>();
+
                     foreach (var expressionStatement in assignmentExpressions)
                     {
                         var assignmentExpression = expressionStatement.Expression as AssignmentExpressionSyntax;
                         var memberAccess = assignmentExpression.Left as MemberAccessExpressionSyntax;
                         var propertyIdentifier = memberAccess.Name as IdentifierNameSyntax;
-                        initializationExpressions.Add(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, propertyIdentifier, assignmentExpression.Right));
+                        var newAssignmentExpression = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, propertyIdentifier, assignmentExpression.Right);
+                        initializationExpressions.Add(newAssignmentExpression);
                     }
+
+                    if (objectCreationExpression.Initializer != null)
+                    {
+                        var existentInitilizers = objectCreationExpression.Initializer.Expressions.Cast<AssignmentExpressionSyntax>()
+                            .Where(ae =>
+                            {
+                                var propertyIdentifier = ae.Left.ToFullString().Trim();
+                                return initializationExpressions.All(ie => ie.Left.ToFullString().Trim() != propertyIdentifier);
+                            })
+                            .Select(ae => ae.WithoutTrivia())
+                            .ToList();
+                        initializationExpressions.InsertRange(0, existentInitilizers);
+                    }
+
                     var initializers = SyntaxFactory.SeparatedList<ExpressionSyntax>(initializationExpressions);
+
                     var newObjectCreationExpression = objectCreationExpression.WithInitializer(
                         SyntaxFactory.InitializerExpression(
                             SyntaxKind.ObjectInitializerExpression,
-                            SyntaxFactory.Token(SyntaxFactory.ParseLeadingTrivia(" "), SyntaxKind.OpenBraceToken, SyntaxFactory.ParseTrailingTrivia("\n")),
+                            SyntaxFactory.Token(SyntaxFactory.ParseLeadingTrivia(" "), SyntaxKind.OpenBraceToken, SyntaxFactory.ParseTrailingTrivia(Environment.NewLine)),
                             initializers,
                             SyntaxFactory.Token(SyntaxFactory.ParseLeadingTrivia(" "), SyntaxKind.CloseBraceToken, SyntaxFactory.ParseTrailingTrivia(""))
                         ))
