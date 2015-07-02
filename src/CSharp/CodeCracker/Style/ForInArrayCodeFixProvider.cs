@@ -4,6 +4,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -37,7 +39,8 @@ namespace CodeCracker.CSharp.Style
             var condition = (BinaryExpressionSyntax)forStatement.Condition;
             var arrayAccessor = (MemberAccessExpressionSyntax)condition.Right;
             var arrayId = semanticModel.GetSymbolInfo(arrayAccessor.Expression).Symbol as ILocalSymbol;
-            var controlVarId = semanticModel.GetDeclaredSymbol(forStatement.Declaration.Variables.Single());
+            var forVariable = forStatement.Declaration.Variables.Single();
+            var controlVarId = semanticModel.GetDeclaredSymbol(forVariable);
             var arrayDeclarations = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
                                      where s.Declaration.Variables.Count == 1
                                      let declaration = s.Declaration.Variables.First()
@@ -50,10 +53,21 @@ namespace CodeCracker.CSharp.Style
                                      select s).ToList();
             var arrayDeclaration = arrayDeclarations.First();
             var blockForFor = forBlock.RemoveNode(arrayDeclaration, SyntaxRemoveOptions.KeepLeadingTrivia);
+
             var forEachStatement = SyntaxFactory.ForEachStatement(SyntaxFactory.ParseTypeName("var"), arrayDeclaration.Declaration.Variables.First().Identifier, arrayAccessor.Expression, blockForFor)
                 .WithLeadingTrivia(forStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(forStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
+
+            var foreachVariable = SyntaxFactory.IdentifierName(forEachStatement.Identifier.Text);
+            var elementsAccessorsToReplace = forEachStatement.DescendantNodes()
+                            .OfType<ElementAccessExpressionSyntax>()
+                            .Where(eae => eae.Expression.IsEquivalentTo(arrayAccessor.Expression))
+                            .Where(eae => eae.ArgumentList.Arguments.Any(a => a.Expression.ToFullString().Trim() == forVariable.Identifier.ToFullString().Trim()))
+                            .ToList();            
+
+            forEachStatement = forEachStatement.ReplaceNodes(elementsAccessorsToReplace, (original, rewritten) => foreachVariable);
+
             var newRoot = root.ReplaceNode(forStatement, forEachStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
