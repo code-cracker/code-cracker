@@ -43,12 +43,13 @@ namespace CodeCracker.CSharp.Style
             if (arrayAccessor == null) return;
             if (!arrayAccessor.IsKind(SyntaxKind.SimpleMemberAccessExpression)) return;
             var arrayId = context.SemanticModel.GetSymbolInfo(arrayAccessor.Expression).Symbol as ILocalSymbol;
-            var literalExpression = forStatement.Declaration.Variables.Single().Initializer.Value as LiteralExpressionSyntax;
+            var forVariable = forStatement.Declaration.Variables.Single();
+            var literalExpression = forVariable.Initializer.Value as LiteralExpressionSyntax;
             if (literalExpression == null || !literalExpression.IsKind(SyntaxKind.NumericLiteralExpression)) return;
             if (literalExpression.Token.ValueText != "0") return;
-            var controlVarId = context.SemanticModel.GetDeclaredSymbol(forStatement.Declaration.Variables.Single());
-            var otherUsesOfIndexToken = forBlock.DescendantTokens().Count(t => t.Text == forStatement.Declaration.Variables.Single().Identifier.Text);
-            if (otherUsesOfIndexToken != 1) return;
+            var controlVarId = context.SemanticModel.GetDeclaredSymbol(forVariable);
+            var otherUsesOfIndexToken = forBlock.DescendantTokens().Count(t => t.GetAncestor<ElementAccessExpressionSyntax>() == null && t.Text == forVariable.Identifier.Text);
+            if (otherUsesOfIndexToken != 0) return;
 
             var arrayAccessorSymbols = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
                                         where s.Declaration.Variables.Count == 1
