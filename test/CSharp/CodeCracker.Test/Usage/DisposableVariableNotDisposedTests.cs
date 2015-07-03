@@ -779,5 +779,26 @@ m.Dispose();".WrapInCSharpMethod();
 ";
             await VerifyCSharpFixAllAsync(new[] { source1, source2, source3 }, new[] { fixtest1, fixtest2, fixtest3 });
         }
+
+        [Fact]
+        public async Task IgnoresDisposableObjectsBeingCreatedOnReturnStatement()
+        {
+            var source =
+             @"namespace MyNamespace
+                  {
+                        public class DisposableClass : System.IDisposable  { }
+                      
+                        public class ActualClass
+                        {
+                            public DisposableClass Method()
+                            {
+                                return new DisposableClass();
+                            }
+                        }
+                  }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
     }
 }
