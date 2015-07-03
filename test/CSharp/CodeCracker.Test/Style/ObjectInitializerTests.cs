@@ -485,5 +485,88 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task WhenObjectAlreadyHaveInitializerMergeExistentInitializersWithNewOnes()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private A a;
+            public int Foo()
+            {
+                var p = new Person
+                {
+                    Name = ""Giovanni"",
+                };
+                p.Age = 25;
+                p.LastName = ""Bassi"";
+            }
+        }
+    }";
+
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private A a;
+            public int Foo()
+            {
+                var p = new Person
+                {
+                    Name = ""Giovanni"",
+                    Age = 25,
+                    LastName = ""Bassi""
+                };
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async Task WhenObjectAlreadyHaveInitializerAndThereIsRepeatingAssignmentMergeExistentInitializersWithNewOnesOverringOldAssignment()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private A a;
+            public int Foo()
+            {
+                var p = new Person
+                {
+                    Name = ""Giovanni"",
+                    Age = 24
+                };
+                p.Age = 25;
+                p.LastName = ""Bassi"";
+            }
+        }
+    }";
+
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private A a;
+            public int Foo()
+            {
+                var p = new Person
+                {
+                    Name = ""Giovanni"",
+                    Age = 25,
+                    LastName = ""Bassi""
+                };
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
     }
 }
