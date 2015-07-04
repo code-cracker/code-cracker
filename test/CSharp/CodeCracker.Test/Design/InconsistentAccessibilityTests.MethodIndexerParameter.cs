@@ -294,7 +294,7 @@ public partial class DependedUpon {}";
         [Fact]
         public async Task ShouldChangeAccessibilityWhenErrorInIndexerParameterAsync()
         {
-            var sourceCode = @"public class Dependent
+            const string sourceCode = @"public class Dependent
 {
     public int this[int idx, DependedUpon dependedUpon]
     {
@@ -307,7 +307,7 @@ class DependedUpon
 {
 }";
 
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public int this[int idx, DependedUpon dependedUpon]
     {
@@ -320,13 +320,13 @@ public class DependedUpon
 {
 }";
 
-            await this.VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ShouldChangeAccessibilityWhenErrorInIndexerParameterUsingQualifiedNameAsync()
         {
-            var sourceCode = @"public class Dependent
+            const string sourceCode = @"public class Dependent
 {
     public int this[int idx, Dependent.DependedUpon dependedUpon]
     {
@@ -339,7 +339,7 @@ public class DependedUpon
     }
 }";
 
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public int this[int idx, Dependent.DependedUpon dependedUpon]
     {
@@ -352,13 +352,13 @@ public class DependedUpon
     }
 }";
 
-            await this.VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ShouldChangeAccessibilityWhenErrorInMoreThanOneIndexerParameterAsync()
         {
-            var sourceCode = @"public class Dependent
+            const string sourceCode = @"public class Dependent
 {
     public int this[int idx, Dependent.DependedUpon dependedUpon, DependedUpon2 dependedUpon2]
     {
@@ -375,7 +375,7 @@ class DependedUpon2
 {
 }";
 
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public int this[int idx, Dependent.DependedUpon dependedUpon, DependedUpon2 dependedUpon2]
     {
@@ -392,7 +392,7 @@ public class DependedUpon2
 {
 }";
 
-            await this.VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         protected override CodeFixProvider GetCodeFixProvider() => new InconsistentAccessibilityCodeFixProvider();

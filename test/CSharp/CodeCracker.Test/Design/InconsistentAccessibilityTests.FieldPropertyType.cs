@@ -8,7 +8,7 @@ namespace CodeCracker.Test.CSharp.Design
 		[Fact]
 		public async Task ShouldFixInconsistentAccessibilityErrorInClassFieldTypeAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     public DependedUpon field;
 }
@@ -16,7 +16,7 @@ namespace CodeCracker.Test.CSharp.Design
 class DependedUpon
 {
 }";
-			var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public DependedUpon field;
 }
@@ -25,13 +25,13 @@ public class DependedUpon
 {
 }";
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
 		[Fact]
 		public async Task ShouldFixInconsistentAccessibilityErrorInClassFieldTypeWhenQualifiedNameAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     internal Dependent.DependedUpon field;
 
@@ -40,7 +40,7 @@ public class DependedUpon
 	}
 }";
 
-			var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     internal Dependent.DependedUpon field;
 
@@ -49,13 +49,13 @@ public class DependedUpon
 	}
 }";
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInStructFieldTypeAsync()
         {
-            var testCode = @"public struct Dependent
+            const string testCode = @"public struct Dependent
 {
     public DependedUpon field, field1;
 }
@@ -63,7 +63,7 @@ public class DependedUpon
 class DependedUpon
 {
 }";
-            var fixedCode = @"public struct Dependent
+            const string fixedCode = @"public struct Dependent
 {
     public DependedUpon field, field1;
 }
@@ -72,13 +72,13 @@ public class DependedUpon
 {
 }";
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInPropertyTypeAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     public DependedUpon Property
     {
@@ -91,7 +91,7 @@ class DependedUpon
 {
 }";
 
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public DependedUpon Property
     {
@@ -104,13 +104,13 @@ public class DependedUpon
 {
 }";
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInPropertyTypeWhenUsingAutoPropertyAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     public DependedUpon Property
     {
@@ -123,7 +123,7 @@ class DependedUpon
 {
 }";
 
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public DependedUpon Property
     {
@@ -136,7 +136,7 @@ public class DependedUpon
 {
 }";
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
     }
 }
