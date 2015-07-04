@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Message,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: false,
+            isEnabledByDefault: true,
             description: Description,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UnusedParameters));
