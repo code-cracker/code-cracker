@@ -783,7 +783,7 @@ m.Dispose();".WrapInCSharpMethod();
         [Fact]
         public async Task IgnoresDisposableObjectsBeingCreatedOnReturnStatement()
         {
-            var source =
+            const string source =
              @"namespace MyNamespace
                   {
                         public class DisposableClass : System.IDisposable  { }

@@ -8,7 +8,7 @@ namespace CodeCracker.Test.CSharp.Design
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInMethodReturnTypeAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     public DependedUpon Method()
     {
@@ -19,7 +19,7 @@ namespace CodeCracker.Test.CSharp.Design
     internal class DependedUpon
     {
     }";
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public DependedUpon Method()
     {
@@ -31,13 +31,13 @@ namespace CodeCracker.Test.CSharp.Design
     {
     }";
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInMethodReturnTypeWhenQualifiedNameAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     public Dependent.DependedUpon Method()
     {
@@ -48,7 +48,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
     }
 }";
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public Dependent.DependedUpon Method()
     {
@@ -60,13 +60,13 @@ namespace CodeCracker.Test.CSharp.Design
     }
 }";
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInIndexerReturnTypeAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     public DependedUpon this[int a]
     {
@@ -78,7 +78,7 @@ namespace CodeCracker.Test.CSharp.Design
     internal class DependedUpon
     {
     }";
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public DependedUpon this[int a]
     {
@@ -91,13 +91,13 @@ namespace CodeCracker.Test.CSharp.Design
     {
     }";
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInIndexerReturnTypeWhenQualifiedNameAsync()
         {
-            var testCode = @"public class Dependent
+            const string testCode = @"public class Dependent
 {
     public Dependent.DependedUpon this[int a]
     {
@@ -109,7 +109,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
     }
 }";
-            var fixedCode = @"public class Dependent
+            const string fixedCode = @"public class Dependent
 {
     public Dependent.DependedUpon this[int a]
     {
@@ -122,7 +122,7 @@ namespace CodeCracker.Test.CSharp.Design
     }
 }";
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
     }
 }

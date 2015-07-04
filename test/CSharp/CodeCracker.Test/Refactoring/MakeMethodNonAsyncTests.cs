@@ -10,26 +10,26 @@ namespace CodeCracker.Test.CSharp.Refactoring
         [Fact]
         public async Task ShouldRemoveAsyncKeywordAndReplaceReturnedValuesWithTaskFromResultAsync()
         {
-            var codeFileTemplate = @"using System.Threading.Tasks;
+            const string codeFileTemplate = @"using System.Threading.Tasks;
 class Test
 {{
 {0}
 }}";
 
-            var testMethod = @"
+            const string testMethod = @"
 public static async Task<int> FooAsync()
 {
     return 42;
 }";
             var testCode = string.Format(codeFileTemplate, testMethod);
-            var fixedMethod = @"
+            const string fixedMethod = @"
 public static Task<int> FooAsync()
 {
     return Task.FromResult(42);
 }";
             var fixedCode = string.Format(codeFileTemplate, fixedMethod);
 
-            await this.VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         protected override CodeFixProvider GetCodeFixProvider() => new MakeMethodNonAsyncCodeFixProvider();
