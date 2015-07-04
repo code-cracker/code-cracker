@@ -35,9 +35,7 @@ namespace CodeCracker.CSharp.Style
             var variableDeclaration = localDeclaration.ChildNodes()
                 .OfType<VariableDeclarationSyntax>()
                 .FirstOrDefault();
-#pragma warning disable CC0021 //todo: related to bug #359, remove pragma when fixed
             var @var = SyntaxFactory.IdentifierName("var")
-#pragma warning restore CC0021
                 .WithLeadingTrivia(variableDeclaration.Type.GetLeadingTrivia())
                 .WithTrailingTrivia(variableDeclaration.Type.GetTrailingTrivia());
             var newRoot = root.ReplaceNode(variableDeclaration.Type, @var);
