@@ -10,16 +10,6 @@ namespace CodeCracker.Test.CSharp.Style
         [Fact]
         public async Task ForWhenAccessingAnotherArrayDoesNotCreateDiagnostic()
         {
-var array = new [] {1};
-var anotherArray = new [] {1};
-var count = 0;
-var anotherCount = 0;
-            for (var i = 0; i < array.Length; i++)
-            {
-                var item = array[i];
-                count += array[i];
-                anotherCount += anotherArray[i];
-            }
             var source = @"
 var array = new [] {1};
 var anotherArray = new [] {1};

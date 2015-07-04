@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,16 +13,16 @@ namespace CodeCracker.CSharp.Usage
         internal static readonly LocalizableString Title = "Virtual Method Called On Constructor";
         internal const string Message = "Do not call overridable methods in constructors";
         internal const string Category = SupportedCategories.Usage;
-        const string Description = "When a virtual method is called, the actual type that executes the method "+
-                                   "is not selected until run time. When a constructor calls a virtual method, "+
-                                   "it is possible that the constructor for the instance that invokes the method "+
+        const string Description = "When a virtual method is called, the actual type that executes the method " +
+                                   "is not selected until run time. When a constructor calls a virtual method, " +
+                                   "it is possible that the constructor for the instance that invokes the method " +
                                    "has not executed.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
-            Title, 
-            Message, 
-            Category, 
+            Title,
+            Message,
+            Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: Description,
@@ -38,18 +35,19 @@ namespace CodeCracker.CSharp.Usage
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ConstructorDeclaration);
         }
 
-        private static void AnalyzeNode(SyntaxNodeAnalysisContext context) {
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        {
             var ctor = (ConstructorDeclarationSyntax)context.Node;
             if (ctor.Body == null) return;
             var methodInvocations = ctor.Body.DescendantNodes().OfType<InvocationExpressionSyntax>();
-            foreach (var method in methodInvocations) {
+            foreach (var method in methodInvocations)
+            {
                 var identifier = method.Expression as IdentifierNameSyntax;
                 if (identifier == null && !method.ToString().StartsWith("this")) return;
-                var methodDeclaration = context.SemanticModel.GetSymbolInfo(method);
-                if (methodDeclaration.Symbol.IsVirtual) {
-                    var diagnostic = Diagnostic.Create(Rule, method.GetLocation());
-                    context.ReportDiagnostic(diagnostic);
-                }
+                var methodDeclaration = context.SemanticModel.GetSymbolInfo(method).Symbol;
+                if (methodDeclaration == null || !methodDeclaration.IsVirtual) return;
+                var diagnostic = Diagnostic.Create(Rule, method.GetLocation());
+                context.ReportDiagnostic(diagnostic);
             }
         }
     }
