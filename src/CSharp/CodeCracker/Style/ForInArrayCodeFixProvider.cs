@@ -62,9 +62,8 @@ namespace CodeCracker.CSharp.Style
             var foreachVariable = SyntaxFactory.IdentifierName(forEachStatement.Identifier.Text);
             var elementsAccessorsToReplace = forEachStatement.DescendantNodes()
                             .OfType<ElementAccessExpressionSyntax>()
-                            .Where(eae => eae.Expression.IsEquivalentTo(arrayAccessor.Expression))
                             .Where(eae => eae.ArgumentList.Arguments.Any(a => a.Expression.ToFullString().Trim() == forVariable.Identifier.ToFullString().Trim()))
-                            .ToList();            
+                            .ToList();
 
             forEachStatement = forEachStatement.ReplaceNodes(elementsAccessorsToReplace, (original, rewritten) => foreachVariable);
 

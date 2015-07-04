@@ -42,13 +42,25 @@ namespace CodeCracker.CSharp.Style
             var arrayAccessor = condition.Right as MemberAccessExpressionSyntax;
             if (arrayAccessor == null) return;
             if (!arrayAccessor.IsKind(SyntaxKind.SimpleMemberAccessExpression)) return;
-            var arrayId = context.SemanticModel.GetSymbolInfo(arrayAccessor.Expression).Symbol as ILocalSymbol;
-            var forVariable = forStatement.Declaration.Variables.Single();
+            var semanticModel = context.SemanticModel;
+            var arrayId = semanticModel.GetSymbolInfo(arrayAccessor.Expression).Symbol;
+            if (arrayId == null) return;
+            var forVariable = forStatement.Declaration.Variables.First();
             var literalExpression = forVariable.Initializer.Value as LiteralExpressionSyntax;
             if (literalExpression == null || !literalExpression.IsKind(SyntaxKind.NumericLiteralExpression)) return;
             if (literalExpression.Token.ValueText != "0") return;
-            var controlVarId = context.SemanticModel.GetDeclaredSymbol(forVariable);
-            var otherUsesOfIndexToken = forBlock.DescendantTokens().Count(t => t.GetAncestor<ElementAccessExpressionSyntax>() == null && t.Text == forVariable.Identifier.Text);
+            var controlVarId = semanticModel.GetDeclaredSymbol(forVariable);
+            var otherUsesOfIndexToken = forBlock.DescendantTokens().Count(t =>
+                {
+                    if (t.Text != forVariable.Identifier.Text) return false;
+                    var elementAccess = t.GetAncestor<ElementAccessExpressionSyntax>();
+                    if (elementAccess == null) return true;
+                    var accessIdentifier = elementAccess.Expression as IdentifierNameSyntax;
+                    if (accessIdentifier == null) return true;
+                    var identifierSymbol = semanticModel.GetSymbolInfo(accessIdentifier).Symbol;
+                    if (identifierSymbol == null) return true;
+                    return !identifierSymbol.Equals(arrayId);
+                });
             if (otherUsesOfIndexToken != 0) return;
 
             var arrayAccessorSymbols = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
@@ -56,13 +68,12 @@ namespace CodeCracker.CSharp.Style
                                         let declaration = s.Declaration.Variables.First()
                                         where declaration?.Initializer?.Value is ElementAccessExpressionSyntax
                                         let init = (ElementAccessExpressionSyntax)declaration.Initializer.Value
-                                        let initSymbol = context.SemanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
+                                        let initSymbol = semanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
                                         where controlVarId.Equals(initSymbol)
-                                        let someArrayInit = context.SemanticModel.GetSymbolInfo(init.Expression).Symbol as ILocalSymbol
-                                        where someArrayInit == null || someArrayInit.Equals(arrayId)
+                                        let someArrayInit = semanticModel.GetSymbolInfo(init.Expression).Symbol
+                                        where arrayId.Equals(someArrayInit)
                                         select arrayId).ToList();
             if (!arrayAccessorSymbols.Any()) return;
-
             var diagnostic = Diagnostic.Create(Rule, forStatement.ForKeyword.GetLocation(), "You can use foreach instead of for.");
             context.ReportDiagnostic(diagnostic);
         }
