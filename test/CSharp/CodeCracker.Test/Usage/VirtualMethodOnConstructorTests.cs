@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -14,13 +12,13 @@ namespace CodeCracker.Test.CSharp.Usage {
             const string test = @"
 public class Person
 {{
-	public Person(string foo) 
+	public Person(string foo)
 	{{
 		DoFoo(foo);
 	}}
 
-	public virtual void DoFoo(string foo) 
-	{{ 
+	public virtual void DoFoo(string foo)
+	{{
 	}}
 }}";
             var expected = new DiagnosticResult {
@@ -38,13 +36,13 @@ public class Person
             const string test = @"
 public class Person
 {{
-	public Person(string foo) 
+	public Person(string foo)
 	{{
 		this.DoFoo(foo);
 	}}
 
-	public virtual void DoFoo(string foo) 
-	{{ 
+	public virtual void DoFoo(string foo)
+	{{
 	}}
 }}";
             var expected = new DiagnosticResult {
@@ -63,13 +61,13 @@ public class Person
             const string test = @"
 public class Book
 {{
-	public virtual void DoFoo(string foo) 
-	{{ 
+	public virtual void DoFoo(string foo)
+	{{
 	}}
 }}
 public class Person
 {{
-	public Person(string foo) 
+	public Person(string foo)
 	{{
 		var b = new Book();
         b.DoFoo(foo);
@@ -84,13 +82,13 @@ public class Person
             const string test = @"
 public class Person
 {{
-	public Person(string foo) 
+	public Person(string foo)
 	{{
 		DoFoo(foo);
 	}}
 
-	public void DoFoo(string foo) 
-	{{ 
+	public void DoFoo(string foo)
+	{{
 	}}
 }}";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
@@ -101,17 +99,17 @@ public class Person
             const string test = @"
 public class Person
 {{
-	public Person(string foo) 
+	public Person(string foo)
 	{{
 		DoFoo(foo);
 		DoFoo2(foo);
 	}}
 
-	public virtual void DoFoo(string foo) 
-	{{ 
+	public virtual void DoFoo(string foo)
+	{{
 	}}
-    public virtual void DoFoo2(string foo) 
-	{{ 
+    public virtual void DoFoo2(string foo)
+	{{
 	}}
 }}";
             var expected = new DiagnosticResult {
@@ -133,6 +131,19 @@ public class Person
 
         protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
             return new VirtualMethodOnConstructorAnalyzer();
+        }
+
+        [Fact]
+        public async Task IfNameOfFoundInConstructorDoesNotCreateDiagnostic() {
+            const string test = @"
+public class Person
+{{
+	public Person(string name)
+	{{
+        throw new System.ArgumentOutOfRangeException(nameof(name), """");
+	}}
+}}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }
 }
