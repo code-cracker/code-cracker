@@ -71,6 +71,9 @@
     <Compile Include="Refactoring\IntroduceFieldFromConstructorCodeFixProvider.cs" />
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
+    <Compile Include="Maintainability\XmlDocumentationAnalyzer.cs" />
+    <Compile Include="Maintainability\XmlDocumentationCreateMissingParametersCodeFixProvider.cs" />
+    <Compile Include="Maintainability\XmlDocumentationRemoveNonExistentParametersCodeFixProvider.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.cs" />
     <Compile Include="Style\ConsoleWriteLineAnalyzer.cs" />
@@ -99,6 +102,7 @@
     <Compile Include="Style\RemoveTrailingWhitespaceCodeFixProvider.cs" />
     <Compile Include="Style\StringFormatCodeFixProvider.cs" />
     <Compile Include="Refactoring\NumericLiteralAnalyzer.cs" />
+    <Compile Include="Maintainability\XmlDocumentationCodeFixProvider.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsCodeFixProvider.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorsAnalyzer.cs" />
     <Compile Include="Usage\ArgumentExceptionAnalyzer.cs" />
@@ -250,7 +254,6 @@
   <ItemGroup>
     <Folder Include="Globalization\" />
     <Folder Include="Interoperability\" />
-    <Folder Include="Maintainability\" />
     <Folder Include="Mobility\" />
     <Folder Include="Naming\" />
     <Folder Include="Portability\" />

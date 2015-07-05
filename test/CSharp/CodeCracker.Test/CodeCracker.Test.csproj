@@ -167,6 +167,7 @@
     <Compile Include="Style\TaskNameASyncTests.cs" />
     <Compile Include="Style\RemoveAsyncFromMethodTests.cs" />
     <Compile Include="Refactoring\NumericLiteralTests.cs" />
+    <Compile Include="Style\XmlDocumentationAnalyzerTests.cs" />
     <Compile Include="Usage\AbstractClassShouldNotHavePublicCtorTests.cs" />
     <Compile Include="Usage\ArgumentExceptionTests.cs" />
     <Compile Include="Style\ConvertToSwitchTests.cs" />

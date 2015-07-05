@@ -174,4 +174,13 @@
   <data name="MakeMethodNonAsyncCodeFixProvider_Title" xml:space="preserve">
     <value>Make method non async</value>
   </data>
+  <data name="XmlDocumentationAnalyzer_Title" xml:space="preserve">
+    <value>You have missing/unexistent parameters in Xml Docs</value>
+  </data>
+  <data name="XmlDocumentationCreateMissingParametersCodeFixProvider_Title" xml:space="preserve">
+    <value>Create missing parameters in xml docs</value>
+  </data>
+  <data name="XmlDocumentationRemoveNonExistentParametersCodeFixProvider_Title" xml:space="preserve">
+    <value>Remove unexistent parameters in xml docs</value>
+  </data>
 </root>
