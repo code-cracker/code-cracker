@@ -231,5 +231,32 @@ namespace CodeCracker.Properties {
                 return ResourceManager.GetString("StringFormatCodeFixProvider_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have missing/unexistent parameters in Xml Docs.
+        /// </summary>
+        public static string XmlDocumentationAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("XmlDocumentationAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create missing parameters in xml docs.
+        /// </summary>
+        public static string XmlDocumentationCreateMissingParametersCodeFixProvider_Title {
+            get {
+                return ResourceManager.GetString("XmlDocumentationCreateMissingParametersCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove unexistent parameters in xml docs.
+        /// </summary>
+        public static string XmlDocumentationRemoveNonExistentParametersCodeFixProvider_Title {
+            get {
+                return ResourceManager.GetString("XmlDocumentationRemoveNonExistentParametersCodeFixProvider_Title", resourceCulture);
+            }
+        }
     }
 }
