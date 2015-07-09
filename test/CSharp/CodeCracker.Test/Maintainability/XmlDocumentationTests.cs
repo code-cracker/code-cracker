@@ -3,26 +3,75 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.Test.CSharp.Style
+namespace CodeCracker.Test.CSharp.Maintainability
 {
-
     public class XmlDocumentationAnalyzerTests : CodeFixVerifier<XmlDocumentationAnalyzer, XmlDocumentationRemoveNonExistentParametersCodeFixProvider>
     {
         [Fact]
-        public async Task XmlDocumentationWithUnexistentParameterOfMethodAnalyzerCreateDiagnostic()
+        public async Task IgnoresClassDocs()
+        {
+            const string source = @"
+namespace ConsoleApplication1
+{
+    /// <summary>
+    ///
+    /// </summary>
+    class TypeName
+    {
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task XmlDocumentationInsideMethodWithAttributeDoesNotCreateDiagnostic()
+        {
+var source = @"
+/// <summary>
+/// </summary>
+/// <param name=""value"" ></param>
+/// <returns></returns>
+[System.Runtime.CompilerServices.MethodImpl]
+public int Foo(int value)
+{
+    ///
+    var a = 1;
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task XmlDocumentationInsideMethodDoesNotCreateDiagnostic()
+        {
+var source = @"
+/// <summary>
+/// </summary>
+/// <param name=""value"" ></param>
+/// <returns></returns>
+public int Foo(int value)
+{
+    ///
+    var a = 1;
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task XmlDocumentationWithNonexistentParameterOfMethodAnalyzerCreateDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""analyzer"">The analyzer to run on the documents</param>
             /// <param name=""documents"">The Documents that the analyzer will be run on</param>
             /// <param name=""spans"">Optional TextSpan indicating where a Diagnostic will be found</param>
             /// <returns>An IEnumerable of Diagnostics that surfaced in teh source code, sorted by Location</returns>
+            [System.Runtime.CompilerServices.MethodImpl]
             protected async static Task<Diagnostic[]> GetSortedDiagnosticsFromDocumentsAsync(DiagnosticAnalyzer analyzer, Document[] documents)
             {
             }
@@ -33,7 +82,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 Id = DiagnosticId.XmlDocumentation.ToDiagnosticId(),
                 Message = "You have missing/unexistent parameters in Xml Docs",
-                Severity = DiagnosticSeverity.Info,
+                Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 16) }
             };
 
@@ -47,9 +96,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""sources"">Classes in the form of strings</param>
             /// <param name=""language"">The language the source code is in</param>
@@ -64,7 +113,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 Id = DiagnosticId.XmlDocumentation.ToDiagnosticId(),
                 Message = "You have missing/unexistent parameters in Xml Docs",
-                Severity = DiagnosticSeverity.Info,
+                Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 16) }
             };
 
@@ -78,9 +127,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""value"" ></param>
             /// <returns></returns>
@@ -120,9 +169,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""analyzer"">The analyzer to run on the documents</param>
             /// <param name=""documents"">The Documents that the analyzer will be run on</param>
@@ -138,9 +187,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""analyzer"">The analyzer to run on the documents</param>
             /// <param name=""documents"">The Documents that the analyzer will be run on</param>
@@ -160,9 +209,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""analyzer"">The analyzer to run on the documents</param>
             /// <param name=""anotherToBeRemoved"">Optional TextSpan indicating where a Diagnostic will be found</param>
@@ -179,9 +228,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""analyzer"">The analyzer to run on the documents</param>
             /// <param name=""documents"">The Documents that the analyzer will be run on</param>
@@ -206,9 +255,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""sources"">Classes in the form of strings</param>
             /// <param name=""language"">The language the source code is in</param>
@@ -223,9 +272,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""sources"">Classes in the form of strings</param>
             /// <param name=""language"">The language the source code is in</param>
@@ -248,9 +297,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <returns>A Project created out of the Douments created from the source strings</returns>
             public static Project CreateProject(string[] sources, out AdhocWorkspace workspace, string language = LanguageNames.CSharp)
@@ -263,9 +312,9 @@ namespace CodeCracker.Test.CSharp.Style
     namespace ConsoleApplication1
     {
         class TypeName
-        {    
+        {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name=""sources"">todo: describe sources parameter on CreateProject</param>
             /// <param name=""workspace"">todo: describe workspace parameter on CreateProject</param>

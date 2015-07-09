@@ -10,7 +10,7 @@ using CodeCracker.Properties;
 namespace CodeCracker.CSharp.Maintainability
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class XmlDocumentationAnalyzer : DiagnosticAnalyzer
+    public sealed class XmlDocumentationAnalyzer : DiagnosticAnalyzer
     {
         internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.XmlDocumentationAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
 
@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Maintainability
             Title,
             Title,
             SupportedCategories.Maintainability,
-            DiagnosticSeverity.Info,
+            DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.XmlDocumentation));
 
@@ -30,34 +30,50 @@ namespace CodeCracker.CSharp.Maintainability
         private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
             var documentationNode = (DocumentationCommentTriviaSyntax)context.Node;
-            var method = documentationNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+            var method = GetMethodFromXmlDocumentation(documentationNode);
+            if (method == null) return;
             var methodParameters = method.ParameterList.Parameters;
             var xElementsWitAttrs = documentationNode.Content.OfType<XmlElementSyntax>()
-                                    .Where(xEle => xEle.StartTag.Name.LocalName.ValueText == "param")
-                                    .SelectMany(xEle => xEle.StartTag.Attributes, (xEle, attr) => (XmlNameAttributeSyntax)attr);
+                                    .Where(xEle => xEle.StartTag?.Name?.LocalName.ValueText == "param")
+                                    .SelectMany(xEle => xEle.StartTag.Attributes, (xEle, attr) => attr as XmlNameAttributeSyntax)
+                                    .Where(attr => attr != null);
 
             var keys = methodParameters.Select(parameter => parameter.Identifier.ValueText)
-                .Union(xElementsWitAttrs.Select(x => x.Identifier.Identifier.ValueText))
+                .Union(xElementsWitAttrs.Select(x => x.Identifier?.Identifier.ValueText))
                 .ToImmutableHashSet();
 
-            var paramterWithDocParameter = (from key in keys
+            var parameterWithDocParameter = (from key in keys
+                                            where key != null
                                             let Parameter = methodParameters.FirstOrDefault(p => p.Identifier.ValueText == key)
-                                            let DocParameter = xElementsWitAttrs.FirstOrDefault(p => p.Identifier.Identifier.ValueText == key)
+                                            let DocParameter = xElementsWitAttrs.FirstOrDefault(p => p.Identifier?.Identifier.ValueText == key)
                                             select new { Parameter, DocParameter });
 
-            if (paramterWithDocParameter.Any(p => p.Parameter == null))
+            if (parameterWithDocParameter.Any(p => p.Parameter == null))
             {
                 var properties = new Dictionary<string, string> {["kind"] = "nonexistentParam" }.ToImmutableDictionary();
                 var diagnostic = Diagnostic.Create(Rule, documentationNode.GetLocation(), properties);
                 context.ReportDiagnostic(diagnostic);
             }
 
-            if (paramterWithDocParameter.Any(p => p.DocParameter == null))
+            if (parameterWithDocParameter.Any(p => p.DocParameter == null))
             {
                 var properties = new Dictionary<string, string> { ["kind"] = "missingDoc" }.ToImmutableDictionary();
                 var diagnostic = Diagnostic.Create(Rule, documentationNode.GetLocation(), properties);
                 context.ReportDiagnostic(diagnostic);
             }
+        }
+
+        private static MethodDeclarationSyntax GetMethodFromXmlDocumentation(DocumentationCommentTriviaSyntax doc)
+        {
+            var tokenParent = doc.ParentTrivia.Token.Parent;
+            var method = tokenParent as MethodDeclarationSyntax;
+            if (method == null)
+            {
+                var attributeList = tokenParent as AttributeListSyntax;
+                if (attributeList == null) return null;
+                method = attributeList.Parent as MethodDeclarationSyntax;
+            }
+            return method;
         }
     }
 }

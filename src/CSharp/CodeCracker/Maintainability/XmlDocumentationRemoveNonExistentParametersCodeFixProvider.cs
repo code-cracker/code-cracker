@@ -12,7 +12,7 @@ using CodeCracker.Properties;
 namespace CodeCracker.CSharp.Maintainability
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, nameof(XmlDocumentationCodeFixProvider)), Shared]
-    public class XmlDocumentationRemoveNonExistentParametersCodeFixProvider : XmlDocumentationCodeFixProvider
+    public sealed class XmlDocumentationRemoveNonExistentParametersCodeFixProvider : XmlDocumentationCodeFixProvider
     {
         public override SyntaxNode FixParameters(MethodDeclarationSyntax method, SyntaxNode root)
         {
