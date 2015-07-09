@@ -22,7 +22,6 @@ namespace CodeCracker.CSharp.Maintainability
             var documentationNode = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
             var newRoot = FixParameters(documentationNode, root);
             var newDocument = document.WithSyntaxRoot(newRoot);
-
             return newDocument;
         }
 

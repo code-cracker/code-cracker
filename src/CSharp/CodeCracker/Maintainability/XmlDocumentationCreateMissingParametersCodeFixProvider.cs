@@ -12,7 +12,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxKind;
 namespace CodeCracker.CSharp.Maintainability
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, nameof(XmlDocumentationCodeFixProvider)), Shared]
-    public class XmlDocumentationCreateMissingParametersCodeFixProvider : XmlDocumentationCodeFixProvider
+    public sealed class XmlDocumentationCreateMissingParametersCodeFixProvider : XmlDocumentationCodeFixProvider
     {
         public override SyntaxNode FixParameters(MethodDeclarationSyntax method, SyntaxNode root)
         {
