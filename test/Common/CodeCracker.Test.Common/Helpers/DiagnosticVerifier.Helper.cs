@@ -63,6 +63,7 @@ namespace CodeCracker.Test
                 var compilation = await project.GetCompilationAsync().ConfigureAwait(true);
                 var compilationWithAnalyzers = compilation.WithAnalyzers(ImmutableArray.Create(analyzer));
                 var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(true);
+                CheckIfAnalyzerThrew(await compilationWithAnalyzers.GetAllDiagnosticsAsync().ConfigureAwait(true));
                 foreach (var diag in diags)
                 {
                     if (diag.Location == Location.None || diag.Location.IsInMetadata)
@@ -81,6 +82,16 @@ namespace CodeCracker.Test
             }
             var results = SortDiagnostics(diagnostics);
             return results;
+        }
+
+        /// <remarks>
+        /// Todo: Remove/Update when https://github.com/dotnet/roslyn/issues/2580 is completed and there is
+        /// an api to check for analyzer exceptions
+        /// </remarks>
+        private static void CheckIfAnalyzerThrew(ImmutableArray<Diagnostic> diags)
+        {
+            var exceptionAnalyzer = diags.FirstOrDefault(d => d.Id == "AD0001");
+            if (exceptionAnalyzer != null) throw new Exception("Analyzer threw. Details:\n" + exceptionAnalyzer.GetMessage());
         }
 
         private static Diagnostic[] SortDiagnostics(List<Diagnostic> diagnostics) =>
