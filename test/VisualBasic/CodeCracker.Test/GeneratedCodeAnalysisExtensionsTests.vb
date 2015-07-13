@@ -5,6 +5,7 @@ Imports System.Collections.Immutable
 Imports Xunit
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
+Imports CodeCracker.VisualBasic
 
 Public Class GeneratedCodeAnalysisExtensionsTests
     Private Const baseProjectPath = "D:\ClassLibrary11\"
