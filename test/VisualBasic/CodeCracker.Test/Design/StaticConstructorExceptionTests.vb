@@ -94,7 +94,7 @@ End Class"
     End Class"
 
             Dim tree = SyntaxFactory.ParseSyntaxTree(code)
-            Dim compilation = VisualBasicCompilation.Create("test", {tree}, {MetadataReference.CreateFromAssembly(GetType(Object).Assembly)})
+            Dim compilation = VisualBasicCompilation.Create("test", {tree}, {MetadataReference.CreateFromFile(GetType(Object).Assembly.Location)})
 
             Dim result = compilation.Emit(New MemoryStream)
 

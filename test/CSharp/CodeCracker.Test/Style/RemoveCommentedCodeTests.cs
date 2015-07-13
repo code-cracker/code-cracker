@@ -21,7 +21,7 @@ namespace CodeCracker.Test.CSharp.Style
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
-        [Fact]
+        [Fact(Skip ="Skipped until SourceCodeKind.Interactive can be set on CSharpParseOptions on the analyzer.")]
         public async Task CreateDiagnosticForSingleLineCommentedCode()
         {
             var test = @"// a = 10;".WrapInCSharpMethod();
@@ -49,7 +49,7 @@ namespace CodeCracker.Test.CSharp.Style
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
-        [Fact]
+        [Fact(Skip ="Skipped until SourceCodeKind.Interactive can be set on CSharpParseOptions on the analyzer.")]
         public async Task CreateDiagnosticForMultipleLinesCommentedCode()
         {
             var test = @"
@@ -68,7 +68,7 @@ namespace CodeCracker.Test.CSharp.Style
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        [Fact]
+        [Fact(Skip ="Skipped until SourceCodeKind.Interactive can be set on CSharpParseOptions on the analyzer.")]
         public async Task RemovesCommentedMultilineCodePreservingRegularComments()
         {
             var test = @"
@@ -103,7 +103,7 @@ namespace CodeCracker.Test.CSharp.Style
             await VerifyCSharpFixAsync(test, fixtest);
         }
 
-        [Fact]
+        [Fact(Skip ="Skipped until SourceCodeKind.Interactive can be set on CSharpParseOptions on the analyzer.")]
         public async Task RemovesNonPerfectIfCommentedCode()
         {
             var test = @"

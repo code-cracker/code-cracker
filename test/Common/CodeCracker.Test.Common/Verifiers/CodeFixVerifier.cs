@@ -233,25 +233,25 @@ namespace CodeCracker.Test
             var document = CreateDocument(oldSource, language, languageVersionCSharp, languageVersionVB);
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document).ConfigureAwait(true);
             var getDocumentDiagnosticsAsync = analyzer != null
-                ? (Func<Document, Task<IEnumerable<Diagnostic>>>)(async doc =>
+                ? (Func<Document, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>>)(async (doc, ids, ct) =>
                      await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { doc }).ConfigureAwait(true))
-                : (async doc =>
+                : (async (doc, ids, ct) =>
                 {
                     var compilerDiags = await GetCompilerDiagnosticsAsync(doc).ConfigureAwait(true);
                     return compilerDiags.Where(d => codeFixProvider.FixableDiagnosticIds.Contains(d.Id));
                 });
-            Func<Project, bool, Task<IEnumerable<Diagnostic>>> getProjectDiagnosticsAsync = async (proj, b) =>
+            Func<Project, bool, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getProjectDiagnosticsAsync = async (proj, b, ids, ct) =>
             {
                 var theDocs = proj.Documents;
-                var diags = await Task.WhenAll(theDocs.Select(d => getDocumentDiagnosticsAsync?.Invoke(d))).ConfigureAwait(true);
+                var diags = await Task.WhenAll(theDocs.Select(d => getDocumentDiagnosticsAsync?.Invoke(d, ids, ct))).ConfigureAwait(true);
                 return diags.SelectMany(d => d);
             };
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
-            var fixAllContext = NewFixAllContext(document, document.Project, codeFixProvider, FixAllScope.Document,
-                null,//code action ids in codecracker are always null
+            var fixAllDiagnosticProvider = new FixAllDiagnosticProvider(codeFixProvider.FixableDiagnosticIds.ToImmutableHashSet(), getDocumentDiagnosticsAsync, getProjectDiagnosticsAsync);
+            var fixAllContext = new FixAllContext(document, codeFixProvider, FixAllScope.Document,
+                null,//todo: code action equivalence keys in codecracker are always null, but should not be
                 codeFixProvider.FixableDiagnosticIds,
-                (doc, diagIds, cancelationToken) => getDocumentDiagnosticsAsync?.Invoke(doc),
-                (theProject, b, diagIds, cancelationToken) => getProjectDiagnosticsAsync(theProject, b),
+                fixAllDiagnosticProvider,
                 CancellationToken.None);
             var action = await fixAllProvider.GetFixAsync(fixAllContext).ConfigureAwait(true);
             if (action == null) throw new Exception("No action supplied for the code fix.");
@@ -278,31 +278,35 @@ namespace CodeCracker.Test
             if (analyzer != null)
             {
                 var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, project.Documents.ToArray()).ConfigureAwait(true);
-                fixAllContext = NewFixAllContext(project.Documents.First(), project, codeFixProvider, FixAllScope.Solution,
-                    null,//code action ids in codecracker are always null
+                Func<Document, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync = (doc, ids, ct) =>
+                    Task.FromResult(analyzerDiagnostics.Where(d => d.Location.SourceTree.FilePath == doc.Name));
+                Func<Project, bool, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getProjectDiagnosticsAsync = (proj, b, ids, ct) =>
+                    Task.FromResult((IEnumerable<Diagnostic>)analyzerDiagnostics); //todo: verify, probably wrong
+                var fixAllDiagnosticProvider = new FixAllDiagnosticProvider(codeFixProvider.FixableDiagnosticIds.ToImmutableHashSet(), getDocumentDiagnosticsAsync, getProjectDiagnosticsAsync);
+                fixAllContext = new FixAllContext(project.Documents.First(), codeFixProvider, FixAllScope.Solution,
+                    null,//todo: code action equivalence keys in codecracker are always null, but should not be
                     codeFixProvider.FixableDiagnosticIds,
-                    (doc, diagnosticIds, cancelationToken) => Task.FromResult(analyzerDiagnostics.Where(d => d.Location.SourceTree.FilePath == doc.Name)),
-                    (theProject, b, diagnosticIds, cancelationToken) => Task.FromResult((IEnumerable<Diagnostic>)analyzerDiagnostics), //todo: verify, probably wrong
+                    fixAllDiagnosticProvider,
                     CancellationToken.None);
             }
             else
             {
-                Func<Document, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync = async doc =>
+                Func<Document, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync = async (doc, ids, ct) =>
                 {
                     var compilerDiags = await GetCompilerDiagnosticsAsync(doc).ConfigureAwait(true);
                     return compilerDiags.Where(d => codeFixProvider.FixableDiagnosticIds.Contains(d.Id));
                 };
-                Func<Project, bool, Task<IEnumerable<Diagnostic>>> getProjectDiagnosticsAsync = async (proj, b) =>
-                {
-                    var theDocs = proj.Documents;
-                    var diags = await Task.WhenAll(theDocs.Select(d => getDocumentDiagnosticsAsync(d))).ConfigureAwait(true);
-                    return diags.SelectMany(d => d);
-                };
-                fixAllContext = NewFixAllContext(project.Documents.First(), project, codeFixProvider, FixAllScope.Solution,
-                    null,//code action ids in codecracker are always null
+                Func<Project, bool, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getProjectDiagnosticsAsync = async (proj, b, ids, ct) =>
+                    {
+                        var theDocs = proj.Documents;
+                        var diags = await Task.WhenAll(theDocs.Select(d => getDocumentDiagnosticsAsync(d, ids, ct))).ConfigureAwait(true);
+                        return diags.SelectMany(d => d);
+                    };
+                var fixAllDiagnosticProvider = new FixAllDiagnosticProvider(codeFixProvider.FixableDiagnosticIds.ToImmutableHashSet(), getDocumentDiagnosticsAsync, getProjectDiagnosticsAsync);
+                fixAllContext = new FixAllContext(project.Documents.First(), codeFixProvider, FixAllScope.Solution,
+                    null,//todo: code action equivalence keys in codecracker are always null, but should not be
                     codeFixProvider.FixableDiagnosticIds,
-                    (doc, diagIds, cancelationToken) => getDocumentDiagnosticsAsync(doc),
-                    (theProject, b, diagIds, cancelationToken) => getProjectDiagnosticsAsync(theProject, b),
+                    fixAllDiagnosticProvider,
                     CancellationToken.None);
             }
             var action = await fixAllProvider.GetFixAsync(fixAllContext).ConfigureAwait(true);
@@ -319,14 +323,6 @@ namespace CodeCracker.Test
                 var actual = await GetStringFromDocumentAsync(document).ConfigureAwait(true);
                 Assert.Equal(newSources[i], actual);
             }
-        }
-
-        //todo: remove when FixAllContext get a public ctor, what should be soon
-        public static FixAllContext NewFixAllContext(Document document, Project project, CodeFixProvider codeFixProvider, FixAllScope scope, string codeActionEquivalenceKey, IEnumerable<string> diagnosticIds, Func<Document, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getDocumentDiagnosticsAsync, Func<Project, bool, ImmutableHashSet<string>, CancellationToken, Task<IEnumerable<Diagnostic>>> getProjectDiagnosticsAsync, CancellationToken cancellationToken)
-        {
-            var parameters = new object[] { document, project, codeFixProvider, scope, codeActionEquivalenceKey, diagnosticIds, getDocumentDiagnosticsAsync, getProjectDiagnosticsAsync, cancellationToken };
-            var fixallContext = (FixAllContext)Activator.CreateInstance(typeof(FixAllContext), BindingFlags.NonPublic | BindingFlags.Instance, null, parameters, null);
-            return fixallContext;
         }
 
         /// <summary>
