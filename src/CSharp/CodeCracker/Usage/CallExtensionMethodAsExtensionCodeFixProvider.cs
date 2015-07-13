@@ -53,10 +53,8 @@ namespace CodeCracker.CSharp.Usage
                         CreateArgumentListSyntaxFrom(parameterExpressions.Skip(1))
                    ).WithAdditionalAnnotations(Formatter.Annotation);
 
-            SemanticModel semanticModel;
-            if (document.TryGetSemanticModel(out semanticModel))
-                root = ImportNeededNamespace(root, semanticModel, callerMethod).WithAdditionalAnnotations(Formatter.Annotation);
-
+            var semanticModel = await document.GetSemanticModelAsync();
+            root = ImportNeededNamespace(root, semanticModel, callerMethod).WithAdditionalAnnotations(Formatter.Annotation);
             var newDocument = document.WithSyntaxRoot(root);
 
             return newDocument;
