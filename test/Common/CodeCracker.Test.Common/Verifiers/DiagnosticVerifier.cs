@@ -54,6 +54,7 @@ namespace CodeCracker.Test
         /// </summary>
         /// <param name="source">A class in the form of a string to run the analyzer on</param>
         /// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
+        /// <param name="languageVersion">The C# language version, defaults to the latest stable version.</param>
         protected async Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, LanguageVersion languageVersion = LanguageVersion.CSharp6) =>
             await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetDiagnosticAnalyzer(), expected, languageVersion, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
 
@@ -69,8 +70,9 @@ namespace CodeCracker.Test
         /// </summary>
         /// <param name="source">A class in the form of a string to run the analyzer on</param>
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source</param>
-        protected async Task VerifyBasicDiagnosticAsync(string source, DiagnosticResult[] expected, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14) =>
-            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected, LanguageVersion.CSharp6, languageVersionVB).ConfigureAwait(true);
+        /// <param name="languageVersion">The VB language version, defaults to the latest stable version.</param>
+        protected async Task VerifyBasicDiagnosticAsync(string source, DiagnosticResult[] expected, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14) =>
+            await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected, LanguageVersion.CSharp6, languageVersion).ConfigureAwait(true);
 
         protected async Task VerifyBasicDiagnosticAsync(string source, DiagnosticResult expected, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14) =>
             await VerifyDiagnosticsAsync(new[] { source }, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), new[] { expected }, LanguageVersion.CSharp6, languageVersionVB).ConfigureAwait(true);
@@ -84,6 +86,7 @@ namespace CodeCracker.Test
         /// </summary>
         /// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
+        /// <param name="languageVersion">The C# language version, defaults to the latest stable version.</param>
         protected async Task VerifyCSharpDiagnosticAsync(string[] sources, DiagnosticResult[] expected, LanguageVersion languageVersion = LanguageVersion.CSharp6) =>
             await VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetDiagnosticAnalyzer(), expected, languageVersion, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
 
@@ -93,7 +96,8 @@ namespace CodeCracker.Test
         /// </summary>
         /// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-        protected async Task VerifyBasicDiagnosticAsync(string[] sources, DiagnosticResult[] expected, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB) =>
+        /// <param name="languageVersion">The VB language version, defaults to the latest stable version.</param>
+        protected async Task VerifyBasicDiagnosticAsync(string[] sources, DiagnosticResult[] expected, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersion) =>
             await VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected, LanguageVersion.CSharp6, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
 
         /// <summary>

@@ -99,7 +99,7 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             var document = solution.GetDocument(typeLocation.SourceTree);
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-            var newRoot = ChangeTypeAccessibilityInSyntaxRoot(syntaxRoot, newAccessibilityModifiers, typeLocation, cancellationToken);
+            var newRoot = ChangeTypeAccessibilityInSyntaxRoot(syntaxRoot, newAccessibilityModifiers, typeLocation);
 
             return document.WithSyntaxRoot(newRoot);
         }
@@ -113,14 +113,14 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             {
                 var document = typeLocationsWithinDocument.Key;
                 var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-                var newRoot = ChangeTypesAccessibilityInSyntaxRoot(syntaxRoot, newAccessibilityModifiers, typeLocationsWithinDocument, cancellationToken);
+                var newRoot = ChangeTypesAccessibilityInSyntaxRoot(syntaxRoot, newAccessibilityModifiers, typeLocationsWithinDocument);
                 updatedSolution = updatedSolution.WithDocumentSyntaxRoot(document.Id, newRoot);
             }
 
             return updatedSolution;
         }
 
-        private static SyntaxNode ChangeTypeAccessibilityInSyntaxRoot(SyntaxNode syntaxRoot, SyntaxTokenList newAccessibilityModifiers, Location typeLocation, CancellationToken cancellationToken)
+        private static SyntaxNode ChangeTypeAccessibilityInSyntaxRoot(SyntaxNode syntaxRoot, SyntaxTokenList newAccessibilityModifiers, Location typeLocation)
         {
             var declaration = (MemberDeclarationSyntax)syntaxRoot.FindNode(typeLocation.SourceSpan);
 
@@ -129,7 +129,7 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             return syntaxRoot.ReplaceNode(declaration, newDeclaration);
         }
 
-        private static SyntaxNode ChangeTypesAccessibilityInSyntaxRoot(SyntaxNode syntaxRoot, SyntaxTokenList newAccessibilityModifiers, IEnumerable<Location> typeLocations, CancellationToken cancellationToken)
+        private static SyntaxNode ChangeTypesAccessibilityInSyntaxRoot(SyntaxNode syntaxRoot, SyntaxTokenList newAccessibilityModifiers, IEnumerable<Location> typeLocations)
         {
             var declarations =  typeLocations.Select(typeLocation => (MemberDeclarationSyntax)syntaxRoot.FindNode(typeLocation.SourceSpan)).ToList();
             var newDeclarations = new Dictionary<MemberDeclarationSyntax, MemberDeclarationSyntax>();

@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Style
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var invocationExpression = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-            var newStringInterpolation = await StringFormatCodeFixProvider.CreateNewStringInterpolationAsync(document, root, invocationExpression, cancellationToken);
+            var newStringInterpolation = await StringFormatCodeFixProvider.CreateNewStringInterpolationAsync(document, invocationExpression, cancellationToken);
             var newArgumentList = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>().Add(SyntaxFactory.Argument(newStringInterpolation)));
             var newRoot = root.ReplaceNode(invocationExpression.ArgumentList, newArgumentList);
             var newDocument = document.WithSyntaxRoot(newRoot);

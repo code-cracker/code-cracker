@@ -32,13 +32,13 @@ namespace CodeCracker.CSharp.Style
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var invocationExpression = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-            var newStringInterpolation = await CreateNewStringInterpolationAsync(document, root, invocationExpression, cancellationToken);
+            var newStringInterpolation = await CreateNewStringInterpolationAsync(document, invocationExpression, cancellationToken);
             var newRoot = root.ReplaceNode(invocationExpression, newStringInterpolation);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
 
-        public static async Task<InterpolatedStringExpressionSyntax> CreateNewStringInterpolationAsync(Document document, SyntaxNode root, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
+        public static async Task<InterpolatedStringExpressionSyntax> CreateNewStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var memberSymbol = semanticModel.GetSymbolInfo(invocationExpression.Expression).Symbol;
