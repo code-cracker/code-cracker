@@ -40,6 +40,8 @@ namespace CodeCracker.Test
         /// <param name="sources">Classes in the form of strings</param>
         /// <param name="language">The language the soruce classes are in</param>
         /// <param name="analyzer">The analyzer to be run on the sources</param>
+        /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
+        /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
         /// <returns>An IEnumerable of Diagnostics that surfaced in teh source code, sorted by Location</returns>
         private static async Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB) =>
             await GetSortedDiagnosticsFromDocumentsAsync(analyzer, GetDocuments(sources, language, languageVersionCSharp, languageVersionVB)).ConfigureAwait(true);
@@ -84,6 +86,7 @@ namespace CodeCracker.Test
             return results;
         }
 
+        /// <param name="diags">The compiler diagnostics at a given compilation.</param>
         /// <remarks>
         /// Todo: Remove/Update when https://github.com/dotnet/roslyn/issues/2580 is completed and there is
         /// an api to check for analyzer exceptions
@@ -103,6 +106,8 @@ namespace CodeCracker.Test
         /// </summary>
         /// <param name="sources">Classes in the form of strings</param>
         /// <param name="language">The language the source code is in</param>
+        /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
+        /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
         /// <returns>A Tuple containing the Documents produced from the sources and thier TextSpans if relevant</returns>
         public static Document[] GetDocuments(string[] sources, string language, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
         {
@@ -130,6 +135,8 @@ namespace CodeCracker.Test
         /// </summary>
         /// <param name="source">Classes in the form of a string</param>
         /// <param name="language">The language the source code is in</param>
+        /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
+        /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
         /// <returns>A Document created from the source string</returns>
         public static Document CreateDocument(string source,
             string language,
@@ -142,7 +149,8 @@ namespace CodeCracker.Test
         /// </summary>
         /// <param name="sources">Classes in the form of strings</param>
         /// <param name="language">The language the source code is in</param>
-        /// <param name="workspace">The created workspace containing the project</param>
+        /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
+        /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
         /// <returns>A Project created out of the Douments created from the source strings</returns>
         public static Project CreateProject(string[] sources,
             string language,

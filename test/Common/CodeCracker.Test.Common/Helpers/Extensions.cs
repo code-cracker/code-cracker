@@ -32,7 +32,7 @@
         }}
     }}";
         }
-        public static string WrapInVBMethod(this string code, 
+        public static string WrapInVBMethod(this string code,
             bool isAsync = false,
             string imports = "")
         {

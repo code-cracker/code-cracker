@@ -33,7 +33,7 @@ namespace CodeCracker.CSharp.Refactoring
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var invocation = root.FindNode(diagnosticLocation.SourceSpan).FirstAncestorOfType<InvocationExpressionSyntax>();
-            var newInvocation = CreateNewInvocation(invocation, root)
+            var newInvocation = CreateNewInvocation(invocation)
                 .WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = ReplaceInvocation(invocation, newInvocation, root);
             var newDocument = document.WithSyntaxRoot(newRoot);
@@ -49,7 +49,7 @@ namespace CodeCracker.CSharp.Refactoring
             return newRoot;
         }
 
-        internal static ExpressionSyntax CreateNewInvocation(InvocationExpressionSyntax invocation, SyntaxNode root)
+        internal static ExpressionSyntax CreateNewInvocation(InvocationExpressionSyntax invocation)
         {
             var methodName = ((MemberAccessExpressionSyntax)invocation.Expression).Name.ToString();
             var nameToCheck = methodName == "Any" ? ChangeAnyToAllAnalyzer.allName : ChangeAnyToAllAnalyzer.anyName;
