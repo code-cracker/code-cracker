@@ -38,8 +38,6 @@ namespace CodeCracker.Test
             this.getProjectDiagnosticsAsync = getProjectDiagnosticsAsync;
         }
 
-#pragma warning disable CC0031
-#pragma warning disable CC0016
         public override Task<IEnumerable<Diagnostic>> GetDocumentDiagnosticsAsync(Document document, CancellationToken cancellationToken) =>
             getDocumentDiagnosticsAsync(document, diagnosticIds, cancellationToken);
 
@@ -49,6 +47,4 @@ namespace CodeCracker.Test
         public override Task<IEnumerable<Diagnostic>> GetProjectDiagnosticsAsync(Project project, CancellationToken cancellationToken) =>
             getProjectDiagnosticsAsync(project, false, diagnosticIds, cancellationToken);
     }
-#pragma warning restore CC0016
-#pragma warning restore CC0031
 }
