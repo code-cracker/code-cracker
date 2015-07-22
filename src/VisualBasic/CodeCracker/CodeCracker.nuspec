@@ -21,9 +21,7 @@ This is a community project, free and open source. Everyone is invited to contri
         </frameworkAssemblies>
     </metadata>
     <files>
-        <file src="tools\install.ps1" target="tools\install.ps1" />
-        <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
-        <file src="bin\debug\CodeCracker.VisualBasic.dll" target="tools\analyzers\CodeCracker.VisualBasic.dll" />
-        <file src="bin\debug\CodeCracker.Common.dll" target="tools\analyzers\CodeCracker.Common.dll" />
+        <file src="bin\debug\*.dll" target="analyzers\dotnet\cs" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*;**\System.Composition.*" />
+        <file src="tools\*.ps1" target="tools\" />
     </files>
 </package>
