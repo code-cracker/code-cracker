@@ -56,7 +56,7 @@ namespace CodeCracker.CSharp.Style
                 if (conditional != null) expression = SyntaxFactory.ParenthesizedExpression(expression);
                 expressionsToReplace.Add(interpolation.Expression, expression);
             }
-            var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
+            var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o].WithoutTrivia());
             return newStringInterpolation;
         }
     }
