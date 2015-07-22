@@ -37,7 +37,7 @@ namespace CodeCracker.CSharp.Design
             var invocation = (InvocationExpressionSyntax)context.Node;
             var identifier = invocation.Expression as IdentifierNameSyntax;
             if (identifier == null) return;
-            if (context.Node.Parent.GetType().Name == "ArrowExpressionClauseSyntax") return;
+            if (context.Node.Parent.GetType().Name == nameof(ArrowExpressionClauseSyntax)) return;
 
             var typeInfo = context.SemanticModel.GetTypeInfo(identifier, context.CancellationToken);
 
