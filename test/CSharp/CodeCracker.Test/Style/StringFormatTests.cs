@@ -549,5 +549,36 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
         }
+    
+    [Fact]
+    public async Task StringFormatWithLineBreak()
+    {
+        const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var myString = string.Format(""{0}, {1}, {2}, {3}"", 0, 1,
+                             2,
+                             3);
+            }
+        }
+    }";
+        const string expected = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var myString = $""{0}, {1}, {2}, {3}"";
+            }
+        }
+    }";
+        await VerifyCSharpFixAsync(source, expected);
     }
+}
+
 }
