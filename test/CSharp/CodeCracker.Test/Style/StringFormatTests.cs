@@ -245,7 +245,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare: false);
         }
 
         [Fact]
@@ -477,7 +477,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare: false);
         }
 
         [Fact]
@@ -515,7 +515,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare: false);
         }
 
         [Fact]
@@ -547,13 +547,13 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare:false);
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare: false);
         }
-    
-    [Fact]
-    public async Task StringFormatWithLineBreak()
-    {
-        const string source = @"
+
+        [Fact]
+        public async Task StringFormatWithLineBreak()
+        {
+            const string source = @"
     namespace ConsoleApplication1
     {
         class TypeName
@@ -566,7 +566,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-        const string expected = @"
+            const string expected = @"
     namespace ConsoleApplication1
     {
         class TypeName
@@ -577,8 +577,37 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-        await VerifyCSharpFixAsync(source, expected);
-    }
-}
+            await VerifyCSharpFixAsync(source, expected);
+        }
 
+        [Fact]
+        public async Task StringFormatWithLineBreakAndComments()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var myString = string.Format(""{0}, {1}, {2}, {3}"", 0, /* Just a simple Comment */1,
+                            /* Important Comment */ 2, // Another Comment
+                            3 /* Yet Another important Comment */);
+            }
+        }
+    }";
+            const string expected = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                var myString = $""{0}, {1}, {2}, {3}"";
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, expected);
+        }
+    }
 }
