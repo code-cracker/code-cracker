@@ -216,6 +216,7 @@ namespace CodeCracker.Test.CSharp.Design
                 public class MyClass
                 {
                     public event System.EventHandler MyEvent;
+                    bool raiseEvents = true;
 
                     public void Execute()
                     {
@@ -227,6 +228,7 @@ namespace CodeCracker.Test.CSharp.Design
                 public class MyClass
                 {
                     public event System.EventHandler MyEvent;
+                    bool raiseEvents = true;
 
                     public void Execute()
                     {
@@ -247,6 +249,23 @@ namespace CodeCracker.Test.CSharp.Design
         {
             var test = @"var tuple = new Tuple<int, Action>(1, null);
 tuple.Item2();".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void NotWarningIfExpressionBodied()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public int Foo(int par1, int par2) => FuncCalc(par1,par2);
+
+                    public int FuncCalc(int p1, int p2)
+                    {
+                         return p1*p2;
+                    }
+
+                }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }
