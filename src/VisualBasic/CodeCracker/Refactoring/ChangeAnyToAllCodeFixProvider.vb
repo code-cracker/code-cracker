@@ -36,7 +36,7 @@ Namespace Refactoring
             Dim invocation = root.FindNode(diagnosticLocation.SourceSpan).FirstAncestorOfType(Of InvocationExpressionSyntax)
             Dim newInvocation = createNewInvocation(invocation, root).
                 WithAdditionalAnnotations(Formatter.Annotation)
-            Dim newRoot = replaceinvocation(invocation, newInvocation, root)
+            Dim newRoot = ReplaceInvocation(invocation, newInvocation, root)
             Dim newDocument = Document.WithSyntaxRoot(newRoot)
             Return newDocument
         End Function
