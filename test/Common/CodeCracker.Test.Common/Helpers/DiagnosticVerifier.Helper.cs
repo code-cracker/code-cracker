@@ -195,8 +195,8 @@ namespace CodeCracker.Test
 
             var project = workspace.CurrentSolution.GetProject(projectId);
             var newCompilationOptions = project.CompilationOptions.WithSpecificDiagnosticOptions(diagOptions);
-            var solution = workspace.CurrentSolution.WithProjectCompilationOptions(projectId, newCompilationOptions);
-            var newProject = solution.GetProject(projectId);
+            var newSolution = workspace.CurrentSolution.WithProjectCompilationOptions(projectId, newCompilationOptions);
+            var newProject = newSolution.GetProject(projectId);
             return newProject;
         }
 

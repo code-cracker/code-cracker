@@ -128,9 +128,7 @@ namespace CodeCracker.CSharp.Style
         private static bool ReplacementChangesSemantics(SyntaxNode originalExpression, SyntaxNode replacedExpression, SemanticModel semanticModel)
         {
             SemanticModel speculativeModel;
-#pragma warning disable CC0026
             if (!Microsoft.CodeAnalysis.CSharp.CSharpExtensions.TryGetSpeculativeSemanticModel(semanticModel, originalExpression.SpanStart, (dynamic)GetSemanticRootForSpeculation(replacedExpression), out speculativeModel))
-#pragma warning restore CC0026
                 return true;
             var originalInfo = semanticModel.GetSymbolInfo(originalExpression);
             var replacementInfo = speculativeModel.GetSymbolInfo(replacedExpression);

@@ -70,7 +70,6 @@ namespace CodeCracker.Test.CSharp.Usage
             {
 #pragma warning disable CC0010
                 System.Text.RegularExpressions.Regex.Match("", "[");
-#pragma warning restore CC0010
             }
             catch (ArgumentException e)
             {
@@ -109,7 +108,6 @@ namespace CodeCracker.Test.CSharp.Usage
             var message = "";
             try
             {
-#pragma warning disable CC0010
                 System.Text.RegularExpressions.Regex.Match("", "[");
 #pragma warning restore CC0010
             }
