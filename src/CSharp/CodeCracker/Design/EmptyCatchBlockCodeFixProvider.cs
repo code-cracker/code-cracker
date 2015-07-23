@@ -23,9 +23,9 @@ namespace CodeCracker.CSharp.Design
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", c => RemoveEmptyCatchBlockAsync(context.Document, diagnostic, c)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block and Put a Documentation Link about Try...Catch use", c => RemoveEmptyCatchBlockPutCommentAsync(context.Document, diagnostic, c)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", c => InsertExceptionClassCommentAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", c => RemoveEmptyCatchBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block and Put a Documentation Link about Try...Catch use", c => RemoveEmptyCatchBlockPutCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider ) + nameof(RemoveEmptyCatchBlockPutCommentAsync)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", c => InsertExceptionClassCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(InsertExceptionClassCommentAsync)), diagnostic);
             return Task.FromResult(0);
         }
 

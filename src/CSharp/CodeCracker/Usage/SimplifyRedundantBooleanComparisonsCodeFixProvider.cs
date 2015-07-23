@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Usage
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create(
-                "Removes redundant comparision", c => RemoveRedundantComparisonAsync(context.Document, diagnostic, c)), diagnostic);
+                "Removes redundant comparision", c => RemoveRedundantComparisonAsync(context.Document, diagnostic, c), nameof(SimplifyRedundantBooleanComparisonsCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

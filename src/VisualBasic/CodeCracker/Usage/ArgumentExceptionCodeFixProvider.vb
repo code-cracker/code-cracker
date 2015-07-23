@@ -27,7 +27,7 @@ Namespace Usage
             Dim parameters = ArgumentExceptionAnalyzer.GetParameterNamesFromCreationContext(objectCreation)
             For Each param In parameters
                 Dim message = "Use '" & param & "'"
-                context.RegisterCodeFix(CodeAction.Create(message, Function(c) FixParamAsync(context.Document, objectCreation, param, c)), diagnostic)
+                context.RegisterCodeFix(CodeAction.Create(message, Function(c) FixParamAsync(context.Document, objectCreation, param, c), NameOf(ArgumentExceptionCodeFixProvider)), diagnostic)
             Next
         End Function
 

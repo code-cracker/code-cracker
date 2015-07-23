@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Design
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Add an Exception class", c => MakeCatchEmptyAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Add an Exception class", c => MakeCatchEmptyAsync(context.Document, diagnostic, c), nameof(CatchEmptyCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

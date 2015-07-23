@@ -3,8 +3,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -40,11 +38,11 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 
                     if (typeLocations.Length == 1)
                     {
-                        context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInDocumentAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations[0], c)), diagnostic);
+                        context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInDocumentAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations[0], c), nameof(InconsistentAccessibilityCodeFixProvider)), diagnostic);
                     }
                     else if (typeLocations.Length > 1)
                     {
-                        context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInSolutionAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations, c)), diagnostic);
+                        context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInSolutionAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations, c), nameof(InconsistentAccessibilityCodeFixProvider)), diagnostic);
                     }
                 }
             }

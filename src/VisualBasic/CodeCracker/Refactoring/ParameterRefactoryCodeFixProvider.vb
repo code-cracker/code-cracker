@@ -20,8 +20,7 @@ Namespace Refactoring
             Dim declarationClass = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of ClassBlockSyntax)
             Dim declarationNamespace = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of NamespaceBlockSyntax)
             Dim declarationMethod = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of MethodBlockSyntax)
-
-            context.RegisterCodeFix(CodeAction.Create("Change to new Class", Function(c) NewClassAsync(context.Document, declarationNamespace, declarationClass, declarationMethod, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Change to new Class", Function(c) NewClassAsync(context.Document, declarationNamespace, declarationClass, declarationMethod, c), NameOf(ParameterRefactoryCodeFixProvider)), diagnostic)
         End Function
 
         Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.ParameterRefactory.ToDiagnosticId())

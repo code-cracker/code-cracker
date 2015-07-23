@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create(Message, ct => RemoveUnreachableCodeAsync(context.Document, diagnostic, ct)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(Message, ct => RemoveUnreachableCodeAsync(context.Document, diagnostic, ct), nameof(RemoveUnreachableCodeCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

@@ -23,8 +23,8 @@ Namespace Design
             Dim diag = context.Diagnostics.First
             Dim diagSpan = diag.Location.SourceSpan
             Dim declaration = root.FindToken(diagSpan.Start).Parent.AncestorsAndSelf.OfType(Of CatchBlockSyntax).First
-            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", Function(c) RemoveTry(context.Document, declaration, c)), diag)
-            context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", Function(c) InsertExceptionClassCommentAsync(context.Document, declaration, c)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", Function(c) RemoveTry(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(RemoveTry)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", Function(c) InsertExceptionClassCommentAsync(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(InsertExceptionClassCommentAsync)), diag)
         End Function
 
         Private Async Function RemoveTry(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)

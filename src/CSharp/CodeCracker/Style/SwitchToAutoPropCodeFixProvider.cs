@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Change to string interpolation", c => MakeAutoPropertyAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change to string interpolation", c => MakeAutoPropertyAsync(context.Document, diagnostic, c), nameof(SwitchToAutoPropCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

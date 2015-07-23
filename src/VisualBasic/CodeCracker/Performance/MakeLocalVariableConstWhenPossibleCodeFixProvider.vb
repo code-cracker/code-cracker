@@ -24,7 +24,7 @@ Namespace Performance
             Dim diagnosticSpan = diagnostic.Location.SourceSpan
             Dim localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType(Of LocalDeclarationStatementSyntax).First()
             Const message = "Make constant"
-            context.RegisterCodeFix(CodeAction.Create(message, Function(c) MakeConstantAsync(context.Document, localDeclaration, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create(message, Function(c) MakeConstantAsync(context.Document, localDeclaration, c), NameOf(MakeLocalVariableConstWhenPossibleCodeFixProvider)), diagnostic)
 
         End Function
 

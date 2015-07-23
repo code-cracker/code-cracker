@@ -18,7 +18,7 @@ Namespace Style
             Dim span = diagnostic.Location.SourceSpan
             Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MultiLineIfBlockSyntax)
             If declaration Is Nothing Then Exit Function
-            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c), NameOf(TernaryOperatorWithReturnCodeFixProvider)), diagnostic)
         End Function
 
         Public Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) =
@@ -56,7 +56,7 @@ Namespace Style
             Dim span = diagnostic.Location.SourceSpan
             Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MultiLineIfBlockSyntax)
             If declaration Is Nothing Then Exit Function
-            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c), NameOf(TernaryOperatorWithAssignmentCodeFixProvider)), diagnostic)
         End Function
 
         Public Overrides ReadOnly Property FixableDiagnosticIds() As ImmutableArray(Of String) =
@@ -98,7 +98,7 @@ Namespace Style
             Dim span = diagnostic.Location.SourceSpan
             Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of InvocationExpressionSyntax)
             If declaration Is Nothing Then Exit Function
-            context.RegisterCodeFix(CodeAction.Create("Change IIF to If to short circuit evaulations", Function(c) MakeTernaryAsync(context.Document, declaration, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Change IIF to If to short circuit evaulations", Function(c) MakeTernaryAsync(context.Document, declaration, c), NameOf(TernaryOperatorFromIifCodeFixProvider)), diagnostic)
         End Function
 
         Public Overrides ReadOnly Property FixableDiagnosticIds() As ImmutableArray(Of String) =

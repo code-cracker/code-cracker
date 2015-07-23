@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Design
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Make static", c => MakeNameOfAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Make static", c => MakeNameOfAsync(context.Document, diagnostic, c), nameof(MakeMethodStaticCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

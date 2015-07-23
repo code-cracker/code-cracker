@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Reliability
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Use ConfigureAwait(false)", ct => CreateUseConfigureAwaitAsync(context.Document, diagnostic.Location.SourceSpan, ct)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use ConfigureAwait(false)", ct => CreateUseConfigureAwaitAsync(context.Document, diagnostic.Location.SourceSpan, ct), nameof(UseConfigureAwaitFalseCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

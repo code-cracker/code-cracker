@@ -16,7 +16,7 @@ Namespace Usage
             Dim diagnostic = context.Diagnostics.First
             Dim span = diagnostic.Location.SourceSpan
             Dim parameter = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of ParameterSyntax)
-            context.RegisterCodeFix(CodeAction.Create(String.Format("Remove unused parameter: '{0}'", parameter.Identifier.GetText()), Function(c) RemovePArameterAsync(root, context.Document, parameter, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create(String.Format("Remove unused parameter: '{0}'", parameter.Identifier.GetText()), Function(c) RemovePArameterAsync(root, context.Document, parameter, c), NameOf(UnusedParametersCodeFixProvider)), diagnostic)
         End Function
 
         Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId())

@@ -24,7 +24,7 @@ Namespace Style
             Dim diagnosticSpan = diagnostic.Location.SourceSpan
             Dim declaration = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOrSelfOfType(GetType(InterfaceStatementSyntax))
             context.RegisterCodeFix(CodeAction.Create("Consider start Interface name with letter 'I'.",
-                                              Function(c) ChangeInterfaceNameAsync(context.Document, DirectCast(declaration, InterfaceStatementSyntax), c)), diagnostic)
+                                              Function(c) ChangeInterfaceNameAsync(context.Document, DirectCast(declaration, InterfaceStatementSyntax), c), NameOf(InterfaceNameCodeFixProvider)), diagnostic)
 
         End Function
 

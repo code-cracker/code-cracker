@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Design
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(
-                CodeAction.Create("Copy event reference to a variable", ct => CreateVariableAsync(context.Document, diagnostic, ct)), diagnostic);
+                CodeAction.Create("Copy event reference to a variable", ct => CreateVariableAsync(context.Document, diagnostic, ct), nameof(CopyEventToVariableBeforeFireCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

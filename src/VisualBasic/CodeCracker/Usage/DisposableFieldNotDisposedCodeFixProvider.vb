@@ -20,7 +20,8 @@ Namespace Usage
             Dim span = diagnostic.Location.SourceSpan
             Dim variableDeclarator = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of VariableDeclaratorSyntax)()
             context.RegisterCodeFix(CodeAction.Create("Dispose field '" & variableDeclarator.Names.First().ToString(),
-                                              Function(c) DisposeField(context.Document, variableDeclarator, c)),
+                                              Function(c) DisposeField(context.Document, variableDeclarator, c),
+                                              NameOf(DisposableFieldNotDisposedCodeFixProvider)),
                             diagnostic)
 
         End Function

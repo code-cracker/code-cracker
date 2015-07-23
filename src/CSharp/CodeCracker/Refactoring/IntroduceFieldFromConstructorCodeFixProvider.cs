@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Refactoring
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create(
-                string.Format(MessageFormat, diagnostic.Properties["parameterName"]), c => IntroduceFieldFromConstructorDocumentAsync(context.Document, diagnostic, c)), diagnostic);
+                string.Format(MessageFormat, diagnostic.Properties["parameterName"]), c => IntroduceFieldFromConstructorDocumentAsync(context.Document, diagnostic, c), nameof(IntroduceFieldFromConstructorCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

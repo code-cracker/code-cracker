@@ -2,7 +2,4 @@
 <RuleSet Name="CodeCrackerAndAllRules" ToolsVersion="14.0">
   <Include Path="allrules.ruleset" Action="Default" />
   <Include Path="codecracker.ruleset" Action="Default" />
-  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Analyzers" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Analyzers">
-    <Rule Id="RS1010" Action="None" />
-  </Rules>
 </RuleSet>

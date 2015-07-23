@@ -24,7 +24,7 @@ Namespace Performance
             Dim diagnostic = context.Diagnostics.First
             Dim diagosticSpan = diagnostic.Location.SourceSpan
             Dim assignmentExpression = root.FindToken(diagosticSpan.Start).Parent.AncestorsAndSelf.OfType(Of AssignmentStatementSyntax).First
-            context.RegisterCodeFix(CodeAction.Create("Use StringBuilder to create a value for " & assignmentExpression.Left.ToString(), Function(c) UseStringBuilder(context.Document, assignmentExpression, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Use StringBuilder to create a value for " & assignmentExpression.Left.ToString(), Function(c) UseStringBuilder(context.Document, assignmentExpression, c), NameOf(StringBuilderInLoopCodeFixProvider)), diagnostic)
 
         End Function
 

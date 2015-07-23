@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create(
-                $"Remove unused private method : '{diagnostic.Properties["identifier"]}'", c => RemoveMethodAsync(context.Document, diagnostic, c)), diagnostic);
+                $"Remove unused private method : '{diagnostic.Properties["identifier"]}'", c => RemoveMethodAsync(context.Document, diagnostic, c), nameof(RemovePrivateMethodNeverUsedCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

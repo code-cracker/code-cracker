@@ -24,7 +24,7 @@ Namespace Performance
             Dim whereInvoke = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType(Of InvocationExpressionSyntax)().First()
             Dim nextMethodInvoke = whereInvoke.Parent.FirstAncestorOrSelf(Of InvocationExpressionSyntax)()
             Dim message = "Remove 'Where' moving predicate to '" + RemoveWhereWhenItIsPossibleAnalyzer.GetNameOfTheInvokeMethod(nextMethodInvoke) + "'"
-            context.RegisterCodeFix(CodeAction.Create(message, Function(c) RemoveWhere(context.Document, whereInvoke, nextMethodInvoke, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create(message, Function(c) RemoveWhere(context.Document, whereInvoke, nextMethodInvoke, c), NameOf(RemoveWhereWhenItIsPossibleCodeFixProvider)), diagnostic)
         End Function
 
         Private Async Function RemoveWhere(document As Document, whereInvoke As InvocationExpressionSyntax, nextMethodInvoke As InvocationExpressionSyntax, cancellationToken As CancellationToken) As Task(Of Document)

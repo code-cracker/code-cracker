@@ -24,8 +24,8 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Change property to 'private set'", c => ChangePropertySetAsync(context.Document, diagnostic, c, FixType.PrivateFix)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Change property to 'protected set'", c => ChangePropertySetAsync(context.Document, diagnostic, c, FixType.ProtectedFix)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change property to 'private set'", c => ChangePropertySetAsync(context.Document, diagnostic, c, FixType.PrivateFix), nameof(PropertyPrivateSetCodeFixProvider) + nameof(FixType.PrivateFix)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change property to 'protected set'", c => ChangePropertySetAsync(context.Document, diagnostic, c, FixType.ProtectedFix), nameof(PropertyPrivateSetCodeFixProvider) + nameof(FixType.ProtectedFix)), diagnostic);
             return Task.FromResult(0);
         }
 

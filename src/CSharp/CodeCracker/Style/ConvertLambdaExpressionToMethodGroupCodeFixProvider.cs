@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Style
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create(
-                "Use method name instead of lambda expression when signatures match", c => ConvertAsync(context.Document, diagnostic, c)), diagnostic);
+                "Use method name instead of lambda expression when signatures match", c => ConvertAsync(context.Document, diagnostic, c), nameof(ConvertLambdaExpressionToMethodGroupCodeFixProvider )), diagnostic);
             return Task.FromResult(0);
         }
 

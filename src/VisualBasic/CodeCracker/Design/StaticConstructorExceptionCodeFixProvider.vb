@@ -21,7 +21,7 @@ Namespace Design
             Dim diagnostic = context.Diagnostics.First
             Dim sourceSpan = diagnostic.Location.SourceSpan
             Dim throwBlock = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf.OfType(Of ThrowStatementSyntax).First
-            context.RegisterCodeFix(CodeAction.Create("Remove this exception", Function(ct) RemoveThrow(context.Document, throwBlock, ct)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Remove this exception", Function(ct) RemoveThrow(context.Document, throwBlock, ct), NameOf(StaticConstructorExceptionCodeFixProvider)), diagnostic)
         End Function
 
         Private Async Function RemoveThrow(document As Document, throwBlock As ThrowStatementSyntax, cancellationToken As CancellationToken) As Task(Of Document)

@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Style
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create(
-                "Convert to an expression bodied member.", c => ConvertToExpressionBodiedMemberAsync(context.Document, diagnostic, c)), diagnostic);
+                "Convert to an expression bodied member.", c => ConvertToExpressionBodiedMemberAsync(context.Document, diagnostic, c), nameof(ConvertToExpressionBodiedMemberCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
         private static async Task<Document> ConvertToExpressionBodiedMemberAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)

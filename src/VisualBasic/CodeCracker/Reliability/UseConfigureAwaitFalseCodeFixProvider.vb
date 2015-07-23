@@ -32,13 +32,13 @@ Namespace Reliability
                 ))).
                 WithTrailingTrivia(awaitExpression.Expression.GetTrailingTrivia()).
                 WithAdditionalAnnotations(Formatter.Annotation)
-
             Dim newRoot = root.ReplaceNode(awaitExpression.Expression, newExpression)
             Dim newDocument = context.Document.WithSyntaxRoot(newRoot)
-
-            context.RegisterCodeFix(CodeAction.Create("Use ConfigureAwait(False)", Function(ct)
-                                                                                       Return Task.FromResult(newDocument)
-                                                                                   End Function), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Use ConfigureAwait(False)",
+                                                      Function(ct)
+                                                          Return Task.FromResult(newDocument)
+                                                      End Function,
+                                                      NameOf(UseConfigureAwaitFalseCodeFixProvider)), diagnostic)
         End Function
     End Class
 End Namespace

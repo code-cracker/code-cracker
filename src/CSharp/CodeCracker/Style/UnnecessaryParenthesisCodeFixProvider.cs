@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Remove unnecessary parenthesis", ct => RemoveParenthesisAsync(context.Document, diagnostic, ct)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove unnecessary parenthesis", ct => RemoveParenthesisAsync(context.Document, diagnostic, ct), nameof(UnnecessaryParenthesisCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
         private static async Task<Document> RemoveParenthesisAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)

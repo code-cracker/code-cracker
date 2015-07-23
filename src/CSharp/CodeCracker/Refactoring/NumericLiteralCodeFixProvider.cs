@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Refactoring
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Swap decimal and hexadecimal literals", c => ChangeLiteralAsync(context.Document, diagnostic.Location, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Swap decimal and hexadecimal literals", c => ChangeLiteralAsync(context.Document, diagnostic.Location, c), nameof(NumericLiteralCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

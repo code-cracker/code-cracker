@@ -27,7 +27,7 @@ namespace CodeCracker.CSharp.Refactoring
             var compilation = context.Document.Project.GetCompilationAsync(context.CancellationToken);
             var newDocument = await ComputeExpressionAsync(context.Document, diagnostic.Location, context.CancellationToken).ConfigureAwait(false);
             if (newDocument != null)
-                context.RegisterCodeFix(CodeAction.Create("Compute expression", c => Task.FromResult(newDocument)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create("Compute expression", c => Task.FromResult(newDocument), nameof(ComputeExpressionCodeFixProvider)), diagnostic);
         }
 
         private async static Task<Document> ComputeExpressionAsync(Document document, Location diagnosticLocation, CancellationToken cancellationToken)

@@ -17,7 +17,7 @@ Namespace Usage
             Dim span = diag.Location.SourceSpan
 
             Dim constructor = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of SubNewStatementSyntax)
-            context.RegisterCodeFix(CodeAction.Create("Use 'Protected' in stead of 'Public'", Function(c) ReplacePublicWithProtectedAsync(context.Document, constructor, c)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Use 'Protected' in stead of 'Public'", Function(c) ReplacePublicWithProtectedAsync(context.Document, constructor, c), NameOf(MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider)), diag)
         End Function
 
 
@@ -25,7 +25,7 @@ Namespace Usage
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId())
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId())
 
         Private Async Function ReplacePublicWithProtectedAsync(document As Document, constructor As SubNewStatementSyntax, cancellationToken As CancellationToken) As Task(Of Document)
             Dim [public] = constructor.Modifiers.First(Function(m) m.IsKind(SyntaxKind.PublicKeyword))

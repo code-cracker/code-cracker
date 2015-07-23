@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Style
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create("Remove Async termination for method name.",
-                c => RemoveAsyncTerminationAsync(context.Document, diagnostic, c)), diagnostic);
+                c => RemoveAsyncTerminationAsync(context.Document, diagnostic, c), nameof(RemoveAsyncFromMethodCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

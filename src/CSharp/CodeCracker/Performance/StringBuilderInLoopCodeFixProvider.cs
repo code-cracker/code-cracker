@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Usage
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create($"Use StringBuilder to create a value for '{diagnostic.Properties["assignmentExpressionLeft"]}'",
-                c => UseStringBuilderAsync(context.Document, diagnostic, c)), diagnostic);
+                c => UseStringBuilderAsync(context.Document, diagnostic, c), nameof(StringBuilderInLoopCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

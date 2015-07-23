@@ -22,11 +22,11 @@ namespace CodeCracker.CSharp.Performance
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(
-                CodeAction.Create("Remove finalizer", ct => RemoveThrowAsync(context.Document, diagnostic, ct)), diagnostic);
+                CodeAction.Create("Remove finalizer", ct => RemoveThrowAsync(context.Document, diagnostic, ct), nameof(EmptyFinalizerCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 
-        private async static Task<Document> RemoveThrowAsync(Document document, Diagnostic diagnostic , CancellationToken cancellationToken)
+        private async static Task<Document> RemoveThrowAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var sourceSpan = diagnostic.Location.SourceSpan;

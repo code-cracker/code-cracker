@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Refactoring
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Change to new Class", c => NewClassAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change to new Class", c => NewClassAsync(context.Document, diagnostic, c), nameof(ParameterRefactoryCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

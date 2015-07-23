@@ -21,7 +21,7 @@ Namespace Performance
             Dim diag = context.Diagnostics.First()
             Dim sourceSpan = diag.Location.SourceSpan
             Dim type = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType(Of Microsoft.CodeAnalysis.VisualBasic.Syntax.ClassStatementSyntax)().First()
-            context.RegisterCodeFix(CodeAction.Create("Mark as NotInheritable", Function(ct) MarkClassAsSealed(context.Document, type, ct)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Mark as NotInheritable", Function(ct) MarkClassAsSealed(context.Document, type, ct), NameOf(SealedAttributeCodeFixProvider)), diag)
         End Function
 
         Private Async Function MarkClassAsSealed(document As Document, type As ClassStatementSyntax, cancellationToken As Threading.CancellationToken) As Task(Of Document)

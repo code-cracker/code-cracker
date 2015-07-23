@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Remove assignment", c => RemoveAssignmentAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove assignment", c => RemoveAssignmentAsync(context.Document, diagnostic, c), nameof(RedundantFieldAssignmentCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

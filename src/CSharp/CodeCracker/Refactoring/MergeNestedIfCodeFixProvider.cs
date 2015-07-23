@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Refactoring
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Merge nested if statements", c => MergeIfsAsync(context.Document, diagnostic.Location, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Merge nested if statements", c => MergeIfsAsync(context.Document, diagnostic.Location, c), nameof(MergeNestedIfCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 
