@@ -89,6 +89,21 @@ public class TypeName
         }
 
         [Fact]
+        public async Task IgnoreNamesNotDeclaredYet()
+        {
+            const string test = @"
+public class TypeName
+{
+    void Foo()
+    {
+        var str = ""x"";
+        var x = 1;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async Task WhenUsingSomeStringInAttributeShouldNotReportDiagnostic()
         {
             const string test = @"

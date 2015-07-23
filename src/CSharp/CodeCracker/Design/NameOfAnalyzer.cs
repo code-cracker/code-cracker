@@ -69,6 +69,13 @@ namespace CodeCracker.CSharp.Design
                 var literalValueText = stringLiteral.Token.ValueText;
                 var symbol = semanticModel.LookupSymbols(stringLiteral.Token.SpanStart, null, literalValueText).FirstOrDefault();
 
+                if (symbol?.Kind == SymbolKind.Local)
+                {
+                    var symbolSpan = symbol.Locations.Min(i => i.SourceSpan);
+                    if (symbolSpan.CompareTo(stringLiteral.Token.Span) > 0)
+                        return string.Empty;
+                }
+
                 programElementName = symbol?.ToDisplayParts().LastOrDefault(IncludeOnlyPartsThatAreName).ToString();
             }
 
