@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Use 'var'", c => UseVarAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use 'var'", c => UseVarAsync(context.Document, diagnostic, c), nameof(AlwaysUseVarCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

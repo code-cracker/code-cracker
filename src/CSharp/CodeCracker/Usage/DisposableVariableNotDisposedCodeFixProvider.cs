@@ -28,7 +28,7 @@ namespace CodeCracker.CSharp.Usage
         {
             var diagnostic = context.Diagnostics.First();
             var title = string.Format(MessageFormat, diagnostic.Properties["typeName"]);
-            context.RegisterCodeFix(CodeAction.Create(title, c => CreateUsingAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(title, c => CreateUsingAsync(context.Document, diagnostic, c), nameof(DisposableVariableNotDisposedCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

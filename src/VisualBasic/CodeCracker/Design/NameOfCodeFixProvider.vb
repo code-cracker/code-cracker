@@ -24,7 +24,7 @@ Namespace Design
             Dim diagnosticspan = diagnostic.Location.SourceSpan
             Dim stringLiteral = root.FindToken(diagnosticspan.Start).Parent.AncestorsAndSelf.OfType(Of LiteralExpressionSyntax).FirstOrDefault
             If stringLiteral IsNot Nothing Then
-                context.RegisterCodeFix(CodeAction.Create("use NameOf()", Function(c) MakeNameOf(context.Document, stringLiteral, root, diagnostic, c)), diagnostic)
+                context.RegisterCodeFix(CodeAction.Create("use NameOf()", Function(c) MakeNameOf(context.Document, stringLiteral, root, diagnostic, c), NameOf(NameOfCodeFixProvider)), diagnostic)
             End If
         End Function
 

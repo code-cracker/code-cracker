@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Usage
             foreach (var param in parameters)
             {
                 var message = "Use '" + param.Value + "'";
-                context.RegisterCodeFix(CodeAction.Create(message, c => FixParamAsync(context.Document, diagnostic, param.Value, c)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(message, c => FixParamAsync(context.Document, diagnostic, param.Value, c), nameof(ArgumentExceptionCodeFixProvider)), diagnostic);
             }
             return Task.FromResult(0);
         }

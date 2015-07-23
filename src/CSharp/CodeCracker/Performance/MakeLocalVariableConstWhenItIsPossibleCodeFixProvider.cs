@@ -24,8 +24,7 @@ namespace CodeCracker.CSharp.Performance
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            const string message = "Make constant";
-            context.RegisterCodeFix(CodeAction.Create(message, c => MakeConstantAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Make constant", c => MakeConstantAsync(context.Document, diagnostic, c), nameof(MakeLocalVariableConstWhenItIsPossibleCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

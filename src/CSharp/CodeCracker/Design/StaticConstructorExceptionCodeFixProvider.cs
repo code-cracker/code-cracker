@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Design
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(
-                CodeAction.Create("Remove this exception", ct => RemoveThrowAsync(context.Document, diagnostic, ct)), diagnostic);
+                CodeAction.Create("Remove this exception", ct => RemoveThrowAsync(context.Document, diagnostic, ct), nameof(StaticConstructorExceptionCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

@@ -22,14 +22,10 @@ namespace CodeCracker.CSharp.Usage
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
             var diagnostic = context.Diagnostics.First();
-
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-
             var variableUnused = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
-
-            context.RegisterCodeFix(CodeAction.Create($"Remove unused variable : '{ variableUnused.Declaration.Variables.First()}'", c => RemoveVariableAsync(context.Document, variableUnused, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create($"Remove unused variable : '{ variableUnused.Declaration.Variables.First()}'", c => RemoveVariableAsync(context.Document, variableUnused, c), nameof(RemoveUnusedVariablesCodeFixProvider)), diagnostic);
         }
 
         private async static Task<Document> RemoveVariableAsync(Document document, LocalDeclarationStatementSyntax variableUnused, CancellationToken cancellationToken)

@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Performance
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Mark as sealed", ct => MarkClassAsSealedAsync(context.Document, diagnostic, ct)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Mark as sealed", ct => MarkClassAsSealedAsync(context.Document, diagnostic, ct), nameof(SealedAttributeCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

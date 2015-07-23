@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Consider start Interface name with letter 'I'", c => ChangeInterfaceNameAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Consider start Interface name with letter 'I'", c => ChangeInterfaceNameAsync(context.Document, diagnostic, c), nameof(InterfaceNameCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

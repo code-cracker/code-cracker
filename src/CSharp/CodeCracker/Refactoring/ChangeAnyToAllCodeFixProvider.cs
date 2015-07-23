@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Refactoring
         {
             var diagnostic = context.Diagnostics.First();
             var message = diagnostic.Id == DiagnosticId.ChangeAnyToAll.ToDiagnosticId() ? "Change Any to All" : "Change All To Any";
-            context.RegisterCodeFix(CodeAction.Create(message, c => ConvertAsync(context.Document, diagnostic.Location, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(message, c => ConvertAsync(context.Document, diagnostic.Location, c), nameof(ChangeAnyToAllCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

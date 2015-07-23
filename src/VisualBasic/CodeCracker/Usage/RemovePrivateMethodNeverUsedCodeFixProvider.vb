@@ -20,7 +20,7 @@ Namespace Usage
             Dim diagnostic = context.Diagnostics.First()
             Dim span = diagnostic.Location.SourceSpan
             Dim methodNotUsed = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MethodStatementSyntax)
-            context.RegisterCodeFix(CodeAction.Create("Remove unused private method: " & methodNotUsed.Identifier.ValueText, Function(c) RemoveMethodAsync(context.Document, methodNotUsed, c)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Remove unused private method: " & methodNotUsed.Identifier.ValueText, Function(c) RemoveMethodAsync(context.Document, methodNotUsed, c), NameOf(RemovePrivateMethodNeverUsedCodeFixProvider)), diagnostic)
         End Function
 
         Private Async Function RemoveMethodAsync(document As Document, methodNotUsed As MethodStatementSyntax, cancellationToken As Threading.CancellationToken) As Task(Of Document)

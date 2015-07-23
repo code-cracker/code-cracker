@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Change method name including 'Async'.", c => ChangeMethodNameAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change method name including 'Async'.", c => ChangeMethodNameAsync(context.Document, diagnostic, c), nameof(TaskNameAsyncCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

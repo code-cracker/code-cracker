@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Use object initializer", c => MakeObjectInitializerAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use object initializer", c => MakeObjectInitializerAsync(context.Document, diagnostic, c), nameof(ObjectInitializerCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 
@@ -73,7 +73,7 @@ namespace CodeCracker.CSharp.Style
                 .WithLeadingTrivia(blockParent.GetLeadingTrivia())
                 .WithTrailingTrivia(blockParent.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            
+
             for (int i = 0; i < blockParent.Statements.Count; i++)
             {
                 var blockStatement = blockParent.Statements[i];

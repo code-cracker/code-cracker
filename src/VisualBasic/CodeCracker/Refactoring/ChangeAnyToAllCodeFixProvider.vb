@@ -27,7 +27,7 @@ Namespace Refactoring
         Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diag = context.Diagnostics.First
             Dim message = If(diag.Id = DiagnosticId.ChangeAnyToAll.ToDiagnosticId, "Change Any to All", "Change All to Any")
-            context.RegisterCodeFix(CodeAction.Create(message, Function(c) ConvertAsync(context.Document, diag.Location, c)), diag)
+            context.RegisterCodeFix(CodeAction.Create(message, Function(c) ConvertAsync(context.Document, diag.Location, c), NameOf(ChangeAnyToAllCodeFixProvider)), diag)
             Return Task.FromResult(0)
         End Function
 

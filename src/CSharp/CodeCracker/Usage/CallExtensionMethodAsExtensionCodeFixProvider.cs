@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Usage
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create(
                 "Use extension method as an extension",
-                cancellationToken => CallAsExtensionAsync(context.Document, diagnostic, cancellationToken)),
+                cancellationToken => CallAsExtensionAsync(context.Document, diagnostic, cancellationToken), nameof(CallExtensionMethodAsExtensionCodeFixProvider)),
                 diagnostic);
             return Task.FromResult(0);
         }

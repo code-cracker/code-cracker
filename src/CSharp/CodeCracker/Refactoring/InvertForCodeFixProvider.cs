@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Refactoring
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Invert For Loop.", c => InvertForAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Invert For Loop.", c => InvertForAsync(context.Document, diagnostic, c), nameof(InvertForCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

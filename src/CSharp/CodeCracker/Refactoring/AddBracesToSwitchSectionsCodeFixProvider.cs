@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Refactoring
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Add braces to each switch section", ct => AddBracesAsync(context.Document, diagnostic, ct)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Add braces to each switch section", ct => AddBracesAsync(context.Document, diagnostic, ct), nameof(AddBracesToSwitchSectionsCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

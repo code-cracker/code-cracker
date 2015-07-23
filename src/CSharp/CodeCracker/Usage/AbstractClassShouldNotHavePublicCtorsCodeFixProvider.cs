@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Use 'protected' instead of 'public'", c => ReplacePublicWithProtectedAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use 'protected' instead of 'public'", c => ReplacePublicWithProtectedAsync(context.Document, diagnostic, c), nameof(AbstractClassShouldNotHavePublicCtorsCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

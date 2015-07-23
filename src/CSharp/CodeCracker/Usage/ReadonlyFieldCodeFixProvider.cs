@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Usage
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create(
-                $"Make readonly: '{diagnostic.Properties["identifier"]}'", c => MakeFieldReadonlyAsync(context.Document, diagnostic, c)), diagnostic);
+                $"Make readonly: '{diagnostic.Properties["identifier"]}'", c => MakeFieldReadonlyAsync(context.Document, diagnostic, c), nameof(ReadonlyFieldCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

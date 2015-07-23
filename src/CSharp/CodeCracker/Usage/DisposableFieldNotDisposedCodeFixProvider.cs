@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Usage
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create(
-                $"Dispose field '{diagnostic.Properties["variableIdentifier"]}'", c => DisposeFieldAsync(context.Document, diagnostic, c)), diagnostic);
+                $"Dispose field '{diagnostic.Properties["variableIdentifier"]}'", c => DisposeFieldAsync(context.Document, diagnostic, c), nameof(DisposableFieldNotDisposedCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

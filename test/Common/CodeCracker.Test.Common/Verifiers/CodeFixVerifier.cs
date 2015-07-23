@@ -34,7 +34,7 @@ namespace CodeCracker.Test
         /// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
         /// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        /// <param name="formatBeforeCompare">todo: Explain</param>
+        /// <param name="formatBeforeCompare">Format the code before comparing, bot the old source and the new.</param>
         /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
         /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
         protected async Task VerifyCSharpFixAsync(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6)
@@ -59,7 +59,7 @@ namespace CodeCracker.Test
         /// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
         /// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        /// <param name="formatBeforeCompare">todo: Explain</param>
+        /// <param name="formatBeforeCompare">Format the code before comparing, bot the old source and the new.</param>
         /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
         /// <param name="languageVersionVB">The VB language version.</param>
         protected async Task VerifyBasicFixAsync(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = false, CodeFixProvider codeFixProvider = null, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14)
@@ -187,7 +187,7 @@ namespace CodeCracker.Test
             Assert.Equal(newSource, actual);
         }
 
-        protected async Task VerifyCSharpFixAllAsync(string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6)
+        protected async Task VerifyCSharpFixAllAsync(string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6, string equivalenceKey = null)
         {
             if (formatBeforeCompare)
             {
@@ -195,10 +195,10 @@ namespace CodeCracker.Test
                 newSources = await Task.WhenAll(newSources.Select(s => FormatSourceAsync(LanguageNames.CSharp, s, languageVersionCSharp))).ConfigureAwait(true);
             }
             codeFixProvider = codeFixProvider ?? GetCodeFixProvider();
-            await VerifyFixAllAsync(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider, oldSources, newSources, allowNewCompilerDiagnostics, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
+            await VerifyFixAllAsync(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider, oldSources, newSources, allowNewCompilerDiagnostics, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14, equivalenceKey).ConfigureAwait(true);
         }
 
-        protected async Task VerifyCSharpFixAllAsync(string oldSource, string newSource, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6)
+        protected async Task VerifyCSharpFixAllAsync(string oldSource, string newSource, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6, string equivalenceKey = null)
         {
             if (formatBeforeCompare)
             {
@@ -206,10 +206,10 @@ namespace CodeCracker.Test
                 newSource = await FormatSourceAsync(LanguageNames.CSharp, newSource, languageVersionCSharp).ConfigureAwait(true);
             }
             codeFixProvider = codeFixProvider ?? GetCodeFixProvider();
-            await VerifyFixAllAsync(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider, oldSource, newSource, allowNewCompilerDiagnostics, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
+            await VerifyFixAllAsync(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider, oldSource, newSource, allowNewCompilerDiagnostics, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14, equivalenceKey).ConfigureAwait(true);
         }
 
-        protected async Task VerifyBasicFixAllAsync(string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14)
+        protected async Task VerifyBasicFixAllAsync(string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14, string equivalenceKey = null)
         {
             if (formatBeforeCompare)
             {
@@ -217,10 +217,10 @@ namespace CodeCracker.Test
                 newSources = await Task.WhenAll(newSources.Select(s => FormatSourceAsync(LanguageNames.VisualBasic, s, languageVersionVB: languageVersionVB))).ConfigureAwait(true);
             }
             codeFixProvider = codeFixProvider ?? GetCodeFixProvider();
-            await VerifyFixAllAsync(LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), codeFixProvider, oldSources, newSources, allowNewCompilerDiagnostics, LanguageVersion.CSharp6, languageVersionVB).ConfigureAwait(true);
+            await VerifyFixAllAsync(LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), codeFixProvider, oldSources, newSources, allowNewCompilerDiagnostics, LanguageVersion.CSharp6, languageVersionVB, equivalenceKey).ConfigureAwait(true);
         }
 
-        protected async Task VerifyBasicFixAllAsync(string oldSource, string newSource, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14)
+        protected async Task VerifyBasicFixAllAsync(string oldSource, string newSource, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14, string equivalenceKey = null)
         {
             if (formatBeforeCompare)
             {
@@ -228,10 +228,10 @@ namespace CodeCracker.Test
                 newSource = await FormatSourceAsync(LanguageNames.VisualBasic, newSource, languageVersionVB: languageVersionVB).ConfigureAwait(true);
             }
             codeFixProvider = codeFixProvider ?? GetCodeFixProvider();
-            await VerifyFixAllAsync(LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), codeFixProvider, oldSource, newSource, allowNewCompilerDiagnostics, LanguageVersion.CSharp6, languageVersionVB).ConfigureAwait(true);
+            await VerifyFixAllAsync(LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), codeFixProvider, oldSource, newSource, allowNewCompilerDiagnostics, LanguageVersion.CSharp6, languageVersionVB, equivalenceKey).ConfigureAwait(true);
         }
 
-        private async static Task VerifyFixAllAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
+        private async static Task VerifyFixAllAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB, string equivalenceKey = null)
         {
             var document = CreateDocument(oldSource, language, languageVersionCSharp, languageVersionVB);
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document).ConfigureAwait(true);
@@ -251,8 +251,9 @@ namespace CodeCracker.Test
             };
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
             var fixAllDiagnosticProvider = new FixAllDiagnosticProvider(codeFixProvider.FixableDiagnosticIds.ToImmutableHashSet(), getDocumentDiagnosticsAsync, getProjectDiagnosticsAsync);
+            if (equivalenceKey == null) equivalenceKey = codeFixProvider.GetType().Name;
             var fixAllContext = new FixAllContext(document, codeFixProvider, FixAllScope.Document,
-                null,//todo: code action equivalence keys in codecracker are always null, but should not be
+                equivalenceKey,
                 codeFixProvider.FixableDiagnosticIds,
                 fixAllDiagnosticProvider,
                 CancellationToken.None);
@@ -272,11 +273,12 @@ namespace CodeCracker.Test
             Assert.Equal(newSource, actual);
         }
 
-        private async static Task VerifyFixAllAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
+        private async static Task VerifyFixAllAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB, string equivalenceKey = null)
         {
             var project = CreateProject(oldSources, language, languageVersionCSharp, languageVersionVB);
             var compilerDiagnostics = (await Task.WhenAll(project.Documents.Select(d => GetCompilerDiagnosticsAsync(d))).ConfigureAwait(true)).SelectMany(d => d);
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
+            if (equivalenceKey == null) equivalenceKey = codeFixProvider.GetType().Name;
             FixAllContext fixAllContext;
             if (analyzer != null)
             {
@@ -287,7 +289,7 @@ namespace CodeCracker.Test
                     Task.FromResult((IEnumerable<Diagnostic>)analyzerDiagnostics); //todo: verify, probably wrong
                 var fixAllDiagnosticProvider = new FixAllDiagnosticProvider(codeFixProvider.FixableDiagnosticIds.ToImmutableHashSet(), getDocumentDiagnosticsAsync, getProjectDiagnosticsAsync);
                 fixAllContext = new FixAllContext(project.Documents.First(), codeFixProvider, FixAllScope.Solution,
-                    null,//todo: code action equivalence keys in codecracker are always null, but should not be
+                    equivalenceKey,
                     codeFixProvider.FixableDiagnosticIds,
                     fixAllDiagnosticProvider,
                     CancellationToken.None);
@@ -307,7 +309,7 @@ namespace CodeCracker.Test
                     };
                 var fixAllDiagnosticProvider = new FixAllDiagnosticProvider(codeFixProvider.FixableDiagnosticIds.ToImmutableHashSet(), getDocumentDiagnosticsAsync, getProjectDiagnosticsAsync);
                 fixAllContext = new FixAllContext(project.Documents.First(), codeFixProvider, FixAllScope.Solution,
-                    null,//todo: code action equivalence keys in codecracker are always null, but should not be
+                    equivalenceKey,
                     codeFixProvider.FixableDiagnosticIds,
                     fixAllDiagnosticProvider,
                     CancellationToken.None);

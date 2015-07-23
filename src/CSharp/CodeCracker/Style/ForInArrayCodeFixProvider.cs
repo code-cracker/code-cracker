@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Change to foreach", c => MakeForeachAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Change to foreach", c => MakeForeachAsync(context.Document, diagnostic, c), nameof(ForInArrayCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

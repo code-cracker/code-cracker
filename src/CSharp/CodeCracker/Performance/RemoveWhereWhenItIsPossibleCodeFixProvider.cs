@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Performance
             var diagnostic = context.Diagnostics.First();
             var name = diagnostic.Properties["methodName"];
             var message = $"Remove 'Where' moving predicate to '{name}'";
-            context.RegisterCodeFix(CodeAction.Create(message, c => RemoveWhereAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(message, c => RemoveWhereAsync(context.Document, diagnostic, c), nameof(RemoveWhereWhenItIsPossibleCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

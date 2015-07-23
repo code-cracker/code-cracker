@@ -22,9 +22,9 @@ namespace CodeCracker.CSharp.Performance
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Use static Regex.IsMatch", c => UseStaticRegexIsMatchAsync(context.Document, diagnostic, c)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Use static and compiled Regex.IsMatch", c => UseCompiledAndStaticRegexAsync(context.Document, diagnostic, c)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Use Compiled Regex", c => UseCompiledRegexAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use static Regex.IsMatch", c => UseStaticRegexIsMatchAsync(context.Document, diagnostic, c), nameof(UseStaticRegexIsMatchCodeFixProvider) + nameof(UseStaticRegexIsMatchAsync)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use static and compiled Regex.IsMatch", c => UseCompiledAndStaticRegexAsync(context.Document, diagnostic, c), nameof(UseStaticRegexIsMatchCodeFixProvider) + nameof(UseCompiledAndStaticRegexAsync)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Use Compiled Regex", c => UseCompiledRegexAsync(context.Document, diagnostic, c), nameof(UseStaticRegexIsMatchCodeFixProvider) + nameof(UseCompiledRegexAsync)), diagnostic);
             return Task.FromResult(0);
         }
 

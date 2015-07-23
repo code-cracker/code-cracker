@@ -24,8 +24,8 @@ namespace CodeCracker.CSharp.Usage
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Rethrow as inner exception", c => MakeThrowAsInnerAsync(context.Document, diagnostic, c)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Throw original exception", c => MakeThrowAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Rethrow as inner exception", c => MakeThrowAsInnerAsync(context.Document, diagnostic, c), nameof(RethrowExceptionCodeFixProvider) + nameof(MakeThrowAsInnerAsync)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Throw original exception", c => MakeThrowAsync(context.Document, diagnostic, c), nameof(RethrowExceptionCodeFixProvider) + nameof(MakeThrowAsync)), diagnostic);
             return Task.FromResult(0);
         }
 

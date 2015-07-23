@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Usage
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(CodeAction.Create(
-                $"Remove unused parameter: '{diagnostic.Properties["identifier"]}'", c => RemoveParameterAsync(context.Document, diagnostic, c)), diagnostic);
+                $"Remove unused parameter: '{diagnostic.Properties["identifier"]}'", c => RemoveParameterAsync(context.Document, diagnostic, c), nameof(UnusedParametersCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

@@ -17,7 +17,7 @@ Namespace Usage
             Dim diagnostic = context.Diagnostics.First
             Dim span = diagnostic.Location.SourceSpan
             Dim method = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MethodBlockSyntax)()
-            context.RegisterCodeFix(CodeAction.Create("Call GC.SuppressFinalize", Function(ct) AddSuppressFinalizeAsync(context.Document, method, ct)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Call GC.SuppressFinalize", Function(ct) AddSuppressFinalizeAsync(context.Document, method, ct), NameOf(DisposablesShouldCallSuppressFinalizeCodeFixProvider)), diagnostic)
         End Function
 
         Public NotOverridable Overrides Function GetFixAllProvider() As FixAllProvider

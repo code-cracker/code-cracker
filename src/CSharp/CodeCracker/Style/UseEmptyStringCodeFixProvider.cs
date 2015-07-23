@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create(MessageFormat, c => UseEmptyStringAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(MessageFormat, c => UseEmptyStringAsync(context.Document, diagnostic, c), nameof(UseEmptyStringCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

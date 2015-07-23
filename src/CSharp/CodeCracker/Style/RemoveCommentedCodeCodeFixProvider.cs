@@ -21,9 +21,8 @@ namespace CodeCracker.CSharp.Style
         {
             var diagnostic = context.Diagnostics.First();
             var start = diagnostic.Location.SourceSpan.Start;
-            context.RegisterCodeFix(CodeAction.Create(
-                "Remove commented code.",
-                c => RemoveCommentedCodeAsync(context.Document, start, c)),
+            context.RegisterCodeFix(CodeAction.Create("Remove commented code.",
+                c => RemoveCommentedCodeAsync(context.Document, start, c), nameof(RemoveCommentedCodeCodeFixProvider)),
                 diagnostic);
             return Task.FromResult(0);
         }

@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Remove empty object initializer", ct => RemoveAsync(context.Document, diagnostic, ct)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove empty object initializer", ct => RemoveAsync(context.Document, diagnostic, ct), nameof(EmptyObjectInitializerCodeFixProvider )), diagnostic);
             return Task.FromResult(0);
         }
 

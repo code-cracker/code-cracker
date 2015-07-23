@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Usage
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(
-                CodeAction.Create("Call GC.SuppressFinalize", ct => AddSuppressFinalizeAsync(context.Document, diagnostic, ct)), diagnostic);
+                CodeAction.Create("Call GC.SuppressFinalize", ct => AddSuppressFinalizeAsync(context.Document, diagnostic, ct), nameof(DisposablesShouldCallSuppressFinalizeCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 
