@@ -328,5 +328,160 @@ public int Foo(int value)
 
             await VerifyCSharpFixAsync(source, expected);
         }
+        
+        [Fact]
+        public async Task FixCreateManyParameterDocWhenHaveFullDocSyntax()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            /// <summary>
+            /// Some text
+            /// </summary>
+            /// <remarks>Remarks</remarks>
+            /// <code>Code sample</code>
+            /// <exception cref=""System.ArgumentException""></exception>
+            /// <example>Some sample</example>
+            /// <returns>A <see cref=""System.Threading.Tasks.Task""/> to you</returns>
+            public static Project CreateProject(string[] sources, out AdhocWorkspace workspace, string language = LanguageNames.CSharp)
+            {
+            }
+        }
+    }";
+
+            const string expected = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            /// <summary>
+            /// Some text
+            /// </summary>
+            /// <param name=""sources"">todo: describe sources parameter on CreateProject</param>
+            /// <param name=""workspace"">todo: describe workspace parameter on CreateProject</param>
+            /// <param name=""language"">todo: describe language parameter on CreateProject</param>
+            /// <remarks>Remarks</remarks>
+            /// <code>Code sample</code>
+            /// <exception cref=""System.ArgumentException""></exception>
+            /// <example>Some sample</example>
+            /// <returns>A <see cref=""System.Threading.Tasks.Task""/> to you</returns>
+            public static Project CreateProject(string[] sources, out AdhocWorkspace workspace, string language = LanguageNames.CSharp)
+            {
+            }
+        }
+    }";
+
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixCreateManyParameterDocWhenHaveOnlySummary()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            /// <summary>
+            ///
+            /// </summary>
+            public static Project CreateProject(string[] sources, out AdhocWorkspace workspace, string language = LanguageNames.CSharp)
+            {
+            }
+        }
+    }";
+
+            const string expected = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            /// <summary>
+            ///
+            /// </summary>
+            /// <param name=""sources"">todo: describe sources parameter on CreateProject</param>
+            /// <param name=""workspace"">todo: describe workspace parameter on CreateProject</param>
+            /// <param name=""language"">todo: describe language parameter on CreateProject</param>
+            public static Project CreateProject(string[] sources, out AdhocWorkspace workspace, string language = LanguageNames.CSharp)
+            {
+            }
+        }
+    }";
+
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixCreateManyParameterDocWhenHaveOnlyReturns()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            /// <returns>A Project created out of the Douments created from the source strings</returns>
+            public static Project CreateProject(string[] sources, out AdhocWorkspace workspace, string language = LanguageNames.CSharp)
+            {
+            }
+        }
+    }";
+
+            const string expected = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            /// <param name=""sources"">todo: describe sources parameter on CreateProject</param>
+            /// <param name=""workspace"">todo: describe workspace parameter on CreateProject</param>
+            /// <param name=""language"">todo: describe language parameter on CreateProject</param>
+            /// <returns>A Project created out of the Douments created from the source strings</returns>
+            public static Project CreateProject(string[] sources, out AdhocWorkspace workspace, string language = LanguageNames.CSharp)
+            {
+            }
+        }
+    }";
+
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixCreateManyParameterDocWhenHaveOnlyRemarks()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            /// <remarks>
+            /// Todo: Remove/Update when https://github.com/dotnet/roslyn/issues/2580 is completed and there is
+            /// an api to check for analyzer exceptions
+            /// </remarks>
+            private static void CheckIfAnalyzerThrew(ImmutableArray<Diagnostic> diags)
+            {
+            }
+        }
+    }";
+
+            const string expected = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            /// <param name=""diags"">todo: describe diags parameter on CheckIfAnalyzerThrew</param>
+            /// <remarks>
+            /// Todo: Remove/Update when https://github.com/dotnet/roslyn/issues/2580 is completed and there is
+            /// an api to check for analyzer exceptions
+            /// </remarks>
+            private static void CheckIfAnalyzerThrew(ImmutableArray<Diagnostic> diags)
+            {
+            }
+        }
+    }";
+
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
     }
 }
