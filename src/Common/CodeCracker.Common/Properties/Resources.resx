@@ -183,4 +183,16 @@
   <data name="XmlDocumentationRemoveNonExistentParametersCodeFixProvider_Title" xml:space="preserve">
     <value>Remove unexistent parameters in xml docs</value>
   </data>
+  <data name="ChangeAsToCastAnalyzer_Title">
+    <value>Toggle between safe cast ('as') and direct cast.</value>
+  </data>
+  <data name="ChangeAsToCastAnalyzer_MessageFormat">
+    <value>Toggle between safe cast ('as') and direct cast.</value>
+  </data>
+  <data name="ChangeAsToCastCodeFixProvider_AsToCast">
+    <value>Change safe cast ('as') to direct cast</value>
+  </data>
+<data name="ChangeAsToCastCodeFixProvider_CastToAs">
+    <value>Change direct cast to safe cast ('as')</value>
+  </data>
 </root>

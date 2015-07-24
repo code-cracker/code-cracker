@@ -1,10 +1,6 @@
-﻿using CodeCracker.CSharp.Refactoring;
+﻿using System.Threading.Tasks;
+using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Refactoring
@@ -19,7 +15,7 @@ string s = o as string;";
             var diagnostic = new DiagnosticResult
             {
                 Id = DiagnosticId.ChangeAsToCast.ToDiagnosticId(),
-                Message = ChangeAsToCastAnalyzer.MessageFormat,
+                Message = ChangeAsToCastAnalyzer.MessageFormat.ToString(),
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 12) }
             };
@@ -34,7 +30,7 @@ string s = (string)o;";
             var diagnostic = new DiagnosticResult
             {
                 Id = DiagnosticId.ChangeAsToCast.ToDiagnosticId(),
-                Message = ChangeAsToCastAnalyzer.MessageFormat,
+                Message = ChangeAsToCastAnalyzer.MessageFormat.ToString(),
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 12) }
             };

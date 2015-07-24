@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,8 +10,8 @@ namespace CodeCracker.CSharp.Refactoring
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ChangeAsToCastAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Toggle between safe cast ('as') and direct cast.";
-        internal const string MessageFormat = "Toggle between safe cast ('as') and direct cast.";
+        internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.ChangeAsToCastAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.ChangeAsToCastAnalyzer_MessageFormat), Resources.ResourceManager, typeof(Resources));
         internal const string Category = SupportedCategories.Refactoring;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -44,8 +45,8 @@ namespace CodeCracker.CSharp.Refactoring
                 if (type?.IsValueType == true)
                     return;
             }
-
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            var properties = ImmutableDictionary.Create<string,string>().Add("kind", context.Node.Kind().ToString());
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation(), properties));
         }
     }
 }
