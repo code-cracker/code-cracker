@@ -201,6 +201,7 @@
     <Compile Include="Usage\UriAnalyzerTests.cs" />
     <Compile Include="Usage\RethrowExceptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Usage\ValidateColorTests.cs" />
     <Compile Include="Usage\VirtualMethodOnConstructorTests.cs" />
   </ItemGroup>
   <ItemGroup>
