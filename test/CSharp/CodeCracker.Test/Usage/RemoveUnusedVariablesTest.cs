@@ -81,6 +81,41 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async Task WhenVariableInCatchDeclarationShouldCreateDiagnostics()
+        {
+            const string source = @"
+        class Name
+        {
+            public void NewFoo()
+            {
+                try
+                {
+                }
+                catch(Exception ex)
+                {
+                    throw;
+                }
+            }
+        }";
+            const string fixtest = @"
+        class Name
+        {
+            public void NewFoo()
+            {
+                try
+                {
+                }
+                catch(Exception)
+                {
+                    throw;
+                }
+            }
+        }";
+
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
         public async Task WhenVariableWithinOfConstructorDoesNotUsedShouldCreateDiagnostics()
         {
             const string source = @"
