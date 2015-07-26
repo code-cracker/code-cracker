@@ -54,6 +54,13 @@ namespace ConsoleApplication1
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
+        public async Task IfIsNotIpAddressParseDoesNotCreatesDiagnostic()
+        {
+            var test = string.Format(TestCode, @"[Enum].Parse(GetType(String), "")");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
 
         private static DiagnosticResult CreateDiagnosticResult(int line, int column, Action getErrorMessageAction) {
             return new DiagnosticResult {

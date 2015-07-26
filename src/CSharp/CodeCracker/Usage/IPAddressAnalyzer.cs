@@ -36,6 +36,7 @@ namespace CodeCracker.CSharp.Usage
         private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
+            if (!context.Node.GetText().ToString().ToUpper().Contains("IPADDRESS.PARSE")) return;
             var method = new MethodInformation(
                 "Parse",
                 "System.Net.IPAddress.Parse(string)",
