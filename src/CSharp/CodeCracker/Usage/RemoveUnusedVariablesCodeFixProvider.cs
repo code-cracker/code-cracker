@@ -24,8 +24,18 @@ namespace CodeCracker.CSharp.Usage
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var variableUnused = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
-            context.RegisterCodeFix(CodeAction.Create($"Remove unused variable : '{ variableUnused.Declaration.Variables.First()}'", c => RemoveVariableAsync(context.Document, variableUnused, c), nameof(RemoveUnusedVariablesCodeFixProvider)), diagnostic);
+            var parent = root.FindToken(diagnosticSpan.Start).Parent;
+
+            if (parent.RawKind != (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.CatchDeclaration)
+            {
+                var variableUnused = parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
+                context.RegisterCodeFix(CodeAction.Create($"Remove unused variable : '{ variableUnused.Declaration.Variables.First()}'", c => RemoveVariableAsync(context.Document, variableUnused, c), nameof(RemoveUnusedVariablesCodeFixProvider)), diagnostic);
+            }
+            else
+            {
+                var variableUnused = parent.AncestorsAndSelf().OfType<CatchDeclarationSyntax>().First();
+                context.RegisterCodeFix(CodeAction.Create($"Remove unused variable : '{ variableUnused.Identifier }'", c => RemoveVariableAsync(context.Document, variableUnused, c), nameof(RemoveUnusedVariablesCodeFixProvider)), diagnostic);
+            }
         }
 
         private async static Task<Document> RemoveVariableAsync(Document document, LocalDeclarationStatementSyntax variableUnused, CancellationToken cancellationToken)
@@ -33,6 +43,15 @@ namespace CodeCracker.CSharp.Usage
             var root = await document.GetSyntaxRootAsync(cancellationToken);
 
             var newRoot = root.RemoveNode(variableUnused, SyntaxRemoveOptions.KeepNoTrivia);
+
+            return document.WithSyntaxRoot(newRoot);
+        }
+
+        private async static Task<Document> RemoveVariableAsync(Document document, CatchDeclarationSyntax variableUnused, CancellationToken cancellationToken)
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
+
+            var newRoot = root.ReplaceNode(variableUnused, variableUnused.Update(variableUnused.OpenParenToken, variableUnused.Type.WithoutTrailingTrivia(), new SyntaxToken(), variableUnused.CloseParenToken));
 
             return document.WithSyntaxRoot(newRoot);
         }
