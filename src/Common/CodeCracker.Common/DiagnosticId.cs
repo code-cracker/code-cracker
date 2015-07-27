@@ -29,6 +29,7 @@
         StaticConstructorException = 24,
         EmptyFinalizer = 25,
         CallExtensionMethodAsExtension = 26,
+        ChangeAsToCast = 28,
         DisposablesShouldCallSuppressFinalize = 29,
         MakeLocalVariableConstWhenItIsPossible = 30,
         UseInvokeMethodToFireEvent = 31,
