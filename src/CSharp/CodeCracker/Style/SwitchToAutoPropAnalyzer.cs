@@ -1,3 +1,4 @@
+using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,10 +12,10 @@ namespace CodeCracker.CSharp.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class SwitchToAutoPropAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Use auto property";
-        internal const string MessageFormat = "Change {0} to an auto property";
+        internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.SwitchToAutoPropAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.SwitchToAutoPropAnalyzer_MessageFormat), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.SwitchToAutoPropAnalyzer_Description), Resources.ResourceManager, typeof(Resources));
         internal const string Category = SupportedCategories.Style;
-        const string Description = "Auto properties offer a more concise way of defining a property. If you are using simple getters and setters you are able to simplify your code with autoproperties.";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.SwitchToAutoProp.ToDiagnosticId(),
