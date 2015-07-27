@@ -35,7 +35,7 @@ namespace CodeCracker.CSharp.Maintainability
 
             var keys = methodParameters.Select(parameter => parameter.Identifier.ValueText)
                 .Union(xElementsWitAttrs.Select(x => x.Item2.Identifier.Identifier.ValueText))
-                .ToImmutableHashSet();
+                .ToImmutableList();
 
             return (from key in keys
                     let Parameter = methodParameters.FirstOrDefault(p => p.Identifier.ValueText == key)
