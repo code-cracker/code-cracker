@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Usage
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var parent = root.FindToken(diagnosticSpan.Start).Parent;
 
-            if (parent.RawKind != (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.CatchDeclaration)
+            if (!parent.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.CatchDeclaration))
             {
                 var variableUnused = parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
                 context.RegisterCodeFix(CodeAction.Create($"Remove unused variable : '{ variableUnused.Declaration.Variables.First()}'", c => RemoveVariableAsync(context.Document, variableUnused, c), nameof(RemoveUnusedVariablesCodeFixProvider)), diagnostic);
