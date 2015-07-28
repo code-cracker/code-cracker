@@ -572,7 +572,7 @@ End Namespace
 Public Class TypeName
     Sub Foo()
         Dim str = ""x""
-        Dom x = 1
+        Dim x = 1
     End Sub
 End Class"
             Await VerifyBasicHasNoDiagnosticsAsync(test)
