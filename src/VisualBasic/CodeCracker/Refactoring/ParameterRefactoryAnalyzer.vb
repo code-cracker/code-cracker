@@ -45,7 +45,8 @@ Namespace Refactoring
             Next
 
             Dim contentParameter = method.SubOrFunctionStatement.ParameterList
-            If contentParameter.Parameters.Count <= 3 Then Exit Sub
+
+            If contentParameter Is Nothing OrElse contentParameter.Parameters.Count <= 3 Then Exit Sub
             If method.Statements.Any() Then Exit Sub
 
             For Each parameter In contentParameter.Parameters
