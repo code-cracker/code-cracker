@@ -36,7 +36,7 @@ Public Class IPAddressAnalyzer
     Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
         If (context.IsGenerated()) Then Return
         Dim method As New MethodInformation("Parse",
-                                            "System.Net.IPAddress.Parse(string)",
+                                            "Public Shared Overloads Function Parse(ipString As String) As System.Net.IPAddress",
                                             Sub(args) parseMethodInfo.Value.Invoke(Nothing, {args(0).ToString()}))
         Dim checker = New methodchecker(context, Rule)
         checker.AnalyzeMethod(method)

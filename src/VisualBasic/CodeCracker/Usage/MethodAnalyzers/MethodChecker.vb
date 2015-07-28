@@ -36,7 +36,7 @@ Public Class MethodChecker
         Return identifier?.Right.ToString() <> methodInformation.MethodName
     End Function
     Public Sub AnalyzeMethod(methodInformation As MethodInformation)
-        If MethodNameNotFound(methodInformation) Then
+        If MethodNameNotFound(methodInformation) OrElse MethodFullNameNotFound(methodInformation.MethodFullDefinition) Then
             Exit Sub
         End If
         Dim argumentList = DirectCast(_context.Node, InvocationExpressionSyntax).ArgumentList

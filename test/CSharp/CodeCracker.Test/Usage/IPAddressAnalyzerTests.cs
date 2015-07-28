@@ -54,8 +54,15 @@ namespace ConsoleApplication1
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
+        public async Task IfIsOtherTypeParseMethodDoesNotCreateDiagnostic()
+        {
+            var test = string.Format(TestCode, @"[Enum].Parse(GetType(String), "")");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
 
-        private static DiagnosticResult CreateDiagnosticResult(int line, int column, Action getErrorMessageAction) {
+
+      private static DiagnosticResult CreateDiagnosticResult(int line, int column, Action getErrorMessageAction) {
             return new DiagnosticResult {
                 Id = DiagnosticId.IPAddress.ToDiagnosticId(),
                 Message = GetErrorMessage(getErrorMessageAction),
