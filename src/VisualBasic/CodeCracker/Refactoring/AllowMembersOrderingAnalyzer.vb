@@ -30,7 +30,7 @@ Namespace Refactoring
         End Property
 
         Public Overrides Sub Initialize(context As AnalysisContext)
-            context.RegisterSyntaxNodeAction(AddressOf Analyze, SyntaxKind.ClassBlock, SyntaxKind.StructureBlock)
+            context.RegisterSyntaxNodeAction(AddressOf Analyze, SyntaxKind.ClassBlock, SyntaxKind.StructureBlock, SyntaxKind.ModuleBlock)
         End Sub
 
         Public Sub Analyze(context As SyntaxNodeAnalysisContext)
