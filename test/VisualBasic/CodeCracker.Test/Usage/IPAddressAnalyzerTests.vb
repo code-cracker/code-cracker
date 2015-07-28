@@ -46,6 +46,13 @@ End Namespace"
         Await VerifyBasicHasNoDiagnosticsAsync(test)
     End Function
 
+    <Fact>
+    Public Async Function IfIsNotIpAddressParseDoesNotCreatesDiagnostic() As Task
+        Dim test = String.Format(TestCode, "[Enum].Parse(GetType(String), """")")
+        Await VerifyBasicHasNoDiagnosticsAsync(test)
+    End Function
+
+
     Private Function CreateDiagnosticResult(line As Integer, column As Integer, errorMessageAction As Action) As DiagnosticResult
         Return New DiagnosticResult With {
             .Id = DiagnosticId.IPAddress.ToDiagnosticId(),
