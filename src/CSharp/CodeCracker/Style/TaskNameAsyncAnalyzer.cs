@@ -33,6 +33,7 @@ namespace CodeCracker.CSharp.Style
             if (context.IsGenerated()) return;
             var method = (MethodDeclarationSyntax)context.Node;
             if (method.Identifier.ToString().EndsWith("Async")) return;
+            if (method.Modifiers.Any(SyntaxKind.NewKeyword, SyntaxKind.OverrideKeyword)) return;
 
             var errorMessage = method.Identifier.ToString() + "Async";
             var diag = Diagnostic.Create(Rule, method.Identifier.GetLocation(), errorMessage);
