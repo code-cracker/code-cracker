@@ -294,5 +294,133 @@ void Bar()
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task NoDiagnosticOnXUnitTestMethods()
+        {
+            const string source = @"
+        class XUnitTests
+        {
+            [Fact]
+            void FactMethod() { }
+
+            [Theory]
+            void TheoryMethod() { }
+        }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task NoDiagnosticOnMicrosoftTestMethods()
+        {
+            const string source = @"
+        class MsTestTests
+        {
+            [TestMethod]
+            void TestMethod() { }
+
+            [AssemblyInitialize]
+            void AssemblyInitializeMethod() { }
+
+            [AssemblyCleanup]
+            AssemblyCleanup() { }
+
+            [ClassInitialize]
+            void ClassInitializeMethod() { }
+
+            [ClassCleanup]
+            void ClassCleanupMethod() { }
+
+            [TestInitialize]
+            void TestInitializeMethod() { }
+
+            [TestCleanup]
+            void TestCleanupMethod() { }
+        }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task NoDiagnosticOnNUnitTestMethods()
+        {
+            const string nunitNonTestFixtureWithAttributesSource = @"
+        class NUnitTests
+        {
+            [Test]
+            void TestMethod() { }
+
+            [TestCase]
+            void TestCaseMethod() { }
+
+            [TestCaseSource]
+            void TestCaseSourceMethod() { }
+
+            [TestFixtureSetup]
+            void TestFixtureSetupMethod() { }
+
+            [TestFixtureTeardown]
+            void TestFixtureTeardownMethod() { }
+
+            [SetUp]
+            void SetUpMethod() { }
+
+            [TearDown]
+            void TearDownMethod() { }
+
+            [OneTimeSetUp]
+            void OneTimeSetUpMethod() { }
+
+            [OneTimeTearDown]
+            void OneTimeTearDownMethod() { }
+        }";
+
+            const string nunitTestFixtureWithoutAttributesSource = @"
+        [TestFixture]
+        class NUnitTestFixtureWithoutAttributes
+        {
+            void TestMethod() { }
+
+            void MethodUnderTest() { }
+
+            void MethodTestShouldPass() { }
+        }";
+
+            const string nunitWithoutTestFixtureWithTestAttributeAndOtherNonAttributedMethodsSource = @"
+        class NUnitWithoutTestFixtureWithTestAttributeAndOtherNonAttributedMethods
+        {
+            [Test]
+            void TestMethod() { }
+
+            void MethodUnderTest() { }
+        }";
+
+            const string nunitWithoutTestFixtureWithTestCaseAttributeAndOtherNonAttributedMethodsSource = @"
+        class NUnitWithoutTestFixtureWithTestCaseAttributeAndOtherNonAttributedMethods
+        {
+            [TestCase]
+            void TestMethod() { }
+
+            void MethodUnderTest() { }
+        }";
+
+            const string nunitWithoutTestFixtureWithTestCaseSourceAttributeAndOtherNonAttributedMethodsSource = @"
+        class NUnitWithoutTestFixtureWithTestCaseSourceAttributeAndOtherNonAttributedMethods
+        {
+            [TestCaseSource]
+            void TestMethod() { }
+
+            void MethodUnderTest() { }
+        }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(new string[] {
+                nunitNonTestFixtureWithAttributesSource,
+                nunitTestFixtureWithoutAttributesSource,
+                nunitWithoutTestFixtureWithTestAttributeAndOtherNonAttributedMethodsSource,
+                nunitWithoutTestFixtureWithTestCaseAttributeAndOtherNonAttributedMethodsSource,
+                nunitWithoutTestFixtureWithTestCaseSourceAttributeAndOtherNonAttributedMethodsSource
+            });
+        }
     }
 }
