@@ -43,7 +43,8 @@ namespace CodeCracker.CSharp.Design
                 SyntaxKind.VirtualKeyword,
                 SyntaxKind.NewKeyword,
                 SyntaxKind.AbstractKeyword,
-                SyntaxKind.OverrideKeyword)) return;
+                SyntaxKind.OverrideKeyword))
+                return;
 
             var semanticModel = context.SemanticModel;
             var methodSymbol = semanticModel.GetDeclaredSymbol(method);
@@ -58,8 +59,6 @@ namespace CodeCracker.CSharp.Design
                 if (implementation != null && implementation.Equals(methodSymbol)) return;
             }
 
-            if (IsTestMethod(method, methodSymbol)) return;
-
             if (method.Body == null)
             {
                 if (method.ExpressionBody?.Expression == null) return;
@@ -73,6 +72,8 @@ namespace CodeCracker.CSharp.Design
                 if (!dataFlowAnalysis.Succeeded) return;
                 if (dataFlowAnalysis.DataFlowsIn.Any(inSymbol => inSymbol.Name == "this")) return;
             }
+
+            if (IsTestMethod(method, methodSymbol)) return;
 
             var diagnostic = Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier.ValueText);
             context.ReportDiagnostic(diagnostic);
