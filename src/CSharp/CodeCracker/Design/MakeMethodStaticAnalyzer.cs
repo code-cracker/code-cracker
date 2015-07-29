@@ -35,6 +35,7 @@ namespace CodeCracker.CSharp.Design
         private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
+
             var method = (MethodDeclarationSyntax)context.Node;
             if (method.Modifiers.Any(
                 SyntaxKind.StaticKeyword,
@@ -43,10 +44,12 @@ namespace CodeCracker.CSharp.Design
                 SyntaxKind.NewKeyword,
                 SyntaxKind.AbstractKeyword,
                 SyntaxKind.OverrideKeyword)) return;
+
             var semanticModel = context.SemanticModel;
             var methodSymbol = semanticModel.GetDeclaredSymbol(method);
             var theClass = methodSymbol.ContainingType;
             if (theClass.TypeKind == TypeKind.Interface) return;
+
             var interfaceMembersWithSameName = theClass.AllInterfaces.SelectMany(i => i.GetMembers(methodSymbol.Name));
             foreach (var memberSymbol in interfaceMembersWithSameName)
             {
@@ -54,6 +57,9 @@ namespace CodeCracker.CSharp.Design
                 var implementation = theClass.FindImplementationForInterfaceMember(memberSymbol);
                 if (implementation != null && implementation.Equals(methodSymbol)) return;
             }
+
+            if (IsTestMethod(method, methodSymbol)) return;
+
             if (method.Body == null)
             {
                 if (method.ExpressionBody?.Expression == null) return;
@@ -67,8 +73,37 @@ namespace CodeCracker.CSharp.Design
                 if (!dataFlowAnalysis.Succeeded) return;
                 if (dataFlowAnalysis.DataFlowsIn.Any(inSymbol => inSymbol.Name == "this")) return;
             }
+
             var diagnostic = Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier.ValueText);
             context.ReportDiagnostic(diagnostic);
         }
+
+        private static bool IsTestMethod(MethodDeclarationSyntax method, IMethodSymbol methodSymbol)
+        {
+            var result = false;
+
+            // Test if the method has any known test framework's attribute.
+            result = method.AttributeLists.HasAnyAttribute(AllTestFrameworksMethodAttributes.Value);
+
+            if (!result && methodSymbol.Name.Contains("Test"))
+            {
+                // Test if the containing class has any NUnit class attribute
+                result = methodSymbol.ContainingType.GetAttributes().Any(attribute => attribute.AttributeClass.Name == NUnitTestClassAttribute);
+
+                if (!result)
+                {
+                    // Test if any other method in the containing class has an NUnit method attribute.
+                    result = method.Parent.DescendantNodes().Any(descendant => descendant.IsKind(SyntaxKind.MethodDeclaration) && ((MethodDeclarationSyntax)descendant).AttributeLists.HasAnyAttribute(NUnitTestMethodAttributes));
+                }
+            }
+
+            return result;
+        }
+
+        internal const string NUnitTestClassAttribute = "TestFixture";
+        internal static readonly string[] MicrosoftTestMethodAttributes = new string[] { "TestMethod", "ClassInitialize", "ClassCleanup", "TestInitialize", "TestCleanup", "AssemblyInitialize", "AssemblyCleanup" };
+        internal static readonly string[] XUnitTestMethodAttributes = new string[] { "Fact", "Theory" };
+        internal static readonly string[] NUnitTestMethodAttributes = new string[] { "Test", "TestCase", "TestCaseSource", "TestFixtureSetup", "TestFixtureTeardown", "SetUp", "TearDown", "OneTimeSetUp", "OneTimeTearDown" };
+        internal static readonly System.Lazy<string[]> AllTestFrameworksMethodAttributes = new System.Lazy<string[]>(() => { return XUnitTestMethodAttributes.Concat(MicrosoftTestMethodAttributes).Concat(NUnitTestMethodAttributes).ToArray(); });
     }
 }
