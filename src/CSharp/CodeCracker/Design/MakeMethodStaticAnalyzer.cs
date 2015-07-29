@@ -43,8 +43,7 @@ namespace CodeCracker.CSharp.Design
                 SyntaxKind.VirtualKeyword,
                 SyntaxKind.NewKeyword,
                 SyntaxKind.AbstractKeyword,
-                SyntaxKind.OverrideKeyword))
-                return;
+                SyntaxKind.OverrideKeyword)) return;
 
             var semanticModel = context.SemanticModel;
             var methodSymbol = semanticModel.GetDeclaredSymbol(method);
@@ -58,6 +57,8 @@ namespace CodeCracker.CSharp.Design
                 var implementation = theClass.FindImplementationForInterfaceMember(memberSymbol);
                 if (implementation != null && implementation.Equals(methodSymbol)) return;
             }
+
+            if (IsTestMethod(method, methodSymbol)) return;
 
             if (method.Body == null)
             {
@@ -73,8 +74,6 @@ namespace CodeCracker.CSharp.Design
                 if (dataFlowAnalysis.DataFlowsIn.Any(inSymbol => inSymbol.Name == "this")) return;
             }
 
-            if (IsTestMethod(method, methodSymbol)) return;
-
             var diagnostic = Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier.ValueText);
             context.ReportDiagnostic(diagnostic);
         }
@@ -86,7 +85,7 @@ namespace CodeCracker.CSharp.Design
             // Test if the method has any known test framework's attribute.
             result = method.AttributeLists.HasAnyAttribute(AllTestFrameworksMethodAttributes.Value);
 
-            if (!result && methodSymbol.Name.IndexOf("Test", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            if (!result && methodSymbol.Name.Contains("Test"))
             {
                 // Test if the containing class has any NUnit class attribute
                 result = methodSymbol.ContainingType.GetAttributes().Any(attribute => attribute.AttributeClass.Name == NUnitTestClassAttribute);
@@ -101,7 +100,7 @@ namespace CodeCracker.CSharp.Design
             return result;
         }
 
-        internal const string NUnitTestClassAttribute = "TestFixtureAttribute";
+        internal const string NUnitTestClassAttribute = "TestFixture";
         internal static readonly string[] MicrosoftTestMethodAttributes = new string[] { "TestMethod", "ClassInitialize", "ClassCleanup", "TestInitialize", "TestCleanup", "AssemblyInitialize", "AssemblyCleanup" };
         internal static readonly string[] XUnitTestMethodAttributes = new string[] { "Fact", "Theory" };
         internal static readonly string[] NUnitTestMethodAttributes = new string[] { "Test", "TestCase", "TestCaseSource", "TestFixtureSetup", "TestFixtureTeardown", "SetUp", "TearDown", "OneTimeSetUp", "OneTimeTearDown" };
