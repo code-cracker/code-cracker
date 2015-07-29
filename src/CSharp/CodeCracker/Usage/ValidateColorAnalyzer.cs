@@ -1,4 +1,5 @@
 ﻿using CodeCracker.CSharp.Usage.MethodAnalyzers;
+using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -6,15 +7,17 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 
 namespace CodeCracker.CSharp.Usage
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ValidateColorAnalyzer : DiagnosticAnalyzer
     {
+        internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.ValidateColorAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString Message = new LocalizableResourceString(nameof(Resources.ValidateColorAnalyzer_Message), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.ValidateColorAnalyzer_Description), Resources.ResourceManager, typeof(Resources));
         internal const string Category = SupportedCategories.Usage;
-        internal const string Message = "Your htmlColor value doesn't exist.";
-        internal const string Title = "Color validation";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ValidateColor.ToDiagnosticId(),
@@ -25,39 +28,30 @@ namespace CodeCracker.CSharp.Usage
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ValidateColor));
-        const string Description = @"This diagnostic checks the htmlColor value and triggers if the parsing fail by throwing an exception.";
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) =>
-            context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeFormatInvocation, SyntaxKind.InvocationExpression);
 
+        private static void AnalyzeFormatInvocation(SyntaxNodeAnalysisContext context) =>
+               AnalyzeFormatInvocation(context, "FromHtml");
 
-        private static void Analyzer(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeFormatInvocation(SyntaxNodeAnalysisContext context, string methodName)
         {
             if (context.IsGenerated()) return;
-            var invocationExpression = (InvocationExpressionSyntax)context.Node;
 
-            var memberExpresion = invocationExpression.Expression as MemberAccessExpressionSyntax;
-            if (memberExpresion?.Name?.ToString() != "FromHtml") return;
-
-            if (memberExpresion.Expression as IdentifierNameSyntax != null)
-            {
-                if (((IdentifierNameSyntax)memberExpresion.Expression).Identifier.Text != nameof(ColorTranslator)) return;
-            }
-            else
-            {
-                if (((IdentifierNameSyntax)((MemberAccessExpressionSyntax)memberExpresion.Expression).Name).Identifier.Text != nameof(ColorTranslator)) return;
-            }
-
-            var argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
+            var invocation = (InvocationExpressionSyntax)context.Node;
+            var memberExpresion = invocation.Expression as MemberAccessExpressionSyntax;
+            if (memberExpresion?.Name?.ToString() != methodName) return;
+            if (!memberExpresion.DescendantTokens().Any(s=> s.ValueText == nameof(ColorTranslator))) return;
+            var argumentList = invocation.ArgumentList as ArgumentListSyntax;
             if (argumentList?.Arguments.Count != 1) return;
             var argument = argumentList.Arguments.First();
-            if (argument.Expression as LiteralExpressionSyntax == null) return;
+            if (argument.Expression.IsNotKind(SyntaxKind.StringLiteralExpression)) return;
             var htmlColor = ((LiteralExpressionSyntax)argument.Expression).Token.ValueText;
             try
             {
-                var color = ColorTranslator.FromHtml(htmlColor);
+                ColorTranslator.FromHtml(htmlColor);
             }
             catch (Exception)
             {
@@ -66,7 +60,7 @@ namespace CodeCracker.CSharp.Usage
             }
         }
 
-        internal enum KnownColor
+        public enum KnownColor
         {
             ActiveBorder = 1,
             ActiveCaption = 2,
@@ -244,51 +238,9 @@ namespace CodeCracker.CSharp.Usage
             MenuHighlight = 174
         }
 
-        internal struct Color
+        private struct Color
         {
             int value;
-
-            #region Unimplemented bloated properties
-            //
-            // These properties were implemented very poorly on Mono, this
-            // version will only store the int32 value and any helper properties
-            // like Name, IsKnownColor, IsSystemColor, IsNamedColor are not
-            // currently implemented, and would be implemented in the future
-            // using external tables/hastables/dictionaries, without bloating
-            // the Color structure
-            //
-            public string Name
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public bool IsKnownColor
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public bool IsSystemColor
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public bool IsNamedColor
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            #endregion
 
             public Color(KnownColor knownColor)
             {
@@ -318,17 +270,7 @@ namespace CodeCracker.CSharp.Usage
                 };
                 return color;
             }
-
-            public int ToArgb()
-            {
-                return (int)value;
-            }
-
-            public static Color FromArgb(int alpha, Color baseColor)
-            {
-                return FromArgb(alpha, baseColor.R, baseColor.G, baseColor.B);
-            }
-
+            
             public static Color FromArgb(int argb)
             {
                 return FromArgb((argb >> 24) & 0x0FF, (argb >> 16) & 0x0FF, (argb >> 8) & 0x0FF, argb & 0x0FF);
@@ -339,138 +281,14 @@ namespace CodeCracker.CSharp.Usage
                 return KnownColors.FromKnownColor(color);
             }
 
-            public static Color FromName(string name)
-            {
-                try
-                {
-                    var kc = (KnownColor)Enum.Parse(typeof(KnownColor), name, true);
-                    return KnownColors.FromKnownColor(kc);
-                }
-                catch (Exception)
-                {
-                    // This is what it returns! 	 
-                    var d = FromArgb(0, 0, 0, 0);
-                    return d;
-                }
-            }
-
-
-            public static readonly Color Empty;
-
-            public static bool operator ==(Color left, Color right)
-            {
-                return left.value == right.value;
-            }
-
-            public static bool operator !=(Color left, Color right)
-            {
-                return left.value != right.value;
-            }
-
-            public float GetBrightness()
-            {
-                var minval = Math.Min(R, Math.Min(G, B));
-                var maxval = Math.Max(R, Math.Max(G, B));
-
-                return (float)(maxval + minval) / 510;
-            }
-
-            public float GetSaturation()
-            {
-                var minval = (byte)Math.Min(R, Math.Min(G, B));
-                var maxval = (byte)Math.Max(R, Math.Max(G, B));
-
-                if (maxval == minval)
-                    return 0.0f;
-
-                var sum = maxval + minval;
-                if (sum > 255)
-                    sum = 510 - sum;
-
-                return (float)(maxval - minval) / sum;
-            }
-
-            public float GetHue()
-            {
-                int r = R;
-                int g = G;
-                int b = B;
-                var minval = (byte)Math.Min(r, Math.Min(g, b));
-                var maxval = (byte)Math.Max(r, Math.Max(g, b));
-
-                if (maxval == minval)
-                    return 0.0f;
-
-                var diff = (float)(maxval - minval);
-                var rnorm = (maxval - r) / diff;
-                var gnorm = (maxval - g) / diff;
-                var bnorm = (maxval - b) / diff;
-
-                var hue = 0.0f;
-                if (r == maxval)
-                    hue = 60.0f * (6.0f + bnorm - gnorm);
-                if (g == maxval)
-                    hue = 60.0f * (2.0f + rnorm - bnorm);
-                if (b == maxval)
-                    hue = 60.0f * (4.0f + gnorm - rnorm);
-                if (hue > 360.0f)
-                    hue = hue - 360.0f;
-
-                return hue;
-            }
-
-            public static KnownColor ToKnownColor()
-            {
-                throw new NotImplementedException();
-            }
-
+            public static readonly Color Empty = default(Color);
+            
             public bool IsEmpty
             {
                 get
                 {
                     return value == 0;
                 }
-            }
-
-            public byte A
-            {
-                get { return (byte)(value >> 24); }
-            }
-
-            public byte R
-            {
-                get { return (byte)(value >> 16); }
-            }
-
-            public byte G
-            {
-                get { return (byte)(value >> 8); }
-            }
-
-            public byte B
-            {
-                get { return (byte)value; }
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is Color))
-                    return false;
-                var c = (Color)obj;
-                return this == c;
-            }
-
-            public override int GetHashCode()
-            {
-                return value;
-            }
-
-            public override string ToString()
-            {
-                if (IsEmpty)
-                    return "Color [Empty]";
-
-                return String.Format("Color [A={0}, R={1}, G={2}, B={3}]", A, R, G, B);
             }
 
             private static ArgumentException CreateColorArgumentException(int value, string color)
@@ -480,725 +298,17 @@ namespace CodeCracker.CSharp.Usage
                     + " less than or equal to 255.", value, color));
             }
 
-            static public Color Transparent
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Transparent); }
-            }
-
-            static public Color AliceBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.AliceBlue); }
-            }
-
-            static public Color AntiqueWhite
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.AntiqueWhite); }
-            }
-
-            static public Color Aqua
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Aqua); }
-            }
-
-            static public Color Aquamarine
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Aquamarine); }
-            }
-
-            static public Color Azure
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Azure); }
-            }
-
-            static public Color Beige
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Beige); }
-            }
-
-            static public Color Bisque
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Bisque); }
-            }
-
-            static public Color Black
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Black); }
-            }
-
-            static public Color BlanchedAlmond
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.BlanchedAlmond); }
-            }
-
-            static public Color Blue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Blue); }
-            }
-
-            static public Color BlueViolet
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.BlueViolet); }
-            }
-
-            static public Color Brown
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Brown); }
-            }
-
-            static public Color BurlyWood
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.BurlyWood); }
-            }
-
-            static public Color CadetBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.CadetBlue); }
-            }
-
-            static public Color Chartreuse
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Chartreuse); }
-            }
-
-            static public Color Chocolate
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Chocolate); }
-            }
-
-            static public Color Coral
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Coral); }
-            }
-
-            static public Color CornflowerBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.CornflowerBlue); }
-            }
-
-            static public Color Cornsilk
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Cornsilk); }
-            }
-
-            static public Color Crimson
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Crimson); }
-            }
-
-            static public Color Cyan
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Cyan); }
-            }
-
-            static public Color DarkBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkBlue); }
-            }
-
-            static public Color DarkCyan
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkCyan); }
-            }
-
-            static public Color DarkGoldenrod
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkGoldenrod); }
-            }
-
-            static public Color DarkGray
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkGray); }
-            }
-
-            static public Color DarkGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkGreen); }
-            }
-
-            static public Color DarkKhaki
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkKhaki); }
-            }
-
-            static public Color DarkMagenta
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkMagenta); }
-            }
-
-            static public Color DarkOliveGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkOliveGreen); }
-            }
-
-            static public Color DarkOrange
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkOrange); }
-            }
-
-            static public Color DarkOrchid
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkOrchid); }
-            }
-
-            static public Color DarkRed
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkRed); }
-            }
-
-            static public Color DarkSalmon
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkSalmon); }
-            }
-
-            static public Color DarkSeaGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkSeaGreen); }
-            }
-
-            static public Color DarkSlateBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkSlateBlue); }
-            }
-
-            static public Color DarkSlateGray
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkSlateGray); }
-            }
-
-            static public Color DarkTurquoise
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkTurquoise); }
-            }
-
-            static public Color DarkViolet
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DarkViolet); }
-            }
-
-            static public Color DeepPink
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DeepPink); }
-            }
-
-            static public Color DeepSkyBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DeepSkyBlue); }
-            }
-
-            static public Color DimGray
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DimGray); }
-            }
-
-            static public Color DodgerBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.DodgerBlue); }
-            }
-
-            static public Color Firebrick
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Firebrick); }
-            }
-
-            static public Color FloralWhite
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.FloralWhite); }
-            }
-
-            static public Color ForestGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.ForestGreen); }
-            }
-
-            static public Color Fuchsia
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Fuchsia); }
-            }
-
-            static public Color Gainsboro
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Gainsboro); }
-            }
-
-            static public Color GhostWhite
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.GhostWhite); }
-            }
-
-            static public Color Gold
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Gold); }
-            }
-
-            static public Color Goldenrod
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Goldenrod); }
-            }
-
-            static public Color Gray
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Gray); }
-            }
-
-            static public Color Green
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Green); }
-            }
-
-            static public Color GreenYellow
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.GreenYellow); }
-            }
-
-            static public Color Honeydew
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Honeydew); }
-            }
-
-            static public Color HotPink
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.HotPink); }
-            }
-
-            static public Color IndianRed
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.IndianRed); }
-            }
-
-            static public Color Indigo
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Indigo); }
-            }
-
-            static public Color Ivory
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Ivory); }
-            }
-
-            static public Color Khaki
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Khaki); }
-            }
-
-            static public Color Lavender
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Lavender); }
-            }
-
-            static public Color LavenderBlush
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LavenderBlush); }
-            }
-
-            static public Color LawnGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LawnGreen); }
-            }
-
-            static public Color LemonChiffon
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LemonChiffon); }
-            }
-
-            static public Color LightBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightBlue); }
-            }
-
-            static public Color LightCoral
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightCoral); }
-            }
-
-            static public Color LightCyan
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightCyan); }
-            }
-
-            static public Color LightGoldenrodYellow
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightGoldenrodYellow); }
-            }
-
-            static public Color LightGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightGreen); }
-            }
-
             static public Color LightGray
             {
                 get { return KnownColors.FromKnownColor(KnownColor.LightGray); }
             }
-
-            static public Color LightPink
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightPink); }
-            }
-
-            static public Color LightSalmon
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightSalmon); }
-            }
-
-            static public Color LightSeaGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightSeaGreen); }
-            }
-
-            static public Color LightSkyBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightSkyBlue); }
-            }
-
-            static public Color LightSlateGray
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightSlateGray); }
-            }
-
-            static public Color LightSteelBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightSteelBlue); }
-            }
-
-            static public Color LightYellow
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LightYellow); }
-            }
-
-            static public Color Lime
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Lime); }
-            }
-
-            static public Color LimeGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.LimeGreen); }
-            }
-
-            static public Color Linen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Linen); }
-            }
-
-            static public Color Magenta
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Magenta); }
-            }
-
-            static public Color Maroon
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Maroon); }
-            }
-
-            static public Color MediumAquamarine
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MediumAquamarine); }
-            }
-
-            static public Color MediumBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MediumBlue); }
-            }
-
-            static public Color MediumOrchid
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MediumOrchid); }
-            }
-
-            static public Color MediumPurple
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MediumPurple); }
-            }
-
-            static public Color MediumSeaGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MediumSeaGreen); }
-            }
-
-            static public Color MediumSlateBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MediumSlateBlue); }
-            }
-
-            static public Color MediumSpringGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MediumSpringGreen); }
-            }
-
-            static public Color MediumTurquoise
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MediumTurquoise); }
-            }
-
-            static public Color MediumVioletRed
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MediumVioletRed); }
-            }
-
-            static public Color MidnightBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MidnightBlue); }
-            }
-
-            static public Color MintCream
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MintCream); }
-            }
-
-            static public Color MistyRose
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.MistyRose); }
-            }
-
-            static public Color Moccasin
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Moccasin); }
-            }
-
-            static public Color NavajoWhite
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.NavajoWhite); }
-            }
-
-            static public Color Navy
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Navy); }
-            }
-
-            static public Color OldLace
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.OldLace); }
-            }
-
-            static public Color Olive
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Olive); }
-            }
-
-            static public Color OliveDrab
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.OliveDrab); }
-            }
-
-            static public Color Orange
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Orange); }
-            }
-
-            static public Color OrangeRed
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.OrangeRed); }
-            }
-
-            static public Color Orchid
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Orchid); }
-            }
-
-            static public Color PaleGoldenrod
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.PaleGoldenrod); }
-            }
-
-            static public Color PaleGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.PaleGreen); }
-            }
-
-            static public Color PaleTurquoise
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.PaleTurquoise); }
-            }
-
-            static public Color PaleVioletRed
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.PaleVioletRed); }
-            }
-
-            static public Color PapayaWhip
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.PapayaWhip); }
-            }
-
-            static public Color PeachPuff
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.PeachPuff); }
-            }
-
-            static public Color Peru
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Peru); }
-            }
-
-            static public Color Pink
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Pink); }
-            }
-
-            static public Color Plum
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Plum); }
-            }
-
-            static public Color PowderBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.PowderBlue); }
-            }
-
-            static public Color Purple
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Purple); }
-            }
-
-            static public Color Red
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Red); }
-            }
-
-            static public Color RosyBrown
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.RosyBrown); }
-            }
-
-            static public Color RoyalBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.RoyalBlue); }
-            }
-
-            static public Color SaddleBrown
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.SaddleBrown); }
-            }
-
-            static public Color Salmon
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Salmon); }
-            }
-
-            static public Color SandyBrown
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.SandyBrown); }
-            }
-
-            static public Color SeaGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.SeaGreen); }
-            }
-
-            static public Color SeaShell
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.SeaShell); }
-            }
-
-            static public Color Sienna
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Sienna); }
-            }
-
-            static public Color Silver
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Silver); }
-            }
-
-            static public Color SkyBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.SkyBlue); }
-            }
-
-            static public Color SlateBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.SlateBlue); }
-            }
-
-            static public Color SlateGray
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.SlateGray); }
-            }
-
-            static public Color Snow
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Snow); }
-            }
-
-            static public Color SpringGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.SpringGreen); }
-            }
-
-            static public Color SteelBlue
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.SteelBlue); }
-            }
-
-            static public Color Tan
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Tan); }
-            }
-
-            static public Color Teal
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Teal); }
-            }
-
-            static public Color Thistle
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Thistle); }
-            }
-
-            static public Color Tomato
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Tomato); }
-            }
-
-            static public Color Turquoise
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Turquoise); }
-            }
-
-            static public Color Violet
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Violet); }
-            }
-
-            static public Color Wheat
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Wheat); }
-            }
-
-            static public Color White
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.White); }
-            }
-
-            static public Color WhiteSmoke
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.WhiteSmoke); }
-            }
-
-            static public Color Yellow
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.Yellow); }
-            }
-
-            static public Color YellowGreen
-            {
-                get { return KnownColors.FromKnownColor(KnownColor.YellowGreen); }
-            }
         }
 
-        internal class ColorConverter
+        private class ColorConverter
         {
-            public ColorConverter() { }
-
             public static Color ConvertFromString(string s, CultureInfo culture)
             {
-                if (culture == null)
-                    culture = CultureInfo.InvariantCulture;
-
                 s = s.Trim();
-
-                if (s.Length == 0)
-                    return Color.Empty;
 
                 // Try to process both NamedColor and SystemColors from the KnownColor enumeration
                 if (Char.IsLetter(s[0]))
@@ -1288,25 +398,12 @@ namespace CodeCracker.CSharp.Usage
                     }
                 }
 
-                if (!result.IsEmpty)
-                {
-                    // Look for a named or system color with those values
-                    var known = KnownColors.FindColorMatch(result);
-                    if (!known.IsEmpty)
-                        return known;
-                }
-
                 return result;
             }
         }
 
-        internal sealed class ColorTranslator
+        private sealed class ColorTranslator
         {
-
-            private ColorTranslator()
-            {
-            }
-
             public static Color FromHtml(string htmlColor)
             {
                 if ((htmlColor == null) || (htmlColor.Length == 0))
@@ -1337,125 +434,13 @@ namespace CodeCracker.CSharp.Usage
                     // special case for Color.LightGray versus html's LightGrey (#340917)
                     case "lightgrey":
                         return Color.LightGray;
+                    default:
+                        return ColorConverter.ConvertFromString(htmlColor, CultureInfo.CurrentCulture);
                 }
-
-                return ColorConverter.ConvertFromString(htmlColor, CultureInfo.CurrentCulture);
-            }
-
-            internal static Color FromBGR(int bgr)
-            {
-                var result = Color.FromArgb(0xFF, (bgr & 0xFF), ((bgr >> 8) & 0xFF), ((bgr >> 16) & 0xFF));
-                var known = KnownColors.FindColorMatch(result);
-                return (known.IsEmpty) ? result : known;
-            }
-
-            public static Color FromOle(int oleColor)
-            {
-                // OleColor format is BGR
-                return FromBGR(oleColor);
-            }
-
-            public static Color FromWin32(int win32Color)
-            {
-                // Win32Color format is BGR
-                return FromBGR(win32Color);
-            }
-
-            public static string ToHtml(Color c)
-            {
-                if (c.IsEmpty)
-                    return String.Empty;
-
-                if (c.IsSystemColor)
-                {
-                    var kc = Color.ToKnownColor();
-                    switch (kc)
-                    {
-                        case KnownColor.ActiveBorder:
-                        case KnownColor.ActiveCaption:
-                        case KnownColor.AppWorkspace:
-                        case KnownColor.GrayText:
-                        case KnownColor.Highlight:
-                        case KnownColor.HighlightText:
-                        case KnownColor.InactiveBorder:
-                        case KnownColor.InactiveCaption:
-                        case KnownColor.InactiveCaptionText:
-                        case KnownColor.InfoText:
-                        case KnownColor.Menu:
-                        case KnownColor.MenuText:
-                        case KnownColor.ScrollBar:
-                        case KnownColor.Window:
-                        case KnownColor.WindowFrame:
-                        case KnownColor.WindowText:
-                            return KnownColors.GetName(kc).ToLowerInvariant();
-
-                        case KnownColor.ActiveCaptionText:
-                            return "captiontext";
-                        case KnownColor.Control:
-                            return "buttonface";
-                        case KnownColor.ControlDark:
-                            return "buttonshadow";
-                        case KnownColor.ControlDarkDark:
-                            return "threeddarkshadow";
-                        case KnownColor.ControlLight:
-                            return "buttonface";
-                        case KnownColor.ControlLightLight:
-                            return "buttonhighlight";
-                        case KnownColor.ControlText:
-                            return "buttontext";
-                        case KnownColor.Desktop:
-                            return "background";
-                        case KnownColor.HotTrack:
-                            return "highlight";
-                        case KnownColor.Info:
-                            return "infobackground";
-
-                        default:
-                            return String.Empty;
-                    }
-                }
-
-                if (c.IsNamedColor)
-                {
-                    return c == Color.LightGray ? "LightGrey" : c.Name;
-                }
-
-                return FormatHtml(c.R, c.G, c.B);
-            }
-
-            static char GetHexNumber(int b)
-            {
-                return (char)(b > 9 ? 55 + b : 48 + b);
-            }
-
-            static string FormatHtml(int r, int g, int b)
-            {
-                var htmlColor = new char[7];
-                htmlColor[0] = '#';
-                htmlColor[1] = GetHexNumber((r >> 4) & 15);
-                htmlColor[2] = GetHexNumber(r & 15);
-                htmlColor[3] = GetHexNumber((g >> 4) & 15);
-                htmlColor[4] = GetHexNumber(g & 15);
-                htmlColor[5] = GetHexNumber((b >> 4) & 15);
-                htmlColor[6] = GetHexNumber(b & 15);
-
-                return new string(htmlColor);
-            }
-
-            public static int ToOle(Color c)
-            {
-                // OleColor format is BGR, same as Win32
-                return ((c.B << 16) | (c.G << 8) | c.R);
-            }
-
-            public static int ToWin32(Color c)
-            {
-                // Win32Color format is BGR, Same as OleColor
-                return ((c.B << 16) | (c.G << 8) | c.R);
             }
         }
 
-        internal static class KnownColors
+        private static class KnownColors
         {
             static internal uint[] ArgbValues = new uint[] {
                 0x00000000, /* 000 - Empty */
@@ -1648,253 +633,10 @@ namespace CodeCracker.CSharp.Usage
                 c = (n <= 0) || (n >= ArgbValues.Length) ? Color.FromArgb(0) : Color.FromArgb((int)ArgbValues[n]);
                 return c;
             }
-
-            public static string GetName(short kc)
-            {
-                switch (kc)
-                {
-                    case 1: return "ActiveBorder";
-                    case 2: return "ActiveCaption";
-                    case 3: return "ActiveCaptionText";
-                    case 4: return "AppWorkspace";
-                    case 5: return "Control";
-                    case 6: return "ControlDark";
-                    case 7: return "ControlDarkDark";
-                    case 8: return "ControlLight";
-                    case 9: return "ControlLightLight";
-                    case 10: return "ControlText";
-                    case 11: return "Desktop";
-                    case 12: return "GrayText";
-                    case 13: return "Highlight";
-                    case 14: return "HighlightText";
-                    case 15: return "HotTrack";
-                    case 16: return "InactiveBorder";
-                    case 17: return "InactiveCaption";
-                    case 18: return "InactiveCaptionText";
-                    case 19: return "Info";
-                    case 20: return "InfoText";
-                    case 21: return "Menu";
-                    case 22: return "MenuText";
-                    case 23: return "ScrollBar";
-                    case 24: return "Window";
-                    case 25: return "WindowFrame";
-                    case 26: return "WindowText";
-                    case 27: return "Transparent";
-                    case 28: return "AliceBlue";
-                    case 29: return "AntiqueWhite";
-                    case 30: return "Aqua";
-                    case 31: return "Aquamarine";
-                    case 32: return "Azure";
-                    case 33: return "Beige";
-                    case 34: return "Bisque";
-                    case 35: return "Black";
-                    case 36: return "BlanchedAlmond";
-                    case 37: return "Blue";
-                    case 38: return "BlueViolet";
-                    case 39: return "Brown";
-                    case 40: return "BurlyWood";
-                    case 41: return "CadetBlue";
-                    case 42: return "Chartreuse";
-                    case 43: return "Chocolate";
-                    case 44: return "Coral";
-                    case 45: return "CornflowerBlue";
-                    case 46: return "Cornsilk";
-                    case 47: return "Crimson";
-                    case 48: return "Cyan";
-                    case 49: return "DarkBlue";
-                    case 50: return "DarkCyan";
-                    case 51: return "DarkGoldenrod";
-                    case 52: return "DarkGray";
-                    case 53: return "DarkGreen";
-                    case 54: return "DarkKhaki";
-                    case 55: return "DarkMagenta";
-                    case 56: return "DarkOliveGreen";
-                    case 57: return "DarkOrange";
-                    case 58: return "DarkOrchid";
-                    case 59: return "DarkRed";
-                    case 60: return "DarkSalmon";
-                    case 61: return "DarkSeaGreen";
-                    case 62: return "DarkSlateBlue";
-                    case 63: return "DarkSlateGray";
-                    case 64: return "DarkTurquoise";
-                    case 65: return "DarkViolet";
-                    case 66: return "DeepPink";
-                    case 67: return "DeepSkyBlue";
-                    case 68: return "DimGray";
-                    case 69: return "DodgerBlue";
-                    case 70: return "Firebrick";
-                    case 71: return "FloralWhite";
-                    case 72: return "ForestGreen";
-                    case 73: return "Fuchsia";
-                    case 74: return "Gainsboro";
-                    case 75: return "GhostWhite";
-                    case 76: return "Gold";
-                    case 77: return "Goldenrod";
-                    case 78: return "Gray";
-                    case 79: return "Green";
-                    case 80: return "GreenYellow";
-                    case 81: return "Honeydew";
-                    case 82: return "HotPink";
-                    case 83: return "IndianRed";
-                    case 84: return "Indigo";
-                    case 85: return "Ivory";
-                    case 86: return "Khaki";
-                    case 87: return "Lavender";
-                    case 88: return "LavenderBlush";
-                    case 89: return "LawnGreen";
-                    case 90: return "LemonChiffon";
-                    case 91: return "LightBlue";
-                    case 92: return "LightCoral";
-                    case 93: return "LightCyan";
-                    case 94: return "LightGoldenrodYellow";
-                    case 95: return "LightGray";
-                    case 96: return "LightGreen";
-                    case 97: return "LightPink";
-                    case 98: return "LightSalmon";
-                    case 99: return "LightSeaGreen";
-                    case 100: return "LightSkyBlue";
-                    case 101: return "LightSlateGray";
-                    case 102: return "LightSteelBlue";
-                    case 103: return "LightYellow";
-                    case 104: return "Lime";
-                    case 105: return "LimeGreen";
-                    case 106: return "Linen";
-                    case 107: return "Magenta";
-                    case 108: return "Maroon";
-                    case 109: return "MediumAquamarine";
-                    case 110: return "MediumBlue";
-                    case 111: return "MediumOrchid";
-                    case 112: return "MediumPurple";
-                    case 113: return "MediumSeaGreen";
-                    case 114: return "MediumSlateBlue";
-                    case 115: return "MediumSpringGreen";
-                    case 116: return "MediumTurquoise";
-                    case 117: return "MediumVioletRed";
-                    case 118: return "MidnightBlue";
-                    case 119: return "MintCream";
-                    case 120: return "MistyRose";
-                    case 121: return "Moccasin";
-                    case 122: return "NavajoWhite";
-                    case 123: return "Navy";
-                    case 124: return "OldLace";
-                    case 125: return "Olive";
-                    case 126: return "OliveDrab";
-                    case 127: return "Orange";
-                    case 128: return "OrangeRed";
-                    case 129: return "Orchid";
-                    case 130: return "PaleGoldenrod";
-                    case 131: return "PaleGreen";
-                    case 132: return "PaleTurquoise";
-                    case 133: return "PaleVioletRed";
-                    case 134: return "PapayaWhip";
-                    case 135: return "PeachPuff";
-                    case 136: return "Peru";
-                    case 137: return "Pink";
-                    case 138: return "Plum";
-                    case 139: return "PowderBlue";
-                    case 140: return "Purple";
-                    case 141: return "Red";
-                    case 142: return "RosyBrown";
-                    case 143: return "RoyalBlue";
-                    case 144: return "SaddleBrown";
-                    case 145: return "Salmon";
-                    case 146: return "SandyBrown";
-                    case 147: return "SeaGreen";
-                    case 148: return "SeaShell";
-                    case 149: return "Sienna";
-                    case 150: return "Silver";
-                    case 151: return "SkyBlue";
-                    case 152: return "SlateBlue";
-                    case 153: return "SlateGray";
-                    case 154: return "Snow";
-                    case 155: return "SpringGreen";
-                    case 156: return "SteelBlue";
-                    case 157: return "Tan";
-                    case 158: return "Teal";
-                    case 159: return "Thistle";
-                    case 160: return "Tomato";
-                    case 161: return "Turquoise";
-                    case 162: return "Violet";
-                    case 163: return "Wheat";
-                    case 164: return "White";
-                    case 165: return "WhiteSmoke";
-                    case 166: return "Yellow";
-                    case 167: return "YellowGreen";
-                    default: return String.Empty;
-                }
-            }
-
-            public static string GetName(KnownColor kc)
-            {
-                return GetName((short)kc);
-            }
-
-            public static Color FindColorMatch(Color c)
-            {
-                var argb = (uint)c.ToArgb();
-                for (int i = 0; i < KnownColors.ArgbValues.Length; i++)
-                {
-                    if (argb == KnownColors.ArgbValues[i])
-                        return KnownColors.FromKnownColor((KnownColor)i);
-                }
-                return Color.Empty;
-            }
-
-            public static bool TryFindKnownColorMatch(Color c, out KnownColor knownColor)
-            {
-                var argb = (uint)c.ToArgb();
-                for (int i = 0; i < KnownColors.ArgbValues.Length; i++)
-                {
-                    if (argb == KnownColors.ArgbValues[i])
-                    {
-                        knownColor = (KnownColor)i;
-                        return true;
-                    }
-                }
-                knownColor = KnownColor.ActiveBorder;
-                return false;
-            }
-
-            // When this method is called, we teach any new color(s) to the Color class
-            // NOTE: This is called (reflection) by System.Windows.Forms.Theme (this isn't dead code)
-            public static void Update(int knownColor, int color)
-            {
-                ArgbValues[knownColor] = (uint)color;
-            }
         }
 
-        internal sealed class SystemColors
+        private sealed class SystemColors
         {
-
-            // not creatable...
-            //
-            private SystemColors()
-            {
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.ActiveBorder"]/*' />
-            /// <devdoc>
-            ///     The color of the filled area of an active window border.
-            /// </devdoc>
-            public static Color ActiveBorder
-            {
-                get
-                {
-                    return new Color(KnownColor.ActiveBorder);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.ActiveCaption"]/*' />
-            /// <devdoc>
-            ///     The color of the background of an active title bar caption.
-            /// </devdoc>
-            public static Color ActiveCaption
-            {
-                get
-                {
-                    return new Color(KnownColor.ActiveCaption);
-                }
-            }
 
             /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.ActiveCaptionText"]/*' />
             /// <devdoc>
@@ -1907,56 +649,7 @@ namespace CodeCracker.CSharp.Usage
                     return new Color(KnownColor.ActiveCaptionText);
                 }
             }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.AppWorkspace"]/*' />
-            /// <devdoc>
-            ///     The color of the application workspace.  The application workspace
-            ///     is the area in a multiple document view that is not being occupied
-            ///     by documents.
-            /// </devdoc>
-            public static Color AppWorkspace
-            {
-                get
-                {
-                    return new Color(KnownColor.AppWorkspace);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.ButtonFace"]/*' />
-            /// <devdoc>
-            ///     Face color for three-dimensional display elements and for dialog box backgrounds.
-            /// </devdoc>
-            public static Color ButtonFace
-            {
-                get
-                {
-                    return new Color(KnownColor.ButtonFace);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.ButtonHighlight"]/*' />
-            /// <devdoc>
-            ///     Highlight color for three-dimensional display elements (for edges facing the light source.)
-            /// </devdoc>
-            public static Color ButtonHighlight
-            {
-                get
-                {
-                    return new Color(KnownColor.ButtonHighlight);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.ButtonShadow"]/*' />
-            /// <devdoc>
-            ///     Shadow color for three-dimensional display elements (for edges facing away from the light source.)
-            /// </devdoc>
-            public static Color ButtonShadow
-            {
-                get
-                {
-                    return new Color(KnownColor.ButtonShadow);
-                }
-            }
+            
 
             /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.Control"]/*' />
             /// <devdoc>
@@ -2041,120 +734,7 @@ namespace CodeCracker.CSharp.Usage
                     return new Color(KnownColor.Desktop);
                 }
             }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.GradientActiveCaption"]/*' />
-            /// <devdoc>
-            ///     Right side color in the color gradient of an active window's title bar. 
-            ///     The ActiveCaption Color specifies the left side color.
-            /// </devdoc>
-            public static Color GradientActiveCaption
-            {
-                get
-                {
-                    return new Color(KnownColor.GradientActiveCaption);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.GradientInactiveCaption"]/*' />
-            /// <devdoc>
-            ///     Right side color in the color gradient of an inactive window's title bar. 
-            ///     The InactiveCaption Color specifies the left side color.
-            /// </devdoc>
-            public static Color GradientInactiveCaption
-            {
-                get
-                {
-                    return new Color(KnownColor.GradientInactiveCaption);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.GrayText"]/*' />
-            /// <devdoc>
-            ///     The color of text that is being shown in a disabled, or grayed-out
-            ///     state.
-            /// </devdoc>
-            public static Color GrayText
-            {
-                get
-                {
-                    return new Color(KnownColor.GrayText);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.Highlight"]/*' />
-            /// <devdoc>
-            ///     The color of the background of highlighted text.  This includes
-            ///     selected menu items as well as selected text.
-            /// </devdoc>
-            public static Color Highlight
-            {
-                get
-                {
-                    return new Color(KnownColor.Highlight);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.HighlightText"]/*' />
-            /// <devdoc>
-            ///     The color of the text of highlighted text.  This includes
-            ///     selected menu items as well as selected text.
-            /// </devdoc>
-            public static Color HighlightText
-            {
-                get
-                {
-                    return new Color(KnownColor.HighlightText);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.HotTrack"]/*' />
-            /// <devdoc>
-            ///     The hot track color.
-            /// </devdoc>
-            public static Color HotTrack
-            {
-                get
-                {
-                    return new Color(KnownColor.HotTrack);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.InactiveBorder"]/*' />
-            /// <devdoc>
-            ///     The color of the filled area of an inactive window border.
-            /// </devdoc>
-            public static Color InactiveBorder
-            {
-                get
-                {
-                    return new Color(KnownColor.InactiveBorder);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.InactiveCaption"]/*' />
-            /// <devdoc>
-            ///     The color of the background of an inactive title bar caption.
-            /// </devdoc>
-            public static Color InactiveCaption
-            {
-                get
-                {
-                    return new Color(KnownColor.InactiveCaption);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.InactiveCaptionText"]/*' />
-            /// <devdoc>
-            ///     The color of the text of an inactive title bar caption.
-            /// </devdoc>
-            public static Color InactiveCaptionText
-            {
-                get
-                {
-                    return new Color(KnownColor.InactiveCaptionText);
-                }
-            }
-
+            
             /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.Info"]/*' />
             /// <devdoc>
             ///     The color of the info/tool tip background.
@@ -2166,116 +746,7 @@ namespace CodeCracker.CSharp.Usage
                     return new Color(KnownColor.Info);
                 }
             }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.InfoText"]/*' />
-            /// <devdoc>
-            ///     The color of the info/tool tip text.
-            /// </devdoc>
-            public static Color InfoText
-            {
-                get
-                {
-                    return new Color(KnownColor.InfoText);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.Menu"]/*' />
-            /// <devdoc>
-            ///     The color of the background of a menu.
-            /// </devdoc>
-            public static Color Menu
-            {
-                get
-                {
-                    return new Color(KnownColor.Menu);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.MenuBar"]/*' />
-            /// <devdoc>
-            ///     The color of the background of a menu bar.
-            /// </devdoc>
-            public static Color MenuBar
-            {
-                get
-                {
-                    return new Color(KnownColor.MenuBar);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.MenuHighlight"]/*' />
-            /// <devdoc>
-            ///     The color used to highlight menu items when the menu appears as a flat menu. 
-            ///     The highlighted menu item is outlined with the Highlight Color.
-            /// </devdoc>
-            public static Color MenuHighlight
-            {
-                get
-                {
-                    return new Color(KnownColor.MenuHighlight);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.MenuText"]/*' />
-            /// <devdoc>
-            ///     The color of the text on a menu.
-            /// </devdoc>
-            public static Color MenuText
-            {
-                get
-                {
-                    return new Color(KnownColor.MenuText);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.ScrollBar"]/*' />
-            /// <devdoc>
-            ///     The color of the scroll bar area that is not being used by the
-            ///     thumb button.
-            /// </devdoc>
-            public static Color ScrollBar
-            {
-                get
-                {
-                    return new Color(KnownColor.ScrollBar);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.Window"]/*' />
-            /// <devdoc>
-            ///     The color of the client area of a window.
-            /// </devdoc>
-            public static Color Window
-            {
-                get
-                {
-                    return new Color(KnownColor.Window);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.WindowFrame"]/*' />
-            /// <devdoc>
-            ///     The color of the thin frame drawn around a window.
-            /// </devdoc>
-            public static Color WindowFrame
-            {
-                get
-                {
-                    return new Color(KnownColor.WindowFrame);
-                }
-            }
-
-            /// <include file='doc\SystemColors.uex' path='docs/doc[@for="SystemColors.WindowText"]/*' />
-            /// <devdoc>
-            ///     The color of the text in the client area of a window.
-            /// </devdoc>
-            public static Color WindowText
-            {
-                get
-                {
-                    return new Color(KnownColor.WindowText);
-                }
-            }
         }
     }
+
 }

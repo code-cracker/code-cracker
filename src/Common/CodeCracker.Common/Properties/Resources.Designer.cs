@@ -294,5 +294,32 @@ namespace CodeCracker.Properties {
                 return ResourceManager.GetString("XmlDocumentationRemoveNonExistentParametersCodeFixProvider_Title", resourceCulture);
             }
         }
+		
+        ///   Looks up a localized string similar to This diagnostic checks the htmlColor value and triggers if the parsing fail by throwing an exception.
+        /// </summary>
+        public static string ValidateColorAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("ValidateColorAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your htmlColor value doesn&apos;t exist.
+        /// </summary>
+        public static string ValidateColorAnalyzer_Message {
+            get {
+                return ResourceManager.GetString("ValidateColorAnalyzer_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Validate color.
+        /// </summary>
+        public static string ValidateColorAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("ValidateColorAnalyzer_Title", resourceCulture);
+            }
+        }
+
     }
 }

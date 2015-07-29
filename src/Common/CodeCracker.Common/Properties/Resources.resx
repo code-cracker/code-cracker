@@ -195,4 +195,14 @@
   <data name="SwitchToAutoPropCodeFixProvider_Title" xml:space="preserve">
     <value>Change to auto property</value>
   </data>
+  <data name="ValidateColorAnalyzer_Title" xml:space="preserve">
+    <value>Validate color</value>
+  </data>
+  <data name="ValidateColorAnalyzer_Description" xml:space="preserve">
+    <value>This diagnostic checks the htmlColor value and triggers if the parsing fail by throwing an exception</value>
+  </data>
+  <data name="ValidateColorAnalyzer_Message" xml:space="preserve">
+    <value>Your htmlColor value doesn't exist</value>
+  </data>
+
 </root>
