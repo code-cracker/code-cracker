@@ -48,12 +48,20 @@ Namespace Design
             If Not Found(programElementName) Then
                 Dim literalValueText = stringLiteral.Token.ValueText
                 Dim symbol = model.LookupSymbols(stringLiteral.Token.SpanStart, Nothing, literalValueText).FirstOrDefault()
+                If symbol?.Kind = SymbolKind.Local Then
+                    ' Only register if local variable is declared before it is used.
+                    ' Don't recommend if variable is declared after string literal is used.
+                    Dim symbolSpan = symbol.Locations.Min(Function(i) i.SourceSpan)
+                    If symbolSpan.CompareTo(stringLiteral.Token.Span) > 0 Then
+                        Return String.Empty
+                    End If
+                End If
                 programElementName = symbol?.ToDisplayParts().
-                    Where(AddressOf IncludeOnlyPartsThatAreName).
-                    LastOrDefault(Function(displayPart) displayPart.ToString() = literalValueText).
-                    ToString()
-            End If
-            Return programElementName
+                        Where(AddressOf IncludeOnlyPartsThatAreName).
+                        LastOrDefault(Function(displayPart) displayPart.ToString() = literalValueText).
+                        ToString()
+                End If
+                Return programElementName
         End Function
 
         Private Shared Function GetParameterNameThatMatchesStringLiteral(stringLiteral As LiteralExpressionSyntax) As String

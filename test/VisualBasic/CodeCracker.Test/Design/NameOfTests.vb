@@ -566,6 +566,18 @@ End Namespace
             Await VerifyBasicFixAllAsync(source.Replace("~REPLACE~", $"""{stringLiteral}"""), source.Replace("~REPLACE~", $"NameOf({stringLiteral})"))
         End Function
 
+        <Fact>
+        Public Async Function IgnoreNamesNotDeclaredYet() As Task
+            Const test = "
+Public Class TypeName
+    Sub Foo()
+        Dim str = ""x""
+        Dim x = 1
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
+
         Private Function CreateNameofDiagnosticResult(nameofArgument As String, diagnosticLine As Integer, diagnosticColumn As Integer) As DiagnosticResult
             Return New DiagnosticResult With
             {

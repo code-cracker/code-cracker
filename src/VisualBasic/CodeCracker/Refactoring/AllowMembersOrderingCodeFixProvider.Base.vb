@@ -27,7 +27,7 @@ Namespace Refactoring
             Dim diagnostic = context.Diagnostics.First()
             Dim diagnosticSpan = diagnostic.Location.SourceSpan
 
-            Dim typeBlock = DirectCast(root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOrSelfOfType(GetType(ClassBlockSyntax), GetType(StructureBlockSyntax)), TypeBlockSyntax)
+            Dim typeBlock = DirectCast(root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOrSelfOfType(GetType(ClassBlockSyntax), GetType(StructureBlockSyntax), GetType(ModuleBlockSyntax)), TypeBlockSyntax)
             Dim newDocument = Await AllowMembersOrderingAsync(context.Document, typeBlock, context.CancellationToken)
             If newDocument IsNot Nothing Then
                 context.RegisterCodeFix(CodeAction.Create(String.Format(CodeActionDescription, typeBlock), Function(ct)

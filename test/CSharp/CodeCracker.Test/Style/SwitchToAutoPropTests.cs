@@ -281,7 +281,7 @@ namespace ConsoleApplication1
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.SwitchToAutoProp.ToDiagnosticId(),
-                Message = string.Format(SwitchToAutoPropAnalyzer.MessageFormat, "Id"),
+                Message = string.Format(SwitchToAutoPropAnalyzer.MessageFormat.ToString(), "Id"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 9) }
             };
