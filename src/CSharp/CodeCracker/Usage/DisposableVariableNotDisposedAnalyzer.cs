@@ -38,6 +38,8 @@ namespace CodeCracker.CSharp.Usage
             if (objectCreation == null) return;
             if (objectCreation?.Parent is UsingStatementSyntax) return;
             if (objectCreation?.Parent is ReturnStatementSyntax) return;
+            if (objectCreation.FirstAncestorOfType<ConstructorInitializerSyntax>()?.Kind() == SyntaxKind.ThisConstructorInitializer) return;
+            if (objectCreation.FirstAncestorOfType<ObjectCreationExpressionSyntax>() != null) return;
 
             var semanticModel = context.SemanticModel;
             var type = semanticModel.GetSymbolInfo(objectCreation.Type).Symbol as INamedTypeSymbol;

@@ -62,12 +62,63 @@ namespace CodeCracker.CSharp.Usage
                 var statement = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
                 newRoot = CreateRootWithUsing(root, statement, u => u.WithDeclaration(variableDeclaration));
             }
+            else if (objectCreation.Parent.IsKind(SyntaxKind.Argument))
+            {
+                var identifierName = GetIdentifierName(objectCreation);
+
+                var whiteSpace = SyntaxFactory.Whitespace(" ");
+                var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(@"var").WithTrailingTrivia(whiteSpace))
+                    .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(identifierName).WithTrailingTrivia(whiteSpace))
+                    .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.Token(SyntaxKind.EqualsToken), objectCreation))));
+
+                var arg = objectCreation.Parent as ArgumentSyntax;
+                var args = objectCreation.Parent.Parent as ArgumentListSyntax;
+                var newArgs = args.ReplaceNode(arg, arg.WithExpression(SyntaxFactory.IdentifierName(identifierName)));
+
+                StatementSyntax statement = objectCreation.FirstAncestorOfType<ExpressionStatementSyntax>();
+                if (statement != null)
+                {
+                    var exprStatement = statement.ReplaceNode(args, newArgs);
+                    var newUsingStatment = CreateUsingStatement(exprStatement, SyntaxFactory.Block(exprStatement))
+                        .WithDeclaration(variableDeclaration);
+                    return root.ReplaceNode(statement, newUsingStatment);
+                }
+
+                statement = (StatementSyntax)objectCreation.Ancestors().First(node => node is StatementSyntax);
+                var newStatement = statement.ReplaceNode(args, newArgs);
+                var statementsForUsing = new[] { newStatement }.Concat(GetChildStatementsAfter(statement));
+                var usingBlock = SyntaxFactory.Block(statementsForUsing);
+                var usingStatement = CreateUsingStatement(newStatement, usingBlock)
+                    .WithDeclaration(variableDeclaration);
+                var statementsToReplace = new List<StatementSyntax> { statement };
+                statementsToReplace.AddRange(statementsForUsing.Skip(1));
+                newRoot = root.ReplaceNodes(statementsToReplace, (node, _) => node.Equals(statement) ? usingStatement : null);
+            }
             else
             {
                 newRoot = CreateRootWithUsing(root, (ExpressionStatementSyntax)objectCreation.Parent, u => u.WithExpression(objectCreation));
             }
             return newRoot;
         }
+
+        private static string GetIdentifierName(ObjectCreationExpressionSyntax objectCreation)
+        {
+            var type = objectCreation.Type;
+            if (type.IsKind(SyntaxKind.QualifiedName))
+            {
+                var name = (QualifiedNameSyntax)type;
+                return LoverCaseFirstLetter(name.Right.Identifier.ValueText);
+            }
+            else if (type is SimpleNameSyntax)
+            {
+                var name = (SimpleNameSyntax)type;
+                return LoverCaseFirstLetter(name.Identifier.ValueText);
+            }
+            return "disposableObject";
+        }
+
+        private static string LoverCaseFirstLetter(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
+
 
         private static SyntaxNode CreateRootAddingDisposeToEndOfMethod(SyntaxNode root, ExpressionStatementSyntax statement, ILocalSymbol identitySymbol)
         {
