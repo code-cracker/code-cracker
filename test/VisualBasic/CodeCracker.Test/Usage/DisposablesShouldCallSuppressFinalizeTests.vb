@@ -119,6 +119,41 @@ End Class
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 
+        <Fact>
+        Public Async Function NoWarningIfClassImplementsDisposableCallsSuppressFinalizeAndCallsDisposeWithMe() As Task
+            Const source = "
+Public Class MyType
+    Implements System.IDisposable
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+        Me.Dispose(True)
+        GC.SuppressFinalize(Me)
+    End Sub
+
+    Protected Overridable Sub Dispose(disposing As Boolean)
+    End Sub
+End Class"
+
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function NoWarningIfClassImplementsDisposableCallsSuppressFinalize() As Task
+            Const source = "
+Public Class MyType
+    Implements System.IDisposable
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+        GC.SuppressFinalize(Me)
+    End Sub
+
+    Protected Overridable Sub Dispose(disposing As Boolean)
+    End Sub
+End Class"
+
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
         <Theory>
         <InlineData("Structure")>
         <InlineData("Class")>

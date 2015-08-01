@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Usage
@@ -55,6 +56,37 @@ namespace CodeCracker.Test.CSharp.Usage
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task NoWarningIfClassImplementsDisposableCallsSuppressFinalizeAndCallsDisposeWithThis()
+        {
+            const string source = @"
+            public class MyType : System.IDisposable
+            {
+                public void Dispose()
+                {
+                    this.Dispose(true);
+                    GC.SuppressFinalize(this);
+                }
+            }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task NoWarningIfClassImplementsDisposableCallsSuppressFinalize()
+        {
+            const string source = @"
+            public class MyType : System.IDisposable
+            {
+                public void Dispose()
+                {
+                    GC.SuppressFinalize(this);
+                }
+            }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
 
@@ -206,8 +238,6 @@ namespace CodeCracker.Test.CSharp.Usage
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
-
-        
 
         [Fact]
         public async void WhenClassHasParametrizedDisposeMethod()
