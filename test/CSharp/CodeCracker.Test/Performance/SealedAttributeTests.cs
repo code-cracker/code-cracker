@@ -11,8 +11,8 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task ApplySealedWhenClassInheritsFromSystemAttributeClass()
         {
             const string test = @"
-                public class MyAttribute : System.Attribute
-                {
+                public class MyAttribute : System.Attribute 
+                { 
 
                 }";
 
@@ -31,13 +31,13 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task ApplySealedWhenClassInheritsIndirectlyFromSystemAttributeClass()
         {
             const string test = @"
-                public abstract class MyAttribute : System.Attribute
-                {
+                public abstract class MyAttribute : System.Attribute 
+                { 
 
                 }
 
-                public class OtherAttribute : MyAttribute
-                {
+                public class OtherAttribute : MyAttribute 
+                { 
 
                 }";
 
@@ -56,8 +56,8 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task NotApplySealedWhenClassThatInheritsFromSystemAttributeClassIsAbstract()
         {
             const string test = @"
-                public abstract class MyAttribute : System.Attribute
-                {
+                public abstract class MyAttribute : System.Attribute 
+                { 
 
                 }";
 
@@ -68,8 +68,8 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task NotApplySealedWhenClassThatInheritsFromSystemAttributeClassIsSealed()
         {
             const string test = @"
-                public sealed class MyAttribute : System.Attribute
-                {
+                public sealed class MyAttribute : System.Attribute 
+                { 
 
                 }";
 
@@ -80,8 +80,8 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task NotApplySealedWhenIsStruct()
         {
             const string test = @"
-                public struct MyStruct
-                {
+                public struct MyStruct 
+                { 
 
                 }";
 
@@ -92,8 +92,8 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task NotApplySealedWhenIsInterface()
         {
             const string test = @"
-                public interface ITest
-                {
+                public interface ITest 
+                { 
 
                     }";
 
@@ -104,13 +104,13 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task WhenSealedModifierIsAppliedOnClass()
         {
             const string source = @"
-                public class MyAttribute : System.Attribute
-                {
+                public class MyAttribute : System.Attribute 
+                { 
                 }";
 
             const string fixtest = @"
-                public sealed class MyAttribute : System.Attribute
-                {
+                public sealed class MyAttribute : System.Attribute 
+                { 
                 }";
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
@@ -120,27 +120,21 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task WhenSealedModifierIsAppliedOnClassFixAll()
         {
             const string source1 = @"
-                public class MyAttribute1 : System.Attribute
-                {
-                }
-                public class MyAttribute3 : System.Attribute
-                {
+                public class MyAttribute1 : System.Attribute 
+                { 
                 }";
             const string fixtest1 = @"
-                public sealed class MyAttribute1 : System.Attribute
-                {
-                }
-                public sealed class MyAttribute3 : System.Attribute
-                {
+                public sealed class MyAttribute1 : System.Attribute 
+                { 
                 }";
 
             const string source2 = @"
-                public class MyAttribute2 : System.Attribute
-                {
+                public class MyAttribute2 : System.Attribute 
+                { 
                 }";
             const string fixtest2 = @"
-                public sealed class MyAttribute2 : System.Attribute
-                {
+                public sealed class MyAttribute2 : System.Attribute 
+                { 
                 }";
 
             await VerifyCSharpFixAllAsync(new string[] { source1, source2 }, new string[] { fixtest1, fixtest2 });
