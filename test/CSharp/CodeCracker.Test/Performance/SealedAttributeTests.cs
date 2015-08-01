@@ -115,5 +115,29 @@ namespace CodeCracker.Test.CSharp.Performance
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
+        [Fact]
+        public async Task WhenSealedModifierIsAppliedOnClassFixAll()
+        {
+            const string source1 = @"
+                public class MyAttribute1 : System.Attribute 
+                { 
+                }";
+            const string fixtest1 = @"
+                public sealed class MyAttribute1 : System.Attribute 
+                { 
+                }";
+
+            const string source2 = @"
+                public class MyAttribute2 : System.Attribute 
+                { 
+                }";
+            const string fixtest2 = @"
+                public sealed class MyAttribute2 : System.Attribute 
+                { 
+                }";
+
+            await VerifyCSharpFixAllAsync(new string[] { source1, source2 }, new string[] { fixtest1, fixtest2 });
+        }
     }
 }
