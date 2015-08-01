@@ -102,5 +102,114 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task ChangeAllInterfaceNamesWithoutI()
+        {
+            const string source1 = @"
+    namespace ConsoleApplication1
+    {
+        public interface Foo1
+        {
+            void Test();
+        }
+    }";
+            const string source2 = @"
+    namespace ConsoleApplication2
+    {
+        public interface Foo2
+        {
+            void Test();
+        }
+    }";
+            const string fixtest1 = @"
+    namespace ConsoleApplication1
+    {
+        public interface IFoo1
+        {
+            void Test();
+        }
+    }";
+            const string fixtest2 = @"
+    namespace ConsoleApplication2
+    {
+        public interface IFoo2
+        {
+            void Test();
+        }
+    }";
+            await VerifyCSharpFixAllAsync(new string[] { source1, source2 }, new string[] { fixtest1, fixtest2 });
+        }
+
+
+        [Fact]
+        public async Task ChangeAllInterfaceNamesWithoutIAndClassImplementation()
+        {
+            const string source1 = @"
+    namespace ConsoleApplication1
+    {
+        public interface Foo1
+        {
+            void Test();
+        }
+
+        public class Test1 : Foo1
+        {
+            public void Test()
+            {
+
+            }
+        }
+    }";
+            const string source2 = @"
+    namespace ConsoleApplication2
+    {
+        public interface Foo2
+        {
+            void Test();
+        }
+
+        public class Test2 : Foo2
+        {
+            public void Test()
+            {
+
+            }
+        }
+    }";
+            const string fixtest1 = @"
+    namespace ConsoleApplication1
+    {
+        public interface IFoo1
+        {
+            void Test();
+        }
+
+        public class Test1 : IFoo1
+        {
+            public void Test()
+            {
+
+            }
+        }
+    }";
+            const string fixtest2 = @"
+    namespace ConsoleApplication2
+    {
+        public interface IFoo2
+        {
+            void Test();
+        }
+
+        public class Test2 : IFoo2
+        {
+            public void Test()
+            {
+
+            }
+        }
+    }";
+            await VerifyCSharpFixAllAsync(new string[] { source1, source2 }, new string[]{ fixtest1, fixtest2 });
+        }
     }
 }
