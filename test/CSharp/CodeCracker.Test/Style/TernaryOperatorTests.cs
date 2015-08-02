@@ -244,14 +244,6 @@ namespace CodeCracker.Test.CSharp.Style
                 {
                     a = ""b"";
                 }
-                if (something)
-                {
-                    a = ""a"";
-                }
-                else
-                {
-                    a = ""b"";
-                }
             }
         }
     }";
@@ -264,7 +256,6 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var something = true;
                 string a;
-                a = something ? ""a"" : ""b"";
                 a = something ? ""a"" : ""b"";
             }
         }
@@ -332,14 +323,6 @@ namespace CodeCracker.Test.CSharp.Style
                 {
                     a = ""c"" + GetInfo(1);
                 }
-                if (something)
-                {
-                    a = ""a"" + ""b"";
-                }
-                else
-                {
-                    a = ""c"" + GetInfo(1);
-                }
             }
         }
     }";
@@ -352,7 +335,6 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var something = true;
                 string a;
-                a = something ? ""a"" + ""b"" : ""c"" + GetInfo(1);
                 a = something ? ""a"" + ""b"" : ""c"" + GetInfo(1);
             }
         }
@@ -412,10 +394,6 @@ namespace CodeCracker.Test.CSharp.Style
                     return 1;
                 else
                     return 2;
-                if (something)
-                    return 1;
-                else
-                    return 2;
             }
         }
     }";
@@ -428,7 +406,6 @@ namespace CodeCracker.Test.CSharp.Style
             public int Foo()
             {
                 var something = true;
-                return something ? 1 : 2;
                 return something ? 1 : 2;
             }
         }
