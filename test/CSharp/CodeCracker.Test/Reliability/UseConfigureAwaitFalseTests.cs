@@ -70,5 +70,34 @@ namespace CodeCracker.Test.CSharp.Reliability
 
             await VerifyCSharpFixAsync(test, fixtest);
         }
+
+        [Theory]
+        [InlineData(
+            "System.Threading.Tasks.Task t; await t;",
+            "System.Threading.Tasks.Task t; await t.ConfigureAwait(false);")]
+        [InlineData(
+            "System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42);",
+            "System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42).ConfigureAwait(false);")]
+        [InlineData(
+            "await System.Threading.Tasks.Task.Delay(1000);",
+            "await System.Threading.Tasks.Task.Delay(1000).ConfigureAwait(false);")]
+        [InlineData(
+            "await System.Threading.Tasks.Task.FromResult(0);",
+            "await System.Threading.Tasks.Task.FromResult(0).ConfigureAwait(false);")]
+        [InlineData(
+            "await System.Threading.Tasks.Task.Run(() => {});",
+            "await System.Threading.Tasks.Task.Run(() => {}).ConfigureAwait(false);")]
+        [InlineData(
+            "Func<System.Threading.Tasks.Task> f; await f();",
+            "Func<System.Threading.Tasks.Task> f; await f().ConfigureAwait(false);")]
+        public async Task FixAllAddsConfigureAwaitFalse(string original, string result)
+        {
+            var test1 = original.WrapInCSharpMethod(isAsync: true, typeName: "MyType1");
+            var fixtest1 = result.WrapInCSharpMethod(isAsync: true, typeName: "MyType1");
+            var test2 = original.WrapInCSharpMethod(isAsync: true, typeName: "MyType2");
+            var fixtest2 = result.WrapInCSharpMethod(isAsync: true, typeName: "MyType2");
+
+            await VerifyCSharpFixAllAsync(new string[] { test1, test2 }, new string[] { fixtest1, fixtest2 });
+        }
     }
 }
