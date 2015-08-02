@@ -76,14 +76,14 @@ namespace CodeCracker.Test.CSharp.Reliability
             "System.Threading.Tasks.Task t; await t;",
             "System.Threading.Tasks.Task t; await t.ConfigureAwait(false);")]
         [InlineData(
-            "System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42); await t.ContinueWith(_ => 42);",
-            "System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42).ConfigureAwait(false); await t.ContinueWith(_ => 42).ConfigureAwait(false);")]
+            "System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42);",
+            "System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42).ConfigureAwait(false);")]
         [InlineData(
             "await System.Threading.Tasks.Task.Delay(1000);",
             "await System.Threading.Tasks.Task.Delay(1000).ConfigureAwait(false);")]
         [InlineData(
-            "await System.Threading.Tasks.Task.FromResult(0);await System.Threading.Tasks.Task.FromResult(0);",
-            "await System.Threading.Tasks.Task.FromResult(0).ConfigureAwait(false);await System.Threading.Tasks.Task.FromResult(0).ConfigureAwait(false);")]
+            "await System.Threading.Tasks.Task.FromResult(0);",
+            "await System.Threading.Tasks.Task.FromResult(0).ConfigureAwait(false);")]
         [InlineData(
             "await System.Threading.Tasks.Task.Run(() => {});",
             "await System.Threading.Tasks.Task.Run(() => {}).ConfigureAwait(false);")]
