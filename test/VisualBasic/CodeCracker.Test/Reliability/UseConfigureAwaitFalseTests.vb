@@ -62,5 +62,34 @@ Namespace Reliability
 
             Await VerifyBasicFixAsync(test, fix)
         End Function
+
+        <Theory>
+        <InlineData(
+            "Dim t As System.Threading.Tasks.Task: Await t",
+            "Dim t As System.Threading.Tasks.Task: Await t.ConfigureAwait(False)")>
+        <InlineData(
+            "Dim t As System.Threading.Tasks.Task: Await t.ContinueWith(Function() 42)",
+            "Dim t As System.Threading.Tasks.Task: Await t.ContinueWith(Function() 42).ConfigureAwait(False)")>
+        <InlineData(
+            "Await System.Threading.Tasks.Task.Delay(1000)",
+            "Await System.Threading.Tasks.Task.Delay(1000).ConfigureAwait(False)")>
+        <InlineData(
+            "Await System.Threading.Tasks.Task.FromResult(0)",
+            "Await System.Threading.Tasks.Task.FromResult(0).ConfigureAwait(False)")>
+        <InlineData(
+            "Await System.Threading.Tasks.Task.Run(Sub() )",
+            "Await System.Threading.Tasks.Task.Run(Sub() ).ConfigureAwait(False)")>
+        <InlineData(
+            "Dim f As Func(Of System.Threading.Tasks.Task): Await F()",
+            "Dim f As Func(Of System.Threading.Tasks.Task): Await F().ConfigureAwait(False)")>
+        Public Async Function FixAllAddsConfigureAwaitFalse(original As String, result As String) As Task
+            Dim test1 = original.WrapInVBMethod(isAsync:=True, typeName:="MyType1")
+            Dim fix1 = result.WrapInVBMethod(isAsync:=True, typeName:="MyType1")
+
+            Dim test2 = original.WrapInVBMethod(isAsync:=True, typeName:="MyType2")
+            Dim fix2 = result.WrapInVBMethod(isAsync:=True, typeName:="MyType2")
+
+            Await VerifyBasicFixAllAsync(New String() {test1, test2}, New String() {fix1, fix2})
+        End Function
     End Class
 End Namespace
