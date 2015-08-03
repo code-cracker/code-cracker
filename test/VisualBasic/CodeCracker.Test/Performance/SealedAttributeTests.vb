@@ -95,5 +95,28 @@ End Class"
 
             Await VerifyBasicFixAsync(test, fix, 0)
         End Function
+
+        <Fact>
+        Public Async Function WhenSealedModifierIsAppliedOnClassFixAll() As Task
+            Const test1 = "
+Public Class MyAttribute1
+    Inherits System.Attribute
+End Class"
+            Const fix1 = "
+Public NotInheritable Class MyAttribute1
+    Inherits System.Attribute
+End Class"
+
+            Const test2 = "
+Public Class MyAttribute2
+    Inherits System.Attribute
+End Class"
+            Const fix2 = "
+Public NotInheritable Class MyAttribute2
+    Inherits System.Attribute
+End Class"
+
+            Await VerifyBasicFixAllAsync(New String() {test1, test2}, New String() {fix1, fix2})
+        End Function
     End Class
 End Namespace
