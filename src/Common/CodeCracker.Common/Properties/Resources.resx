@@ -183,16 +183,25 @@
   <data name="XmlDocumentationRemoveNonExistentParametersCodeFixProvider_Title" xml:space="preserve">
     <value>Remove unexistent parameters in xml docs</value>
   </data>
-  <data name="ChangeAsToCastAnalyzer_Title">
+  <data name="ChangeAsToCastAnalyzer_Title" xml:space="preserve">
     <value>Toggle between safe cast ('as') and direct cast.</value>
   </data>
-  <data name="ChangeAsToCastAnalyzer_MessageFormat">
+  <data name="ChangeAsToCastAnalyzer_MessageFormat" xml:space="preserve">
     <value>Toggle between safe cast ('as') and direct cast.</value>
   </data>
-  <data name="ChangeAsToCastCodeFixProvider_AsToCast">
+  <data name="ChangeAsToCastCodeFixProvider_AsToCast" xml:space="preserve">
     <value>Change safe cast ('as') to direct cast</value>
   </data>
-<data name="ChangeAsToCastCodeFixProvider_CastToAs">
+  <data name="ChangeAsToCastCodeFixProvider_CastToAs" xml:space="preserve">
     <value>Change direct cast to safe cast ('as')</value>
+  </data>
+  <data name="ValidateColorAnalyzer_Description" xml:space="preserve">
+    <value>This diagnostic checks the htmlColor value and triggers if the parsing fail by throwing an exception</value>
+  </data>
+  <data name="ValidateColorAnalyzer_Message" xml:space="preserve">
+    <value>Your htmlColor value doesn't exist</value>
+  </data>
+  <data name="ValidateColorAnalyzer_Title" xml:space="preserve">
+    <value>Validate color</value>
   </data>
 </root>
