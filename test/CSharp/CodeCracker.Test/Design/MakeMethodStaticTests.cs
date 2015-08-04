@@ -294,5 +294,169 @@ void Bar()
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task NoDiagnosticOnXUnitTestMethods()
+        {
+            const string source = @"
+        using Xunit;
+        namespace ConsoleApplication1
+        {
+            class XUnitTests
+            {
+                [Fact]
+                void FactMethod() { }
+
+                [Theory]
+                void TheoryMethod() { }
+            }
+        }";
+            var xunitReference = MetadataReference.CreateFromFile(typeof(FactAttribute).Assembly.Location);
+            await VerifyCSharpHasNoDiagnosticsAsync(source, metadataReferences: new MetadataReference[] { xunitReference });
+        }
+
+        [Fact]
+        public async Task NoDiagnosticOnMicrosoftTestMethods()
+        {
+            const string source = @"
+        using Microsoft.VisualStudio.TestTools.UnitTesting;
+        namespace ConsoleApplication1
+        {
+            class MsTestTests
+            {
+                [TestMethod]
+                void TestMethod() { }
+
+                [AssemblyInitialize]
+                void AssemblyInitializeMethod() { }
+
+                [AssemblyCleanup]
+                AssemblyCleanup() { }
+
+                [ClassInitialize]
+                void ClassInitializeMethod() { }
+
+                [ClassCleanup]
+                void ClassCleanupMethod() { }
+
+                [TestInitialize]
+                void TestInitializeMethod() { }
+
+                [TestCleanup]
+                void TestCleanupMethod() { }
+            }
+        }";
+            var msTestReference = MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute).Assembly.Location);
+            await VerifyCSharpHasNoDiagnosticsAsync(source, metadataReferences: new MetadataReference[] { msTestReference });
+        }
+
+        [Fact]
+        public async Task NoDiagnosticOnNUnitTestMethods()
+        {
+            const string nunitNonTestFixtureWithAttributesSource = @"
+        using NUnit.Framework;
+        namespace ConsoleApplication1
+        {
+            class nunitNonTestFixtureWithAttributesSource
+            {
+                [Test]
+                void TestMethod() { }
+
+                [TestCase]
+                void TestCaseMethod() { }
+
+                [TestCaseSource]
+                void TestCaseSourceMethod() { }
+
+                [TestFixtureSetup]
+                void TestFixtureSetupMethod() { }
+
+                [TestFixtureTeardown]
+                void TestFixtureTeardownMethod() { }
+
+                [SetUp]
+                void SetUpMethod() { }
+
+                [TearDown]
+                void TearDownMethod() { }
+
+                [OneTimeSetUp]
+                void OneTimeSetUpMethod() { }
+
+                [OneTimeTearDown]
+                void OneTimeTearDownMethod() { }
+            }
+        }";
+
+            const string nunitTestFixtureWithoutAttributesSource = @"
+        using NUnit.Framework;
+
+        namespace NUnit.Framework
+        {
+            public class TestFixtureAttribute : System.Attribute
+            {
+            }
+        }
+
+        namespace ConsoleApplication2
+        {
+            [TestFixture]
+            class NUnitTestFixtureWithoutAttributes
+            {
+                void TestMethod() { }
+
+                void MethodUnderTest() { }
+
+                void MethodTestShouldPass() { }
+            }
+        }";
+
+            const string nunitWithoutTestFixtureWithTestAttributeAndOtherNonAttributedMethodsSource = @"
+        using NUnit.Framework;
+        namespace ConsoleApplication3
+        {
+            class NUnitWithoutTestFixtureWithTestAttributeAndOtherNonAttributedMethods
+            {
+                [Test]
+                void TestMethod() { }
+
+                void MethodUnderTest() { }
+            }
+        }";
+
+            const string nunitWithoutTestFixtureWithTestCaseAttributeAndOtherNonAttributedMethodsSource = @"
+        using NUnit.Framework;
+        namespace ConsoleApplication4
+        {
+            class NUnitWithoutTestFixtureWithTestCaseAttributeAndOtherNonAttributedMethods
+            {
+                [TestCase]
+                void TestMethod() { }
+
+                void MethodUnderTest() { }
+            }
+        }";
+            
+            const string nunitWithoutTestFixtureWithTestCaseSourceAttributeAndOtherNonAttributedMethodsSource = @"
+        using NUnit.Framework;
+        namespace ConsoleApplication5
+        {
+            class NUnitWithoutTestFixtureWithTestCaseSourceAttributeAndOtherNonAttributedMethods
+            {
+                [TestCaseSource]
+                void TestMethod() { }
+
+                void MethodUnderTest() { }
+            }
+        }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(new string[] {
+                nunitNonTestFixtureWithAttributesSource,
+                nunitTestFixtureWithoutAttributesSource,
+                nunitWithoutTestFixtureWithTestAttributeAndOtherNonAttributedMethodsSource,
+                nunitWithoutTestFixtureWithTestCaseAttributeAndOtherNonAttributedMethodsSource,
+                nunitWithoutTestFixtureWithTestCaseSourceAttributeAndOtherNonAttributedMethodsSource
+            });
+        }
     }
 }

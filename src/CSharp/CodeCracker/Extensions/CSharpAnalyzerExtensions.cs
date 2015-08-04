@@ -231,6 +231,9 @@ namespace CodeCracker
         public static bool HasAttribute(this SyntaxList<AttributeListSyntax> attributeLists, string attributeName) =>
             attributeLists.SelectMany(a => a.Attributes).Any(a => a.Name.ToString().EndsWith(attributeName, StringComparison.OrdinalIgnoreCase));
 
+        public static bool HasAnyAttribute(this SyntaxList<AttributeListSyntax> attributeLists, string[] attributeNames) =>
+            attributeLists.SelectMany(a => a.Attributes).Any(a => attributeNames.Any(attributeName => a.Name.ToString().EndsWith(attributeName, StringComparison.OrdinalIgnoreCase)));
+
         public static NameSyntax ToNameSyntax(this INamespaceSymbol namespaceSymbol) =>
             ToNameSyntax(namespaceSymbol.ToDisplayString().Split('.'));
 
