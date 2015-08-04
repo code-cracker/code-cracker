@@ -145,11 +145,34 @@ function UpdateNuspec($nuspecPath, $language) {
 
 function RestorePkgs($sln) {
     Write-Host "Restoring $sln..." -ForegroundColor Green
-    if (-Not (Test-Path $sln)) {
-        Write-Host "File $sln does not exist, exiting." -ForegroundColor DarkRed
-        return
+    Retry {
+        . $nugetExe restore $sln
+        if ($LASTEXITCODE) { throw "Nuget restore for $sln failed." }
     }
-    exec { . $nugetExe restore $sln }
+}
+
+function Retry {
+     Param (
+        [parameter(Position=0,Mandatory=1)]
+        [ScriptBlock]$cmd,
+        [parameter(Position=1,Mandatory=0)]
+        [int]$times = 3
+    )
+    $retrycount = 0
+    while ($retrycount -lt $times){
+        try {
+            & $cmd
+            if (!$?) {
+                throw "Command failed."
+            }
+            return
+        }
+        catch {
+            Write-Host -ForegroundColor Red "Failed: ($($_.Exception.Message)), retrying."
+        }
+        $retrycount++
+    }
+    throw "Command '$($cmd.ToString())' failed."
 }
 
 function TestPath($paths) {
