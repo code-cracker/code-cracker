@@ -42,10 +42,9 @@ namespace CodeCracker.Test
         /// <param name="analyzer">The analyzer to be run on the sources</param>
         /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
         /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
-        /// <param name="metadataReferences">Set of metadata references to use with the test.</param>
         /// <returns>An IEnumerable of Diagnostics that surfaced in teh source code, sorted by Location</returns>
-        private static async Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB, IEnumerable<MetadataReference> metadataReferences = null) =>
-            await GetSortedDiagnosticsFromDocumentsAsync(analyzer, GetDocuments(sources, language, languageVersionCSharp, languageVersionVB, metadataReferences)).ConfigureAwait(true);
+        private static async Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB) =>
+            await GetSortedDiagnosticsFromDocumentsAsync(analyzer, GetDocuments(sources, language, languageVersionCSharp, languageVersionVB)).ConfigureAwait(true);
 
         /// <summary>
         /// Given an analyzer and a document to apply it to, run the analyzer and gather an array of diagnostics found in it.
@@ -109,9 +108,8 @@ namespace CodeCracker.Test
         /// <param name="language">The language the source code is in</param>
         /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
         /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
-        /// <param name="metadataReferences">Set of metadata references to use with the test.</param>
         /// <returns>A Tuple containing the Documents produced from the sources and thier TextSpans if relevant</returns>
-        public static Document[] GetDocuments(string[] sources, string language, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB, IEnumerable<MetadataReference> metadataReferences = null)
+        public static Document[] GetDocuments(string[] sources, string language, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
         {
             if (language != LanguageNames.CSharp && language != LanguageNames.VisualBasic)
                 throw new ArgumentException("Unsupported Language");
@@ -121,7 +119,7 @@ namespace CodeCracker.Test
                 var fileName = language == LanguageNames.CSharp ? nameof(Test) + i + ".cs" : nameof(Test) + i + ".vb";
             }
 
-            var project = CreateProject(sources, language, languageVersionCSharp, languageVersionVB, metadataReferences);
+            var project = CreateProject(sources, language, languageVersionCSharp, languageVersionVB);
             var documents = project.Documents.ToArray();
 
             if (sources.Length != documents.Length)
@@ -144,7 +142,7 @@ namespace CodeCracker.Test
             string language,
             LanguageVersion languageVersionCSharp,
             Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB) =>
-            CreateProject(new[] { source }, language, languageVersionCSharp, languageVersionVB, null).Documents.First();
+            CreateProject(new[] { source }, language, languageVersionCSharp, languageVersionVB).Documents.First();
 
         /// <summary>
         /// Create a project using the inputted strings as sources.
@@ -153,13 +151,11 @@ namespace CodeCracker.Test
         /// <param name="language">The language the source code is in</param>
         /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
         /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
-        /// <param name="otherMetadataReferences">Set of metadata references to use with the test in addition to the default references.  Can be null.</param>
         /// <returns>A Project created out of the Douments created from the source strings</returns>
         public static Project CreateProject(string[] sources,
             string language,
             LanguageVersion languageVersionCSharp,
-            Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB,
-            IEnumerable<MetadataReference> otherMetadataReferences)
+            Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
         {
             var fileNamePrefix = DefaultFilePathPrefix;
             string fileExt;
@@ -180,19 +176,12 @@ namespace CodeCracker.Test
             var workspace = new AdhocWorkspace();
 #pragma warning restore CC0022
 
-            var configuredMetadataReferences = ImmutableList.Create(
-                    CorlibReference, SystemCoreReference, RegexReference,
-                    CSharpSymbolsReference, CodeAnalysisReference, JsonNetReference);
-
-            if (otherMetadataReferences != null)
-            {
-                configuredMetadataReferences = configuredMetadataReferences.AddRange(otherMetadataReferences);
-            }
-            
             var projectInfo = ProjectInfo.Create(projectId, VersionStamp.Create(), TestProjectName,
                 TestProjectName, language,
                 parseOptions: parseOptions,
-                metadataReferences: configuredMetadataReferences);
+                metadataReferences: ImmutableList.Create(
+                    CorlibReference, SystemCoreReference, RegexReference,
+                    CSharpSymbolsReference, CodeAnalysisReference, JsonNetReference));
 
             workspace.AddProject(projectInfo);
 
