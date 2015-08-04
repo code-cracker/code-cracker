@@ -84,6 +84,35 @@ End Class"
         End Function
 
         <Fact>
+        Public Async Function WhenThrowIsRemovedFromAllStaticConstructors() As Task
+            Const test1 = "
+Public Class TestClass1
+    Shared Sub New()
+        Throw New System.Exception()
+    End Sub
+End Class"
+            Const fix1 = "
+Public Class TestClass1
+    Shared Sub New()
+    End Sub
+End Class"
+
+            Const test2 = "
+Public Class TestClass2
+    Shared Sub New()
+        Throw New System.Exception()
+    End Sub
+End Class"
+            Const fix2 = "
+Public Class TestClass2
+    Shared Sub New()
+    End Sub
+End Class"
+
+            Await VerifyBasicFixAllAsync(New String() {test1, test2}, New String() {fix1, fix2})
+        End Function
+
+        <Fact>
         Sub CanGetTypeSymbolForInferedString()
             Const code = "
     Class C
