@@ -309,6 +309,9 @@ void Bar()
 
                 [Theory]
                 void TheoryMethod() { }
+
+                [TheoryAttribute]
+                void TheoryMethod2() { }
             }
         }";
             var xunitReference = MetadataReference.CreateFromFile(typeof(FactAttribute).Assembly.Location);
@@ -436,7 +439,7 @@ void Bar()
                 void MethodUnderTest() { }
             }
         }";
-            
+
             const string nunitWithoutTestFixtureWithTestCaseSourceAttributeAndOtherNonAttributedMethodsSource = @"
         using NUnit.Framework;
         namespace ConsoleApplication5
