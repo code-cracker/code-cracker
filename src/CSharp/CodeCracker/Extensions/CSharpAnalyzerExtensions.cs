@@ -232,7 +232,9 @@ namespace CodeCracker
             attributeLists.SelectMany(a => a.Attributes).Any(a => a.Name.ToString().EndsWith(attributeName, StringComparison.OrdinalIgnoreCase));
 
         public static bool HasAnyAttribute(this SyntaxList<AttributeListSyntax> attributeLists, string[] attributeNames) =>
-            attributeLists.SelectMany(a => a.Attributes).Any(a => attributeNames.Any(attributeName => a.Name.ToString().EndsWith(attributeName, StringComparison.OrdinalIgnoreCase)));
+            attributeLists.SelectMany(a => a.Attributes).Select(a => a.Name.ToString()).Any(name => attributeNames.Any(attributeName =>
+            name.EndsWith(attributeName, StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith($"{attributeName}Attribute", StringComparison.OrdinalIgnoreCase)));
 
         public static NameSyntax ToNameSyntax(this INamespaceSymbol namespaceSymbol) =>
             ToNameSyntax(namespaceSymbol.ToDisplayString().Split('.'));
