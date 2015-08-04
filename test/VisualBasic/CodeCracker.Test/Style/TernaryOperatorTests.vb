@@ -134,7 +134,7 @@ End Namespace"
     Private Const sourceAssign = "
 Imports System
 Namespace ConsoleApplication1
-    Class TypeName
+    Class MyType
         Public Sub Foo()
             Dim something = true
             Dim x = ""a""
@@ -152,7 +152,7 @@ End Namespace"
         Const fix = "
 Imports System
 Namespace ConsoleApplication1
-    Class TypeName
+    Class MyType
         Public Sub Foo()
             Dim something = true
             Dim x = ""a""
@@ -161,6 +161,22 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
         Await VerifyBasicFixAsync(sourceAssign, fix)
+    End Function
+
+    <Fact>
+    Public Async Function WhenUsingIfAndElseWithAssignmentChangeToTernaryFixAll() As Task
+        Const fix = "
+Imports System
+Namespace ConsoleApplication1
+    Class MyType
+        Public Sub Foo()
+            Dim something = true
+            Dim x = ""a""
+            x = If(something, ""b"", ""c"")
+        End Sub
+    End Class
+End Namespace"
+        Await VerifyBasicFixAllAsync(New String() {sourceAssign, sourceAssign.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
     End Function
 End Class
 
@@ -278,7 +294,7 @@ End Namespace"
 
     Private Const sourceReturn = "
 Namespace ConsoleApplication1
-    Class TypeName
+    Class MyType
         Public Function Foo() As Integer
             Dim something = true
             If something Then
@@ -305,7 +321,7 @@ End Namespace"
     Public Async Function WhenUsingIfAndElseWithDirectReturnCreatesFix() As Task
         Const fix = "
 Namespace ConsoleApplication1
-    Class TypeName
+    Class MyType
         Public Function Foo() As Integer
             Dim something = true
             Return If(something, 1, 2)
@@ -314,6 +330,21 @@ Namespace ConsoleApplication1
 End Namespace"
 
         Await VerifyBasicFixAsync(sourceReturn, fix)
+    End Function
+
+    <Fact>
+    Public Async Function WhenUsingIfAndElseWithDirectReturnCreatesFixAll() As Task
+        Const fix = "
+Namespace ConsoleApplication1
+    Class MyType
+        Public Function Foo() As Integer
+            Dim something = true
+            Return If(something, 1, 2)
+        End Function
+    End Class
+End Namespace"
+
+        Await VerifyBasicFixAllAsync(New String() {sourceReturn, sourceReturn.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
     End Function
 End Class
 
@@ -342,9 +373,30 @@ End Class"
     End Function
 
     <Fact>
+    Public Async Function WhenUsingIifAndSimpleAssignmentCreatesFixAll() As Task
+        Const source = "
+Class MyType
+    Public Sub Foo()
+        Dim x = 1
+        x = Iif(x = 1, 2, 3)
+    End Sub
+End Class"
+
+        Const fix = "
+Class MyType
+    Public Sub Foo()
+        Dim x = 1
+        x = If(x = 1, 2, 3)
+    End Sub
+End Class"
+
+        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+    End Function
+
+    <Fact>
     Public Async Function WhenUsingIifAndReturnCreatesFix() As Task
         Const source = "
-Class TypeName
+Class MyType
     Public Function Foo() As Integer
         Dim x = 1
         Return Iif(x = 1, 2, 3)
@@ -352,7 +404,7 @@ Class TypeName
 End Class"
 
         Const fix = "
-Class TypeName
+Class MyType
     Public Function Foo() As Integer
         Dim x = 1
         Return If(x = 1, 2, 3)
@@ -368,6 +420,27 @@ End Class"
 
         Await VerifyBasicDiagnosticAsync(source, expected)
         Await VerifyBasicFixAsync(source, fix)
+    End Function
+
+    <Fact>
+    Public Async Function WhenUsingIifAndReturnCreatesFixAll() As Task
+        Const source = "
+Class MyType
+    Public Function Foo() As Integer
+        Dim x = 1
+        Return Iif(x = 1, 2, 3)
+    End Function
+End Class"
+
+        Const fix = "
+Class MyType
+    Public Function Foo() As Integer
+        Dim x = 1
+        Return If(x = 1, 2, 3)
+    End Function
+End Class"
+
+        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
     End Function
 
     <Fact>

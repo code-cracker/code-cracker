@@ -224,6 +224,45 @@ namespace CodeCracker.Test.CSharp.Style
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
+        [Fact]
+        public async Task WhenUsingIfAndElseWithAssignmentChangeToTernaryFixAll()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                if (something)
+                {
+                    a = ""a"";
+                }
+                else
+                {
+                    a = ""b"";
+                }
+            }
+        }
+    }";
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                a = something ? ""a"" : ""b"";
+            }
+        }
+    }";
+            await VerifyCSharpFixAllAsync(new string[] { source, source.Replace("TypeName", "TypeName1") }, new string[] { fixtest, fixtest.Replace("TypeName", "TypeName1") });
+        }
+
 
         [Fact]
         public async Task WhenUsingIfAndElseWithComplexAssignmentChangeToTernaryFix()
@@ -263,6 +302,45 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithComplexAssignmentChangeToTernaryFixAll()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                if (something)
+                {
+                    a = ""a"" + ""b"";
+                }
+                else
+                {
+                    a = ""c"" + GetInfo(1);
+                }
+            }
+        }
+    }";
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                a = something ? ""a"" + ""b"" : ""c"" + GetInfo(1);
+            }
+        }
+    }";
+            await VerifyCSharpFixAllAsync(new string[] { source, source.Replace("TypeName", "TypeName1") }, new string[] { fixtest, fixtest.Replace("TypeName", "TypeName1") });
+        }
     }
 
     public class TernaryOperatorWithReturnTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
@@ -299,6 +377,40 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithDirectReturnChangeToTernaryFixAll()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                if (something)
+                    return 1;
+                else
+                    return 2;
+            }
+        }
+    }";
+
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                return something ? 1 : 2;
+            }
+        }
+    }";
+            await VerifyCSharpFixAllAsync(new string[] { source, source.Replace("TypeName", "TypeName1") }, new string[] { fixtest, fixtest.Replace("TypeName", "TypeName1") });
         }
 
         [Fact]
