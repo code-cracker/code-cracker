@@ -64,7 +64,7 @@ namespace CodeCracker.CSharp.Usage
             }
             else if (objectCreation.Parent.IsKind(SyntaxKind.Argument))
             {
-                var identifierName = GetIdentifierName(objectCreation);
+                var identifierName = GetIdentifierName(objectCreation, semanticModel);
 
                 var whiteSpace = SyntaxFactory.Whitespace(" ");
                 var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(@"var").WithTrailingTrivia(whiteSpace))
@@ -101,23 +101,36 @@ namespace CodeCracker.CSharp.Usage
             return newRoot;
         }
 
-        private static string GetIdentifierName(ObjectCreationExpressionSyntax objectCreation)
+        private static string GetIdentifierName(ObjectCreationExpressionSyntax objectCreation, SemanticModel semanticModel)
         {
+            var identifierName = "disposableObject";
+
             var type = objectCreation.Type;
             if (type.IsKind(SyntaxKind.QualifiedName))
             {
                 var name = (QualifiedNameSyntax)type;
-                return LoverCaseFirstLetter(name.Right.Identifier.ValueText);
+                identifierName = LoverCaseFirstLetter(name.Right.Identifier.ValueText);
             }
             else if (type is SimpleNameSyntax)
             {
                 var name = (SimpleNameSyntax)type;
-                return LoverCaseFirstLetter(name.Identifier.ValueText);
+                identifierName = LoverCaseFirstLetter(name.Identifier.ValueText);
             }
-            return "disposableObject";
+
+            var confilctingNames = from symbol in semanticModel.LookupSymbols(objectCreation.SpanStart)
+                                   let symbolIdentifierName = symbol?.ToDisplayParts().LastOrDefault(IncludeOnlyPartsThatAreName).ToString()
+                                   where symbolIdentifierName != null && symbolIdentifierName.StartsWith(identifierName)
+                                   select symbolIdentifierName;
+
+            var identifierPostFix = 0;
+            while (confilctingNames.Any(p => p == identifierName + ++identifierPostFix)) { }
+            return identifierName + (identifierPostFix == 0 ? "" : identifierPostFix.ToString());
         }
 
         private static string LoverCaseFirstLetter(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
+        public static bool IncludeOnlyPartsThatAreName(SymbolDisplayPart displayPart) =>
+     displayPart.IsAnyKind(SymbolDisplayPartKind.ClassName, SymbolDisplayPartKind.DelegateName, SymbolDisplayPartKind.EnumName, SymbolDisplayPartKind.EventName, SymbolDisplayPartKind.FieldName, SymbolDisplayPartKind.InterfaceName, SymbolDisplayPartKind.LocalName, SymbolDisplayPartKind.MethodName, SymbolDisplayPartKind.NamespaceName, SymbolDisplayPartKind.ParameterName, SymbolDisplayPartKind.PropertyName, SymbolDisplayPartKind.StructName);
+
 
 
         private static SyntaxNode CreateRootAddingDisposeToEndOfMethod(SyntaxNode root, ExpressionStatementSyntax statement, ILocalSymbol identitySymbol)
