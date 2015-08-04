@@ -146,9 +146,10 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task ChangeAllInterfaceNamesWithoutIAndClassImplementation()
         {
             const string source1 = @"
+    using ConsoleApplication2;
     namespace ConsoleApplication1
     {
-        public interface Foo1
+        public interface Foo2
         {
             void Test();
         }
@@ -162,9 +163,10 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
             const string source2 = @"
+    using ConsoleApplication1;
     namespace ConsoleApplication2
     {
-        public interface Foo2
+        public interface Foo1
         {
             void Test();
         }
@@ -178,9 +180,10 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
             const string fixtest1 = @"
+    using ConsoleApplication2;
     namespace ConsoleApplication1
     {
-        public interface IFoo1
+        public interface IFoo2
         {
             void Test();
         }
@@ -194,9 +197,10 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
             const string fixtest2 = @"
+    using ConsoleApplication1;
     namespace ConsoleApplication2
     {
-        public interface IFoo2
+        public interface IFoo1
         {
             void Test();
         }
@@ -209,7 +213,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAllAsync(new string[] { source1, source2 }, new string[]{ fixtest1, fixtest2 });
+            await VerifyCSharpFixAllAsync(new string[] { source1, source2 }, new string[] { fixtest1, fixtest2 });
         }
     }
 }
