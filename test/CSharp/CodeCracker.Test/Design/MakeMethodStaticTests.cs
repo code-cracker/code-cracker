@@ -390,6 +390,14 @@ void Bar()
 
             const string nunitTestFixtureWithoutAttributesSource = @"
         using NUnit.Framework;
+
+        namespace NUnit.Framework
+        {
+            public class TestFixtureAttribute : System.Attribute
+            {
+            }
+        }
+
         namespace ConsoleApplication2
         {
             [TestFixture]
@@ -441,7 +449,6 @@ void Bar()
                 void MethodUnderTest() { }
             }
         }";
-            var nunitReference = MetadataReference.CreateFromFile(typeof(NUnit.Framework.TestFixtureAttribute).Assembly.Location);
 
             await VerifyCSharpHasNoDiagnosticsAsync(new string[] {
                 nunitNonTestFixtureWithAttributesSource,
@@ -449,7 +456,7 @@ void Bar()
                 nunitWithoutTestFixtureWithTestAttributeAndOtherNonAttributedMethodsSource,
                 nunitWithoutTestFixtureWithTestCaseAttributeAndOtherNonAttributedMethodsSource,
                 nunitWithoutTestFixtureWithTestCaseSourceAttributeAndOtherNonAttributedMethodsSource
-            }, metadataReferences: new MetadataReference[] { nunitReference });
+            });
         }
     }
 }
