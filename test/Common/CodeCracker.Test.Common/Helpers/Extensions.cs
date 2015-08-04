@@ -34,12 +34,13 @@
         }
         public static string WrapInVBMethod(this string code,
             bool isAsync = false,
+            string typeName = "TypeName",
             string imports = "")
         {
             return $@"
 Imports System{imports}
 Namespace ConsoleApplication1
-    Class TypeName
+    Class {typeName}
         Public {(isAsync ? "Async " : "")}{(isAsync ? "Function" : "Sub")} Foo(){(isAsync ? " As Task" : "")}
             {code}
             ' VB Requires value to be used or another analyzer is added which breaks the tests
