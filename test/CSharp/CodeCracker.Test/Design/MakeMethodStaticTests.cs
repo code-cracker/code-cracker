@@ -315,7 +315,7 @@ void Bar()
             }
         }";
             var xunitReference = MetadataReference.CreateFromFile(typeof(FactAttribute).Assembly.Location);
-            await VerifyCSharpHasNoDiagnosticsAsync(source, metadataReferences: new MetadataReference[] { xunitReference });
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
@@ -349,8 +349,7 @@ void Bar()
                 void TestCleanupMethod() { }
             }
         }";
-            var msTestReference = MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute).Assembly.Location);
-            await VerifyCSharpHasNoDiagnosticsAsync(source, metadataReferences: new MetadataReference[] { msTestReference });
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]

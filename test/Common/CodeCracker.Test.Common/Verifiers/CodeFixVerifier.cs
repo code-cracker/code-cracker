@@ -275,7 +275,7 @@ namespace CodeCracker.Test
 
         private async static Task VerifyFixAllAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB, string equivalenceKey = null)
         {
-            var project = CreateProject(oldSources, language, languageVersionCSharp, languageVersionVB, null);
+            var project = CreateProject(oldSources, language, languageVersionCSharp, languageVersionVB);
             var compilerDiagnostics = (await Task.WhenAll(project.Documents.Select(d => GetCompilerDiagnosticsAsync(d))).ConfigureAwait(true)).SelectMany(d => d);
             var fixAllProvider = codeFixProvider.GetFixAllProvider();
             if (equivalenceKey == null) equivalenceKey = codeFixProvider.GetType().Name;
