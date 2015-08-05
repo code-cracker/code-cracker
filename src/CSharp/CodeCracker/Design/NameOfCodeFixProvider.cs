@@ -49,7 +49,7 @@ namespace CodeCracker.CSharp.Design
                 return parameter.Identifier.Text;
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             var symbol = semanticModel.LookupSymbols(stringLiteral.Token.SpanStart, null, stringLiteral.Token.ValueText).First();
-            return symbol.ToDisplayParts().Last(NameOfAnalyzer.IncludeOnlyPartsThatAreName).ToString();
+            return symbol.ToDisplayParts().Last(AnalyzerExtensions.IsName).ToString();
         }
 
         private static ParameterSyntax FindParameterThatStringLiteralRefers(SyntaxNode root, int diagnosticSpanStart, LiteralExpressionSyntax stringLiteral)
