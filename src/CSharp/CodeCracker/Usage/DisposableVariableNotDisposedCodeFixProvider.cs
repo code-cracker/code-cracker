@@ -62,12 +62,71 @@ namespace CodeCracker.CSharp.Usage
                 var statement = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
                 newRoot = CreateRootWithUsing(root, statement, u => u.WithDeclaration(variableDeclaration));
             }
+            else if (objectCreation.Parent.IsKind(SyntaxKind.Argument))
+            {
+                var identifierName = GetIdentifierName(objectCreation, semanticModel);
+
+                var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(@"var"))
+                    .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(identifierName))
+                    .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.Token(SyntaxKind.EqualsToken), objectCreation))));
+
+                var arg = objectCreation.Parent as ArgumentSyntax;
+                var args = objectCreation.Parent.Parent as ArgumentListSyntax;
+                var newArgs = args.ReplaceNode(arg, arg.WithExpression(SyntaxFactory.IdentifierName(identifierName)));
+
+                StatementSyntax statement = objectCreation.FirstAncestorOfType<ExpressionStatementSyntax>();
+                if (statement != null)
+                {
+                    var exprStatement = statement.ReplaceNode(args, newArgs);
+                    var newUsingStatment = CreateUsingStatement(exprStatement, SyntaxFactory.Block(exprStatement))
+                        .WithDeclaration(variableDeclaration);
+                    return root.ReplaceNode(statement, newUsingStatment);
+                }
+
+                statement = (StatementSyntax)objectCreation.Ancestors().First(node => node is StatementSyntax);
+                var newStatement = statement.ReplaceNode(args, newArgs);
+                var statementsForUsing = new[] { newStatement }.Concat(GetChildStatementsAfter(statement));
+                var usingBlock = SyntaxFactory.Block(statementsForUsing);
+                var usingStatement = CreateUsingStatement(newStatement, usingBlock)
+                    .WithDeclaration(variableDeclaration);
+                var statementsToReplace = new List<StatementSyntax> { statement };
+                statementsToReplace.AddRange(statementsForUsing.Skip(1));
+                newRoot = root.ReplaceNodes(statementsToReplace, (node, _) => node.Equals(statement) ? usingStatement : null);
+            }
             else
             {
                 newRoot = CreateRootWithUsing(root, (ExpressionStatementSyntax)objectCreation.Parent, u => u.WithExpression(objectCreation));
             }
             return newRoot;
         }
+
+        private static string GetIdentifierName(ObjectCreationExpressionSyntax objectCreation, SemanticModel semanticModel)
+        {
+            var identifierName = "disposableObject";
+
+            var type = objectCreation.Type;
+            if (type.IsKind(SyntaxKind.QualifiedName))
+            {
+                var name = (QualifiedNameSyntax)type;
+                identifierName = LowerCaseFirstLetter(name.Right.Identifier.ValueText);
+            }
+            else if (type is SimpleNameSyntax)
+            {
+                var name = (SimpleNameSyntax)type;
+                identifierName = LowerCaseFirstLetter(name.Identifier.ValueText);
+            }
+
+            var confilctingNames = from symbol in semanticModel.LookupSymbols(objectCreation.SpanStart)
+                                   let symbolIdentifierName = symbol?.ToDisplayParts().LastOrDefault(AnalyzerExtensions.IsName).ToString()
+                                   where symbolIdentifierName != null && symbolIdentifierName.StartsWith(identifierName)
+                                   select symbolIdentifierName;
+
+            var identifierPostFix = 0;
+            while (confilctingNames.Any(p => p == identifierName + ++identifierPostFix)) { }
+            return identifierName + (identifierPostFix == 0 ? "" : identifierPostFix.ToString());
+        }
+
+        private static string LowerCaseFirstLetter(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
 
         private static SyntaxNode CreateRootAddingDisposeToEndOfMethod(SyntaxNode root, ExpressionStatementSyntax statement, ILocalSymbol identitySymbol)
         {
