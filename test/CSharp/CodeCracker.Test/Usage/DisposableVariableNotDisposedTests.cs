@@ -75,6 +75,50 @@ m.Dispose();".WrapInCSharpMethod();
         }
 
         [Fact]
+        public async Task PassedIntoThisDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+                class A
+                {
+                    public A(Disposable foo)
+                    { }
+
+                    A() : this(new Disposable())
+                    { }
+                }
+
+                class Disposable : System.IDisposable
+                {
+                    void System.IDisposable.Dispose() { }
+                }
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task PassedToConstructorDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+                class A
+                {
+                    public A(Disposable foo)
+                    { }
+                    
+                    void Foo()
+                    { 
+                        var a = new A(new Disposable());
+                    }
+                }
+
+                class Disposable : System.IDisposable
+                {
+                    void System.IDisposable.Dispose() { }
+                }
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task DisposableVariablePassedAsParamCreatesDiagnostic()
         {
             var source = "string.Format(\"\", new System.IO.MemoryStream());".WrapInCSharpMethod();
@@ -338,6 +382,240 @@ using (m = new System.IO.MemoryStream())
 {
     Console.WriteLine(m);
 }".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentInsideArgument()
+        {
+            var source = @"
+{
+    string.Format(string.Empty,new System.IO.MemoryStream());
+}".WrapInCSharpMethod();
+            var fixtest = @"
+{
+    using (var memoryStream = new System.IO.MemoryStream())
+    {
+        string.Format(string.Empty, memoryStream);
+    }
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentInsideArgumentWithSimpleName()
+        {
+            var source = @"
+{
+    string.Format(string.Empty,new MemoryStream());
+    var s = string.empty;
+}".WrapInCSharpMethod(usings: "using System.IO;");
+            var fixtest = @"
+{
+    using (var memoryStream = new MemoryStream())
+    {
+        string.Format(string.Empty, memoryStream);
+    }
+    var s = string.empty;
+}".WrapInCSharpMethod(usings: "using System.IO;");
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentInsideArgumentWithAssgienmt()
+        {
+            var source = @"
+{
+    var s = string.Format(string.Empty,new MemoryStream());
+    s.Trim();
+}".WrapInCSharpMethod(usings: "using System.IO;");
+            var fixtest = @"
+{
+    using (var memoryStream = new MemoryStream())
+    {
+        var s = string.Format(string.Empty, memoryStream);
+        s.Trim();
+    }
+}".WrapInCSharpMethod(usings: "using System.IO;");
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentInsideArgumentWithVariables()
+        {
+            var source = @"
+{
+    var s = string.Empty;
+    string.Format(s,new System.IO.MemoryStream());
+    s.Trim();
+}".WrapInCSharpMethod();
+            var fixtest = @"
+{
+    var s = string.Empty;
+    using (var memoryStream = new System.IO.MemoryStream())
+    {
+        string.Format(s, memoryStream);
+    }
+    s.Trim();
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentInsideArgumentWithGenericName()
+        {
+            const string source = @"
+                class A
+                {
+                    void Foo()
+                    {
+                        string.Format(string.Empty,new Disposable<int>());
+                    }
+                }
+                class Disposable<T> : System.IDisposable
+                {
+                    void IDisposable.Dispose() { }
+                    public void Flush() { }
+                }
+";
+            const string fixtest = @"
+                class A
+                {
+                    void Foo()
+                    {    
+                        using (var disposable = new Disposable<int>())
+                        {
+                            string.Format(string.Empty, disposable);
+                        }
+                    }
+                }
+                class Disposable<T> : System.IDisposable
+                {
+                    void IDisposable.Dispose() { }
+                    public void Flush() { }
+                }
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentInsideArgumentWithGenericName2()
+        {
+            const string source = @"
+                class A
+                {
+                    void Foo()
+                    {
+                        string.Format(string.Empty,new Disposable());
+                    }
+                }
+                class Disposable : System.IDisposable
+                {
+                    void IDisposable.Dispose() { }
+                    public void Flush() { }
+                }
+";
+            const string fixtest = @"
+                class A
+                {
+                    void Foo()
+                    {    
+                        using (var disposable = new Disposable())
+                        {
+                            string.Format(string.Empty, disposable);
+                        }
+                    }
+                }
+                class Disposable : System.IDisposable
+                {
+                    void IDisposable.Dispose() { }
+                    public void Flush() { }
+                }
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentWithConflictingsLocalName()
+        {
+            const string source = @"
+                class A
+                {
+                    void Foo()
+                    {
+                        var str = "";
+                        string.Format(str, new Str());
+                    }
+                }
+                class Str : System.IDisposable
+                {
+                    void IDisposable.Dispose() { }
+                    public void Flush() { }
+                }
+";
+            const string fixtest = @"
+                class A
+                {
+                    void Foo()
+                    {
+                        var str = "";
+                        using (var str1 = new Str())
+                        { 
+                            string.Format(str, str1);
+                        }
+                    }
+                }
+                class Str : System.IDisposable
+                {
+                    void IDisposable.Dispose() { }
+                    public void Flush() { }
+                }
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentWithManyConflictingsName()
+        {
+            const string source = @"
+                class A
+                {
+                    class str { }
+                    string str1 { get; set; }
+                    string str2;
+                    void Foo()
+                    {
+                        var str3 = "";
+                        string.Format(str3, new Str());
+                    }
+                }
+                class Str : System.IDisposable
+                {
+                    void IDisposable.Dispose() { }
+                    public void Flush() { }
+                }
+";
+            const string fixtest = @"
+                class A
+                {
+                    class str { }
+                    string str1 { get; set; }
+                    string str2;
+                    void Foo()
+                    {
+                        var str3 = "";
+                        using (var str4 = new Str())
+                        { 
+                            string.Format(str3, str4);
+                        }
+                    }
+                }
+                class Str : System.IDisposable
+                {
+                    void IDisposable.Dispose() { }
+                    public void Flush() { }
+                }
+";
             await VerifyCSharpFixAsync(source, fixtest);
         }
 

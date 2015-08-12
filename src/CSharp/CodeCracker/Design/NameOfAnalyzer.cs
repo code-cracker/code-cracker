@@ -76,7 +76,7 @@ namespace CodeCracker.CSharp.Design
                         return string.Empty;
                 }
 
-                programElementName = symbol?.ToDisplayParts().LastOrDefault(IncludeOnlyPartsThatAreName).ToString();
+                programElementName = symbol?.ToDisplayParts().LastOrDefault(AnalyzerExtensions.IsName).ToString();
             }
 
             return programElementName;
@@ -109,9 +109,6 @@ namespace CodeCracker.CSharp.Design
         }
 
         private static bool Found(string programElement) => !string.IsNullOrEmpty(programElement);
-
-        public static bool IncludeOnlyPartsThatAreName(SymbolDisplayPart displayPart) =>
-            displayPart.IsAnyKind(SymbolDisplayPartKind.ClassName, SymbolDisplayPartKind.DelegateName, SymbolDisplayPartKind.EnumName, SymbolDisplayPartKind.EventName, SymbolDisplayPartKind.FieldName, SymbolDisplayPartKind.InterfaceName, SymbolDisplayPartKind.LocalName, SymbolDisplayPartKind.MethodName, SymbolDisplayPartKind.NamespaceName, SymbolDisplayPartKind.ParameterName, SymbolDisplayPartKind.PropertyName, SymbolDisplayPartKind.StructName);
 
         private static ParameterSyntax GetParameterWithIdentifierEqualToStringLiteral(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters) =>
             parameters.FirstOrDefault(m => string.Equals(m.Identifier.ValueText, stringLiteral.Token.ValueText, StringComparison.Ordinal));
