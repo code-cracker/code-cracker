@@ -96,6 +96,28 @@ m.Dispose();".WrapInCSharpMethod();
         }
 
         [Fact]
+        public async Task PassedIntoBaseDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+                class A
+                {
+                    public A(Disposable foo)
+                    { }
+                }
+                class B : A
+                {
+                    B() : base(new Disposable())
+                    { }
+                }
+                class Disposable : System.IDisposable
+                {
+                    void System.IDisposable.Dispose() { }
+                }
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task PassedToConstructorDoesNotCreateDiagnostic()
         {
             const string source = @"
@@ -103,9 +125,9 @@ m.Dispose();".WrapInCSharpMethod();
                 {
                     public A(Disposable foo)
                     { }
-                    
+
                     void Foo()
-                    { 
+                    {
                         var a = new A(new Disposable());
                     }
                 }
@@ -482,7 +504,7 @@ using (m = new System.IO.MemoryStream())
                 class A
                 {
                     void Foo()
-                    {    
+                    {
                         using (var disposable = new Disposable<int>())
                         {
                             string.Format(string.Empty, disposable);
@@ -519,7 +541,7 @@ using (m = new System.IO.MemoryStream())
                 class A
                 {
                     void Foo()
-                    {    
+                    {
                         using (var disposable = new Disposable())
                         {
                             string.Format(string.Empty, disposable);
@@ -560,7 +582,7 @@ using (m = new System.IO.MemoryStream())
                     {
                         var str = "";
                         using (var str1 = new Str())
-                        { 
+                        {
                             string.Format(str, str1);
                         }
                     }
@@ -605,7 +627,7 @@ using (m = new System.IO.MemoryStream())
                     {
                         var str3 = "";
                         using (var str4 = new Str())
-                        { 
+                        {
                             string.Format(str3, str4);
                         }
                     }
@@ -1065,7 +1087,7 @@ m.Dispose();".WrapInCSharpMethod();
              @"namespace MyNamespace
                   {
                         public class DisposableClass : System.IDisposable  { }
-                      
+
                         public class ActualClass
                         {
                             public DisposableClass Method()
