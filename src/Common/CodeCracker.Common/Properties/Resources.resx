@@ -195,6 +195,18 @@
   <data name="ChangeAsToCastCodeFixProvider_CastToAs" xml:space="preserve">
     <value>Change direct cast to safe cast ('as')</value>
   </data>
+  <data name="SwitchToAutoPropAnalyzer_Description" xml:space="preserve">
+    <value>Auto properties offer a more concise way of defining a property. If you are using simple getters and setters you are able to simplify your code with autoproperties.</value>
+  </data>
+  <data name="SwitchToAutoPropAnalyzer_MessageFormat" xml:space="preserve">
+    <value>Change {0} to an auto property</value>
+  </data>
+  <data name="SwitchToAutoPropAnalyzer_Title" xml:space="preserve">
+    <value>Use auto property</value>
+  </data>
+  <data name="SwitchToAutoPropCodeFixProvider_Title" xml:space="preserve">
+    <value>Change to auto property</value>
+  </data>
   <data name="ValidateColorAnalyzer_Description" xml:space="preserve">
     <value>This diagnostic checks the htmlColor value and triggers if the parsing fail by throwing an exception</value>
   </data>

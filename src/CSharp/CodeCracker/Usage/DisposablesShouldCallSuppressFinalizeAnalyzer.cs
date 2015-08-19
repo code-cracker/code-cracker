@@ -49,7 +49,8 @@ namespace CodeCracker.CSharp.Usage
                 {
                     var invocation = statement.Expression as InvocationExpressionSyntax;
                     var method = invocation?.Expression as MemberAccessExpressionSyntax;
-                    if (method != null && ((IdentifierNameSyntax)method.Expression).Identifier.ToString() == "GC" && method.Name.ToString() == "SuppressFinalize")
+                    var identifierSyntax = method?.Expression as IdentifierNameSyntax;
+                    if (identifierSyntax != null && identifierSyntax.Identifier.ToString() == "GC" && method.Name.ToString() == "SuppressFinalize")
                         return;
                 }
             }

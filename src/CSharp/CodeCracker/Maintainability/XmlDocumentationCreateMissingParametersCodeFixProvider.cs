@@ -1,12 +1,12 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Composition;
+using System.Linq;
+using System.Threading.Tasks;
+using CodeCracker.Properties;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Composition;
-using System.Linq;
-using System.Threading.Tasks;
-using CodeCracker.Properties;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxKind;
 
 namespace CodeCracker.CSharp.Maintainability
@@ -14,28 +14,30 @@ namespace CodeCracker.CSharp.Maintainability
     [ExportCodeFixProvider(LanguageNames.CSharp, nameof(XmlDocumentationCodeFixProvider)), Shared]
     public sealed class XmlDocumentationCreateMissingParametersCodeFixProvider : XmlDocumentationCodeFixProvider
     {
+        private const string WHITESPACE = @" ";
+
         public override SyntaxNode FixParameters(MethodDeclarationSyntax method, SyntaxNode root)
         {
             var documentationNode = method.GetLeadingTrivia().Select(x => x.GetStructure()).OfType<DocumentationCommentTriviaSyntax>().First();
             var newDocumentationNode = documentationNode;
             var methodParameterWithDocParameter = GetMethodParametersWithDocParameters(method, documentationNode);
 
-            var xmlText = documentationNode.Content.OfType<XmlTextSyntax>().Skip(1).First();
-
+            var newFormation = newDocumentationNode.Content.OfType<XmlElementSyntax>();
+            
             var nodesToAdd = methodParameterWithDocParameter.Where(p => p.Item2 == null)
-                                .SelectMany(x => CreateParamenterXmlDocumentation(xmlText, x.Item1.Identifier.ValueText, method.Identifier.ValueText))
+                                .Select(x => CreateParamenterXmlDocumentation(x.Item1.Identifier.ValueText, method.Identifier.ValueText))
+                                .Union(newFormation)
+                                .OrderByDescending(xEle => xEle.StartTag.Name.LocalName.ValueText == "summary")
+                                .ThenByDescending(xEle => xEle.StartTag.Name.LocalName.ValueText == "param")
+                                .SelectMany(EnvolveXmlDocSyntaxWithNewLine)
                                 .ToList();
-            var newFormation = newDocumentationNode.Content.OfType<XmlElementSyntax>().ToList();
-            var node = newFormation.LastOrDefault(xEle => xEle.StartTag.Name.LocalName.ValueText == "param") ?? newFormation.LastOrDefault(xEle => xEle.StartTag.Name.LocalName.ValueText == "summary");
-            var nodeInList = documentationNode.Content.OfType<XmlTextSyntax>().FirstOrDefault(x => x.FullSpan.Start == node.FullSpan.End);
 
-            newDocumentationNode = newDocumentationNode.InsertNodesAfter(node, nodesToAdd.Cast<SyntaxNode>());
+            newDocumentationNode = newDocumentationNode.WithContent(SyntaxFactory.List(nodesToAdd));
 
             return root.ReplaceNode(documentationNode, newDocumentationNode);
         }
 
-
-        private static XmlNodeSyntax[] CreateParamenterXmlDocumentation(XmlTextSyntax xmlText, string paramenterName, string methodName)
+        private static XmlElementSyntax CreateParamenterXmlDocumentation(string paramenterName, string methodName)
         {
             var content = $"todo: describe {paramenterName} parameter on {methodName}";
             var xmlTagName = SyntaxFactory.XmlName(SyntaxFactory.Identifier(@"param "));
@@ -44,7 +46,21 @@ namespace CodeCracker.CSharp.Maintainability
 
             var xmlElementSyntax = SyntaxFactory.XmlElement(startTag, endTag).WithContent(CreateXmlElementContent(content));
 
-            return new XmlNodeSyntax[] { xmlText, xmlElementSyntax };
+            return xmlElementSyntax;
+        }
+
+        private static XmlNodeSyntax[] EnvolveXmlDocSyntaxWithNewLine(XmlElementSyntax xmlElementSyntax)
+        {
+            var emptyTriviaList = SyntaxFactory.TriviaList();
+
+            var syntaxTriviaList = SyntaxFactory.TriviaList(SyntaxFactory.DocumentationCommentExterior(@"///"));
+            var xmlTextLiteral = SyntaxFactory.XmlTextNewLine(syntaxTriviaList, WHITESPACE, WHITESPACE, emptyTriviaList);
+            var withTextTokens = SyntaxFactory.XmlText(SyntaxFactory.TokenList(xmlTextLiteral));
+
+            var xmlNewTextLiteral = SyntaxFactory.XmlTextNewLine(emptyTriviaList, string.Empty, string.Empty, SyntaxFactory.TriviaList(SyntaxFactory.ElasticCarriageReturnLineFeed));
+            var withNewLineTokens = SyntaxFactory.XmlText(SyntaxFactory.TokenList(xmlNewTextLiteral));
+
+            return new XmlNodeSyntax[] { withTextTokens, xmlElementSyntax, withNewLineTokens };
         }
 
         private static SyntaxList<XmlNodeSyntax> CreateXmlElementContent(string content)
@@ -56,10 +72,12 @@ namespace CodeCracker.CSharp.Maintainability
 
         private static SyntaxList<XmlAttributeSyntax> CreateXmlAttributes(string paramenterName)
         {
-            var syntaxToken = SyntaxFactory.Token(DoubleQuoteToken);
-            var xmlAttributeName = SyntaxFactory.XmlName(SyntaxFactory.Identifier(@"name"));
-
-            return SyntaxFactory.SingletonList<XmlAttributeSyntax>(SyntaxFactory.XmlNameAttribute(xmlAttributeName, syntaxToken, SyntaxFactory.IdentifierName(paramenterName), syntaxToken));
+            var xmlNameSyntax = SyntaxFactory.XmlName(SyntaxFactory.Identifier("name"));
+            var quoteToken = SyntaxFactory.Token(DoubleQuoteToken);
+            var identifierNameSyntax = SyntaxFactory.IdentifierName(paramenterName.Trim());
+            var equalsToken = SyntaxFactory.Token(EqualsToken);
+            var xmlNameAttributeSyntax = SyntaxFactory.XmlNameAttribute(xmlNameSyntax, equalsToken, quoteToken, identifierNameSyntax, quoteToken);
+            return SyntaxFactory.SingletonList<XmlAttributeSyntax>(xmlNameAttributeSyntax);
         }
 
         public override sealed Task RegisterCodeFixesAsync(CodeFixContext context)

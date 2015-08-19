@@ -24,6 +24,40 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
+        public async Task TaskNameAsyncMethodWhithoutAsyncNameAndOverridesShouldNotCreateDiagnostic()
+        {
+            const string source = @"
+    using System.Threading.Tasks;
+
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            overrides Task Test() {};
+        }
+    }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task TaskNameAsyncMethodWhithoutAsyncNameAndShadowsShouldNotCreateDiagnostic()
+        {
+            const string source = @"
+    using System.Threading.Tasks;
+
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            new Task Test() {};
+        }
+    }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task TaskNameAsyncMethodWhithoutAsyncName()
         {
             const string source = @"
@@ -39,7 +73,7 @@ namespace CodeCracker.Test.CSharp.Style
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
-                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat,"TestAsync"),
+                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat, "TestAsync"),
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 18) }
             };

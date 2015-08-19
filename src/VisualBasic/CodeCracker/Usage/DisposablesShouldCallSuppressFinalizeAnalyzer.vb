@@ -49,17 +49,17 @@ This rule should be followed even if the class doesn't have a finalizer in a der
             If disposeMethod Is Nothing Then Exit Sub
 
             Dim syntaxTree = Await disposeMethod.DeclaringSyntaxReferences(0)?.GetSyntaxAsync(context.CancellationToken)
-            Dim statements = TryCast(syntaxTree, MethodBlockSyntax)?.Statements.OfType(Of ExpressionStatementSyntax)
+            Dim methodBlock = TryCast(TryCast(syntaxTree, MethodStatementSyntax)?.Parent, MethodBlockSyntax)
+            Dim statements = methodBlock?.Statements.OfType(Of ExpressionStatementSyntax)
 
             If statements IsNot Nothing Then
                 For Each statement In statements
                     Dim invocation = TryCast(statement.Expression, InvocationExpressionSyntax)
-                    If invocation IsNot Nothing Then
-                        Dim method = TryCast(invocation.Expression, MemberAccessExpressionSyntax)
-                        If method IsNot Nothing Then
-                            If DirectCast(method.Expression, IdentifierNameSyntax).Identifier.ToString = NameOf(GC) AndAlso method.Name.ToString() = "SuppressFinalize" Then
-                                Exit Sub
-                            End If
+                    Dim method = TryCast(invocation?.Expression, MemberAccessExpressionSyntax)
+                    Dim identifier = TryCast(method?.Expression, IdentifierNameSyntax)
+                    If identifier IsNot Nothing Then
+                        If NameOf(GC).Equals(identifier.Identifier.ToString, StringComparison.OrdinalIgnoreCase) AndAlso "SuppressFinalize".Equals(method.Name.ToString(), StringComparison.OrdinalIgnoreCase) Then
+                            Exit Sub
                         End If
                     End If
                 Next
@@ -69,12 +69,12 @@ This rule should be followed even if the class doesn't have a finalizer in a der
 
         Private Shared Function FindDisposeMethod(symbol As INamedTypeSymbol) As ISymbol
             Return symbol.GetMembers().
-                Where(Function(x) x.ToString().Contains("Dispose")).OfType(Of IMethodSymbol).
+                Where(Function(x) x.ToString().IndexOf("Dispose", StringComparison.OrdinalIgnoreCase) > 0).OfType(Of IMethodSymbol).
                 FirstOrDefault(Function(m) m.Parameters = Nothing Or m.Parameters.Count() = 0)
         End Function
 
         Private Shared Function ContainsUserDefinedFinalizer(symbol As INamedTypeSymbol) As Boolean
-            Return symbol.GetMembers().Any(Function(x) x.ToString().Contains(NameOf(Finalize)))
+            Return symbol.GetMembers().Any(Function(x) x.ToString().IndexOf(NameOf(Finalize), StringComparison.OrdinalIgnoreCase) > 0)
         End Function
 
         Private Shared Function ContainsNonPrivateConstructors(symbol As INamedTypeSymbol) As Boolean
@@ -83,7 +83,6 @@ This rule should be followed even if the class doesn't have a finalizer in a der
             Return symbol.GetMembers().
                 Any(Function(m) m.MetadataName = ".ctor" AndAlso m.DeclaredAccessibility <> Accessibility.Private)
         End Function
-
 
         Private Shared Function IsNestedPrivateType(symbol As INamedTypeSymbol) As Boolean
             If symbol Is Nothing Then Return False

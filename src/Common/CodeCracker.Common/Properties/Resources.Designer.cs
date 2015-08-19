@@ -267,6 +267,42 @@ namespace CodeCracker.Properties {
                 return ResourceManager.GetString("StringFormatCodeFixProvider_Title", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Auto properties offer a more concise way of defining a property. If you are using simple getters and setters you are able to simplify your code with autoproperties..
+        /// </summary>
+        public static string SwitchToAutoPropAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("SwitchToAutoPropAnalyzer_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Change {0} to an auto property.
+        /// </summary>
+        public static string SwitchToAutoPropAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("SwitchToAutoPropAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Use auto property.
+        /// </summary>
+        public static string SwitchToAutoPropAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("SwitchToAutoPropAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change to auto property.
+        /// </summary>
+        public static string SwitchToAutoPropCodeFixProvider_Title {
+            get {
+                return ResourceManager.GetString("SwitchToAutoPropCodeFixProvider_Title", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to This diagnostic checks the htmlColor value and triggers if the parsing fail by throwing an exception.

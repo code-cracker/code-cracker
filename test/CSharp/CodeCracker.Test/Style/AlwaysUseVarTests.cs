@@ -152,5 +152,68 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(test, expected);
         }
+
+        [Fact]
+        public async Task FixReplacesDeclaringTypeWithVarIdentifierFixAll()
+        {
+            const string source1 = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                int a = 10;
+                int b = 10;
+            }
+        }
+    }";
+            const string source2 = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                string a = ""10"";
+                string b = ""10"";
+            }
+        }
+    }";
+
+            const string fixtest1 = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                var a = 10;
+                var b = 10;
+            }
+        }
+    }";
+            const string fixtest2 = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                var a = ""10"";
+                var b = ""10"";
+            }
+        }
+    }";
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { fixtest1, fixtest2 });
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,14 @@ namespace CodeCracker
 {
     public static partial class AnalyzerExtensions
     {
+        public static bool IsName(this SymbolDisplayPart displayPart) =>
+            displayPart.IsAnyKind(SymbolDisplayPartKind.ClassName, SymbolDisplayPartKind.DelegateName,
+                                  SymbolDisplayPartKind.EnumName, SymbolDisplayPartKind.EventName,
+                                  SymbolDisplayPartKind.FieldName, SymbolDisplayPartKind.InterfaceName,
+                                  SymbolDisplayPartKind.LocalName, SymbolDisplayPartKind.MethodName,
+                                  SymbolDisplayPartKind.NamespaceName, SymbolDisplayPartKind.ParameterName,
+                                  SymbolDisplayPartKind.PropertyName, SymbolDisplayPartKind.StructName);
+
         public static SyntaxNode WithSameTriviaAs(this SyntaxNode target, SyntaxNode source)
         {
             if (target == null) throw new ArgumentNullException(nameof(target));
