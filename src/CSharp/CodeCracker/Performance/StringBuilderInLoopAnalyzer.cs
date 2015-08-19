@@ -49,6 +49,7 @@ namespace CodeCracker.CSharp.Usage
             if (symbolForAssignment is IPropertySymbol) type = ((IPropertySymbol)symbolForAssignment).Type;
             else if (symbolForAssignment is ILocalSymbol) type = ((ILocalSymbol)symbolForAssignment).Type;
             else if (symbolForAssignment is IFieldSymbol) type = ((IFieldSymbol)symbolForAssignment).Type;
+            else if (symbolForAssignment is IParameterSymbol) type = ((IParameterSymbol)symbolForAssignment).Type;
             else return;
             if (type == null) return;
             if (type.TypeKind == TypeKind.Array)
