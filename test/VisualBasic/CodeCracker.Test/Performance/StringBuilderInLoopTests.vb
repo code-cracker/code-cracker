@@ -35,6 +35,20 @@ End Namespace"
         End Function
 
         <Fact>
+        Public Async Function WhileWithoutStringConcatWithMethoParameterDoesNotCreateDiagnostic() As Task
+            Dim source = "
+    Public Class TypeName
+        Public Sub Looper(ByRef a As Integer)
+            While a < 10
+                a += 1
+            End While
+        End Sub
+    End Class"
+
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
         Public Async Function WhileWithStringConcatOnLocalVariableCreateDiagnostic() As Task
             Dim source = "
             Dim a = """"
@@ -446,6 +460,22 @@ End Namespace"
 ".WrapInVBMethod
 
             Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        <Fact>
+        Public Async Function ForLoopInMethodWithoutStringShouldNotCreateDiagnostic() As Task
+            Dim source = "
+    Public Class Test
+        Private Sub AdjustSample(ByRef readIndex As Integer, writeBuffer() As Single, ByRef writeIndex As Integer)
+            For i = 0 To 2
+                writeBuffer(writeIndex) = 0
+                readIndex += 1
+                writeIndex += 1
+            Next
+        End Sub
+    End Class"
+
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
         End Function
     End Class
 End Namespace
