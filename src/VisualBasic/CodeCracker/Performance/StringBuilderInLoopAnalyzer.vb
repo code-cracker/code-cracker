@@ -42,9 +42,11 @@ Namespace Performance
             If loopStatment Is Nothing Then Exit Sub
             Dim semanticModel = context.SemanticModel
             Dim symbolForAssignment = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol
+            If symbolForAssignment Is Nothing Then Exit Sub
             If TypeOf symbolForAssignment Is IPropertySymbol AndAlso DirectCast(symbolForAssignment, IPropertySymbol).Type.Name <> "String" Then Exit Sub
             If TypeOf symbolForAssignment Is ILocalSymbol AndAlso DirectCast(symbolForAssignment, ILocalSymbol).Type.Name <> "String" Then Exit Sub
             If TypeOf symbolForAssignment Is IFieldSymbol AndAlso DirectCast(symbolForAssignment, IFieldSymbol).Type.Name <> "String" Then Exit Sub
+            If TypeOf symbolForAssignment Is IParameterSymbol AndAlso DirectCast(symbolForAssignment, IParameterSymbol).Type.Name <> "String" Then Exit Sub
 
             If assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentStatement) Then
                 If (Not If(assignmentExpression.Right?.IsKind(SyntaxKind.AddExpression), False)) Then Exit Sub
