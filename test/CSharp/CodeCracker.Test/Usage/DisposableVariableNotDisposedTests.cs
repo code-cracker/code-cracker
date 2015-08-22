@@ -1100,5 +1100,26 @@ m.Dispose();".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
+        [Fact]
+        public async Task WhenVariableIsReturnedAsAnImplementedInterface()
+        {
+            const string source =
+            @"namespace MyNamespace
+            {
+                public class DisposableClass : System.IDisposable { }
+
+                public class ActualClass
+                {
+                    public System.IDisposable Method()
+                    {
+                        var disposable = new DisposableClass();
+                        return disposable;
+                    }
+                }
+            }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
+
