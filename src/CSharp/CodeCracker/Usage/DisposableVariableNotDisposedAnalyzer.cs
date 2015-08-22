@@ -104,7 +104,7 @@ namespace CodeCracker.CSharp.Usage
         {
             var returnTypeSymbol = semanticModel.GetTypeInfo(method.ReturnType).Type;
             if (returnTypeSymbol == null) return false;
-            if (returnTypeSymbol.SpecialType == SpecialType.System_Void || !returnTypeSymbol.Equals(identitySymbol.Type)) return false;
+            if (returnTypeSymbol.SpecialType == SpecialType.System_Void) return false;
             var returns = method.Body.DescendantNodes().OfType<ReturnStatementSyntax>();
             var isReturning = returns.Any(r =>
             {
