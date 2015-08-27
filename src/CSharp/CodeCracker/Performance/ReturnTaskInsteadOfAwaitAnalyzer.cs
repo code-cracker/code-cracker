@@ -34,30 +34,55 @@ namespace CodeCracker.CSharp.Performance
             var methodDecl = (context.Node as MethodDeclarationSyntax);
             if (!methodDecl.Modifiers.Any(SyntaxKind.AsyncKeyword)) return;
             if (context.IsGenerated()) return;
+            if (methodDecl.ExpressionBody != null) return; // TODO: Workout for expressionBody
+
 
             var awaits = from child in methodDecl.Body.DescendantNodes(_ => true)
                          where child.IsKind(SyntaxKind.AwaitExpression)
                          let AwaitExpression = child as AwaitExpressionSyntax
                          select AwaitExpression;
 
-            var blocks = new HashSet<BlockSyntax>();
             foreach (var await in awaits)
             {
-                var block = await.FirstAncestorOfType<BlockSyntax>();
-                if (blocks.Contains(block)) return;
-                blocks.Add(block);
+                var ansestors = await.Ancestors();
+                if (ansestors.Any(ansestor => IsLoopStatement(ansestor))) return;
             }
 
-            foreach (var block in blocks)
+            var controlFlow = context.SemanticModel.AnalyzeControlFlow(methodDecl.Body);
+            if (controlFlow.ReturnStatements.Length == 0)
             {
-                var lastStatement = block.ChildNodes().Last();
+                //var returnType = context.SemanticModel.GetTypeInfo(methodDecl.ReturnType);
+                //returnType.ConvertedType.spec;
+
+                var lastStatement = methodDecl.Body.ChildNodes().Last();
                 if (!lastStatement.IsKind(SyntaxKind.ExpressionStatement)) return;
                 var statement = lastStatement as ExpressionStatementSyntax;
                 if (!statement.Expression.IsKind(SyntaxKind.AwaitExpression)) return;
+
+
+            }
+            else
+            {
+                foreach (var await in awaits)
+                {
+                    if (!await.Parent.IsKind(SyntaxKind.ReturnStatement)) return;
+                }
             }
 
             var diagnostic = Diagnostic.Create(Rule, methodDecl.GetLocation());
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static bool IsLoopStatement(SyntaxNode note) => note.IsAnyKind(SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement);
+
+
+        async static Task FooAsync(bool x)
+        {
+            System.Math.Abs(12);
+            if (x)
+                await Task.Delay(200);
+            else
+                await Task.Delay(200);
         }
     }
 }
