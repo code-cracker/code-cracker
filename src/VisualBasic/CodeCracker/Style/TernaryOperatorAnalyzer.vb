@@ -50,6 +50,7 @@ Namespace Style
             context.RegisterSyntaxNodeAction(AddressOf IifAnalyzer, SyntaxKind.InvocationExpression)
         End Sub
         Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim ifStatement = TryCast(context.Node, IfStatementSyntax)
             If ifStatement Is Nothing Then Exit Sub
             Dim ifBlock = TryCast(ifStatement.Parent, MultiLineIfBlockSyntax)
@@ -77,6 +78,7 @@ Namespace Style
         End Sub
 
         Private Sub IifAnalyzer(context As SyntaxNodeAnalysisContext)
+            If (context.IsGenerated()) Then Return
             Dim iifStatement = TryCast(context.Node, InvocationExpressionSyntax)
             If iifStatement Is Nothing Then Exit Sub
             Dim iifExpression = TryCast(iifStatement.Expression, IdentifierNameSyntax)
