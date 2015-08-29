@@ -36,6 +36,7 @@ Namespace Usage
         End Sub
 
         Private Sub Analyze(context As SyntaxNodeAnalysisContext, methodName As String, methodFullDefinition As String)
+            If (context.IsGenerated()) Then Return
             Dim invocationExpression = DirectCast(context.Node, InvocationExpressionSyntax)
             Dim memberExpression = TryCast(invocationExpression.Expression, MemberAccessExpressionSyntax)
             If memberExpression?.Name?.Identifier.ValueText <> methodName Then Exit Sub
