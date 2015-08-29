@@ -10,8 +10,10 @@ Public Module VBGeneratedCodeAnalysisExtensions
         Return If(context.SemanticModel?.SyntaxTree?.IsGenerated(), False) OrElse If(context.Node?.IsGenerated(), False)
     End Function
 
+    Private ReadOnly generatedCodeAttributes() As String = {"DebuggerNonUserCode", "GeneratedCode", NameOf(DebuggerNonUserCodeAttribute), "GeneratedCodeAttribute"}
+
     <Extension> Public Function IsGenerated(node As SyntaxNode) As Boolean
-        Return node.HasAttributeOnAncestorOrSelf("DebuggerNonUserCode", "GeneratedCode")
+        Return node.HasAttributeOnAncestorOrSelf(generatedCodeAttributes)
     End Function
 
     <Extension> Public Function IsGenerated(context As SyntaxTreeAnalysisContext) As Boolean

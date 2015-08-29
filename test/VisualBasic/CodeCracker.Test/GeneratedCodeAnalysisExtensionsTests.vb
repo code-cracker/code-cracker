@@ -49,231 +49,399 @@ End Class", baseProjectPath + "TemporaryGeneratedFile_.vb")
         context.IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasDebuggerNonUserCodeAttributeOnAClass()
-        GetContext(Of ClassBlockSyntax)("<System.Diagnostics.DebuggerNonUserCode> Class TypeName
-    End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData("<System.Diagnostics.DebuggerNonUserCode> Class TypeName
+    End Class")>
+    <InlineData("<System.Diagnostics.DebuggerNonUserCodeAttribute> Class TypeName
+    End Class")>
+    Public Sub HasDebuggerNonUserCodeAttributeOnAClass(source As String)
+        GetContext(Of ClassBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasDebuggerNonUserCodeAttributeOnAModule()
-        GetContext(Of ModuleBlockSyntax)("<System.Diagnostics.DebuggerNonUserCode> Module TypeName
-    End Module").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData("<System.Diagnostics.DebuggerNonUserCode> Module TypeName
+    End Module")>
+    <InlineData("<System.Diagnostics.DebuggerNonUserCodeAttribute> Module TypeName
+    End Module")>
+    Public Sub HasDebuggerNonUserCodeAttributeOnAModule(source As String)
+        GetContext(Of ModuleBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasDebuggerNonUserCodeAttributeOnAMethod()
-        GetContext(Of MethodBlockSyntax)(
-"Class TypeName
-    <System.Diagnostics.DebuggerNonUserCode> Sub Foo()
-    End Sub
-End Class").IsGenerated().Should().BeTrue()
-    End Sub
-
-    <Fact>
-    Public Sub HasDebuggerNonUserCodeAttributeOnAStatementWithinAMethod()
-        GetContext(Of InvocationExpressionSyntax)(
-"Class TypeName
-    <System.Diagnostics.DebuggerNonUserCode> Sub Foo()
-        System.Console.WriteLine(1)
-    End Sub
-End Class").IsGenerated().Should().BeTrue()
-    End Sub
-    <Fact>
-    Public Sub HasDebuggerNonUserCodeAttributeOnAProperty()
-        GetContext(Of PropertyStatementSyntax)(
-"Class TypeName
-    <System.Diagnostics.DebuggerNonUserCode> Property Foo As Integer
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        <System.Diagnostics.DebuggerNonUserCode> Sub Foo()
+        End Sub
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        <System.Diagnostics.DebuggerNonUserCodeAttribute> Sub Foo()
+        End Sub
+    End Class")>
+    Public Sub HasDebuggerNonUserCodeAttributeOnAMethod(source As String)
+        GetContext(Of MethodBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasDebuggerNonUserCodeAttributeOnAPropertyCheckingTheGet()
-        GetContext(Of AccessorBlockSyntax)(
-"Class TypeName
-    Private _foo As Integer
-    <System.Diagnostics.DebuggerNonUserCode>
-    Public ReadOnly Property Foo() As Integer
-        Get
-            Return _foo
-        End Get
-    End Property
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        <System.Diagnostics.DebuggerNonUserCode> Sub Foo()
+            System.Console.WriteLine(1)
+        End Sub
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        <System.Diagnostics.DebuggerNonUserCodeAttribute> Sub Foo()
+            System.Console.WriteLine(1)
+        End Sub
+    End Class")>
+    Public Sub HasDebuggerNonUserCodeAttributeOnAStatementWithinAMethod(source As String)
+        GetContext(Of InvocationExpressionSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasDebuggerNonUserCodeAttributeOnAPropertyGet()
-        GetContext(Of AccessorBlockSyntax)(
-"Class TypeName
-    Private _foo As Integer
-    Public ReadOnly Property Foo() As Integer
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        <System.Diagnostics.DebuggerNonUserCode> Property Foo As Integer
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        <System.Diagnostics.DebuggerNonUserCodeAttribute> Property Foo As Integer
+    End Class")>
+    Public Sub HasDebuggerNonUserCodeAttributeOnAProperty(source As String)
+        GetContext(Of PropertyStatementSyntax)(source).IsGenerated().Should().BeTrue()
+    End Sub
+
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        Private _foo As Integer
         <System.Diagnostics.DebuggerNonUserCode>
-        Get
-            Return _foo
-        End Get
-    End Property
-End Class").IsGenerated().Should().BeTrue()
+        Public ReadOnly Property Foo() As Integer
+            Get
+                Return _foo
+            End Get
+        End Property
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        Private _foo As Integer
+        <System.Diagnostics.DebuggerNonUserCodeAttribute>
+        Public ReadOnly Property Foo() As Integer
+            Get
+                Return _foo
+            End Get
+        End Property
+    End Class")>
+    Public Sub HasDebuggerNonUserCodeAttributeOnAPropertyCheckingTheGet(source As String)
+        GetContext(Of AccessorBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasDebuggerNonUserCodeAttributeOnAPropertySet()
-        GetContext(Of AccessorBlockSyntax)(
-"Class TypeName
-    Private _foo As Integer
-    Public WriteOnly Property Foo() As Integer
-        <System.Diagnostics.DebuggerNonUserCode>
-        Set(ByVal value As Integer)
-            _foo = value
-        End Set
-    End Property
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        Private _foo As Integer
+        Public ReadOnly Property Foo() As Integer
+            <System.Diagnostics.DebuggerNonUserCode>
+            Get
+                Return _foo
+            End Get
+        End Property
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        Private _foo As Integer
+        Public ReadOnly Property Foo() As Integer
+            <System.Diagnostics.DebuggerNonUserCodeAttribute>
+            Get
+                Return _foo
+            End Get
+        End Property
+    End Class")>
+    Public Sub HasDebuggerNonUserCodeAttributeOnAPropertyGet(source As String)
+        GetContext(Of AccessorBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnAClass()
-        GetContext(Of ClassBlockSyntax)("<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Class TypeName
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        Private _foo As Integer
+        Public WriteOnly Property Foo() As Integer
+            <System.Diagnostics.DebuggerNonUserCode>
+            Set(ByVal value As Integer)
+                _foo = value
+            End Set
+        End Property
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        Private _foo As Integer
+        Public WriteOnly Property Foo() As Integer
+            <System.Diagnostics.DebuggerNonUserCodeAttribute>
+            Set(ByVal value As Integer)
+                _foo = value
+            End Set
+        End Property
+    End Class")>
+    Public Sub HasDebuggerNonUserCodeAttributeOnAPropertySet(source As String)
+        GetContext(Of AccessorBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnAnInterface()
-        GetContext(Of InterfaceBlockSyntax)("<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Interface ITypeName
-End Interface").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData("<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Class TypeName
+    End Class")>
+    <InlineData("<System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)> Class TypeName
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnAClass(source As String)
+        GetContext(Of ClassBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnEnum()
-        GetContext(Of EnumBlockSyntax)("<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
+    <Theory>
+    <InlineData("<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Interface ITypeName
+    End Interface")>
+    <InlineData("<System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)> Interface ITypeName
+    End Interface")>
+    Public Sub HasGeneratedCodeAttributeOnAnInterface(source As String)
+        GetContext(Of InterfaceBlockSyntax)(source).IsGenerated().Should().BeTrue()
+    End Sub
+
+    <Theory>
+    <InlineData(
+    "<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
     Enum A
         a
-    End Enum").IsGenerated().Should().BeTrue()
+    End Enum")>
+    <InlineData(
+    "<System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)>
+    Enum A
+        a
+    End Enum")>
+    Public Sub HasGeneratedCodeAttributeOnEnum(source As String)
+        GetContext(Of EnumBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnAField()
-        GetContext(Of FieldDeclarationSyntax)(
-"Class TypeName
-    <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> private i as Integer
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> private i as Integer
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        <System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)> private i as Integer
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnAField(source As String)
+        GetContext(Of FieldDeclarationSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnAnEvent()
-        GetContext(Of EventStatementSyntax)(
-"Class TypeName
-<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Event a As Action
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "Class TypeName
+    <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Event a As Action
+    End Class")>
+    <InlineData(
+    "Class TypeName
+    <System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)> Event a As Action
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnAnEvent(source As String)
+        GetContext(Of EventStatementSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnParameter()
-        GetContext(Of ParameterSyntax)(
-"Class TypeName
-    public Sub Foo(<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> i as Integer)
-    End Sub
-End Class").IsGenerated().Should().BeTrue()
-    End Sub
-
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnDelegate()
-        GetContext(Of DelegateStatementSyntax)(
-"Class TypeName
-    <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Delegate Sub A()
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        public Sub Foo(<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> i as Integer)
+        End Sub
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        public Sub Foo(<System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)> i as Integer)
+        End Sub
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnParameter(source As String)
+        GetContext(Of ParameterSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnNestedClass()
-        GetContext(Of StructureBlockSyntax)(
-"<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Class TypeName
-    Structure Nested
-    End Structure
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Delegate Sub A()
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        <System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)> Delegate Sub A()
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnDelegate(source As String)
+        GetContext(Of DelegateStatementSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnCustomEvent()
-        GetContext(Of EventStatementSyntax)(
-"Class TypeName
-    Private Events As New System.ComponentModel.EventHandlerList
-    <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
-    Public Custom Event Click As EventHandler
-        AddHandler(ByVal value As EventHandler)
-        End AddHandler
-        RemoveHandler(ByVal value As EventHandler)
-        End RemoveHandler
-        RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
-        End RaiseEvent
-    End Event
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "<System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)> Class TypeName
+        Structure Nested
+        End Structure
+    End Class")>
+    <InlineData(
+    "<System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)> Class TypeName
+        Structure Nested
+        End Structure
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnNestedClass(source As String)
+        GetContext(Of StructureBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnCustomEventInsideAccessor()
-        GetContext(Of AccessorBlockSyntax)(
-"Class TypeName
-    Private Events As New System.ComponentModel.EventHandlerList
-    <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
-    Public Custom Event Click As EventHandler
-        AddHandler(ByVal value As EventHandler)
-        End AddHandler
-        RemoveHandler(ByVal value As EventHandler)
-        End RemoveHandler
-        RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
-        End RaiseEvent
-    End Event
-End Class").IsGenerated().Should().BeTrue()
-    End Sub
-
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnCustomEventAdd()
-        GetContext(Of AccessorBlockSyntax)(
-"Class TypeName
-    Private Events As New System.ComponentModel.EventHandlerList
-    Public Custom Event Click As EventHandler
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
         <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
-        AddHandler(ByVal value As EventHandler)
-        End AddHandler
-        RemoveHandler(ByVal value As EventHandler)
-        End RemoveHandler
-        RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
-        End RaiseEvent
-    End Event
-End Class").IsGenerated().Should().BeTrue()
+        Public Custom Event Click As EventHandler
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+        End Event
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
+        <System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)>
+        Public Custom Event Click As EventHandler
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+        End Event
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnCustomEvent(source As String)
+        GetContext(Of EventStatementSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnCustomEventRemove()
-        GetContext(Of AccessorBlockSyntax)(
-"Class TypeName
-    Private Events As New System.ComponentModel.EventHandlerList
-    Public Custom Event Click As EventHandler
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
         <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
-        RemoveHandler(ByVal value As EventHandler)
-        End RemoveHandler
-        AddHandler(ByVal value As EventHandler)
-        End AddHandler
-        RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
-        End RaiseEvent
-    End Event
-End Class").IsGenerated().Should().BeTrue()
+        Public Custom Event Click As EventHandler
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+        End Event
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
+        <System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)>
+        Public Custom Event Click As EventHandler
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+        End Event
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnCustomEventInsideAccessor(source As String)
+        GetContext(Of AccessorBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
-    <Fact>
-    Public Sub HasGeneratedCodeAttributeOnCustomEventRaise()
-        GetContext(Of AccessorBlockSyntax)(
-"Class TypeName
-    Private Events As New System.ComponentModel.EventHandlerList
-    Public Custom Event Click As EventHandler
-        <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
-        RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
-        End RaiseEvent
-        AddHandler(ByVal value As EventHandler)
-        End AddHandler
-        RemoveHandler(ByVal value As EventHandler)
-        End RemoveHandler
-    End Event
-End Class").IsGenerated().Should().BeTrue()
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
+        Public Custom Event Click As EventHandler
+            <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+        End Event
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
+        Public Custom Event Click As EventHandler
+            <System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)>
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+        End Event
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnCustomEventAdd(source As String)
+        GetContext(Of AccessorBlockSyntax)(source).IsGenerated().Should().BeTrue()
+    End Sub
+
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
+        Public Custom Event Click As EventHandler
+            <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+        End Event
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
+        Public Custom Event Click As EventHandler
+            <System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)>
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+        End Event
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnCustomEventRemove(source As String)
+        GetContext(Of AccessorBlockSyntax)(source).IsGenerated().Should().BeTrue()
+    End Sub
+
+    <Theory>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
+        Public Custom Event Click As EventHandler
+            <System.CodeDom.Compiler.GeneratedCode(Nothing, Nothing)>
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+        End Event
+    End Class")>
+    <InlineData(
+    "Class TypeName
+        Private Events As New System.ComponentModel.EventHandlerList
+        Public Custom Event Click As EventHandler
+            <System.CodeDom.Compiler.GeneratedCodeAttribute(Nothing, Nothing)>
+            RaiseEvent(ByVal sender As Object, ByVal e As EventArgs)
+            End RaiseEvent
+            AddHandler(ByVal value As EventHandler)
+            End AddHandler
+            RemoveHandler(ByVal value As EventHandler)
+            End RemoveHandler
+        End Event
+    End Class")>
+    Public Sub HasGeneratedCodeAttributeOnCustomEventRaise(source As String)
+        GetContext(Of AccessorBlockSyntax)(source).IsGenerated().Should().BeTrue()
     End Sub
 
     <Fact>
