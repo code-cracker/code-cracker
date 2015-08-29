@@ -43,7 +43,7 @@ namespace CodeCracker.CSharp.Design
 
             var symbol = context.SemanticModel.GetSymbolInfo(identifier).Symbol;
 
-            if (typeInfo.ConvertedType.BaseType.Name != typeof(MulticastDelegate).Name || symbol is ILocalSymbol) return;
+            if (typeInfo.ConvertedType.BaseType.Name != typeof(MulticastDelegate).Name || symbol is ILocalSymbol || symbol is IParameterSymbol) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), identifier.Identifier.Text));
         }
