@@ -2,11 +2,14 @@
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace CodeCracker.Test.CSharp.Usage
 {
-    public class NoPrivateReadonlyFieldTests : CodeFixVerifier<NoPrivateReadonlyFieldAnalyzer, ReadonlyFieldCodeFixProvider>
+    public class NoPrivateReadonlyFieldTests : CodeFixVerifier
     {
+        protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() => new NoPrivateReadonlyFieldAnalyzer();
+
         static DiagnosticResult CreateExpectedDiagnosticResult(int line, int column, string fieldName = "i") =>
             new DiagnosticResult
             {
@@ -435,22 +438,6 @@ namespace CodeCracker.Test.CSharp.Usage
 				};
 			}";
             await VerifyCSharpHasNoDiagnosticsAsync(source1, source2);
-        }
-
-        [Fact]
-        public async Task ChangeFieldWhenIsPublicAndNotAssigned()
-        {
-            const string source = @"
-			class TypeName
-			{
-				public int i;
-			}";
-            const string fixtest = @"
-			class TypeName
-			{
-				public readonly int i;
-			}";
-            await VerifyCSharpFixAsync(source, fixtest);
         }
     }
 }
