@@ -193,5 +193,17 @@ namespace CodeCracker.Test.CSharp.Design
 tuple.Item2();".WrapInCSharpMethod();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
+
+        [Fact]
+        public async void WhenMethodInvokedWithNonReferenceTypeHasNoDiagnosticAsync()
+        {
+            var test = @"
+                public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T : System.Attribute
+                {            
+                    return getter(default(T));
+                }".WrapInCSharpClass();
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
     }
 }
