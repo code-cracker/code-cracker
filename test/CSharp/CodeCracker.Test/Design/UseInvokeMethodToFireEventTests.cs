@@ -19,6 +19,7 @@ namespace CodeCracker.Test.CSharp.Design
                         MyEvent(this, System.EventArgs.Empty);
                     }
                 }";
+
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
@@ -26,6 +27,7 @@ namespace CodeCracker.Test.CSharp.Design
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
             };
+
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -209,6 +211,18 @@ public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 12) }
             };
             await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WhenMethodInvokedWithNonReferenceTypeHasNoDiagnostic()
+        {
+            var test = @"
+                public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T : System.Attribute where TReturn : struct
+                {
+                    return getter(default(T));
+                }".WrapInCSharpClass();
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }
 }
