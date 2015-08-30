@@ -37,6 +37,7 @@ namespace CodeCracker.CSharp.Usage
         {
             if (context.IsGenerated()) return;
             var methodDeclaration = (MethodDeclarationSyntax)context.Node;
+            if (methodDeclaration.ExplicitInterfaceSpecifier != null) return;
             var methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
             if (methodSymbol.DeclaredAccessibility != Accessibility.Private) return;
             if (IsMethodUsed(methodDeclaration, context.SemanticModel)) return;
