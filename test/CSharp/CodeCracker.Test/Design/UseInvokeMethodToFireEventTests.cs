@@ -195,10 +195,29 @@ tuple.Item2();".WrapInCSharpMethod();
         }
 
         [Fact]
-        public async void WhenMethodInvokedWithNonReferenceTypeHasNoDiagnosticAsync()
+        public async void ReportOnParametersWhenReturnTypeIsAReferenceType()
         {
             var test = @"
-                public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T : System.Attribute
+public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T : System.Attribute where TReturn : class
+{
+    if (getter == null) return default(TReturn);
+    return getter(default(T));
+}".WrapInCSharpClass();
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
+                Message = "Use ?.Invoke operator and method to fire 'getter' event.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 12) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WhenMethodInvokedWithNonReferenceTypeHasNoDiagnostic()
+        {
+            var test = @"
+                public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T : System.Attribute where TReturn : struct
                 {            
                     return getter(default(T));
                 }".WrapInCSharpClass();
