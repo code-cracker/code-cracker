@@ -71,6 +71,21 @@ void Foo()
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
+        [Fact]
+        public async Task NoDiagnosticOnExplicitInterfaceImplementation()
+        {
+            const string source = @"
+        interface I
+        {
+            int Foo();
+        }
+        class C : I
+        {
+            int I.Foo() => 42;
+        }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
         [Theory]
         [InlineData("void Foo() { }")]
         [InlineData(@"void Foo()

@@ -46,6 +46,9 @@ namespace CodeCracker.CSharp.Design
                 SyntaxKind.OverrideKeyword))
                 return;
 
+            if (method.ExplicitInterfaceSpecifier != null)
+                return;
+
             var semanticModel = context.SemanticModel;
             var methodSymbol = semanticModel.GetDeclaredSymbol(method);
             var theClass = methodSymbol.ContainingType;
