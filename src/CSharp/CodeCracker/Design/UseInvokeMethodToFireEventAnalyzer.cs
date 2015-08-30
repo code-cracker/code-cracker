@@ -41,7 +41,7 @@ namespace CodeCracker.CSharp.Design
 
             if (typeInfo.ConvertedType?.BaseType == null) return;
             if (typeInfo.ConvertedType.BaseType.Name != typeof(MulticastDelegate).Name) return;
-            
+
             var symbol = context.SemanticModel.GetSymbolInfo(identifier).Symbol;
             if (symbol is ILocalSymbol) return;
 
