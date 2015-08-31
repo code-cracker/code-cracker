@@ -49,6 +49,7 @@ Namespace Style
             context.RegisterSyntaxNodeAction(AddressOf Analyzer, SyntaxKind.IfStatement)
             context.RegisterSyntaxNodeAction(AddressOf IifAnalyzer, SyntaxKind.InvocationExpression)
         End Sub
+
         Private Sub Analyzer(context As SyntaxNodeAnalysisContext)
             If (context.IsGenerated()) Then Return
             Dim ifStatement = TryCast(context.Node, IfStatementSyntax)
@@ -63,8 +64,24 @@ Namespace Style
 
             If TypeOf (ifClauseStatement) Is ReturnStatementSyntax AndAlso
             TypeOf (elseStatement) Is ReturnStatementSyntax Then
+                Dim ifClauseReturnTypeInfo = context.SemanticModel.GetTypeInfo(DirectCast(ifClauseStatement, ReturnStatementSyntax).Expression)
+                ' The mix of reference and value types being returned is only a problem
+                ' if the function return type is nullable.  Otherwise the return type will be casted to the value type, which is safe to
+                ' convert to a ternary statement.  The ConvertedType gives the function return type.
+                If ifClauseReturnTypeInfo.ConvertedType.IsValueType AndAlso ifClauseReturnTypeInfo.ConvertedType.Name = NameOf(Nullable) Then
+                    Dim elseClauseReturnTypeInfo = context.SemanticModel.GetTypeInfo(DirectCast(elseStatement, ReturnStatementSyntax).Expression)
 
-                Dim diag = Diagnostic.Create(RuleForIfWithReturn, ifStatement.IfKeyword.GetLocation, "You can use a ternary operator.")
+                    ' Return type will be nothing if Nothing is being returned.
+                    If ifClauseReturnTypeInfo.Type Is Nothing OrElse ifClauseReturnTypeInfo.Type.IsReferenceType Then
+                        If elseClauseReturnTypeInfo.Type IsNot Nothing AndAlso elseClauseReturnTypeInfo.Type.IsValueType Then Exit Sub
+                    End If
+
+                    If elseClauseReturnTypeInfo.Type Is Nothing OrElse elseClauseReturnTypeInfo.Type.IsReferenceType Then
+                        If ifClauseReturnTypeInfo.Type IsNot Nothing AndAlso ifClauseReturnTypeInfo.Type.IsValueType Then Exit Sub
+                    End If
+                End If
+
+                Dim diag = Diagnostic.Create(RuleForIfWithReturn, ifStatement.IfKeyword.GetLocation, MessageFormat)
                 context.ReportDiagnostic(diag)
                 Exit Sub
             End If
@@ -73,7 +90,7 @@ Namespace Style
             Dim elseAssignment = TryCast(elseStatement, AssignmentStatementSyntax)
             If ifAssignment Is Nothing OrElse elseAssignment Is Nothing Then Exit Sub
             If Not ifAssignment?.Left.IsEquivalentTo(elseAssignment?.Left) Then Exit Sub
-            Dim assignDiag = Diagnostic.Create(RuleForIfWithAssignment, ifStatement.IfKeyword.GetLocation(), "You can use a ternary operator.")
+            Dim assignDiag = Diagnostic.Create(RuleForIfWithAssignment, ifStatement.IfKeyword.GetLocation(), MessageFormat)
             context.ReportDiagnostic(assignDiag)
         End Sub
 
