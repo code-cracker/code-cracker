@@ -437,6 +437,78 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
+        public async Task WhenUsingIfAndElseWithDirectReturnOfNullableTypeChangeToTernaryFix()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public System.DateTime? Foo()
+            {
+                var something = true;
+                if (something)
+                    return null;
+                else
+                    return System.DateTime.Now;
+            }
+        }
+    }";
+
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public System.DateTime? Foo()
+            {
+                var something = true;
+                return something ? (System.DateTime?)null : System.DateTime.Now;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithDirectReturnOfNullableTypeViaFunctionChangeToTernaryFix()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            System.Func<object> nullFunc = () => { return null; };
+
+            public System.DateTime? Foo()
+            {
+                var something = true;
+                if (something)
+                    return nullFunc?.Invoke();
+                else
+                    return System.DateTime.Now;
+            }
+        }
+    }";
+
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            System.Func<object> nullFunc = () => { return null; };            
+
+            public System.DateTime? Foo()
+            {
+                var something = true;
+                return something ? (System.DateTime?)nullFunc?.Invoke() : System.DateTime.Now;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
         public async Task WhenUsingIfAndElseWithAssignmentAnalyzerCreatesDiagnostic()
         {
             const string source = @"
