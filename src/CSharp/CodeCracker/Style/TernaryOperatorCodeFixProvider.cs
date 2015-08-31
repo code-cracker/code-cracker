@@ -35,13 +35,32 @@ namespace CodeCracker.CSharp.Style
             var statementInsideIf = (ReturnStatementSyntax)(ifStatement.Statement is BlockSyntax ? ((BlockSyntax)ifStatement.Statement).Statements.Single() : ifStatement.Statement);
             var elseStatement = ifStatement.Else;
             var statementInsideElse = (ReturnStatementSyntax)(elseStatement.Statement is BlockSyntax ? ((BlockSyntax)elseStatement.Statement).Statements.Single() : elseStatement.Statement);
-            var ternary = SyntaxFactory.ParseStatement($"return {ifStatement.Condition.ToString()} ? {statementInsideIf.Expression.ToString()} : {statementInsideElse.Expression.ToString()};")
+            var nullableSafeIfExpression = MakeStatementSafeForNullableReturnTypesAsync(document, statementInsideIf, cancellationToken);
+            var nullableSafeElseExpression = MakeStatementSafeForNullableReturnTypesAsync(document, statementInsideElse, cancellationToken);
+            Task.WaitAll(nullableSafeIfExpression, nullableSafeElseExpression);
+            var ternary = SyntaxFactory.ParseStatement($"return {ifStatement.Condition.ToString()} ? {nullableSafeIfExpression.Result} : {nullableSafeElseExpression.Result};")
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(ifStatement.GetTrailingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = root.ReplaceNode(ifStatement, ternary);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
+        }
+
+        private static async Task<string> MakeStatementSafeForNullableReturnTypesAsync(Document document, ReturnStatementSyntax statement, CancellationToken cancellationToken)
+        {
+            var safeStatement = statement.Expression.ToString();
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            var returnType = semanticModel.GetTypeInfo(statement.Expression, cancellationToken);
+            if (returnType.ConvertedType.IsValueType && returnType.ConvertedType.Name == "Nullable")
+            {
+                if (returnType.Type == null || returnType.Type.IsReferenceType)
+                {
+                    safeStatement = $"({returnType.ConvertedType.ToString()}){safeStatement}";
+                }
+            }
+
+            return safeStatement;
         }
     }
 
