@@ -346,6 +346,61 @@ End Namespace"
 
         Await VerifyBasicFixAllAsync(New String() {sourceReturn, sourceReturn.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
     End Function
+
+    <Fact>
+    Public Async Function WhenIfWithReferenceFirstAndValueTypeReturnAndReturnTypeIsNullableDoesNotCreateDiagnostic() As Task
+        Const source = "
+Class SomeType
+    Public Function Bar() As Date?
+        If True Then            
+            Return Nothing
+        Else
+            Return CDate(Nothing)
+        End If
+    End Function
+End Class"
+
+        Await VerifyBasicHasNoDiagnosticsAsync(source)
+    End Function
+
+    <Fact>
+    Public Async Function WhenIfWithReferenceSecondAndValueTypeReturnAndReturnTypeIsNullableDoesNotCreateDiagnostic() As Task
+        Const source = "
+Class SomeType
+    Public Function Bar() As Date?
+        If True Then            
+            Return CDate(Nothing)
+        Else
+            Return Nothing
+        End If
+    End Function
+End Class"
+
+        Await VerifyBasicHasNoDiagnosticsAsync(source)
+    End Function
+
+    <Fact>
+    Public Async Function WhenIfWithReferenceAndValueTypeReturnAndReturnTypeIsValueTypeCreatesDiagnostic() As Task
+        Const source = "
+Class SomeType
+    Public Function Bar() As Date
+        If True Then            
+            Return Nothing
+        Else
+            Return CDate(Nothing)
+        End If
+    End Function
+End Class"
+
+        Dim expected As New DiagnosticResult With {
+            .Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
+            .Message = "You can use a ternary operator.",
+            .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
+            .Locations = {New DiagnosticResultLocation("Test0.vb", 4, 9)}
+            }
+
+        Await VerifyBasicDiagnosticAsync(source, expected)
+    End Function
 End Class
 
 Public Class TernaryOperatorFromIifTests
