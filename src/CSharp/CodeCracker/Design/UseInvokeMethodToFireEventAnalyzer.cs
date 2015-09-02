@@ -40,10 +40,14 @@ namespace CodeCracker.CSharp.Design
             var typeInfo = context.SemanticModel.GetTypeInfo(identifier, context.CancellationToken);
 
             if (typeInfo.ConvertedType?.BaseType == null) return;
+            if (typeInfo.ConvertedType.BaseType.Name != typeof(MulticastDelegate).Name) return;
 
             var symbol = context.SemanticModel.GetSymbolInfo(identifier).Symbol;
+            if (symbol is ILocalSymbol) return;
 
-            if (typeInfo.ConvertedType.BaseType.Name != typeof(MulticastDelegate).Name || symbol is ILocalSymbol) return;
+            var invokedMethodSymbol = (typeInfo.ConvertedType as INamedTypeSymbol)?.DelegateInvokeMethod;
+            if (invokedMethodSymbol == null) return;
+            if (!invokedMethodSymbol.ReturnsVoid && !invokedMethodSymbol.ReturnType.IsReferenceType) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), identifier.Identifier.Text));
         }

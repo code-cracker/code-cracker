@@ -225,6 +225,45 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
+        public async Task WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFix()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                var something = true;
+                int? a;
+                if (something)
+                {
+                    a = 1;
+                }
+                else
+                {
+                    a = null;
+                }
+            }
+        }
+    }";
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                var something = true;
+                int? a;
+                a = something ? 1 : (int?)null;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
         public async Task WhenUsingIfAndElseWithAssignmentChangeToTernaryFixAll()
         {
             const string source = @"
@@ -391,6 +430,40 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 var something = true;
                 return something ? 1 : 2;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFix()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int? Foo()
+            {
+                var something = true;
+                if (something)
+                    return 1;
+                else
+                    return null;
+            }
+        }
+    }";
+
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int? Foo()
+            {
+                var something = true;
+                return something ? 1 : (int?)null;
             }
         }
     }";

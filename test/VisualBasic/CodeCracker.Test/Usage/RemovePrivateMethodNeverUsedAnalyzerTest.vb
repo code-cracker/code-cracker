@@ -5,9 +5,9 @@ Namespace Usage
     Public Class RemovePrivateMethodNeverUsedAnalyzerTest
         Inherits CodeFixVerifier(Of RemovePrivateMethodNeverUsedAnalyzer, RemovePrivateMethodNeverUsedCodeFixProvider)
 
-		<Fact>
-		Public Async Function DoesNotGenerateDiagnostics() As Task
-			Const test = "
+        <Fact>
+        Public Async Function DoesNotGenerateDiagnostics() As Task
+            Const test = "
 Public Class Foo
     Public Sub PublicFoo
         PrivateFoo()
@@ -19,12 +19,12 @@ Public Class Foo
     End Sub
 End Class"
 
-			Await VerifyBasicHasNoDiagnosticsAsync(test)
-		End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
 
-		<Fact>
-		Public Async Function WhenPrivateMethodUsedInPartialClassesDoesNotGenerateDiagnostics() As Task
-			Const test = "
+        <Fact>
+        Public Async Function WhenPrivateMethodUsedInPartialClassesDoesNotGenerateDiagnostics() As Task
+            Const test = "
 Public Partial Class Foo
     Public Sub PublicFoo
         PrivateFoo()
@@ -36,12 +36,12 @@ Public Partial Class Foo
     End Sub
 End Class"
 
-			Await VerifyBasicHasNoDiagnosticsAsync(test)
-		End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
 
-		<Fact>
-		Public Async Function WhenPrivateMethodIsNotUsedInPartialClassesItShouldBeRemoved() As Task
-			Const test = "
+        <Fact>
+        Public Async Function WhenPrivateMethodIsNotUsedInPartialClassesItShouldBeRemoved() As Task
+            Const test = "
 Public Partial Class Foo
     Public Sub PublicFoo
     End Sub
@@ -52,7 +52,7 @@ Public Partial Class Foo
     End Sub
 End Class"
 
-			Const fix = "
+            Const fix = "
 Public Partial Class Foo
     Public Sub PublicFoo
     End Sub
@@ -61,10 +61,10 @@ End Class
 Public Partial Class Foo
 End Class"
 
-			Await VerifyBasicFixAsync(test, fix)
-		End Function
+            Await VerifyBasicFixAsync(test, fix)
+        End Function
 
-		<Fact>
+        <Fact>
         Public Async Function WhenPrivateMethodUsedDoesNotGenerateDiagnostics() As Task
             Const test = "
 Public Class Foo
@@ -102,5 +102,19 @@ Class Foo
 End Class"
             Await VerifyBasicHasNoDiagnosticsAsync(test)
         End Function
+
+        <Fact>
+        Public Async Function WhenPrivateMethodHandlesEventExplicitlyDoesNotGenerateDiagnostics() As Task
+            Const test = "
+Imports System
+Class Foo
+    Private Event Load(ByVal sender As Object, ByVal e As EventArgs)
+
+    Private Sub Form_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
     End Class
+
 End Namespace

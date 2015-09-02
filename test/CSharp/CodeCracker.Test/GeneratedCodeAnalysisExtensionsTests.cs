@@ -53,161 +53,239 @@ namespace CodeCracker.Test.CSharp
         public static void SyntaxTreeAnalysis_IsContextOnGeneratedFile() =>
             GetSyntaxTreeAnalysisContext("class TypeName { }", baseProjectPath + "TemporaryGeneratedFile_.cs").IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAClass() =>
-            GetSyntaxNodeAnalysisContext<ClassDeclarationSyntax>("[System.Diagnostics.DebuggerNonUserCode] class TypeName { }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.Diagnostics.DebuggerNonUserCode] class TypeName { }")]
+        [InlineData("[System.Diagnostics.DebuggerNonUserCodeAttribute] class TypeName { }")]
+        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAClass(string source) =>
+            GetSyntaxNodeAnalysisContext<ClassDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAClass() =>
-            GetSymbolAnalysisContext<ClassDeclarationSyntax>("[System.Diagnostics.DebuggerNonUserCode] class TypeName { }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.Diagnostics.DebuggerNonUserCode] class TypeName { }")]
+        [InlineData("[System.Diagnostics.DebuggerNonUserCodeAttribute] class TypeName { }")]
+        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAClass(string source) =>
+            GetSymbolAnalysisContext<ClassDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasAbbreviatedDebuggerNonUserCodeAttributeOnAClass() =>
-            GetSyntaxNodeAnalysisContext<ClassDeclarationSyntax>("using System.Diagnostics; [DebuggerNonUserCode] class TypeName { }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("using System.Diagnostics; [DebuggerNonUserCode] class TypeName { }")]
+        [InlineData("using System.Diagnostics; [DebuggerNonUserCodeAttribute] class TypeName { }")]
+        public static void SyntaxNodeAnalysis_HasAbbreviatedDebuggerNonUserCodeAttributeOnAClass(string source) =>
+            GetSyntaxNodeAnalysisContext<ClassDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasAbbreviatedDebuggerNonUserCodeAttributeOnAClass() =>
-            GetSymbolAnalysisContext<ClassDeclarationSyntax>("using System.Diagnostics; [DebuggerNonUserCode] class TypeName { }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("using System.Diagnostics; [DebuggerNonUserCode] class TypeName { }")]
+        [InlineData("using System.Diagnostics; [DebuggerNonUserCodeAttribute] class TypeName { }")]
+        public static void SymbolicAnalysis_HasAbbreviatedDebuggerNonUserCodeAttributeOnAClass(string source) =>
+            GetSymbolAnalysisContext<ClassDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAMethod() =>
-            GetSyntaxNodeAnalysisContext<MethodDeclarationSyntax>("class TypeName { [System.Diagnostics.DebuggerNonUserCode] void Foo() { } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCode] void Foo() { } }")]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCodeAttribute] void Foo() { } }")]
+        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAMethod(string source) =>
+            GetSyntaxNodeAnalysisContext<MethodDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAMethod() =>
-            GetSymbolAnalysisContext<MethodDeclarationSyntax>("class TypeName { [System.Diagnostics.DebuggerNonUserCode] void Foo() { } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCode] void Foo() { } }")]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCodeAttribute] void Foo() { } }")]
+        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAMethod(string source) =>
+            GetSymbolAnalysisContext<MethodDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAStatementWithinAMethod() =>
-            GetSyntaxNodeAnalysisContext<InvocationExpressionSyntax>("class TypeName { [System.Diagnostics.DebuggerNonUserCode] void Foo() { System.Console.WriteLine(1); } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCode] void Foo() { System.Console.WriteLine(1); } }")]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCodeAttribute] void Foo() { System.Console.WriteLine(1); } }")]
+        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAStatementWithinAMethod(string source) =>
+            GetSyntaxNodeAnalysisContext<InvocationExpressionSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAStatementWithinAMethod() =>
-            GetSymbolAnalysisContext<VariableDeclaratorSyntax>("class TypeName { [System.Diagnostics.DebuggerNonUserCode] void Foo() { var i = 1; } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCode] void Foo() { var i = 1; } }")]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCodeAttribute] void Foo() { var i = 1; } }")]
+        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAStatementWithinAMethod(string source) =>
+            GetSymbolAnalysisContext<VariableDeclaratorSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAProperty() =>
-            GetSyntaxNodeAnalysisContext<PropertyDeclarationSyntax>("class TypeName { [System.Diagnostics.DebuggerNonUserCode] int Foo { get; set; } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCode] int Foo { get; set; } }")]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCodeAttribute] int Foo { get; set; } }")]
+        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAProperty(string source) =>
+            GetSyntaxNodeAnalysisContext<PropertyDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAProperty() =>
-            GetSymbolAnalysisContext<PropertyDeclarationSyntax>("class TypeName { [System.Diagnostics.DebuggerNonUserCode] int Foo { get; set; } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCode] int Foo { get; set; } }")]
+        [InlineData("class TypeName { [System.Diagnostics.DebuggerNonUserCodeAttribute] int Foo { get; set; } }")]
+        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAProperty(string source) =>
+            GetSymbolAnalysisContext<PropertyDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertyCheckGet() =>
-            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>("class TypeName { private int foo; [System.Diagnostics.DebuggerNonUserCode] int Foo { get { return foo; } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { private int foo; [System.Diagnostics.DebuggerNonUserCode] int Foo { get { return foo; } } }")]
+        [InlineData("class TypeName { private int foo; [System.Diagnostics.DebuggerNonUserCodeAttribute] int Foo { get { return foo; } } }")]
+        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertyCheckGet(string source) =>
+            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertyCheckGet() =>
-            GetSymbolAnalysisContext<AccessorDeclarationSyntax>("class TypeName { private int foo; [System.Diagnostics.DebuggerNonUserCode] int Foo { get { return foo; } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { private int foo; [System.Diagnostics.DebuggerNonUserCode] int Foo { get { return foo; } } }")]
+        [InlineData("class TypeName { private int foo; [System.Diagnostics.DebuggerNonUserCodeAttribute] int Foo { get { return foo; } } }")]
+        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertyCheckGet(string source) =>
+            GetSymbolAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertyGet() =>
-            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCode] get { return foo; } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCode] get { return foo; } } }")]
+        [InlineData("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCodeAttribute] get { return foo; } } }")]
+        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertyGet(string source) =>
+            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertyGet() =>
-            GetSymbolAnalysisContext<AccessorDeclarationSyntax>("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCode] get { return foo; } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCode] get { return foo; } } }")]
+        [InlineData("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCodeAttribute] get { return foo; } } }")]
+        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertyGet(string source) =>
+            GetSymbolAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertySet() =>
-            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCode] set { foo = value; } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCode] set { foo = value; } } }")]
+        [InlineData("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCodeAttribute] set { foo = value; } } }")]
+        public static void SyntaxNodeAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertySet(string source) =>
+            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertySet() =>
-            GetSymbolAnalysisContext<AccessorDeclarationSyntax>("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCode] set { foo = value; } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCode] set { foo = value; } } }")]
+        [InlineData("class TypeName { private int foo; int Foo { [System.Diagnostics.DebuggerNonUserCodeAttribute] set { foo = value; } } }")]
+        public static void SymbolicAnalysis_HasDebuggerNonUserCodeAttributeOnAPropertySet(string source) =>
+            GetSymbolAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAClass() =>
-            GetSyntaxNodeAnalysisContext<ClassDeclarationSyntax>("[System.CodeDom.Compiler.GeneratedCode(null, null)] class TypeName { }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCode(null, null)] class TypeName { }")]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] class TypeName { }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAClass(string source) =>
+            GetSyntaxNodeAnalysisContext<ClassDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAClass() =>
-            GetSymbolAnalysisContext<ClassDeclarationSyntax>("[System.CodeDom.Compiler.GeneratedCode(null, null)] class TypeName { }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCode(null, null)] class TypeName { }")]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] class TypeName { }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAClass(string source) =>
+            GetSymbolAnalysisContext<ClassDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnInterface() =>
-            GetSyntaxNodeAnalysisContext<InterfaceDeclarationSyntax>("[System.CodeDom.Compiler.GeneratedCode(null, null)] interface ITypeName { }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCode(null, null)] interface ITypeName { }")]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] interface ITypeName { }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnInterface(string source) =>
+            GetSyntaxNodeAnalysisContext<InterfaceDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnInterface() =>
-            GetSymbolAnalysisContext<InterfaceDeclarationSyntax>("[System.CodeDom.Compiler.GeneratedCode(null, null)] interface ITypeName { }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCode(null, null)] interface ITypeName { }")]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] interface ITypeName { }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnInterface(string source) =>
+            GetSymbolAnalysisContext<InterfaceDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnEnum() =>
-            GetSyntaxNodeAnalysisContext<EnumDeclarationSyntax>("[System.CodeDom.Compiler.GeneratedCode(null, null)] enum A { a }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCode(null, null)] enum A { a }")]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] enum A { a }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnEnum(string source) =>
+            GetSyntaxNodeAnalysisContext<EnumDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnEnum() =>
-            GetSymbolAnalysisContext<EnumDeclarationSyntax>("[System.CodeDom.Compiler.GeneratedCode(null, null)] enum A { a }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCode(null, null)] enum A { a }")]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] enum A { a }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnEnum(string source) =>
+            GetSymbolAnalysisContext<EnumDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAField() =>
-            GetSyntaxNodeAnalysisContext<FieldDeclarationSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] private int i; }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] private int i; }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] private int i; }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAField(string source) =>
+            GetSyntaxNodeAnalysisContext<FieldDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAField() =>
-            GetSymbolAnalysisContext<VariableDeclaratorSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] private int i; }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] private int i; }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] private int i; }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAField(string source) =>
+            GetSymbolAnalysisContext<VariableDeclaratorSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnEventField() =>
-            GetSyntaxNodeAnalysisContext<EventFieldDeclarationSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event System.Action a; }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event System.Action a; }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] event System.Action a; }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnEventField(string source) =>
+            GetSyntaxNodeAnalysisContext<EventFieldDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnEventField() =>
-            GetSymbolAnalysisContext<VariableDeclaratorSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event System.Action a; }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event System.Action a; }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] event System.Action a; }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnEventField(string source) =>
+            GetSymbolAnalysisContext<VariableDeclaratorSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnEventDeclaration() =>
-            GetSyntaxNodeAnalysisContext<EventDeclarationSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event EventHandler A { add { } remove { } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event EventHandler A { add { } remove { } } }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] event EventHandler A { add { } remove { } } }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnEventDeclaration(string source) =>
+            GetSyntaxNodeAnalysisContext<EventDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnEventDeclaration() =>
-            GetSymbolAnalysisContext<EventDeclarationSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event EventHandler A { add { } remove { } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event EventHandler A { add { } remove { } } }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] event EventHandler A { add { } remove { } } }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnEventDeclaration(string source) =>
+            GetSymbolAnalysisContext<EventDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnEventDeclarationCheckingAccessor() =>
-            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event EventHandler A { add { } remove { } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event EventHandler A { add { } remove { } } }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] event EventHandler A { add { } remove { } } }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnEventDeclarationCheckingAccessor(string source) =>
+            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnEventDeclarationCheckingAccessor() =>
-            GetSymbolAnalysisContext<AccessorDeclarationSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event EventHandler A { add { } remove { } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] event EventHandler A { add { } remove { } } }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] event EventHandler A { add { } remove { } } }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnEventDeclarationCheckingAccessor(string source) =>
+            GetSymbolAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnEventDeclarationAccessor() =>
-            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>("class TypeName { event EventHandler A { [System.CodeDom.Compiler.GeneratedCode(null, null)] add { } remove { } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { event EventHandler A { [System.CodeDom.Compiler.GeneratedCode(null, null)] add { } remove { } } }")]
+        [InlineData("class TypeName { event EventHandler A { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] add { } remove { } } }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnAnEventDeclarationAccessor(string source) =>
+            GetSyntaxNodeAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnEventDeclarationAccessor() =>
-            GetSymbolAnalysisContext<AccessorDeclarationSyntax>("class TypeName { event EventHandler A { [System.CodeDom.Compiler.GeneratedCode(null, null)] add { } remove { } } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { event EventHandler A { [System.CodeDom.Compiler.GeneratedCode(null, null)] add { } remove { } } }")]
+        [InlineData("class TypeName { event EventHandler A { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] add { } remove { } } }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnAnEventDeclarationAccessor(string source) =>
+            GetSymbolAnalysisContext<AccessorDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnParameter() =>
-            GetSyntaxNodeAnalysisContext<ParameterSyntax>("class TypeName { void Foo([System.CodeDom.Compiler.GeneratedCode(null, null)] int i) { } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { void Foo([System.CodeDom.Compiler.GeneratedCode(null, null)] int i) { } }")]
+        [InlineData("class TypeName { void Foo([System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] int i) { } }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnParameter(string source) =>
+            GetSyntaxNodeAnalysisContext<ParameterSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnParameter() =>
-            GetSymbolAnalysisContext<ParameterSyntax>("class TypeName { void Foo([System.CodeDom.Compiler.GeneratedCode(null, null)] int i) { } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { void Foo([System.CodeDom.Compiler.GeneratedCode(null, null)] int i) { } }")]
+        [InlineData("class TypeName { void Foo([System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] int i) { } }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnParameter(string source) =>
+            GetSymbolAnalysisContext<ParameterSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnDelegate() =>
-            GetSyntaxNodeAnalysisContext<DelegateDeclarationSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] delegate void A(); }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] delegate void A(); }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] delegate void A(); }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnDelegate(string source) =>
+            GetSyntaxNodeAnalysisContext<DelegateDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnDelegate() =>
-            GetSymbolAnalysisContext<DelegateDeclarationSyntax>("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] delegate void A(); }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCode(null, null)] delegate void A(); }")]
+        [InlineData("class TypeName { [System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] delegate void A(); }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnDelegate(string source) =>
+            GetSymbolAnalysisContext<DelegateDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnReturnValue() =>
-            GetSyntaxNodeAnalysisContext<ReturnStatementSyntax>("class TypeName {[return: System.CodeDom.Compiler.GeneratedCode(null, null)] int Foo() { return 1; } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("class TypeName {[return: System.CodeDom.Compiler.GeneratedCode(null, null)] int Foo() { return 1; } }")]
+        [InlineData("class TypeName {[return: System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] int Foo() { return 1; } }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnReturnValue(string source) =>
+            GetSyntaxNodeAnalysisContext<ReturnStatementSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnNestedClass() =>
-            GetSyntaxNodeAnalysisContext<StructDeclarationSyntax>("[System.CodeDom.Compiler.GeneratedCode(null, null)] class TypeName { struct Nested { } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCode(null, null)] class TypeName { struct Nested { } }")]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] class TypeName { struct Nested { } }")]
+        public static void SyntaxNodeAnalysis_HasGeneratedCodeAttributeOnNestedClass(string source) =>
+            GetSyntaxNodeAnalysisContext<StructDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
-        [Fact]
-        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnNestedClass() =>
-            GetSymbolAnalysisContext<StructDeclarationSyntax>("[System.CodeDom.Compiler.GeneratedCode(null, null)] class TypeName { struct Nested { } }").IsGenerated().Should().BeTrue();
+        [Theory]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCode(null, null)] class TypeName { struct Nested { } }")]
+        [InlineData("[System.CodeDom.Compiler.GeneratedCodeAttribute(null, null)] class TypeName { struct Nested { } }")]
+        public static void SymbolicAnalysis_HasGeneratedCodeAttributeOnNestedClass(string source) =>
+            GetSymbolAnalysisContext<StructDeclarationSyntax>(source).IsGenerated().Should().BeTrue();
 
         [Fact]
         public static void SyntaxNodeAnalysis_WithAutoGeneratedCommentBasedOnWebForms() =>
