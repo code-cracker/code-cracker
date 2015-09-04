@@ -36,20 +36,15 @@ namespace CodeCracker.CSharp.Style
             var propertyStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
-            var getAcessor = (propertyStatement.AccessorList.Accessors[0].Keyword.Text == "get") ? propertyStatement.AccessorList.Accessors[0] : propertyStatement.AccessorList.Accessors[1];
             var setAcessor = (propertyStatement.AccessorList.Accessors[0].Keyword.Text == "set") ? propertyStatement.AccessorList.Accessors[0] : propertyStatement.AccessorList.Accessors[1];
-
             var privateprotectedModifier = SyntaxFactory.Token(fixType == FixType.PrivateFix ? SyntaxKind.PrivateKeyword : SyntaxKind.ProtectedKeyword)
-                .WithAdditionalAnnotations(Formatter.Annotation);
+                    .WithTrailingTrivia(setAcessor.GetTrailingTrivia())
+                    .WithLeadingTrivia(setAcessor.GetLeadingTrivia());
 
-            var modifiers = setAcessor.Modifiers.Add(privateprotectedModifier);
-            setAcessor = setAcessor.WithModifiers(modifiers);
+            var newSet = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration, setAcessor.AttributeLists, SyntaxTokenList.Create(privateprotectedModifier), setAcessor.Body);
+            if(setAcessor.Body == null) newSet = newSet.WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+            var newProperty = propertyStatement.ReplaceNode(setAcessor, newSet);
 
-            var newProperty = SyntaxFactory.PropertyDeclaration(propertyStatement.Type, propertyStatement.Identifier)
-                .WithModifiers(propertyStatement.Modifiers)
-                .WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List<AccessorDeclarationSyntax>(new AccessorDeclarationSyntax[] { getAcessor, setAcessor })))
-                .WithLeadingTrivia(propertyStatement.GetLeadingTrivia()).WithTrailingTrivia(propertyStatement.GetTrailingTrivia())
-                .WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = root.ReplaceNode(propertyStatement, newProperty);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
