@@ -1,7 +1,4 @@
-﻿
-
-
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -17,7 +14,7 @@ namespace CodeCracker.CSharp.Performance
     public class ReturnTaskInsteadOfAwaitAnalyzer : DiagnosticAnalyzer
     {
         internal const string Title = "Remove async and return task directly.";
-        internal const string MessageFormat = "This method can directly return a task.";
+        internal const string MessageFormat = "{0} can directly return a task.";
         internal const string Category = SupportedCategories.Performance;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -79,10 +76,10 @@ namespace CodeCracker.CSharp.Performance
                 }
             }
 
-            var diagnostic = Diagnostic.Create(Rule, methodDecl.GetLocation());
+            var name = methodDecl.Identifier.ToString();
+            var diagnostic = Diagnostic.Create(Rule, methodDecl.GetLocation(), name);
             context.ReportDiagnostic(diagnostic);
         }
-
 
         /// <summary>
         /// Checks if the branch contains an await in all as the last statement. Returns true if the checking should continue.

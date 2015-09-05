@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test.CSharp.Performance
 {
-    public class ReturnTaskInsteadOfAwaitTests : DiagnosticVerifier<ReturnTaskInsteadOfAwaitAnalyzer>
+    public class ReturnTaskInsteadOfAwaitTests : CodeFixVerifier<ReturnTaskInsteadOfAwaitAnalyzer, ReturnTaskInsteadOfAwaitCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresWhenWorkIsDoneAfterTheAwait()
@@ -152,7 +152,6 @@ namespace CodeCracker.Test.CSharp.Performance
                 ";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
-
         [Fact]
         public async Task IgnoresWhenAwaitIsAfterBlock()
         {
@@ -231,7 +230,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
-                Message = "This method can directly return a task.",
+                Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
             };
@@ -260,7 +259,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
-                Message = "This method can directly return a task.",
+                Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
             };
@@ -290,7 +289,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
-                Message = "This method can directly return a task.",
+                Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
             };
@@ -325,14 +324,13 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
-                Message = "This method can directly return a task.",
+                Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
-
         [Fact]
         public async Task ReturnTaskDirectlyWithSwitchBranching()
         {
@@ -362,7 +360,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
-                Message = "This method can directly return a task.",
+                Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
             };
@@ -406,7 +404,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
-                Message = "This method can directly return a task.",
+                Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
             };
@@ -430,7 +428,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
-                Message = "This method can directly return a task.",
+                Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
             };
@@ -457,7 +455,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
-                Message = "This method can directly return a task.",
+                Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
             };
@@ -479,12 +477,185 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
-                Message = "This method can directly return a task.",
+                Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
+
+        [Fact]
+        public async Task ReturnWithAwaitsFix()
+        {
+            const string test = @"
+                async Task<int> FooAsync()
+                {
+                    Console.WriteLine(""Done Waiting"");
+                    return await Sum(1, 1);
+                }
+
+                async Task<int> Sum(int x, int y) { await Task.Delay(200); return x + y; }
+                ";
+            const string expected = @"
+                Task<int> FooAsync()
+                {
+                    Console.WriteLine(""Done Waiting"");
+                    return Sum(1, 1);
+                }
+
+                async Task<int> Sum(int x, int y) { await Task.Delay(200); return x + y; }
+                ";
+
+            await VerifyCSharpFixAsync(WrapInClass(test), WrapInClass(expected));
+        }
+
+        [Fact]
+        public async Task SimpleFunctionFix()
+        {
+            const string test = @"
+                private async Task FooAsync()
+                {
+                    Console.WriteLine(42);
+                    await Task.Delay(200);
+                }
+                ";
+            const string expected = @"
+                private Task FooAsync()
+                {
+                    Console.WriteLine(42);
+                    return Task.Delay(200);
+                }
+                ";
+            await VerifyCSharpFixAsync(WrapInClass(test), WrapInClass(expected));
+        }
+
+        [Fact]
+        public async Task MethodWithCommentInfrontOfAsyncFix()
+        {
+            const string test = @"
+                /* foo */ async Task FooAsync()
+                {
+                    Console.WriteLine(42);
+                    await Task.Delay(200);
+                }
+                ";
+            const string expected = @"
+                /* foo */ Task FooAsync()
+                {
+                    Console.WriteLine(42);
+                    return Task.Delay(200);
+                }
+                ";
+            await VerifyCSharpFixAsync(WrapInClass(test), WrapInClass(expected));
+        }
+        [Fact]
+        public async Task MethodWithCommentBehindeOfAsyncFix()
+        {
+            const string test = @"
+                async /* foo */ private Task FooAsync()
+                {
+                    Console.WriteLine(42);
+                    await Task.Delay(200);
+                }
+                ";
+            const string expected = @"
+                /* foo */ private Task FooAsync()
+                {
+                    Console.WriteLine(42);
+                    return Task.Delay(200);
+                }
+                ";
+            await VerifyCSharpFixAsync(WrapInClass(test), WrapInClass(expected));
+        }
+        [Fact]
+        public async Task AsyncWithVoidReturnFix()
+        {
+            const string test = @"
+                // Important Comment
+                async void FooAsync()
+                {
+                    Console.WriteLine(42);
+                    await Task.Delay(200);
+                }
+                ";
+            const string expected = @"
+                // Important Comment
+                Task FooAsync()
+                {
+                    Console.WriteLine(42);
+                    return Task.Delay(200);
+                }
+                ";
+            await VerifyCSharpFixAsync(WrapInClass(test), WrapInClass(expected));
+        }
+
+        [Fact]
+        public async Task ReturnTaskDirectlyWithBothSwitchIfBranchingFix()
+        {
+            const string test = @"
+                async Task FooAsync(int x)
+                {
+                    Console.WriteLine(""foo"");                       
+                    if (true)
+                        await Task.Delay(200);
+                    else
+                    {
+                        switch (x)
+                        {
+                            case 1:
+                                if (true)
+                                    await Task.Delay(200);
+                                else
+                                    await Task.Delay(200);
+                                break;
+                            case 2:
+                                await Task.Delay(20);
+                                break;
+                            case 3:
+                                await Task.Delay(30);
+                                break;
+                            default:
+                                await Task.Delay(42);
+                                break;
+                        }
+                    }
+                }
+                ";
+
+            const string expected = @"
+                Task FooAsync(int x)
+                {
+                    Console.WriteLine(""foo"");                       
+                    if (true)
+                        return Task.Delay(200);
+                    else
+                    {
+                        switch (x)
+                        {
+                            case 1:
+                                if (true)
+                                    return Task.Delay(200);
+                                else
+                                    return Task.Delay(200);
+                                break;
+                            case 2:
+                                return Task.Delay(20);
+                                break;
+                            case 3:
+                                return Task.Delay(30);
+                                break;
+                            default:
+                                return Task.Delay(42);
+                                break;
+                        }
+                    }
+                }
+                ";
+            await VerifyCSharpFixAsync(WrapInClass(test), WrapInClass(expected));
+        }
+
+        private static string WrapInClass(string code)
+           => code.WrapInCSharpClass(usings: "using System.Threading.Tasks;");
     }
 }
