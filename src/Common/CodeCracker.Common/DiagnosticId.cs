@@ -81,5 +81,6 @@
         MakeMethodStatic = 91,
         ChangeAllToAny = 92,
         ConsoleWriteLine = 95,
+        ExtractClassToFile = 96
     }
 }

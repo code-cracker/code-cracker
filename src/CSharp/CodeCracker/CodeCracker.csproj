@@ -54,12 +54,14 @@
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchCodeFixProvider.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsAnalyzer.cs" />
+    <Compile Include="Refactoring\ExtractClassToFileCodeFixProvider.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsCodeFixProvider.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
     <Compile Include="Refactoring\ChangeAsToCastAnalyzer.cs" />
     <Compile Include="Refactoring\ChangeAsToCastCodeFixProvider.cs" />
+    <Compile Include="Refactoring\ExtractClassToFileAnalyzer.cs" />
     <Compile Include="Refactoring\MakeMethodNonAsyncCodeFixProvider.cs" />
     <Compile Include="Refactoring\MergeNestedIfAnalyzer.cs" />
     <Compile Include="Refactoring\MergeNestedIfCodeFixProvider.cs" />
