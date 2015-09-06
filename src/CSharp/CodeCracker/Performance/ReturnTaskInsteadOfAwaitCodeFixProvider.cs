@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Composition;
+using CodeCracker.Properties;
 
 namespace CodeCracker.CSharp.Performance
 {
@@ -23,7 +24,7 @@ namespace CodeCracker.CSharp.Performance
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Remove 'async' and return directly.", c => ReturnTaskDirectly(context.Document, diagnostic, c), nameof(RemoveWhereWhenItIsPossibleCodeFixProvider)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(Resources.ReturnTaskInsteadOfAwaitCodeFixProvider_Title, c => ReturnTaskDirectly(context.Document, diagnostic, c), nameof(RemoveWhereWhenItIsPossibleCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

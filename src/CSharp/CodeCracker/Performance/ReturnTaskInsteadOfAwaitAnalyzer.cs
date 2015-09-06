@@ -2,19 +2,20 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using CodeCracker.Properties;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace CodeCracker.CSharp.Performance
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ReturnTaskInsteadOfAwaitAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Remove async and return task directly.";
-        internal const string MessageFormat = "{0} can directly return a task.";
+        internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.ReturnTaskInsteadOfAwait_Title), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.ReturnTaskInsteadOfAwait_MessageFormat), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.ReturnTaskInsteadOfAwait_Description), Resources.ResourceManager, typeof(Resources));
         internal const string Category = SupportedCategories.Performance;
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -24,6 +25,7 @@ namespace CodeCracker.CSharp.Performance
             Category,
             DiagnosticSeverity.Info,
             isEnabledByDefault: true,
+            description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ReturnTaskInsteadOfAwait));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
