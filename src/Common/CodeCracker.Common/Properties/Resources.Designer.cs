@@ -188,6 +188,33 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You may change this foreach loop to an equivalent Linq Expression..
+        /// </summary>
+        public static string LoopToLinq_Description {
+            get {
+                return ResourceManager.GetString("LoopToLinq_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change foreach loop to a Linq expression.
+        /// </summary>
+        public static string LoopToLinq_MessageFormat {
+            get {
+                return ResourceManager.GetString("LoopToLinq_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change foreach loop to a Linq expression.
+        /// </summary>
+        public static string LoopToLinq_Title {
+            get {
+                return ResourceManager.GetString("LoopToLinq_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Make method non async.
         /// </summary>
         public static string MakeMethodNonAsyncCodeFixProvider_Title {
