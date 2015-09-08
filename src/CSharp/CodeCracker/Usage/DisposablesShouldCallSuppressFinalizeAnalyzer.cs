@@ -60,7 +60,7 @@ namespace CodeCracker.CSharp.Usage
         private static ISymbol FindDisposeMethod(INamedTypeSymbol symbol)
         {
             return symbol.GetMembers().Where(x => x.ToString().Contains($"{x.ContainingType.Name}.Dispose(")).Cast<IMethodSymbol>()
-                .FirstOrDefault(m => m.Parameters == null || m.Parameters.Count() == 0);
+                .FirstOrDefault(m => m.Parameters == null || m.Parameters.Length == 0);
         }
 
         public static bool ContainsUserDefinedFinalizer(INamedTypeSymbol symbol)
