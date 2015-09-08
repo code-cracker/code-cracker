@@ -69,7 +69,7 @@ namespace CodeCracker.CSharp.Design
                 if (!dataFlowAnalysis.Succeeded) return;
                 if (dataFlowAnalysis.DataFlowsIn.Any(inSymbol => inSymbol.Name == "this")) return;
             }
-            else if (method.Body.Statements.Count > 0)
+            else if (method.Body.Statements.Any())
             {
                 var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(method.Body);
                 if (!dataFlowAnalysis.Succeeded) return;

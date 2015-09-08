@@ -152,7 +152,7 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             if (!hasAccessibilityModifiers)
             {
                 var modifiers = declaration.GetModifiers();
-                if (modifiers.Count > 0)
+                if (modifiers.Any())
                 {
                     var firstModifier = modifiers.First();
                     leadingTrivias = firstModifier.LeadingTrivia;

@@ -39,7 +39,7 @@ namespace CodeCracker.CSharp.Refactoring
                                      modifier.IsKind(SyntaxKind.OutKeyword) ||
                                      modifier.IsKind(SyntaxKind.ThisKeyword) ||
                                      modifier.IsKind(SyntaxKind.ParamsKeyword))) return;
-            if (method.Body?.ChildNodes().Count() > 0) return;
+            if ((bool) method.Body?.ChildNodes().Any()) return;
             var diagnostic = Diagnostic.Create(Rule, contentParameter.GetLocation());
             context.ReportDiagnostic(diagnostic);
         }
