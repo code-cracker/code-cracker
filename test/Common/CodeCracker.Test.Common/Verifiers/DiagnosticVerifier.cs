@@ -126,7 +126,7 @@ namespace CodeCracker.Test
         /// <param name="expectedResults">Diagnsotic Results that should have appeared in the code</param>
         private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expectedResults)
         {
-            var expectedCount = expectedResults.Count();
+            var expectedCount = expectedResults.Length;
             var actualCount = actualResults.Count();
 
             if (expectedCount != actualCount)

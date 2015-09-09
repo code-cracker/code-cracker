@@ -86,7 +86,7 @@ namespace CodeCracker.CSharp.Usage
                     symbolInfo
                         .CandidateSymbols
                         .OfType<IMethodSymbol>()
-                        .FirstOrDefault(s => s.Parameters.Count() == argumentsCount + 1);
+                        .FirstOrDefault(s => s.Parameters.Length == argumentsCount + 1);
         }
 
         private static INamedTypeSymbol GetCallerClassSymbol(SemanticModel semanticModel, ExpressionSyntax expression) =>
