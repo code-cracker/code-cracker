@@ -2,10 +2,10 @@
 {
     public static class Extensions
     {
-        public static string WrapInCSharpClass(this string code, string typeName = "TypeName")
+        public static string WrapInCSharpClass(this string code, string typeName = "TypeName", string usings = "")
         {
             return $@"
-    using System;
+    using System;{usings}
 
     namespace ConsoleApplication1
     {{
