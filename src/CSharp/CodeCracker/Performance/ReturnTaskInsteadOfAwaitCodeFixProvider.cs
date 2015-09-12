@@ -24,18 +24,18 @@ namespace CodeCracker.CSharp.Performance
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create(Resources.ReturnTaskInsteadOfAwaitCodeFixProvider_Title, c => ReturnTaskDirectly(context.Document, diagnostic, c), nameof(RemoveWhereWhenItIsPossibleCodeFixProvider)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(Resources.ReturnTaskInsteadOfAwaitCodeFixProvider_Title, c => ReturnTaskDirectlyAsync(context.Document, diagnostic, c), nameof(RemoveWhereWhenItIsPossibleCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 
-        private async static Task<Document> ReturnTaskDirectly(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> ReturnTaskDirectlyAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var methodDecl = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
             var newMethod = RemoveAsyncModifier(methodDecl);
 
-            var awaits = (from child in newMethod.Body.DescendantNodes(_ => true)
+            var awaits = (from child in newMethod.Body.DescendantNodes()
                           where child.IsKind(SyntaxKind.AwaitExpression)
                           select new
                           {

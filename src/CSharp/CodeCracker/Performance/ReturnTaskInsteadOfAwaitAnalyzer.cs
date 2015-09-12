@@ -34,23 +34,23 @@ namespace CodeCracker.CSharp.Performance
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var methodDecl = (context.Node as MethodDeclarationSyntax);
             if (!methodDecl.Modifiers.Any(SyntaxKind.AsyncKeyword)) return;
-            if (context.IsGenerated()) return;
-            if (methodDecl.ExpressionBody != null) return;
+            if (methodDecl.Body == null || methodDecl.ExpressionBody != null) return;
 
             var awaits = new List<StatementSyntax>();
-            var AnyReturns = false;
-            foreach (var child in methodDecl.Body.DescendantNodes(_ => true))
+            var anyReturns = false;
+            foreach (var child in methodDecl.Body.DescendantNodes())
             {
                 if (child.IsKind(SyntaxKind.AwaitExpression))
                 {
-                    if (child.Ancestors().Any(ansestor => IsLoopStatement(ansestor))) return;
+                    if (child.Ancestors().Any(ancestor => ancestor.IsLoopStatement())) return;
                     var awaitStatement = child.FirstAncestorOrSelfThatIsAStatement();
                     awaits.Add(awaitStatement);
                 }
                 else if (child.IsKind(SyntaxKind.ReturnStatement))
-                    AnyReturns = true;
+                    anyReturns = true;
             }
             if (awaits.Count == 0) return;
 
@@ -59,16 +59,16 @@ namespace CodeCracker.CSharp.Performance
             if (returnType.Type.SpecialType == SpecialType.System_Void ||
                 returnType.Type.MetadataName.Equals(nameof(Task)))
             {
-                if (AnyReturns) return;
-                var CheckedBranches = new Dictionary<StatementSyntax, bool>();
+                if (anyReturns) return;
+                var checkedBranches = new Dictionary<StatementSyntax, bool>();
                 foreach (var awaitStatement in awaits)
                 {
                     var lastSiblingOfAwaitParent = SiblingsAndSelf(awaitStatement)
                         .Last(node => !IsExpressionLessStatement(node));
                     if (lastSiblingOfAwaitParent != awaitStatement) return;
-                    if (!CheckBranching(awaitStatement, CheckedBranches)) return;
+                    if (!CheckBranching(awaitStatement, checkedBranches)) return;
                 }
-                if (CheckedBranches.ContainsValue(false)) return;
+                if (checkedBranches.ContainsValue(false)) return;
             }
             else
             {
@@ -163,9 +163,6 @@ namespace CodeCracker.CSharp.Performance
 
         private static IEnumerable<SyntaxNode> SiblingsAndSelf(SyntaxNode retStatment) => retStatment.Parent.ChildNodes();
 
-        private static bool IsReturnStatement(SyntaxNode note) => note.IsKind(SyntaxKind.ReturnStatement);
-        private static bool IsLoopStatement(SyntaxNode note) => note.IsAnyKind(SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement);
         private static bool IsExpressionLessStatement(SyntaxNode node) => node.IsKind(SyntaxKind.ReturnStatement, SyntaxKind.ElseClause, SyntaxKind.BreakStatement);
-
     }
 }

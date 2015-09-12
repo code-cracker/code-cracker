@@ -10,38 +10,38 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task IgnoresWhenWorkIsDoneAfterTheAwait()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     Console.WriteLine(42);
                     await Task.Delay(200);
                     Console.WriteLine(""Done Waiting"");
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoresAwaitInsideLoops()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
-                {   
-                    while (true) 
+                {
+                    while (true)
                     {
                         Console.WriteLine(42);
                         await Task.Delay(200);
                     }
                 }
                 async Task Foo2Async()
-                {   
-                    do 
+                {
+                    do
                     {
                         Console.WriteLine(42);
                         await Task.Delay(200);
                     } while (true)
                 }
                 async Task Foo3Async()
-                {   
+                {
                     for (;;)
                     {
                         Console.WriteLine(42);
@@ -49,33 +49,33 @@ namespace CodeCracker.Test.CSharp.Performance
                     }
                 }
                 async Task Foo4Async()
-                {   
+                {
                     foreach (var x in new[] { 1,2,3 })
                     {
                         Console.WriteLine(42);
                         await Task.Delay(200);
                     }
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoreGenericTasksWhenWorkIsDoneAfterAwait()
         {
-            const string test = @"
+            var test = @"
                 async Task<int> FooAsync()
                 {
                     Console.WriteLine(""Done Waiting"");
                     await Task.Delay(200);
                     return 42;
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoreMultipeAwaits()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     Console.WriteLine(42);
@@ -83,13 +83,13 @@ namespace CodeCracker.Test.CSharp.Performance
                     Console.WriteLine(""Done Waiting"");
                     await Task.Delay(200);
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoreWhenMultipeAwaitsInsideABlock()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     if (true)
@@ -106,13 +106,13 @@ namespace CodeCracker.Test.CSharp.Performance
                         await Task.Delay(200);
                     }
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoreSwitchSectionWithoutAwait()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync(int x)
                 {
                     Console.WriteLine(""foo"");
@@ -129,13 +129,13 @@ namespace CodeCracker.Test.CSharp.Performance
                             break;
                     }
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoreSwitchWithOutDefault()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync(int x)
                 {
                     Console.WriteLine(""foo"");
@@ -149,13 +149,13 @@ namespace CodeCracker.Test.CSharp.Performance
                             break;
                     }
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoresWhenAwaitIsAfterBlock()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     if (true)
@@ -170,13 +170,13 @@ namespace CodeCracker.Test.CSharp.Performance
                     }
                     await Task.Delay(200);
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoreAwaitsAfterBranching()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     Console.WriteLine(""foo"");
@@ -184,63 +184,61 @@ namespace CodeCracker.Test.CSharp.Performance
                        await Task.Delay(200);
                     else
                         Console.WriteLine(""42"");
-                    
+
                     await Task.Delay(200);
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoreAwaitsOnlyInSingleBranch()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     Console.WriteLine(""foo"");
                     if (true)
                        await Task.Delay(200);
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task IgnoreReturnWithVoid()
         {
-            const string test = @"
+            var test = @"
                 async void FooAsync()
                 {
-                    Console.WriteLine(42);rv 
+                    Console.WriteLine(42);rv
                     await Task.Delay(200);
                     return;
                 }
-                ";
+                ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
         [Fact]
         public async Task ReturnTaskDirectlyWithSimpleFunction()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     Console.WriteLine(42);
                     await Task.Delay(200);
                 }
-                ";
-
+                ".WrapInCSharpClass();
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
                 Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
-
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
         [Fact]
         public async Task ReturnTaskDirectlyWithMultipleBranches()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     if (true)
@@ -254,14 +252,13 @@ namespace CodeCracker.Test.CSharp.Performance
                         await Task.Delay(200);
                     }
                 }
-                ";
-
+                ".WrapInCSharpClass();
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
                 Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -269,7 +266,7 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task ReturnTaskDirectlyWithDeepBranching()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     Console.WriteLine(""foo"");
@@ -284,14 +281,13 @@ namespace CodeCracker.Test.CSharp.Performance
                         else
                            await Task.Delay(200);
                 }
-                ";
-
+                ".WrapInCSharpClass();
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
                 Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -299,7 +295,7 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task ReturnTaskDirectlyWithDeepBranchingAndMoreStatements()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     Console.WriteLine(""foo"");
@@ -319,14 +315,13 @@ namespace CodeCracker.Test.CSharp.Performance
                            await Task.Delay(40);
                     }
                 }
-                ";
-
+                ".WrapInCSharpClass();
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
                 Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -334,7 +329,7 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task ReturnTaskDirectlyWithSwitchBranching()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync(int x)
                 {
                     Console.WriteLine(""foo"");
@@ -354,15 +349,13 @@ namespace CodeCracker.Test.CSharp.Performance
                             break;
                     }
                 }
-                ";
-
-
+                ".WrapInCSharpClass();
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
                 Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -370,10 +363,10 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task ReturnTaskDirectlyWithBothSwitchIfBranching()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync(int x)
                 {
-                    Console.WriteLine(""foo"");                       
+                    Console.WriteLine(""foo"");
                     if (true)
                         await Task.Delay(200);
                     else
@@ -398,15 +391,13 @@ namespace CodeCracker.Test.CSharp.Performance
                         }
                     }
                 }
-                ";
-
-
+                ".WrapInCSharpClass();
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
                 Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -414,7 +405,7 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task ReturnTaskDirectlyWithMultipleBranchesWithOutBlocks()
         {
-            const string test = @"
+            var test = @"
                 async Task FooAsync()
                 {
                     Console.WriteLine(""foo"");
@@ -423,14 +414,13 @@ namespace CodeCracker.Test.CSharp.Performance
                     else
                        await Task.Delay(200);
                 }
-                ";
-
+                ".WrapInCSharpClass();
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
                 Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -438,7 +428,7 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task MultipleReturnsWithAwaits()
         {
-            const string test = @"
+            var test = @"
                 async Task<int> FooAsync()
                 {
                     if (true)
@@ -451,13 +441,13 @@ namespace CodeCracker.Test.CSharp.Performance
                 }
 
                 async Task<int> Sum(int x, int y) { await Task.Delay(200); return x + y; }
-                ";
+                ".WrapInCSharpClass();
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
                 Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -465,7 +455,7 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task ReturnWithAwaits()
         {
-            const string test = @"
+            var test = @"
                 async Task<int> FooAsync()
                 {
                     Console.WriteLine(""Done Waiting"");
@@ -473,13 +463,13 @@ namespace CodeCracker.Test.CSharp.Performance
                 }
 
                 async Task<int> Sum(int x, int y) { await Task.Delay(200); return x + y; }
-                ";
+                ".WrapInCSharpClass();
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.ReturnTaskInsteadOfAwait.ToDiagnosticId(),
                 Message = "FooAsync can directly return a task.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -506,7 +496,6 @@ namespace CodeCracker.Test.CSharp.Performance
 
                 async Task<int> Sum(int x, int y) { await Task.Delay(200); return x + y; }
                 ";
-
             await VerifyCSharpFixAsync(WrapInClass(test), WrapInClass(expected));
         }
 
@@ -596,7 +585,7 @@ namespace CodeCracker.Test.CSharp.Performance
             const string test = @"
                 async Task FooAsync(int x)
                 {
-                    Console.WriteLine(""foo"");                       
+                    Console.WriteLine(""foo"");
                     if (true)
                         await Task.Delay(200);
                     else
@@ -622,11 +611,10 @@ namespace CodeCracker.Test.CSharp.Performance
                     }
                 }
                 ";
-
             const string expected = @"
                 Task FooAsync(int x)
                 {
-                    Console.WriteLine(""foo"");                       
+                    Console.WriteLine(""foo"");
                     if (true)
                         return Task.Delay(200);
                     else
