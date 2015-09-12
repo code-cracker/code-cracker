@@ -48,6 +48,7 @@
         PropertyPrivateSet = 47,
         StringFormat = 48,
         SimplifyRedundantBooleanComparisons = 49,
+        ReturnTaskInsteadOfAwait = 51,
         ReadonlyField = 52,
         ValidateColor = 53,
         JsonNet = 54,

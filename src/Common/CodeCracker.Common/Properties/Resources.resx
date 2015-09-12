@@ -216,4 +216,16 @@
   <data name="ValidateColorAnalyzer_Title" xml:space="preserve">
     <value>Validate color</value>
   </data>
+  <data name="ReturnTaskInsteadOfAwait_Description" xml:space="preserve">
+    <value>Remove async and return task directly.</value>
+  </data>
+  <data name="ReturnTaskInsteadOfAwait_MessageFormat" xml:space="preserve">
+    <value>{0} can directly return a task.</value>
+  </data>
+  <data name="ReturnTaskInsteadOfAwait_Title" xml:space="preserve">
+    <value>Return task instead of await.</value>
+  </data>
+  <data name="ReturnTaskInsteadOfAwaitCodeFixProvider_Title" xml:space="preserve">
+    <value>Remove 'async' and return directly.</value>
+  </data>
 </root>
