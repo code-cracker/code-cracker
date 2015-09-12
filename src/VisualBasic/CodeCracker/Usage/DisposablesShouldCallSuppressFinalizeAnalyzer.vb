@@ -70,7 +70,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         Private Shared Function FindDisposeMethod(symbol As INamedTypeSymbol) As ISymbol
             Return symbol.GetMembers().
                 Where(Function(x) x.ToString().IndexOf("Dispose", StringComparison.OrdinalIgnoreCase) > 0).OfType(Of IMethodSymbol).
-                FirstOrDefault(Function(m) m.Parameters = Nothing Or m.Parameters.Count() = 0)
+                FirstOrDefault(Function(m) m.Parameters = Nothing Or m.Parameters.Count = 0)
         End Function
 
         Private Shared Function ContainsUserDefinedFinalizer(symbol As INamedTypeSymbol) As Boolean

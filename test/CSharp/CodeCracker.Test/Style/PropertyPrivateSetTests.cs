@@ -143,7 +143,6 @@ namespace CodeCracker.Test.CSharp.Style
             public int MyProperty 
             {
                get { return 0; }
-
                private set 
                {  }
             }
@@ -182,7 +181,6 @@ namespace CodeCracker.Test.CSharp.Style
             public int MyProperty 
             {
                get { return 0; }
-
                protected set 
                {  }
             }
@@ -191,5 +189,44 @@ namespace CodeCracker.Test.CSharp.Style
 
             await VerifyCSharpFixAsync(test, expected, 1);
         }
+
+    [Fact]
+    public async Task PropertyWithAttributeProtectedFix()
+    {
+        const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            [Obsolete(""this property is obsolete"")]
+            public int MyProperty 
+            {
+               get { return 0; }
+               set {  }
+            }
+        }
+    }";
+
+        const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            [Obsolete(""this property is obsolete"")]
+            public int MyProperty 
+            {
+               get { return 0; }
+               protected set 
+               {  }
+            }
+        }
+    }";
+
+        await VerifyCSharpFixAsync(test, expected, 1);
     }
+}
 }
