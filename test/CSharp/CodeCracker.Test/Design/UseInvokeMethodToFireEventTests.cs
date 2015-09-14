@@ -10,14 +10,14 @@ namespace CodeCracker.Test.CSharp.Design
         public async void WarningIfEventIsFiredDirectly()
         {
             const string test = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent(this, System.EventArgs.Empty);
-                    } 
+                    }
                 }";
 
             var expected = new DiagnosticResult
@@ -40,14 +40,14 @@ namespace CodeCracker.Test.CSharp.Design
                     public string Info { get; set; }
                 }
 
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler<MyArgs> MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent(this, new MyArgs() { Info = ""ping"" });
-                    } 
+                    }
                 }";
 
             var expected = new DiagnosticResult
@@ -72,14 +72,14 @@ namespace CodeCracker.Test.CSharp.Design
 
                 public delegate void Executed (object sender, MyArgs args);
 
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event Executed MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent(this, new MyArgs() { Info = ""ping"" });
-                    } 
+                    }
                 }";
 
             var expected = new DiagnosticResult
@@ -97,14 +97,14 @@ namespace CodeCracker.Test.CSharp.Design
         public async void NotWarningIfEventIsFiredWithInvokeMethod()
         {
             const string test = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent?.Invoke(this, System.EventArgs.Empty);
-                    } 
+                    }
                 }";
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
@@ -114,15 +114,15 @@ namespace CodeCracker.Test.CSharp.Design
         public async void NotWarningIfIsNotAnEvent()
         {
             const string test = @"
-                public class MyClass 
-                { 
-                    public void Execute() 
-                    { 
+                public class MyClass
+                {
+                    public void Execute()
+                    {
                         MyClass.Run(null);
-                    } 
+                    }
 
-                    public static void Run(object obj) 
-                    { 
+                    public static void Run(object obj)
+                    {
 
                     }
                 }";
@@ -134,25 +134,25 @@ namespace CodeCracker.Test.CSharp.Design
         public async void WhenEventIsFiredDirectlyShouldUseInvokeMethod()
         {
             const string source = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent(this, System.EventArgs.Empty);
-                    } 
+                    }
                 }";
 
             const string fixtest = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent?.Invoke(this, System.EventArgs.Empty);
-                    } 
+                    }
                 }";
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
@@ -162,25 +162,25 @@ namespace CodeCracker.Test.CSharp.Design
         public async void KeepCommentsWhenReplacedWithCodeFix()
         {
             const string source = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent(this, System.EventArgs.Empty); //Some Comment
-                    } 
+                    }
                 }";
 
             const string fixtest = @"
-                public class MyClass 
-                { 
+                public class MyClass
+                {
                     public event System.EventHandler MyEvent;
 
-                    public void Execute() 
-                    { 
+                    public void Execute()
+                    {
                         MyEvent?.Invoke(this, System.EventArgs.Empty); //Some Comment
-                    } 
+                    }
                 }";
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
@@ -191,6 +191,37 @@ namespace CodeCracker.Test.CSharp.Design
         {
             var test = @"var tuple = new Tuple<int, Action>(1, null);
 tuple.Item2();".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void ReportOnParametersWhenReturnTypeIsAReferenceType()
+        {
+            var test = @"
+public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T : System.Attribute where TReturn : class
+{
+    if (getter == null) return default(TReturn);
+    return getter(default(T));
+}".WrapInCSharpClass();
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
+                Message = "Use ?.Invoke operator and method to fire 'getter' event.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 12) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WhenMethodInvokedWithNonReferenceTypeHasNoDiagnostic()
+        {
+            var test = @"
+                public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T : System.Attribute where TReturn : struct
+                {
+                    return getter(default(T));
+                }".WrapInCSharpClass();
+
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }

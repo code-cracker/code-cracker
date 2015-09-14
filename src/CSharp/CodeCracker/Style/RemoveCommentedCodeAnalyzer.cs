@@ -82,7 +82,7 @@ namespace CodeCracker.CSharp.Style
                 return true;
             }
 
-            if (diagnostics.Count() != 0) return false;
+            if (diagnostics.Length != 0) return false;
 
             return true;
         }

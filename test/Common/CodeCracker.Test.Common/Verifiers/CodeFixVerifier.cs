@@ -146,7 +146,7 @@ namespace CodeCracker.Test
             var document = CreateDocument(oldSource, language, languageVersionCSharp, languageVersionVB);
             var compilerDiagnostics = (await GetCompilerDiagnosticsAsync(document).ConfigureAwait(true)).ToList();
             var analyzerDiagnostics = compilerDiagnostics.Where(c => diagnosticIds.Contains(c.Id)).ToList();
-            var attempts = analyzerDiagnostics.Count();
+            var attempts = analyzerDiagnostics.Count;
 
             for (int i = 0; i < attempts; ++i)
             {

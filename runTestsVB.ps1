@@ -1,5 +1,5 @@
 param([String]$testClass)
-$Global:lastRun = $(date)
+$Global:lastRun = $lastRun = [System.DateTime]::Now
 $testDllDirPath = "$PSScriptRoot\test\VisualBasic\CodeCracker.Test\bin\Debug\"
 $testDllFileName = "CodeCracker.Test.VisualBasic.dll"
 $Global:testDllFullFileName = "$testDllDirPath$testDllFileName"
@@ -12,10 +12,10 @@ if ($testClass -eq "now"){
 
 function global:DebounceXunit {
     try {
-        if (($(date) - $script:lastRun).TotalMilliseconds -lt 2000) {
+        if (([System.DateTime]::Now - $script:lastRun).TotalMilliseconds -lt 2000) {
             return
         }
-        $Global:lastRun = $(date)
+        $Global:lastRun = [System.DateTime]::Now
         If ($Global:testClass) {
             Start-Process $Global:xunitConsole -ArgumentList "`"$Global:testDllFullFileName`" -class $Global:testClass" -NoNewWindow
         } Else {

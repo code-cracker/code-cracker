@@ -80,5 +80,12 @@ notifications:
   - giggio@giggio.net
   subject: CodeCracker Build
   on_build_success: false
-  on_build_failure: true
+  on_build_failure: false
+  on_build_status_changed: true
+- provider: Slack
+  auth_token:
+    secure: 27j6KWmjrx8b6KiDamj8lSDkJDEfIefQO4Cgt3OZF+c8u/RqTkSrfeG5GNhcEG0kl861mTS07J4IU/FvHTC1PQ==
+  channel: general
+  on_build_success: false
+  on_build_failure: false
   on_build_status_changed: true

@@ -46,6 +46,9 @@ namespace CodeCracker.CSharp.Design
                 SyntaxKind.OverrideKeyword))
                 return;
 
+            if (method.ExplicitInterfaceSpecifier != null)
+                return;
+
             var semanticModel = context.SemanticModel;
             var methodSymbol = semanticModel.GetDeclaredSymbol(method);
             var theClass = methodSymbol.ContainingType;
@@ -66,7 +69,7 @@ namespace CodeCracker.CSharp.Design
                 if (!dataFlowAnalysis.Succeeded) return;
                 if (dataFlowAnalysis.DataFlowsIn.Any(inSymbol => inSymbol.Name == "this")) return;
             }
-            else if (method.Body.Statements.Count > 0)
+            else if (method.Body.Statements.Any())
             {
                 var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(method.Body);
                 if (!dataFlowAnalysis.Succeeded) return;
