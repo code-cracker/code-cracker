@@ -13,11 +13,7 @@ Namespace Style
         Inherits CodeFixProvider
 
         Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            'Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
-            'Dim span = diagnostic.Location.SourceSpan
-            'Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MultiLineIfBlockSyntax)
-            'If declaration Is Nothing Then Exit Function
             context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, diagnostic, c), NameOf(TernaryOperatorWithReturnCodeFixProvider)), diagnostic)
             Return Task.FromResult(0)
         End Function
@@ -57,9 +53,6 @@ Namespace Style
 
         Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First
-            'Dim span = diagnostic.Location.SourceSpan
-            'Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MultiLineIfBlockSyntax)
-            'If declaration Is Nothing Then Exit Function
             context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, diagnostic, c), NameOf(TernaryOperatorWithAssignmentCodeFixProvider)), diagnostic)
             Return Task.FromResult(0)
         End Function
