@@ -52,10 +52,7 @@ namespace CodeCracker.CSharp.Style
             returnIdentifier = root.GetCurrentNode(returnIdentifier);
             returnIdentifierSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
 
-            var newProperty = property.WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List(new[] {
-                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
-                    SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
-                })))
+            var newProperty = GetSimpleProperty(property, fieldDeclaration)
                 .WithTrailingTrivia(property.AccessorList.GetTrailingTrivia())
                 .WithLeadingTrivia(property.AccessorList.GetLeadingTrivia())
                 .WithAdditionalAnnotations(Formatter.Annotation);
@@ -69,6 +66,19 @@ namespace CodeCracker.CSharp.Style
 
             document = document.WithSyntaxRoot(root);
             return document.Project.Solution;
+        }
+
+        private static PropertyDeclarationSyntax GetSimpleProperty(PropertyDeclarationSyntax property, FieldDeclarationSyntax fieldDeclaration)
+        {
+            var fieldInitializer = fieldDeclaration.Declaration.Variables.First()?.Initializer;
+            var simpleGetSetPropetie = property.WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List(new[] {
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                })));
+            return fieldInitializer == null ?
+                simpleGetSetPropetie :
+                simpleGetSetPropetie.WithInitializer(fieldInitializer)
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
         }
     }
 }
