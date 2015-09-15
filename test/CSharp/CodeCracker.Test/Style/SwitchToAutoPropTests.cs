@@ -99,7 +99,7 @@ namespace CodeCracker.Test.CSharp.Style
         private int id;
         public int Id
         {
-            get { id = value; }
+            set { id = value; }
         }
 ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(source);
@@ -302,6 +302,40 @@ namespace ConsoleApplication1
             var expected = @"public int Id { get; set; }//comment 1
 ".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixSimplePropWithFieldAssigmentIntoAutoProp()
+        {
+            var source = @"
+        private int id = 42;
+        public int Id
+        {
+            get { return id; }
+            set { id = value; }
+        }//comment 1
+".WrapInCSharpClass();
+            var expected = @"public int Id { get; set; } = 42;//comment 1
+".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixSimplePropWithFieldAssigmentIntoAutoProp1616()
+        {
+            var source = @"
+                private int id = 42, anotherInt;
+                public int Id
+                {
+                    get { return id; }
+                    set { id = value; }
+                }";
+
+            var expected = @"
+                private int anotherInt;
+                public int Id { get; set; } = 42;";
+
+            await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
         }
 
         [Fact]
