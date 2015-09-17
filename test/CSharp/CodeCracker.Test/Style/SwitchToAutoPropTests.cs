@@ -321,22 +321,63 @@ namespace ConsoleApplication1
         }
 
         [Fact]
-        public async Task FixSimplePropWithFieldAssigmentIntoAutoProp1616()
+        public async Task FixSimplePropWithVaribleDeclarationNotFirstIntoAutoProp()
         {
             var source = @"
-                private int id = 42, anotherInt;//comment 1
-                public int Id
+                private int x, y = 42; //comment 1
+                public int Y
                 {
-                    get { return id; }
-                    set { id = value; }
+                    get { return y; }
+                    set { y = value; }
                 }";
 
             var expected = @"
-                private int anotherInt;//comment 1
-                public int Id { get; set; } = 42;";
+                private int x; //comment 1
+                public int Y { get; set; } = 42;";
 
             await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
         }
+
+        [Fact]
+        public async Task FixSimplePropWithMultipleFieldsIntoAutoProp()
+        {
+            var source = @"
+                private int x = 42, y; //comment 1
+                public int X
+                {
+                    get { return x; }
+                    set { x = value; }
+                }";
+
+            var expected = @"
+                private int y; //comment 1
+                public int X { get; set; } = 42;";
+
+            await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
+        }
+        [Fact]
+        public async Task FixSimplePropWithMultipleFieldsIntoAutoPropAll()
+        {
+            var source = @"
+                private int x = 42, y;
+                public int X
+                {
+                    get { return x; }
+                    set { x = value; }
+                }
+                public int Y
+                {
+                    get { return y; }
+                    set { y = value; }
+                }";
+
+            var expected = @"
+                public int X { get; set; } = 42;
+                public int Y { get; set; }";
+
+            await VerifyCSharpFixAllAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
+        }
+
 
         [Fact]
         public async Task FixPropIntoAutoPropAndFixFieldReferencesInSameClass()
