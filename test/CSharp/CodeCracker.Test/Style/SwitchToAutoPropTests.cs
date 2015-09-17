@@ -324,7 +324,7 @@ namespace ConsoleApplication1
         public async Task FixSimplePropWithFieldAssigmentIntoAutoProp1616()
         {
             var source = @"
-                private int id = 42, anotherInt;
+                private int id = 42, anotherInt;//comment 1
                 public int Id
                 {
                     get { return id; }
@@ -332,7 +332,7 @@ namespace ConsoleApplication1
                 }";
 
             var expected = @"
-                private int anotherInt;
+                private int anotherInt;//comment 1
                 public int Id { get; set; } = 42;";
 
             await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
