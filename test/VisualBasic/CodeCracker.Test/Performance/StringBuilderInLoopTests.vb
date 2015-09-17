@@ -477,5 +477,17 @@ End Namespace"
 
             Await VerifyBasicHasNoDiagnosticsAsync(source)
         End Function
+
+        <Fact>
+        Public Async Function ForLoopStringDeclaredAndConcatenatedWithinShouldNotCreateDiagnostic() As Task
+            Dim source = "
+            For i = 0 To 10
+                Dim someString As String = i.ToString()
+                someString &= "" ""
+                Console.WriteLine(someString)
+            Next".WrapInVBMethod()
+
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
     End Class
 End Namespace

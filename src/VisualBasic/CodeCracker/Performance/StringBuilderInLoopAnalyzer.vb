@@ -44,9 +44,13 @@ Namespace Performance
             Dim symbolForAssignment = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol
             If symbolForAssignment Is Nothing Then Exit Sub
             If TypeOf symbolForAssignment Is IPropertySymbol AndAlso DirectCast(symbolForAssignment, IPropertySymbol).Type.Name <> "String" Then Exit Sub
-            If TypeOf symbolForAssignment Is ILocalSymbol AndAlso DirectCast(symbolForAssignment, ILocalSymbol).Type.Name <> "String" Then Exit Sub
             If TypeOf symbolForAssignment Is IFieldSymbol AndAlso DirectCast(symbolForAssignment, IFieldSymbol).Type.Name <> "String" Then Exit Sub
             If TypeOf symbolForAssignment Is IParameterSymbol AndAlso DirectCast(symbolForAssignment, IParameterSymbol).Type.Name <> "String" Then Exit Sub
+            If TypeOf symbolForAssignment Is ILocalSymbol Then
+                Dim localSymbol = DirectCast(symbolForAssignment, ILocalSymbol)
+                If localSymbol.Type.Name <> "String" OrElse localSymbol.DeclaringSyntaxReferences(0).Span.Start > loopStatment.SpanStart Then Exit Sub
+                ' Don't analyze string declared within the loop.
+            End If
 
             If assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentStatement) Then
                 If (Not If(assignmentExpression.Right?.IsKind(SyntaxKind.AddExpression), False)) Then Exit Sub
@@ -55,7 +59,8 @@ Namespace Performance
                 Dim symbolOnIdentifierOnConcatExpression = semanticModel.GetSymbolInfo(identifierOnConcatExpression).Symbol
                 If Not symbolForAssignment.Equals(symbolOnIdentifierOnConcatExpression) Then Exit Sub
 
-            ElseIf Not assignmentExpression.IsKind(SyntaxKind.AddAssignmentStatement) Then
+            ElseIf Not assignmentExpression.IsKind(SyntaxKind.AddAssignmentStatement) AndAlso
+                Not assignmentExpression.IsKind(SyntaxKind.ConcatenateAssignmentStatement) Then
                 Exit Sub
             End If
 
