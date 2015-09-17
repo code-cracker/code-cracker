@@ -47,6 +47,8 @@
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Extensions\CSharpGeneratedCodeAnalysisExtensions.cs" />
+    <Compile Include="Performance\ReturnTaskInsteadOfAwaitCodeFixProvider.cs" />
+    <Compile Include="Performance\ReturnTaskInsteadOfAwaitAnalyzer.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchAnalyzer.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
@@ -65,6 +67,8 @@
     <Compile Include="Refactoring\ComputeExpressionCodeFixProvider.cs" />
     <Compile Include="Refactoring\ChangeAnyToAllAnalyzer.cs" />
     <Compile Include="Refactoring\ChangeAnyToAllCodeFixProvider.cs" />
+    <Compile Include="Refactoring\LoopToLinqAnalyzer.cs" />
+    <Compile Include="Refactoring\LoopToLinqCodeFixProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfFixAllProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfCodeFixProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfAnalyzer.cs" />

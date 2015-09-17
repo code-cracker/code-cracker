@@ -188,6 +188,33 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You may change this foreach loop to an equivalent Linq Expression..
+        /// </summary>
+        public static string LoopToLinq_Description {
+            get {
+                return ResourceManager.GetString("LoopToLinq_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change foreach loop to a Linq expression.
+        /// </summary>
+        public static string LoopToLinq_MessageFormat {
+            get {
+                return ResourceManager.GetString("LoopToLinq_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change foreach loop to a Linq expression.
+        /// </summary>
+        public static string LoopToLinq_Title {
+            get {
+                return ResourceManager.GetString("LoopToLinq_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Make method non async.
         /// </summary>
         public static string MakeMethodNonAsyncCodeFixProvider_Title {
@@ -233,6 +260,42 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove async and return task directly..
+        /// </summary>
+        public static string ReturnTaskInsteadOfAwait_Description {
+            get {
+                return ResourceManager.GetString("ReturnTaskInsteadOfAwait_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} can directly return a task..
+        /// </summary>
+        public static string ReturnTaskInsteadOfAwait_MessageFormat {
+            get {
+                return ResourceManager.GetString("ReturnTaskInsteadOfAwait_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return task instead of await..
+        /// </summary>
+        public static string ReturnTaskInsteadOfAwait_Title {
+            get {
+                return ResourceManager.GetString("ReturnTaskInsteadOfAwait_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove &apos;async&apos; and return directly..
+        /// </summary>
+        public static string ReturnTaskInsteadOfAwaitCodeFixProvider_Title {
+            get {
+                return ResourceManager.GetString("ReturnTaskInsteadOfAwaitCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to String interpolation allows for better reading of the resulting string when compared to String.Format. You should use String.Format only when another method is supplying the format string..
         /// </summary>
         public static string StringFormatAnalyzer_Description {
@@ -267,7 +330,7 @@ namespace CodeCracker.Properties {
                 return ResourceManager.GetString("StringFormatCodeFixProvider_Title", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Auto properties offer a more concise way of defining a property. If you are using simple getters and setters you are able to simplify your code with autoproperties..
         /// </summary>
@@ -276,7 +339,7 @@ namespace CodeCracker.Properties {
                 return ResourceManager.GetString("SwitchToAutoPropAnalyzer_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Change {0} to an auto property.
         /// </summary>
@@ -285,7 +348,7 @@ namespace CodeCracker.Properties {
                 return ResourceManager.GetString("SwitchToAutoPropAnalyzer_MessageFormat", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Use auto property.
         /// </summary>

@@ -422,5 +422,7 @@ namespace CodeCracker
 
             return SyntaxFactory.TokenList(accessibilityModifiers.EnsureProtectedBeforeInternal());
         }
+
+        public static bool IsLoopStatement(this SyntaxNode note) => note.IsAnyKind(SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement);
     }
 }

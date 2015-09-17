@@ -128,6 +128,7 @@
     <Compile Include="Design\MakeMethodStaticTests.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Performance\ReturnTaskInsteadOfAwaitTests.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
     <Compile Include="Performance\StringBuilderInLoopTests.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsTests.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Refactoring\MergeNestedIfTest.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorTest.cs" />
     <Compile Include="Refactoring\ComputeExpressionTests.cs" />
+    <Compile Include="Refactoring\LoopToLinqTests.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfTests.cs" />
     <Compile Include="Refactoring\ParameterRefectoryTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
