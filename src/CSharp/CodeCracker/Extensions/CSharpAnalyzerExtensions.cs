@@ -313,10 +313,66 @@ namespace CodeCracker
             return result;
         }
 
+        public static MemberDeclarationSyntax AddModifiers(this MemberDeclarationSyntax declaration, SyntaxTokenList newModifiers) =>
+            declaration.AddModifiers(newModifiers.ToArray());
+
+        public static MemberDeclarationSyntax AddModifiers(this MemberDeclarationSyntax declaration, params SyntaxToken[] newModifiers)
+        {
+            var result = declaration;
+            switch (declaration.Kind())
+            {
+                case SyntaxKind.ClassDeclaration:
+                    result = ((ClassDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.StructDeclaration:
+                    result = ((StructDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.InterfaceDeclaration:
+                    result = ((InterfaceDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.EnumDeclaration:
+                    result = ((EnumDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.DelegateDeclaration:
+                    result = ((DelegateDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.FieldDeclaration:
+                    result = ((FieldDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.EventFieldDeclaration:
+                    result = ((EventFieldDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.MethodDeclaration:
+                    result = ((MethodDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.OperatorDeclaration:
+                    result = ((OperatorDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.ConversionOperatorDeclaration:
+                    result = ((ConversionOperatorDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.ConstructorDeclaration:
+                    result = ((ConstructorDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.DestructorDeclaration:
+                    result = ((DestructorDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.PropertyDeclaration:
+                    result = ((PropertyDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.IndexerDeclaration:
+                    result = ((IndexerDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.EventDeclaration:
+                    result = ((EventDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+            }
+            return result;
+        }
+
         public static MemberDeclarationSyntax WithModifiers(this MemberDeclarationSyntax declaration, SyntaxTokenList newModifiers)
         {
             var result = declaration;
-
             switch (declaration.Kind())
             {
                 case SyntaxKind.ClassDeclaration:
@@ -365,7 +421,6 @@ namespace CodeCracker
                     result = ((EventDeclarationSyntax)declaration).WithModifiers(newModifiers);
                     break;
             }
-
             return result;
         }
 

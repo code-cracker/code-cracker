@@ -47,8 +47,10 @@
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Extensions\CSharpGeneratedCodeAnalysisExtensions.cs" />
+    <Compile Include="Performance\SealMemberAnalyzer.cs" />
     <Compile Include="Performance\ReturnTaskInsteadOfAwaitCodeFixProvider.cs" />
     <Compile Include="Performance\ReturnTaskInsteadOfAwaitAnalyzer.cs" />
+    <Compile Include="Performance\SealMemberCodeFixProvider.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchAnalyzer.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />

@@ -237,4 +237,22 @@
   <data name="ReturnTaskInsteadOfAwaitCodeFixProvider_Title" xml:space="preserve">
     <value>Remove 'async' and return directly.</value>
   </data>
+  <data name="SealMemberAnalyzer_Description" xml:space="preserve">
+    <value>If a member is overriding a base member, it could gain in performance by being sealed (not overridable).</value>
+  </data>
+  <data name="SealMemberAnalyzer_ClassMessageFormat" xml:space="preserve">
+    <value>Seal members of class '{0}'</value>
+  </data>
+  <data name="SealMemberAnalyzer_Title" xml:space="preserve">
+    <value>Seal class members</value>
+  </data>
+  <data name="SealMemberCodeFixProvider_ClassTitle" xml:space="preserve">
+    <value>Seal members of class '{0}'</value>
+  </data>
+  <data name="SealMemberAnalyzer_MemberMessageFormat" xml:space="preserve">
+    <value>Seal member '{0}'</value>
+  </data>
+  <data name="SealMemberCodeFixProvider_MemberTitle" xml:space="preserve">
+    <value>Seal member '{0}'</value>
+  </data>
 </root>
