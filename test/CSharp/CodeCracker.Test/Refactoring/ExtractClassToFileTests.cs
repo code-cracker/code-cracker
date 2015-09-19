@@ -43,6 +43,24 @@ namespace CodeCracker.Test.CSharp.Refactoring
             await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpMethod());
         }
 
+        public async Task IgnoreDiagnosticWhenClassOutsideNamespace()
+        {
+            const string test = @"
+    using System;
+
+    class TypeName
+    {
+        public int MyProperty { get; private set; }
+    }
+
+    class TypeName2
+    {
+        public int MyProperty2 { get; private set; }
+    }
+    ";
+            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpMethod());
+        }
+
 
         [Fact]
         public async Task CreateDiagnosticWhenHasTwoClassesAndAtLeastOnePublic()

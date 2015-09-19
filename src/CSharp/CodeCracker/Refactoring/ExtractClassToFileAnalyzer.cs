@@ -33,6 +33,9 @@ namespace CodeCracker.CSharp.Refactoring
             var declaration = context.Node as ClassDeclarationSyntax;
             if (!declaration.Modifiers.Any(SyntaxKind.PublicKeyword)) return;
 
+            var classSymbol = context.SemanticModel.GetDeclaredSymbol(declaration);
+            if (classSymbol.ContainingNamespace.Name == "") return;
+
             var namespaceDeclaration = declaration.Parent as NamespaceDeclarationSyntax;
             var classCount = namespaceDeclaration.Members.Where(cl => cl.GetType().ToString().Contains(nameof(ClassDeclarationSyntax)));
             if (classCount.Count() == 1) return;
