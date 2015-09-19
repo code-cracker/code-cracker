@@ -378,7 +378,7 @@ namespace CodeCracker.Test.CSharp.Performance
         }
 
         [Fact]
-        public async Task ForWithtStringConcatOnLocalVariableCreatesDiagnostic()
+        public async Task ForWithStringConcatOnLocalVariableCreatesDiagnostic()
         {
             var source = @"
                 var myString = """";
@@ -394,6 +394,20 @@ namespace CodeCracker.Test.CSharp.Performance
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task ForWithStringConcatOnLoopLocalVariableShouldNotCreateDiagnostic()
+        {
+            var source = @"                
+                for (;;)
+                {
+                    var myString = """";
+                    myString += """";
+                    Console.WriteLine(myString);
+                }".WrapInCSharpMethod();
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
