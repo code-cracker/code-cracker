@@ -24,13 +24,13 @@ namespace CodeCracker.CSharp.Design
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Make static", c => MakeNameOfAsync(context.Document, diagnostic, c), nameof(MakeMethodStaticCodeFixProvider)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Make static", c => MakeMethodStaticAsync(context.Document, diagnostic, c), nameof(MakeMethodStaticCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 
         private static readonly SyntaxToken staticToken = SyntaxFactory.Token(SyntaxKind.StaticKeyword);
 
-        private static async Task<Solution> MakeNameOfAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private static async Task<Solution> MakeMethodStaticAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;
@@ -51,13 +51,13 @@ namespace CodeCracker.CSharp.Design
             SyntaxNode newRoot;
             if (mainDocGroup == null)
             {
-                newRoot = root.ReplaceNode(method, method.AddModifiers(staticToken));
+                newRoot = root.ReplaceNode(method, method.WithoutTrivia().AddModifiers(staticToken).WithTriviaFrom(method));
             }
             else
             {
                 var diagnosticNodes = mainDocGroup.Select(referenceLocation => root.FindNode(referenceLocation.Location.SourceSpan)).ToList();
                 newRoot = root.TrackNodes(diagnosticNodes.Union(new[] { method }));
-                newRoot = newRoot.ReplaceNode(newRoot.GetCurrentNode(method), method.AddModifiers(staticToken));
+                newRoot = newRoot.ReplaceNode(newRoot.GetCurrentNode(method), method.WithoutTrivia().AddModifiers(staticToken).WithTriviaFrom(method));
                 foreach (var diagnosticNode in diagnosticNodes)
                 {
                     var token = newRoot.FindToken(diagnosticNode.GetLocation().SourceSpan.Start);
