@@ -99,7 +99,7 @@ namespace CodeCracker.Test.CSharp.Style
         private int id;
         public int Id
         {
-            get { id = value; }
+            set { id = value; }
         }
 ".WrapInCSharpClass();
             await VerifyCSharpHasNoDiagnosticsAsync(source);
@@ -302,6 +302,92 @@ namespace ConsoleApplication1
             var expected = @"public int Id { get; set; }//comment 1
 ".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixSimplePropWithFieldAssigmentIntoAutoProp()
+        {
+            var source = @"
+        private int id = 42;
+        public int Id
+        {
+            get { return id; }
+            set { id = value; }
+        }//comment 1
+".WrapInCSharpClass();
+            var expected = @"public int Id { get; set; } = 42;//comment 1
+".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixSimplePropWithMultipleFieldsIntoAutoProp()
+        {
+            var source = @"
+                private int x = 42, y; //comment 1
+                public int X
+                {
+                    get { return x; }
+                    set { x = value; }
+                }";
+
+            var expected = @"
+                private int y; //comment 1
+                public int X { get; set; } = 42;";
+
+            await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
+        }
+
+        [Fact]
+        public async Task FixSimplePropWithVaribleDeclarationNotFirstIntoAutoProp()
+        {
+            var source = @"
+                private int x, y = 42; //comment 1
+                public int Y
+                {
+                    get { return y; }
+                    set { y = value; }
+                }";
+
+            var expected = @"
+                private int x; //comment 1
+                public int Y { get; set; } = 42;";
+
+            await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
+        }
+
+
+        [Fact(Skip = "Skip until the FixAll has been fixed.")]
+        public async Task FixSimplePropWithMultipleFieldsIntoAutoPropAll()
+        {
+            var source = @"
+                private int x = 42, y;
+                private int z = int.MaxValue;
+
+                public int X
+                {
+                    get { return x; }
+                    set { x = value; }
+                }
+
+                public int Y
+                {
+                    get { return y; }
+                    set { y = value; }
+                }
+
+                public int Z
+                {
+                    get { return z; }
+                    set { z = value; }
+                }";
+
+            var expected = @"
+                public int X { get; set; } = 42;
+                public int Y { get; set; }
+                public int Z { get; set; } = int.MaxValue;";
+
+            await VerifyCSharpFixAllAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
         }
 
         [Fact]
