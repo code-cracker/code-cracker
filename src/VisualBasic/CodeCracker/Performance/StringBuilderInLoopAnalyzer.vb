@@ -48,8 +48,9 @@ Namespace Performance
             If TypeOf symbolForAssignment Is IParameterSymbol AndAlso DirectCast(symbolForAssignment, IParameterSymbol).Type.Name <> "String" Then Exit Sub
             If TypeOf symbolForAssignment Is ILocalSymbol Then
                 Dim localSymbol = DirectCast(symbolForAssignment, ILocalSymbol)
-                If localSymbol.Type.Name <> "String" OrElse localSymbol.DeclaringSyntaxReferences(0).Span.Start > loopStatment.SpanStart Then Exit Sub
+                If localSymbol.Type.SpecialType <> SpecialType.System_String Then Exit Sub
                 ' Don't analyze string declared within the loop.
+                If loopStatment.DescendantTokens(localSymbol.DeclaringSyntaxReferences(0).Span).Any() Then Exit Sub
             End If
 
             If assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentStatement) Then
