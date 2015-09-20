@@ -114,6 +114,25 @@ static string i;")]
         [Theory]
         [InlineData("void Foo() { }", "static void Foo() { }")]
         [InlineData("int Foo() => 1;", "static int Foo() => 1;")]
+        [InlineData(@"
+#region
+    void Foo() { }
+#endregion", @"
+#region
+    static void Foo() { }
+#endregion")]
+        [InlineData(@"
+///<summary>Method summary</summary>
+void Foo() { }", 
+            @"
+///<summary>Method summary</summary>
+static void Foo() { }")]
+        [InlineData(@"
+///<summary>Method summary</summary>
+public void Foo() { }",
+            @"
+///<summary>Method summary</summary>
+public static void Foo() { }")]
         public async Task FixMakeMethodStaticWithoutReference(string code, string fix)
         {
             var source = code.WrapInCSharpClass();
@@ -245,6 +264,52 @@ void Bar()
                 Func<int> i = Bar;
             }
             public static int Bar() => 1;
+        }
+        class Context
+        {
+            private int i;
+            public void Register(Func<int> f) { i++; }
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task MakeMethodWithLeadingTriviaStaticWhenReferencingAsAMethodGroup()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public virtual void Foo()
+            {
+                Func<int> i = Bar;
+            }
+
+            /// <summary>Bar method</summary>
+            int Bar() => 1;
+        }
+        class Context
+        {
+            private int i;
+            public void Register(Func<int> f) { i++; }
+        }
+    }";
+            const string fixtest = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public virtual void Foo()
+            {
+                Func<int> i = Bar;
+            }
+
+            /// <summary>Bar method</summary>
+            static int Bar() => 1;
         }
         class Context
         {

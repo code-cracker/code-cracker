@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -56,6 +57,8 @@ namespace CodeCracker.CSharp.Usage
                 if ((type as IArrayTypeSymbol)?.ElementType?.SpecialType != SpecialType.System_String) return;
             }
             else if (type.Name != "String") return;
+            // Do not analyze a string declared within the loop.
+            if (symbolForAssignment is ILocalSymbol && whileStatement.DescendantTokens(((ILocalSymbol)symbolForAssignment).DeclaringSyntaxReferences[0].Span).Any()) return;
             if (assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression))
             {
                 if (!(assignmentExpression.Right?.IsKind(SyntaxKind.AddExpression) ?? false)) return;
