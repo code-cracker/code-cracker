@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Refactoring
     {
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.ExtractClassToFile.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public sealed override FixAllProvider GetFixAllProvider() => null;
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
