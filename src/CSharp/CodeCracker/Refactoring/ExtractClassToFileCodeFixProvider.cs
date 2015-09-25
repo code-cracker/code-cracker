@@ -12,6 +12,9 @@ using Microsoft.CodeAnalysis.Formatting;
 using System.Threading;
 using Microsoft.CodeAnalysis.Text;
 
+/// <summary>
+/// xpto
+/// </summary>
 namespace CodeCracker.CSharp.Refactoring
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ExtractClassToFileCodeFixProvider)), Shared]
@@ -36,23 +39,44 @@ namespace CodeCracker.CSharp.Refactoring
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var typeSymbol = semanticModel.GetDeclaredSymbol(classStatement, cancellationToken);
 
-            var newRoot = root.RemoveNode(classStatement,SyntaxRemoveOptions.KeepNoTrivia);
+            var ns = classStatement.FirstAncestorOfType<NamespaceDeclarationSyntax>();
+            NamespaceDeclarationSyntax newNs = null;
+            while (ns != null)
+            {
+                if (newNs != null)
+                {
+                    var newNewNs = SyntaxFactory.NamespaceDeclaration(ns.Name)
+                        .WithUsings(ns.Usings)
+                        .WithLeadingTrivia(ns.GetLeadingTrivia())
+                        .AddMembers(newNs);
+                    newNs = newNewNs;
+                }
+                else
+                {
+                    newNs = SyntaxFactory.NamespaceDeclaration(ns.Name)
+                        .WithUsings(ns.Usings)
+                        .WithLeadingTrivia(ns.GetLeadingTrivia())
+                        .AddMembers(classStatement);
+                }
+                ns = ns.FirstAncestorOfType<NamespaceDeclarationSyntax>();
+            }
+
+            var newRoot = root.RemoveNode(classStatement, SyntaxRemoveOptions.KeepNoTrivia);
             document = document.WithSyntaxRoot(newRoot);
 
-            var usings = root.DescendantNodesAndSelf().Where(u => u is UsingDirectiveSyntax).Select(u => (UsingDirectiveSyntax)u);
-            var nameSpaceBlock = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.IdentifierName(typeSymbol.ContainingNamespace.Name));
-            nameSpaceBlock = nameSpaceBlock.WithMembers(SyntaxFactory.SingletonList<MemberDeclarationSyntax>(classStatement));
-
+            var usings = root.ChildNodes().Where(n => n.IsKind(SyntaxKind.UsingDirective)).Cast<UsingDirectiveSyntax>();
             var newFileClass = SyntaxFactory.CompilationUnit()
                 .WithUsings(SyntaxFactory.List<UsingDirectiveSyntax>((usings)))
-                .WithMembers(SyntaxFactory.SingletonList<MemberDeclarationSyntax>(nameSpaceBlock))
+                .WithMembers(SyntaxFactory.SingletonList<MemberDeclarationSyntax>((MemberDeclarationSyntax)newNs ?? classStatement))
                 .WithoutLeadingTrivia()
-                .NormalizeWhitespace();
+                .NormalizeWhitespace()
+                .WithAdditionalAnnotations(Formatter.Annotation);
             var filename = $"{classStatement.Identifier.Text}.cs";
             var newDocument = document.Project.AddDocument(filename, SourceText.From(newFileClass.ToFullString()), document.Folders);
             return newDocument.Project.Solution;
         }
 
-        
+
     }
 }
+

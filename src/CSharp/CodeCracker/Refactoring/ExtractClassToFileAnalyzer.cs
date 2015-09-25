@@ -31,13 +31,10 @@ namespace CodeCracker.CSharp.Refactoring
         {
             if (context.IsGenerated()) return;
             var declaration = context.Node as ClassDeclarationSyntax;
-            if (!declaration.Modifiers.Any(SyntaxKind.PublicKeyword)) return;
-
             var classSymbol = context.SemanticModel.GetDeclaredSymbol(declaration);
-            if (classSymbol.ContainingNamespace.Name == "") return;
 
-            var namespaceDeclaration = declaration.Parent as NamespaceDeclarationSyntax;
-            var classCount = namespaceDeclaration.Members.Where(cl => cl.GetType().ToString().Contains(nameof(ClassDeclarationSyntax)));
+            var namespaceDeclaration = declaration.Parent;
+            var classCount = namespaceDeclaration.ChildNodes().Where(cl => cl.IsKind(SyntaxKind.ClassDeclaration));
             if (classCount.Count() == 1) return;
 
             var diagnostic = Diagnostic.Create(Rule, declaration.GetLocation(), declaration.Identifier.Text);
