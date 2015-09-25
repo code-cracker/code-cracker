@@ -61,11 +61,10 @@ namespace CodeCracker.Test.CSharp.Usage
         [InlineData("#DEB887")]
         [InlineData("0xF")]
         [InlineData("200")]
-        [InlineData("200;100;50")]
-        [InlineData("200;100;50;60")]
+        [InlineData("200,100,50")]
+        [InlineData("200,100,50,60")]
         public async Task WhenUsingValidColorAnalyzerDoesNotCreateDiagnostic(string htmlColor)
         {
-            var htmlColorWithCorrectListSeparator = ReplaceListSeparator(htmlColor, ";");
             var source = @"
             namespace ConsoleApplication1
             {
@@ -73,12 +72,12 @@ namespace CodeCracker.Test.CSharp.Usage
                 {
                     public int Foo()
                     {
-                        var color = System.Drawing.ColorTranslator.FromHtml(""" + htmlColorWithCorrectListSeparator + @""");
+                        var color = System.Drawing.ColorTranslator.FromHtml(""" + htmlColor + @""");
                     }
                 }
             }";
-
-            await VerifyCSharpHasNoDiagnosticsAsync(source);
+            using (new ChangeCulture(""))
+                await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Theory]
@@ -88,7 +87,6 @@ namespace CodeCracker.Test.CSharp.Usage
         [InlineData("wrong color")]
         public async Task WhenNotUsingLiteralExpressionSyntaxColorValueAnalyzerDoesNotCreateDiagnostic(string htmlColor)
         {
-            var htmlColorWithCorrectListSeparator = ReplaceListSeparator(htmlColor, ";");
             var source = @"
     namespace ConsoleApplication1
     {
@@ -96,22 +94,22 @@ namespace CodeCracker.Test.CSharp.Usage
         {
             public int Foo()
             {
-                var colorArg = """ + htmlColorWithCorrectListSeparator + @""";
+                var colorArg = """ + htmlColor + @""";
                 ColorTranslator.FromHtml(colorArg);
             }
         }
     }";
-
-            await VerifyCSharpHasNoDiagnosticsAsync(source);
+            using (new ChangeCulture(""))
+                await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Theory]
         [InlineData("#FFFZZZ")]
         [InlineData("bluee")]
         [InlineData("wrong color")]
-        [InlineData("200;100")]
-        [InlineData("200;JJ;50;60")]
-        [InlineData("200;100;50;100;60")]
+        [InlineData("200,100")]
+        [InlineData("200,JJ,50,60")]
+        [InlineData("200,100,50,100,60")]
         [InlineData("-300, 100, 100")]
         [InlineData("300, 100, 100")]
         [InlineData("100, -300, 100")]
@@ -122,7 +120,6 @@ namespace CodeCracker.Test.CSharp.Usage
         [InlineData("300, 100, 100, 100")]
         public async Task WhenUsingInvalidColorAnalyzerCreatesCreateDiagnostic(string htmlColor)
         {
-            var htmlColorWithCorrectListSeparator = ReplaceListSeparator(htmlColor, ";");
             var source = @"
     namespace ConsoleApplication1
     {
@@ -130,12 +127,12 @@ namespace CodeCracker.Test.CSharp.Usage
         {
             public int Foo()
             {
-                var color = ColorTranslator.FromHtml(""" + htmlColorWithCorrectListSeparator + @""");
+                var color = ColorTranslator.FromHtml(""" + htmlColor + @""");
             }
         }
     }";
-
-            await VerifyCSharpDiagnosticAsync(source, CreateDiagnosticResult(8, 29));
+            using (new ChangeCulture(""))
+                await VerifyCSharpDiagnosticAsync(source, CreateDiagnosticResult(8, 29));
         }
 
         public static DiagnosticResult CreateDiagnosticResult(int line, int column)
@@ -147,12 +144,6 @@ namespace CodeCracker.Test.CSharp.Usage
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
             };
-        }
-
-        private static string ReplaceListSeparator(string htmlColor, string currentListSeparator)
-        {
-            var numSeparator = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
-            return htmlColor.Replace(currentListSeparator, numSeparator);
         }
 
         protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() => new ValidateColorAnalyzer();
