@@ -41,8 +41,23 @@ namespace CodeCracker.CSharp.Refactoring
 
             var ns = classStatement.FirstAncestorOfType<NamespaceDeclarationSyntax>();
             NamespaceDeclarationSyntax newNs = null;
+
+            SyntaxNode namespaceRemove = classStatement;
+            var canContinue = true;
             while (ns != null)
             {
+                if (ns.Members.Count() == 1 )
+                {
+                    if (canContinue)
+                    {
+                        namespaceRemove = ns;
+                    }
+                }
+                else
+                {
+                    canContinue = false;
+                }
+
                 if (newNs != null)
                 {
                     var newNewNs = SyntaxFactory.NamespaceDeclaration(ns.Name)
@@ -61,7 +76,8 @@ namespace CodeCracker.CSharp.Refactoring
                 ns = ns.FirstAncestorOfType<NamespaceDeclarationSyntax>();
             }
 
-            var newRoot = root.RemoveNode(classStatement, SyntaxRemoveOptions.KeepNoTrivia);
+            var newRoot = root.RemoveNode(namespaceRemove, SyntaxRemoveOptions.KeepNoTrivia);
+            
             document = document.WithSyntaxRoot(newRoot);
 
             var usings = root.ChildNodes().Where(n => n.IsKind(SyntaxKind.UsingDirective)).Cast<UsingDirectiveSyntax>();

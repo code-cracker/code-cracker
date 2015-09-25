@@ -20,7 +20,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
             public int MyProperty { get; private set; }
         }
     }";
-            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpMethod());
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         public async Task SourceFileWithTwoClassesButNotPublic()
@@ -40,7 +40,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
             public int MyProperty2 { get; private set; }
         }
     }";
-            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpMethod());
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         public async Task IgnoreDiagnosticWhenClassOutsideNamespace()
@@ -58,7 +58,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         public int MyProperty2 { get; private set; }
     }
     ";
-            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpMethod());
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
 
@@ -86,17 +86,17 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 Id = DiagnosticId.ExtractClassToFile.ToDiagnosticId(),
                 Message = "Extract class 'TypeName' to new file.",
                 Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 9) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 9) }
             };
             var diagnostic1 = new DiagnosticResult
             {
                 Id = DiagnosticId.ExtractClassToFile.ToDiagnosticId(),
                 Message = "Extract class 'TypeName2' to new file.",
                 Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 20, 9) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 9) }
             };
 
-            await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), new [] { diagnostic, diagnostic1 });
+            await VerifyCSharpDiagnosticAsync(test, new [] { diagnostic, diagnostic1 });
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 Id = DiagnosticId.ExtractClassToFile.ToDiagnosticId(),
                 Message = "Extract class 'TypeName' to new file.",
                 Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 9) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 9) }
             };
 
             var diagnostic1 = new DiagnosticResult
@@ -128,9 +128,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 Id = DiagnosticId.ExtractClassToFile.ToDiagnosticId(),
                 Message = "Extract class 'TypeName2' to new file.",
                 Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 18, 9) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 9) }
             };
-            await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), new[] { diagnostic, diagnostic1 });
+            await VerifyCSharpDiagnosticAsync(test, new[] { diagnostic, diagnostic1 });
         }
 
 
@@ -163,7 +163,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
             public int MyProperty2 { get; private set; }
         }
     }";
-            await VerifyCSharpFixAsync(test, expected, documentsCount: 2);
+            await VerifyCSharpFixAsync(test, expected, 0, documentsCount: 2);
         }
 
         [Fact]
@@ -207,6 +207,39 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 using System.IO;
                 namespace Bar
                 {
+        
+                    /// <summary>
+                    /// test
+                    /// </summary>
+                    namespace Baz
+                    {
+                        using System.Threading.Tasks;
+
+                        class Baz2
+                        {
+                        }
+                        class Bar21
+                        {
+
+                        }
+                    }
+                }
+            }";
+            await VerifyCSharpFixAsync(test, expected, 0, documentsCount: 2);
+        }
+
+
+        [Fact]
+        public async Task SourceFileWithNestedNameSpacesRemovingWhenHasOneClass()
+        {
+            const string test = @"
+            using System;
+
+            namespace Foo
+            {
+                using System.IO;
+                namespace Bar
+                {
                     class Bar2
                     {
                     }
@@ -217,14 +250,37 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     namespace Baz
                     {
                         using System.Threading.Tasks;
-                        class Bar21
-                        {
 
+                        class Baz2
+                        {
                         }
                     }
                 }
             }";
-            await VerifyCSharpFixAsync(test, expected, documentsCount: 2);
+
+            const string expected = @"
+            using System;
+
+            namespace Foo
+            {
+                using System.IO;
+                namespace Bar
+                {
+        
+                    /// <summary>
+                    /// test
+                    /// </summary>
+                    namespace Baz
+                    {
+                        using System.Threading.Tasks;
+
+                        class Baz2
+                        {
+                        }
+                    }
+                }
+            }";
+            await VerifyCSharpFixAsync(test, expected, 0, documentsCount: 2);
         }
     }
 }
