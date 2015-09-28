@@ -80,6 +80,7 @@
         XmlDocumentation = 90,
         MakeMethodStatic = 91,
         ChangeAllToAny = 92,
+        SealMember = 94,
         ConsoleWriteLine = 95,
         ExtractClassToFile = 96
     }

@@ -296,6 +296,60 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Seal members of class &apos;{0}&apos;.
+        /// </summary>
+        public static string SealMemberAnalyzer_ClassMessageFormat {
+            get {
+                return ResourceManager.GetString("SealMemberAnalyzer_ClassMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If a member is overriding a base member, it could gain in performance by being sealed (not overridable)..
+        /// </summary>
+        public static string SealMemberAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("SealMemberAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seal member &apos;{0}&apos;.
+        /// </summary>
+        public static string SealMemberAnalyzer_MemberMessageFormat {
+            get {
+                return ResourceManager.GetString("SealMemberAnalyzer_MemberMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seal class members.
+        /// </summary>
+        public static string SealMemberAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("SealMemberAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seal members of class &apos;{0}&apos;.
+        /// </summary>
+        public static string SealMemberCodeFixProvider_ClassTitle {
+            get {
+                return ResourceManager.GetString("SealMemberCodeFixProvider_ClassTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seal member &apos;{0}&apos;.
+        /// </summary>
+        public static string SealMemberCodeFixProvider_MemberTitle {
+            get {
+                return ResourceManager.GetString("SealMemberCodeFixProvider_MemberTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to String interpolation allows for better reading of the resulting string when compared to String.Format. You should use String.Format only when another method is supplying the format string..
         /// </summary>
         public static string StringFormatAnalyzer_Description {
