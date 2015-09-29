@@ -19,7 +19,8 @@ Namespace Refactoring
         MessageFormat,
         Category,
         DiagnosticSeverity.Hidden,
-        isEnabledByDefault:=True
+        isEnabledByDefault:=True,
+        helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.ParameterRefactory)
     )
 
         Public Overrides ReadOnly Property SupportedDiagnostics As ImmutableArray(Of DiagnosticDescriptor)
