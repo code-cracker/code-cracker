@@ -260,6 +260,24 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A call to &apos;Count({0}) &gt; 0&apos; can be changed to &apos;Any({0})&apos;.
+        /// </summary>
+        public static string PreferAnyToCountGreaterThanZeroAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("PreferAnyToCountGreaterThanZeroAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prefer &apos;Any()&apos; to &apos;Count() &gt; 0&apos;.
+        /// </summary>
+        public static string PreferAnyToCountGreaterThanZeroAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("PreferAnyToCountGreaterThanZeroAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove async and return task directly..
         /// </summary>
         public static string ReturnTaskInsteadOfAwait_Description {

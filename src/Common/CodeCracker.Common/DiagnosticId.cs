@@ -82,6 +82,7 @@
         ChangeAllToAny = 92,
         SealMember = 94,
         ConsoleWriteLine = 95,
-        ExtractClassToFile = 96
+        ExtractClassToFile = 96,
+        PreferAnyToCountGreaterThanZero = 99
     }
 }
