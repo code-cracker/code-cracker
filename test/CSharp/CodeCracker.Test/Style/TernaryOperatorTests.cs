@@ -178,7 +178,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
                 Message = "You can use a ternary operator.",
-                Severity = DiagnosticSeverity.Warning,
+                Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
 
@@ -536,7 +536,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 Id = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
                 Message = "You can use a ternary operator.",
-                Severity = DiagnosticSeverity.Warning,
+                Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
 
