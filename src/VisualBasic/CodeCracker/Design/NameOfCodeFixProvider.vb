@@ -12,7 +12,7 @@ Namespace Design
     Public Class NameOfCodeFixProvider
         Inherits CodeFixProvider
 
-        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(NameOfAnalyzer.Id)
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(NameOfAnalyzer.Id, DiagnosticId.NameOf_External.ToDiagnosticId())
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
