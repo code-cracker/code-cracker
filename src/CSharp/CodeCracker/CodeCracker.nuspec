@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>codecracker.CSharp</id>
-        <version>1.0.0-rc2</version>
+        <version>1.0.0-rc3</version>
         <title>CodeCracker</title>
         <authors>giggio,elemarjr,carloscds</authors>
         <owners>giggio,elemarjr,carloscds</owners>
