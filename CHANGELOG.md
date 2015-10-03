@@ -3,16 +3,6 @@
 ## [v1.0.0-rc3](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc3) (2015-10-03)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc2...v1.0.0-rc3)
 
-**Implemented enhancements:**
-
-- CC0013 Should be Information instead of Warning [\#520](https://github.com/code-cracker/code-cracker/issues/520)
-- Extract Class to a New File [\#382](https://github.com/code-cracker/code-cracker/issues/382)
-- Seal member if possible [\#372](https://github.com/code-cracker/code-cracker/issues/372)
-- Remove virtual modifier if possible [\#371](https://github.com/code-cracker/code-cracker/issues/371)
-- Remove async and return task directly [\#151](https://github.com/code-cracker/code-cracker/issues/151)
-- Change from as operator to direct cast or the opposite [\#65](https://github.com/code-cracker/code-cracker/issues/65)
-- Convert loop to linq expression [\#22](https://github.com/code-cracker/code-cracker/issues/22)
-
 **Fixed bugs:**
 
 - CC0017 Change to auto property codefix removes multiple variable declaration. [\#512](https://github.com/code-cracker/code-cracker/issues/512)
@@ -33,13 +23,6 @@
 ## [v1.0.0-rc2](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc2) (2015-08-19)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc1...v1.0.0-rc2)
 
-**Implemented enhancements:**
-
-- Update VB Allow Members Ordering to work with Modules [\#440](https://github.com/code-cracker/code-cracker/issues/440)
-- Provide an equivalence key on all code fix providers [\#417](https://github.com/code-cracker/code-cracker/issues/417)
-- Unit test methods raises CC0091 - "Make \<xxxx\> method static" [\#404](https://github.com/code-cracker/code-cracker/issues/404)
-- Validate color from System.Drawing.ColorTranslator.FromHtml [\#1](https://github.com/code-cracker/code-cracker/issues/1)
-
 **Fixed bugs:**
 
 - Erroneous CC0039 message [\#461](https://github.com/code-cracker/code-cracker/issues/461)
@@ -57,10 +40,6 @@
 
 ## [v1.0.0-rc1](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc1) (2015-07-23)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-beta1...v1.0.0-rc1)
-
-**Implemented enhancements:**
-
-- Verify if xml docs have the correct parameters [\#357](https://github.com/code-cracker/code-cracker/issues/357)
 
 **Fixed bugs:**
 
@@ -202,7 +181,6 @@
 - Update all analyzers to use the supported categories [\#97](https://github.com/code-cracker/code-cracker/issues/97)
 - Detect read-only private fields and fix adding the "readonly" modifier [\#86](https://github.com/code-cracker/code-cracker/issues/86)
 - Offer diagnostic to allow for ordering members inside classes and structs [\#76](https://github.com/code-cracker/code-cracker/issues/76)
-- Excess parameters in methods [\#44](https://github.com/code-cracker/code-cracker/issues/44)
 - Suggest use of stringbuilder when you have a while loop [\#34](https://github.com/code-cracker/code-cracker/issues/34)
 - Private set by default for automatic properties [\#32](https://github.com/code-cracker/code-cracker/issues/32)
 - Class that has IDisposable fields should implement IDisposable and dispose those fields [\#30](https://github.com/code-cracker/code-cracker/issues/30)
