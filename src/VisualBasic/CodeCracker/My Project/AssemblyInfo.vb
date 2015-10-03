@@ -14,5 +14,5 @@ Imports System.Runtime.InteropServices
 <Assembly: ComVisible(False)>
 <Assembly: NeutralResourcesLanguage("en")>
 <Assembly: AssemblyVersion("1.0.*")>
-<Assembly: AssemblyFileVersion("1.0.0.9")>
+<Assembly: AssemblyFileVersion("1.0.0.10")>
 <Assembly: InternalsVisibleTo("CodeCracker.Test.VisualBasic")>
