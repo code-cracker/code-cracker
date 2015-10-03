@@ -255,4 +255,10 @@
   <data name="SealMemberCodeFixProvider_MemberTitle" xml:space="preserve">
     <value>Seal member '{0}'</value>
   </data>
+  <data name="PreferAnyToCountGreaterThanZeroAnalyzer_Title" xml:space="preserve">
+    <value>Prefer 'Any()' to 'Count() &gt; 0'</value>
+  </data>
+  <data name="PreferAnyToCountGreaterThanZeroAnalyzer_MessageFormat" xml:space="preserve">
+    <value>A call to 'Count({0}) &gt; 0' can be changed to 'Any({0})'</value>
+  </data>
 </root>
