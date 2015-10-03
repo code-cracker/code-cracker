@@ -41,19 +41,20 @@ Namespace Style
             If rightSideExpression Is Nothing Then Return
             If Not rightSideExpression.IsKind(SyntaxKind.NumericLiteralExpression) Then Return
             If rightSideExpression.Token.ToString() <> "0" Then Return
-            Dim memberExpression = binExpression.Left.DescendantNodesAndSelf().OfType(Of MemberAccessExpressionSyntax).FirstOrDefault()
+            If (binExpression.Left Is Nothing) Then Return
+            If (binExpression.Left.IsKind(SyntaxKind.InvocationExpression) = False AndAlso binExpression.Left.IsKind(SyntaxKind.SimpleMemberAccessExpression) = False) Then Return
+            Dim memberExpression = TryCast(If(TryCast(binExpression.Left, InvocationExpressionSyntax)?.Expression, binExpression.Left), MemberAccessExpressionSyntax)
             If memberExpression Is Nothing Then Return
             If memberExpression.Name.ToString() <> "Count" Then Return
             Dim memberSymbolInfo = context.SemanticModel.GetSymbolInfo(memberExpression)
-            Dim namespaceName = memberSymbolInfo.Symbol.ContainingNamespace.ToString()
+            Dim namespaceName = memberSymbolInfo.Symbol?.ContainingNamespace?.ToString()
             If namespaceName <> "System.Linq" AndAlso namespaceName <> "System.Collections" AndAlso namespaceName <> "System.Collections.Generic" Then Return
-
             context.ReportDiagnostic(Diagnostic.Create(Rule, binExpression.GetLocation(), GetPredicateString(binExpression.Left)))
         End Sub
 
         Private Shared Function GetPredicateString(expression As ExpressionSyntax) As String
             Dim predicateString = ""
-            If TypeOf expression Is InvocationExpressionSyntax Then
+            If expression.IsKind(SyntaxKind.InvocationExpression) Then
                 Dim arguments = TryCast(expression, InvocationExpressionSyntax).ArgumentList
                 predicateString = If(arguments?.Arguments Is Nothing, "", If(arguments.Arguments.Count > 0, "predicate", ""))
             End If

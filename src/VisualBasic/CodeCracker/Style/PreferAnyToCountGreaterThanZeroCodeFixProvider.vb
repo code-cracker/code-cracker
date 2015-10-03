@@ -6,6 +6,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports System.Collections.Immutable
 Imports System.Threading
+Imports Microsoft.CodeAnalysis.Formatting
 
 Namespace Style
     <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(PreferAnyToCountGreaterThanZeroCodeFixProvider)), Composition.Shared>
@@ -29,12 +30,13 @@ Namespace Style
             Dim leftExpression = greaterThanExpression.Left
             Dim memberExpression = leftExpression.DescendantNodesAndSelf().OfType(Of MemberAccessExpressionSyntax)().FirstOrDefault()
             Dim invocationExpression = TryCast(leftExpression, InvocationExpressionSyntax)
-            Dim argumentList = If(invocationExpression Is Nothing, SyntaxFactory.ArgumentList(), invocationExpression.ArgumentList)
-            Dim anyExpression = SyntaxFactory.InvocationExpression(memberExpression.WithName(AnyName), argumentList) _
+            Dim anyExpression = If(invocationExpression Is Nothing,
+                SyntaxFactory.InvocationExpression(memberExpression.WithName(AnyName), SyntaxFactory.ArgumentList()),
+                invocationExpression.WithExpression(memberExpression.WithName(AnyName))) _
                 .WithLeadingTrivia(greaterThanExpression.GetLeadingTrivia()) _
                 .WithTrailingTrivia(greaterThanExpression.GetTrailingTrivia())
             Dim newRoot = root.ReplaceNode(greaterThanExpression, anyExpression)
-            newRoot = AddImportsSystemLinq(root, newRoot)
+            newRoot = AddImportsSystemLinq(root, newRoot).WithAdditionalAnnotations(Formatter.Annotation)
             Return document.WithSyntaxRoot(newRoot)
         End Function
 

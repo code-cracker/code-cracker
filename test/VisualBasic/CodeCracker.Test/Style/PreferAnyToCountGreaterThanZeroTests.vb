@@ -32,6 +32,21 @@ Namespace Style
         End Function
 
         <Fact>
+        Public Async Function IgnoreNestedInvocationOfCount() As Task
+            Const TestCountProp As String = "Imports System.Linq
+Module Module1
+    Sub Main()
+        Dim list = New List(Of Integer)
+        Dim query = Foo(list.Count()) > 1
+    End Sub
+    Function Foo(i As Object) As Integer
+        Return 1
+    End Function
+End Module"
+            Await VerifyBasicHasNoDiagnosticsAsync(TestCountProp)
+        End Function
+
+        <Fact>
         Public Async Function IgnoresCountWithoutZero() As Task
             Const TestCountProp As String = "Imports System.Linq
     Module Module1
@@ -76,14 +91,14 @@ End Module"
         <Fact>
         Public Async Function ConvertsCountMethodToAny() As Task
             Const FixTest As String = "Imports System.Linq
-    Module Module1
+Module Module1
 
-        Sub Main()
-            Dim ints = {1, 2}
-            Dim query = True AndAlso ints.Any() AndAlso True
-        End Sub
+    Sub Main()
+        Dim ints = {1, 2}
+        Dim query = True AndAlso ints.Any() AndAlso True
+    End Sub
 
-    End Module"
+End Module"
 
             Await VerifyBasicFixAsync(Test, FixTest)
         End Function
@@ -91,30 +106,30 @@ End Module"
         <Fact>
         Public Async Function ConvertsToAnyWithPredicate() As Task
             Const TestPredicate As String = "Imports System.Linq
-    Module Module1
-        Class Bar
-            Public A As Boolean
-        End Class
+Module Module1
+    Class Bar
+        Public A As Boolean
+    End Class
 
-        Sub Main()
-            Dim bools = {New Bar(), New Bar()}
-            Dim query = True AndAlso bools.Count(Function(x) x.A) > 0 AndAlso True
-        End Sub
+    Sub Main()
+        Dim bools = {New Bar(), New Bar()}
+        Dim query = True AndAlso bools.Count(Function(x) x.A) > 0 AndAlso True
+    End Sub
 
-    End Module"
+End Module"
 
             Const FixTest As String = "Imports System.Linq
-    Module Module1
-        Class Bar
-            Public A As Boolean
-        End Class
+Module Module1
+    Class Bar
+        Public A As Boolean
+    End Class
 
-        Sub Main()
-            Dim bools = {New Bar(), New Bar()}
-            Dim query = True AndAlso bools.Any(Function(x) x.A) AndAlso True
-        End Sub
+    Sub Main()
+        Dim bools = {New Bar(), New Bar()}
+        Dim query = True AndAlso bools.Any(Function(x) x.A) AndAlso True
+    End Sub
 
-    End Module"
+End Module"
 
             Await VerifyBasicFixAsync(TestPredicate, FixTest)
         End Function

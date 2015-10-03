@@ -24,7 +24,7 @@ namespace CodeCracker.Test.CSharp.Style
     }";
 
         [Fact]
-        public async Task CreatesDiagnosticsWhenUsingCountGreaterThanZero()
+        public async Task CreatesDiagnosticsWhenUsingCountMethodGreaterThanZero()
         {
             var expected = new DiagnosticResult
             {
@@ -33,8 +33,52 @@ namespace CodeCracker.Test.CSharp.Style
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 37) }
             };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task CreatesDiagnosticsWhenUsingCountPropertyGreaterThanZero()
+        {
+            const string test = @"
+class Bar
+{
+    void Foo()
+    {
+        var ints = new System.Collections.Generic.List<int>();
+        var query = true && ints.Count > 0 && true;
+    }
+}";
+            var a = new System.Collections.Generic.List<int>();
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.PreferAnyToCountGreaterThanZero.ToDiagnosticId(),
+                Message = string.Format(PreferAnyToCountGreaterThanZeroAnalyzer.MessageFormat.ToString(), ""),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 29) }
+            };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+
+        [Fact]
+        public async Task IgnoreNestedInvocationOfCount()
+        {
+            const string testCountProp = @"
+    using System;
+    using System.Linq;
+    namespace ConsoleApplication1
+    {
+        class Program
+        {
+            public override void M()
+            {
+                var b = Foo(new[] { 2 }.Count()) > 0;
+            }
+            static int Foo(object i) => 1;
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(testCountProp);
         }
 
         [Fact]
@@ -117,7 +161,7 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(test, fixTest);
         }
-        
+
 
         [Fact]
         public async Task ConvertsToAnyWithPredicate()

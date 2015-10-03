@@ -37,19 +37,21 @@ namespace CodeCracker.CSharp.Style
             if (rightSideExpression == null) return;
             if (rightSideExpression.IsNotKind(SyntaxKind.NumericLiteralExpression)) return;
             if (rightSideExpression.Token.ToString() != "0") return;
-            var memberExpression = binExpression.Left.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
+            if (binExpression.Left == null) return;
+            if (binExpression.Left.IsNotKind(SyntaxKind.InvocationExpression, SyntaxKind.SimpleMemberAccessExpression)) return;
+            var memberExpression = ((binExpression.Left as InvocationExpressionSyntax)?.Expression ?? binExpression.Left) as MemberAccessExpressionSyntax;
             if (memberExpression == null) return;
             if (memberExpression.Name.ToString() != "Count") return;
             var memberSymbolInfo = context.SemanticModel.GetSymbolInfo(memberExpression);
-            var namespaceName = memberSymbolInfo.Symbol.ContainingNamespace.ToString();
-            if (namespaceName != "System.Linq" && namespaceName != "System.Collections" && namespaceName != "System.Collections.Generic" ) return;
+            var namespaceName = memberSymbolInfo.Symbol?.ContainingNamespace?.ToString();
+            if (namespaceName != "System.Linq" && namespaceName != "System.Collections" && namespaceName != "System.Collections.Generic") return;
             context.ReportDiagnostic(Diagnostic.Create(Rule, binExpression.GetLocation(), GetPredicateString(binExpression.Left)));
         }
 
         private static string GetPredicateString(ExpressionSyntax expression)
         {
             var predicateString = "";
-            if (expression is InvocationExpressionSyntax)
+            if (expression.IsKind(SyntaxKind.InvocationExpression))
             {
                 var arguments = ((InvocationExpressionSyntax)expression).ArgumentList;
                 predicateString = arguments?.Arguments == null ? "" : arguments.Arguments.Count > 0 ? "predicate" : "";

@@ -35,11 +35,11 @@ namespace CodeCracker.CSharp.Style
             var leftExpression = greaterThanExpression.Left;
             var memberExpression = leftExpression.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             var invocationExpression = leftExpression as InvocationExpressionSyntax;
-            var anyExpression = invocationExpression == null ? SyntaxFactory.InvocationExpression(memberExpression.WithName(anyName)) : SyntaxFactory.InvocationExpression(memberExpression.WithName(anyName), invocationExpression.ArgumentList)
+            var anyExpression = invocationExpression == null ? SyntaxFactory.InvocationExpression(memberExpression.WithName(anyName)) : invocationExpression.WithExpression(memberExpression.WithName(anyName))
                 .WithLeadingTrivia(greaterThanExpression.GetLeadingTrivia())
                 .WithTrailingTrivia(greaterThanExpression.GetTrailingTrivia());
             var newRoot = root.ReplaceNode(greaterThanExpression, anyExpression);
-            newRoot = AddUsingSystemLinq(root, newRoot);
+            newRoot = AddUsingSystemLinq(root, newRoot).WithAdditionalAnnotations(Formatter.Annotation);
             return document.WithSyntaxRoot(newRoot);
         }
 
