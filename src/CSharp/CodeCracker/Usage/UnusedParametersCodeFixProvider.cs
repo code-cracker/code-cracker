@@ -69,8 +69,20 @@ namespace CodeCracker.CSharp.Usage
                     var arguments = objectCreation != null
                         ? objectCreation.ArgumentList
                         : methodIdentifier.FirstAncestorOfType<InvocationExpressionSyntax>().ArgumentList;
-                    var newArguments = arguments.WithArguments(arguments.Arguments.RemoveAt(parameterPosition));
-                    replacingArgs.Add(arguments, newArguments);
+                    if (parameter.Modifiers.Any(m => m.IsKind(SyntaxKind.ParamsKeyword)))
+                    {
+                        var newArguments = arguments;
+                        do
+                        {
+                            newArguments = newArguments.WithArguments(newArguments.Arguments.RemoveAt(parameterPosition));
+                        } while (newArguments.Arguments.Count > parameterPosition);
+                        replacingArgs.Add(arguments, newArguments);
+                    }
+                    else
+                    {
+                        var newArguments = arguments.WithArguments(arguments.Arguments.RemoveAt(parameterPosition));
+                        replacingArgs.Add(arguments, newArguments);
+                    }
                 }
                 var newLocRoot = locRoot.ReplaceNodes(replacingArgs.Keys, (original, rewritten) => replacingArgs[original]);
                 newSolution = newSolution.WithDocumentSyntaxRoot(referencingDocument.Id, newLocRoot);

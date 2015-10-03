@@ -4,6 +4,7 @@ Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeActions
 Imports Microsoft.CodeAnalysis.CodeFixes
 Imports Microsoft.CodeAnalysis.FindSymbols
+Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Usage
@@ -16,16 +17,16 @@ Namespace Usage
             Dim diagnostic = context.Diagnostics.First
             Dim span = diagnostic.Location.SourceSpan
             Dim parameter = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of ParameterSyntax)
-            context.RegisterCodeFix(CodeAction.Create(String.Format("Remove unused parameter: '{0}'", parameter.Identifier.GetText()), Function(c) RemovePArameterAsync(root, context.Document, parameter, c), NameOf(UnusedParametersCodeFixProvider)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create(String.Format("Remove unused parameter: '{0}'", parameter.Identifier.GetText()), Function(c) RemoveParameterAsync(root, context.Document, parameter, c), NameOf(UnusedParametersCodeFixProvider)), diagnostic)
         End Function
 
-        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId())
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId())
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Private Shared Async Function RemovePArameterAsync(root As SyntaxNode, document As Document, parameter As ParameterSyntax, cancellationToken As CancellationToken) As Task(Of Solution)
+        Private Shared Async Function RemoveParameterAsync(root As SyntaxNode, document As Document, parameter As ParameterSyntax, cancellationToken As CancellationToken) As Task(Of Solution)
             Dim solution = document.Project.Solution
             Dim parameterList = DirectCast(parameter.Parent, ParameterListSyntax)
             Dim parameterPosition = parameterList.Parameters.IndexOf(parameter)
@@ -57,8 +58,16 @@ Namespace Usage
                     Dim arguments = If(objectCreation IsNot Nothing,
                         objectCreation.ArgumentList,
                         methodIdentifier.FirstAncestorOfType(Of InvocationExpressionSyntax).ArgumentList)
-                    Dim newArguments = arguments.WithArguments(arguments.Arguments.RemoveAt(parameterPosition))
-                    replacingArgs.Add(arguments, newArguments)
+                    If parameter.Modifiers.Any(Function(m) m.IsKind(SyntaxKind.ParamArrayKeyword)) Then
+                        Dim newArguments = arguments
+                        Do
+                            newArguments = newArguments.WithArguments(newArguments.Arguments.RemoveAt(parameterPosition))
+                        Loop While newArguments.Arguments.Count > parameterPosition
+                        replacingArgs.Add(arguments, newArguments)
+                    Else
+                        Dim newArguments = arguments.WithArguments(arguments.Arguments.RemoveAt(parameterPosition))
+                        replacingArgs.Add(arguments, newArguments)
+                    End If
                 Next
                 Dim newLocRoot = locRoot.ReplaceNodes(replacingArgs.Keys, Function(original, rewritten) replacingArgs(original))
                 newSolution = newSolution.WithDocumentSyntaxRoot(referencingDocument.Id, newLocRoot)

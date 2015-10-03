@@ -313,6 +313,36 @@ class TypeName
         }
 
         [Fact]
+        public async Task FixParams()
+        {
+            const string source = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Foo(1, 2, 3, 4);
+    }
+    public void Foo(int a, int b, params int[] c)
+    {
+        a = b;
+    }
+}";
+            const string fixtest = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Foo(1, 2);
+    }
+    public void Foo(int a, int b)
+    {
+        a = b;
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
         public async Task FixWhenTheParametersHasReferenceOnDifferentClass()
         {
             const string source = @"
@@ -539,7 +569,4 @@ class TypeName
         }
 
     }
-
 }
-
-

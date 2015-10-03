@@ -1,6 +1,4 @@
 ﻿Imports CodeCracker.VisualBasic.Usage
-Imports Microsoft.CodeAnalysis
-Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports Xunit
 
 Namespace Usage
@@ -250,7 +248,7 @@ Class HasRef
         Dim x = New TypeName().Foo(1, 2)
     End Sub
 End Class
-Class TypeName 
+Class TypeName
     Public Function Foo(a As Integer, b As Integer) as Integer
         Return a
     End Function
@@ -261,7 +259,7 @@ Class HasRef
         Dim x = New TypeName().Foo(1)
     End Sub
 End Class
-Class TypeName 
+Class TypeName
     Public Function Foo(a As Integer) as Integer
         Return a
     End Function
@@ -278,7 +276,7 @@ Class HasRef
         TypeName.Foo(1, 2)
     End Sub
 End Class
-Class TypeName 
+Class TypeName
     Public Shared Function Foo(a As Integer, b As Integer) as Integer
         Return a
     End Function
@@ -289,7 +287,7 @@ Class HasRef
         TypeName.Foo(1)
     End Sub
 End Class
-Class TypeName 
+Class TypeName
     Public Shared Function Foo(a As Integer) as Integer
         Return a
     End Function
@@ -306,7 +304,7 @@ Class HasRef
         Dim x = New TypeName(1, 2)
     End Sub
 End Class
-Class TypeName 
+Class TypeName
     Public Sub New(a As Integer, b As Integer)
         Dim x = a
     End Sub
@@ -317,12 +315,64 @@ Class HasRef
         Dim x = New TypeName(1)
     End Sub
 End Class
-Class TypeName 
+Class TypeName
     Public Sub New(a As Integer)
         Dim x = a
     End Sub
 End Class"
 
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        <Fact>
+        Public Async Function FixParamsInConstructor() As Task
+            Const source = "
+Class HasRef
+    Public Sub IsReferencing()
+        Dim x = New TypeName(1, 2, 3)
+    End Sub
+End Class
+Class TypeName
+    Public Sub New(a As Integer, b As Integer, ParamArray c As Integer())
+        b = a
+    End Sub
+End Class"
+            Const fix = "
+Class HasRef
+    Public Sub IsReferencing()
+        Dim x = New TypeName(1, 2)
+    End Sub
+End Class
+Class TypeName
+    Public Sub New(a As Integer, b As Integer)
+        b = a
+    End Sub
+End Class"
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        <Fact>
+        Public Async Function FixParams() As Task
+            Const source = "
+Class Foo
+    Public Sub IsReferencing()
+        Dim x = Bar(1, 2, 3, 4)
+    End Sub
+    Public Function Bar(a As Integer, b As Integer, ParamArray c As Integer())
+        b = a
+        return 1
+    End Function
+End Class"
+            Const fix = "
+Class Foo
+    Public Sub IsReferencing()
+        Dim x = Bar(1, 2)
+    End Sub
+    Public Function Bar(a As Integer, b As Integer)
+        b = a
+        return 1
+    End Function
+End Class"
             Await VerifyBasicFixAsync(source, fix)
         End Function
 
