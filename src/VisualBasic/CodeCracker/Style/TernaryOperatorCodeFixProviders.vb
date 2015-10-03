@@ -8,14 +8,33 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Style
-    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(TernaryOperatorWithReturnCodeFixProvider)), Composition.Shared>
-    Public Class TernaryOperatorWithReturnCodeFixProvider
+
+    Public MustInherit Class TernaryOperatorCodeFixProviderBase
         Inherits CodeFixProvider
 
-        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
+        Protected Shared Function MakeTernaryOperand(expression As ExpressionSyntax, semanticModel As SemanticModel, type As ITypeSymbol, typeSyntax As TypeSyntax) As ExpressionSyntax
+            If type?.OriginalDefinition.SpecialType = SpecialType.System_Nullable_T Then
+                Dim constValue = semanticModel.GetConstantValue(expression)
+                If constValue.HasValue AndAlso constValue.Value Is Nothing Then
+                    Return SyntaxFactory.DirectCastExpression(expression.WithoutTrailingTrivia(), typeSyntax)
+                End If
+            End If
+
+            Return expression
+        End Function
+    End Class
+
+    <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(TernaryOperatorWithReturnCodeFixProvider)), Composition.Shared>
+    Public Class TernaryOperatorWithReturnCodeFixProvider
+        Inherits TernaryOperatorCodeFixProviderBase
+
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
+            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
-            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, diagnostic, c), NameOf(TernaryOperatorWithReturnCodeFixProvider)), diagnostic)
-            Return Task.FromResult(0)
+            Dim span = diagnostic.Location.SourceSpan
+            Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MultiLineIfBlockSyntax)
+            If declaration Is Nothing Then Exit Function
+            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c), NameOf(TernaryOperatorWithReturnCodeFixProvider)), diagnostic)
         End Function
 
         Public Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) =
@@ -25,36 +44,40 @@ Namespace Style
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Private Async Function MakeTernaryAsync(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
-            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
-            Dim span = diagnostic.Location.SourceSpan
-
-            Dim ifBlock = root.FindToken(span.Start).Parent.FirstAncestorOrSelfOfType(Of MultiLineIfBlockSyntax)
-
+        Private Async Function MakeTernaryAsync(document As Document, ifBlock As MultiLineIfBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
             Dim ifReturn = TryCast(ifBlock.Statements.FirstOrDefault(), ReturnStatementSyntax)
             Dim elseReturn = TryCast(ifBlock.ElseBlock?.Statements.FirstOrDefault(), ReturnStatementSyntax)
+            Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
+            Dim type = semanticModel.GetTypeInfo(ifReturn.Expression).ConvertedType
+            Dim typeSyntax = SyntaxFactory.IdentifierName(type.ToMinimalDisplayString(semanticModel, ifReturn.SpanStart))
+            Dim trueExpression = MakeTernaryOperand(ifReturn.Expression, semanticModel, type, typeSyntax)
+            Dim falseExpression = MakeTernaryOperand(elseReturn.Expression, semanticModel, type, typeSyntax)
             Dim ternary = SyntaxFactory.TernaryConditionalExpression(ifBlock.IfStatement.Condition.WithoutTrailingTrivia(),
-                                                                     ifReturn.Expression.WithoutTrailingTrivia(),
-                                                                     elseReturn.Expression.WithoutTrailingTrivia()).
-                WithLeadingTrivia(ifBlock.GetLeadingTrivia()).
-                WithTrailingTrivia(ifBlock.GetTrailingTrivia()).
-                WithAdditionalAnnotations(Formatter.Annotation)
+                                                                     trueExpression.WithoutTrailingTrivia(),
+                                                                     falseExpression.WithoutTrailingTrivia()).
+                                                                     WithLeadingTrivia(ifBlock.GetLeadingTrivia()).
+                                                                     WithTrailingTrivia(ifBlock.GetTrailingTrivia()).
+                                                                     WithAdditionalAnnotations(Formatter.Annotation)
             Dim returnStatement = SyntaxFactory.ReturnStatement(ternary)
-
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken)
             Dim newRoot = root.ReplaceNode(ifBlock, returnStatement)
             Dim newDocument = document.WithSyntaxRoot(newRoot)
+
             Return newDocument
         End Function
     End Class
 
     <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(TernaryOperatorWithAssignmentCodeFixProvider)), Composition.Shared>
     Public Class TernaryOperatorWithAssignmentCodeFixProvider
-        Inherits CodeFixProvider
+        Inherits TernaryOperatorCodeFixProviderBase
 
-        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
+        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
+            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
             Dim diagnostic = context.Diagnostics.First
-            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, diagnostic, c), NameOf(TernaryOperatorWithAssignmentCodeFixProvider)), diagnostic)
-            Return Task.FromResult(0)
+            Dim span = diagnostic.Location.SourceSpan
+            Dim declaration = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MultiLineIfBlockSyntax)
+            If declaration Is Nothing Then Exit Function
+            context.RegisterCodeFix(CodeAction.Create("Change to ternary operator", Function(c) MakeTernaryAsync(context.Document, declaration, c), NameOf(TernaryOperatorWithAssignmentCodeFixProvider)), diagnostic)
         End Function
 
         Public Overrides ReadOnly Property FixableDiagnosticIds() As ImmutableArray(Of String) =
@@ -64,56 +87,30 @@ Namespace Style
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Private Async Function MakeTernaryAsync(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
-            Dim root = Await document.GetSyntaxRootAsync(cancellationToken)
-            Dim ifBlock = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.FirstAncestorOrSelf(Of MultiLineIfBlockSyntax)
-
+        Private Async Function MakeTernaryAsync(document As Document, ifBlock As MultiLineIfBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
             Dim ifAssign = TryCast(ifBlock.Statements.FirstOrDefault(), AssignmentStatementSyntax)
             Dim elseAssign = TryCast(ifBlock.ElseBlock?.Statements.FirstOrDefault(), AssignmentStatementSyntax)
+            Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
+            Dim type = semanticModel.GetTypeInfo(ifAssign.Left).ConvertedType
+            Dim typeSyntax = SyntaxFactory.IdentifierName(type.ToMinimalDisplayString(semanticModel, ifAssign.SpanStart))
+            Dim trueExpression = MakeTernaryOperand(ifAssign.Right, semanticModel, type, typeSyntax)
+            Dim falseExpression = MakeTernaryOperand(elseAssign.Right, semanticModel, type, typeSyntax)
+            Dim ternary = SyntaxFactory.TernaryConditionalExpression(ifBlock.IfStatement.Condition.WithoutTrailingTrivia(),
+                                                                     trueExpression.WithoutTrailingTrivia(),
+                                                                     falseExpression.WithoutTrailingTrivia()).
+                                                                     WithLeadingTrivia(ifBlock.GetLeadingTrivia()).
+                                                                     WithTrailingTrivia(ifBlock.GetTrailingTrivia()).
+                                                                     WithAdditionalAnnotations(Formatter.Annotation)
 
-            Dim assignment As AssignmentStatementSyntax
-            If ifAssign.Left.Kind = SyntaxKind.IdentifierName Then
-                assignment = CreateIdentifier(ifBlock, ifAssign, elseAssign)
-            ElseIf ifAssign.Left.Kind = SyntaxKind.SimpleMemberAccessExpression
-                assignment = CreateMemberAssignment(ifBlock, ifAssign, elseAssign)
-            Else
-                Return document
-            End If
+            Dim assignment = SyntaxFactory.SimpleAssignmentStatement(ifAssign.Left, ternary).
+                WithLeadingTrivia(ifBlock.GetLeadingTrivia()).
+                WithTrailingTrivia(ifBlock.GetTrailingTrivia()).
+                WithAdditionalAnnotations(Formatter.Annotation)
 
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken)
             Dim newRoot = root.ReplaceNode(ifBlock, assignment)
             Dim newDocument = document.WithSyntaxRoot(newRoot)
             Return newDocument
-        End Function
-
-        Private Shared Function CreateIdentifier(ifBlock As MultiLineIfBlockSyntax, ifAssign As AssignmentStatementSyntax, elseAssign As AssignmentStatementSyntax) As AssignmentStatementSyntax
-            Dim variableIdentifier = TryCast(ifAssign.Left, IdentifierNameSyntax)
-
-            Dim ternary = SyntaxFactory.TernaryConditionalExpression(
-                ifBlock.IfStatement.Condition,
-                ifAssign.Right.WithoutTrailingTrivia(),
-                elseAssign.Right.WithoutTrailingTrivia())
-
-            Dim assignment = SyntaxFactory.SimpleAssignmentStatement(variableIdentifier, ternary).
-                WithLeadingTrivia(ifBlock.GetLeadingTrivia()).
-                WithTrailingTrivia(ifBlock.GetTrailingTrivia()).
-                WithAdditionalAnnotations(Formatter.Annotation)
-            Return assignment
-        End Function
-
-        Private Shared Function CreateMemberAssignment(ifBlock As MultiLineIfBlockSyntax, ifAssign As AssignmentStatementSyntax, elseAssign As AssignmentStatementSyntax) As AssignmentStatementSyntax
-            Dim variableIdentifier = TryCast(ifAssign.Left, MemberAccessExpressionSyntax)
-
-            Dim ternary = SyntaxFactory.TernaryConditionalExpression(
-                ifBlock.IfStatement.Condition,
-                ifAssign.Right.WithoutTrailingTrivia(),
-                elseAssign.Right.WithoutTrailingTrivia())
-
-            Dim assignment = SyntaxFactory.SimpleAssignmentStatement(variableIdentifier, ternary).
-                WithLeadingTrivia(ifBlock.GetLeadingTrivia()).
-                WithTrailingTrivia(ifBlock.GetTrailingTrivia()).
-                WithAdditionalAnnotations(Formatter.Annotation)
-
-            Return assignment
         End Function
     End Class
 

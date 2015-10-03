@@ -180,47 +180,54 @@ End Namespace"
     End Function
 
     <Fact>
-    Public Async Function WhenTernaryWithObjectDoesApplyFix() As Task
+    Public Async Function WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFix() As Task
         Const source = "
-Class MyCustomer
-    Public Property Value As String
-End Class
-Public Class ExcelLineRecordClass
-    Public Property LineNumber As Integer
-    Public Property imported As Boolean
-End Class
-Class Tester
-    Private Sub Test()
-        Dim ExcelRecord As New ExcelLineRecordClass
-        Dim lCell As New MyCustomer
-        If lCell Is Nothing Then
-            ExcelRecord.imported = False
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer?
+        If True Then
+            a = 1
         Else
-            ExcelRecord.imported = If(lCell.Value, lCell.Value.ToString = ""X"")
+            a = Nothing
         End If
     End Sub
 End Class"
 
         Const fix = "
-Class MyCustomer
-    Public Property Value As String
-End Class
-Public Class ExcelLineRecordClass
-    Public Property LineNumber As Integer
-    Public Property imported As Boolean
-End Class
-Class Tester
-    Private Sub Test()
-        Dim ExcelRecord As New ExcelLineRecordClass
-        Dim lCell As New MyCustomer
-        ExcelRecord.imported = If(lCell Is Nothing, False, If(lCell.Value, lCell.Value.ToString = ""X""))
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer?
+         a = If(True, 1, DirectCast(Nothing, Integer?))
     End Sub
 End Class"
 
         Await VerifyBasicFixAsync(source, fix)
-
     End Function
 
+    <Fact>
+    Public Async Function WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFixAll() As Task
+        Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer?
+        If True Then
+            a = 1
+        Else
+            a = Nothing
+        End If
+    End Sub
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer?
+         a = If(True, 1, DirectCast(Nothing, Integer?))
+    End Sub
+End Class"
+
+        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+    End Function
 End Class
 
 Public Class TernaryOperatorWithReturnTests
@@ -390,6 +397,51 @@ End Namespace"
         Await VerifyBasicFixAllAsync(New String() {sourceReturn, sourceReturn.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
     End Function
 
+    <Fact>
+    Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFix() As Task
+        Const source = "
+Public Class MyType
+    Public Function Foo() As Integer?
+        If True Then
+            Return 1
+        Else
+            Return Nothing
+        End If
+    End Function
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Function Foo() As Integer?
+        Return If(True, 1, DirectCast(Nothing, Integer?))
+    End Function
+End Class"
+
+        Await VerifyBasicFixAsync(source, fix)
+    End Function
+
+    <Fact>
+    Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFixAll() As Task
+        Const source = "
+Public Class MyType
+    Public Function Foo() As Integer?
+        If True Then
+            Return 1
+        Else
+            Return Nothing
+        End If
+    End Function
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Function Foo() As Integer?
+        Return If(True, 1, DirectCast(Nothing, Integer?))
+    End Function
+End Class"
+
+        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+    End Function
 End Class
 
 Public Class TernaryOperatorFromIifTests
@@ -523,7 +575,4 @@ End Class"
         Await VerifyBasicHasNoDiagnosticsAsync(source)
     End Function
 
-
-
 End Class
-
