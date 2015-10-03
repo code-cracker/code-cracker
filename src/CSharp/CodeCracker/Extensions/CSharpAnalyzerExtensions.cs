@@ -473,9 +473,35 @@ namespace CodeCracker
 
         public static SyntaxTokenList CloneAccessibilityModifiers(this SyntaxTokenList modifiers)
         {
-            var accessibilityModifiers = modifiers.Where(token => token.IsKind(SyntaxKind.PublicKeyword) || token.IsKind(SyntaxKind.ProtectedKeyword) || token.IsKind(SyntaxKind.InternalKeyword) || token.IsKind(SyntaxKind.PrivateKeyword)).Select(token => SyntaxFactory.Token(token.Kind()));
+            var accessibilityModifiers =
+                modifiers.Where(
+                    token =>
+                        token.IsKind(SyntaxKind.PublicKeyword) || token.IsKind(SyntaxKind.ProtectedKeyword) ||
+                        token.IsKind(SyntaxKind.InternalKeyword) || token.IsKind(SyntaxKind.PrivateKeyword))
+                    .Select(token => SyntaxFactory.Token(token.Kind()));
 
             return SyntaxFactory.TokenList(accessibilityModifiers.EnsureProtectedBeforeInternal());
+        }
+
+        public static string GetOperatorName(this BaseMethodDeclarationSyntax operatorSyntax)
+        {
+            switch (operatorSyntax.Kind())
+            {
+                case SyntaxKind.OperatorDeclaration:
+                    var operatorDeclaration = (OperatorDeclarationSyntax)operatorSyntax;
+                    return $"{operatorSyntax.GetTypeDeclaration().Identifier.ValueText}.{operatorDeclaration.OperatorKeyword} {operatorDeclaration.OperatorToken}{operatorDeclaration.ParameterList}";
+                case SyntaxKind.ConversionOperatorDeclaration:
+                    var conversionOperatorDeclaration = (ConversionOperatorDeclarationSyntax)operatorSyntax;
+                    return $"{operatorSyntax.GetTypeDeclaration().Identifier.ValueText}.{conversionOperatorDeclaration.ImplicitOrExplicitKeyword} {conversionOperatorDeclaration.Type}{conversionOperatorDeclaration.ParameterList}";
+                default:
+                    throw new InvalidOperationException("Passed MethodDeclaration is not any kind of OperatorDeclaration");
+            }
+        }
+
+        public static TypeDeclarationSyntax GetTypeDeclaration(this BaseMethodDeclarationSyntax methodSyntax)
+        {
+            return methodSyntax.FirstAncestorOfType(typeof(ClassDeclarationSyntax),
+                typeof(StructDeclarationSyntax)) as TypeDeclarationSyntax;
         }
 
         public static bool IsLoopStatement(this SyntaxNode note) => note.IsAnyKind(SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement);
