@@ -211,6 +211,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Design\InconsistentAccessibilityTests.FieldPropertyType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.OperatorReturnType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.OperatorParameter.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

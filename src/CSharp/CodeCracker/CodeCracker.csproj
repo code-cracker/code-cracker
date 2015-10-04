@@ -42,6 +42,8 @@
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfoProvider.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInFieldType.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInOperatorParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInOperatorReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInPropertyType.cs" />
     <Compile Include="Design\MakeMethodStaticAnalyzer.cs" />
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />

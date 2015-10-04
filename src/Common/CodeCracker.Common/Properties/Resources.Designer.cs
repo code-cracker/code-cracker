@@ -179,6 +179,24 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change parameter type &apos;{0}&apos; accessibility to be as accessible as operator &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInOperatorParameter_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInOperatorParameter_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change return type &apos;{0}&apos; accessibility to be as accessible as operator &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInOperatorReturnType_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInOperatorReturnType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change property type &apos;{0}&apos; accessibility to be as accessible as property &apos;{1}&apos;.
         /// </summary>
         public static string InconsistentAccessibilityInPropertyType_Title {
