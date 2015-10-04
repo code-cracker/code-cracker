@@ -20,6 +20,18 @@ End Class"
             Await VerifyBasicHasNoDiagnosticsAsync(source)
         End Function
 
+        <Fact>
+        Public Async Function WhenReferencingExternalSymbolShouldReportDiagnostic() As Task
+            Dim source = $"
+Imports System
+Public Class TypeName
+    Sub Foo()
+        Dim a = ""Action""
+    End Sub
+End Class"
+            Dim expected = CreateNameofDiagnosticResult("Actio" + "n", 5, 17, DiagnosticId.NameOf_External)
+            Await VerifyBasicDiagnosticAsync(source, expected)
+        End Function
 
         <Theory>
         <InlineData("b As String", "b", "b")>
@@ -578,10 +590,10 @@ End Class"
             Await VerifyBasicHasNoDiagnosticsAsync(test)
         End Function
 
-        Private Function CreateNameofDiagnosticResult(nameofArgument As String, diagnosticLine As Integer, diagnosticColumn As Integer) As DiagnosticResult
+        Private Function CreateNameofDiagnosticResult(nameofArgument As String, diagnosticLine As Integer, diagnosticColumn As Integer, Optional id As DiagnosticId = DiagnosticId.NameOf) As DiagnosticResult
             Return New DiagnosticResult With
             {
-                .Id = DiagnosticId.NameOf.ToDiagnosticId(),
+                .Id = id.ToDiagnosticId(),
                 .Message = $"Use 'NameOf({nameofArgument})' instead of specifying the program element name.",
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", diagnosticLine, diagnosticColumn)}

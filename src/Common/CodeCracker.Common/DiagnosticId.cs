@@ -77,5 +77,6 @@
         MakeMethodStatic = 91,
         ChangeAllToAny = 92,
         ConsoleWriteLine = 95,
+        NameOf_External = 108,
     }
 }
