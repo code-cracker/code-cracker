@@ -21,10 +21,21 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
         internal const string InconsistentAccessibilityInPropertyTypeCompilerErrorNumber = "CS0053";
         internal const string InconsistentAccessibilityInIndexerReturnTypeCompilerErrorNumber = "CS0054";
         internal const string InconsistentAccessibilityInIndexerParameterCompilerErrorNumber = "CS0055";
+        internal const string InconsistentAccessibilityInOperatorReturnTypeCompilerErrorNumber = "CS0056";
+        internal const string InconsistentAccessibilityInOperatorParameterCompilerErrorNumber = "CS0057";
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(InconsistentAccessibilityInMethodReturnTypeCompilerErrorNumber, InconsistentAccessibilityInMethodParameterCompilerErrorNumber, InconsistentAccessibilityInFieldTypeCompilerErrorNumber, InconsistentAccessibilityInPropertyTypeCompilerErrorNumber, InconsistentAccessibilityInIndexerReturnTypeCompilerErrorNumber, InconsistentAccessibilityInIndexerParameterCompilerErrorNumber);
+        public override ImmutableArray<string> FixableDiagnosticIds
+            =>
+                ImmutableArray.Create(InconsistentAccessibilityInMethodReturnTypeCompilerErrorNumber,
+                    InconsistentAccessibilityInMethodParameterCompilerErrorNumber,
+                    InconsistentAccessibilityInFieldTypeCompilerErrorNumber,
+                    InconsistentAccessibilityInPropertyTypeCompilerErrorNumber,
+                    InconsistentAccessibilityInIndexerReturnTypeCompilerErrorNumber,
+                    InconsistentAccessibilityInIndexerParameterCompilerErrorNumber,
+                    InconsistentAccessibilityInOperatorReturnTypeCompilerErrorNumber,
+                    InconsistentAccessibilityInOperatorParameterCompilerErrorNumber);
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -34,15 +45,29 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 
                 if (inconsistentAccessibilityInfo.TypeToChangeFound())
                 {
-                    var typeLocations = await FindTypeLocationsInSourceCodeAsync(context.Document, inconsistentAccessibilityInfo.TypeToChangeAccessibility, context.CancellationToken).ConfigureAwait(false);
+                    var typeLocations =
+                        await
+                            FindTypeLocationsInSourceCodeAsync(context.Document,
+                                inconsistentAccessibilityInfo.TypeToChangeAccessibility, context.CancellationToken)
+                                .ConfigureAwait(false);
 
                     if (typeLocations.Length == 1)
                     {
-                        context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInDocumentAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations[0], c), nameof(InconsistentAccessibilityCodeFixProvider)), diagnostic);
+                        context.RegisterCodeFix(
+                            CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage,
+                                c =>
+                                    ChangeTypeAccessibilityInDocumentAsync(context.Document.Project.Solution,
+                                        inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations[0], c),
+                                nameof(InconsistentAccessibilityCodeFixProvider)), diagnostic);
                     }
                     else if (typeLocations.Length > 1)
                     {
-                        context.RegisterCodeFix(CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage, c => ChangeTypeAccessibilityInSolutionAsync(context.Document.Project.Solution, inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations, c), nameof(InconsistentAccessibilityCodeFixProvider)), diagnostic);
+                        context.RegisterCodeFix(
+                            CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage,
+                                c =>
+                                    ChangeTypeAccessibilityInSolutionAsync(context.Document.Project.Solution,
+                                        inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations, c),
+                                nameof(InconsistentAccessibilityCodeFixProvider)), diagnostic);
                     }
                 }
             }
@@ -71,6 +96,12 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
                     break;
                 case InconsistentAccessibilityInIndexerParameterCompilerErrorNumber:
                     inconsistentAccessibilityProvider = new InconsistentAccessibilityInIndexerParameter();
+                    break;
+                case InconsistentAccessibilityInOperatorReturnTypeCompilerErrorNumber:
+                    inconsistentAccessibilityProvider = new InconsistentAccessibilityInOperatorReturnType();
+                    break;
+                case InconsistentAccessibilityInOperatorParameterCompilerErrorNumber:
+                    inconsistentAccessibilityProvider = new InconsistentAccessibilityInOperatorParameter();
                     break;
             }
 
