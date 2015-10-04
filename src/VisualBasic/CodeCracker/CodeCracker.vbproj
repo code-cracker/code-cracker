@@ -139,6 +139,7 @@
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeCodeFixProvider.vb" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzer.vb" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedCodeFixProvider.vb" />
+    <Compile Include="Usage\UnusedParametersCodeFixAllProvider.vb" />
     <Compile Include="Usage\UnusedParametersCodeFixProvider.vb" />
     <Compile Include="Usage\UriAnalyzer.vb" />
   </ItemGroup>

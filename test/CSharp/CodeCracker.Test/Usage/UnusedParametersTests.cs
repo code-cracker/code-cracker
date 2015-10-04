@@ -313,6 +313,104 @@ class TypeName
         }
 
         [Fact]
+        public async Task FixParams()
+        {
+            const string source = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Foo(1, 2, 3, 4);
+    }
+    public void Foo(int a, int b, params int[] c)
+    {
+        a = b;
+    }
+}";
+            const string fixtest = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Foo(1, 2);
+    }
+    public void Foo(int a, int b)
+    {
+        a = b;
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAllInSameClass()
+        {
+            const string source = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Foo(1, 2, 3, 4);
+    }
+    public void Foo(int a, int b, params int[] c)
+    {
+        a = 1;
+    }
+}";
+            const string fixtest = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Foo(1);
+    }
+    public void Foo(int a)
+    {
+        a = 1;
+    }
+}";
+            await VerifyCSharpFixAllAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAllInDifferentClass()
+        {
+            const string source1 = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Referenced.Foo(1, 2, 3, 4);
+    }
+}";
+            const string source2 = @"
+class Referenced
+{
+    public static void Foo(int a, int b, params int[] c)
+    {
+        a = 1;
+    }
+}";
+            const string fix1 = @"
+class TypeName
+{
+    public void IsReferencing()
+    {
+        Referenced.Foo(1);
+    }
+}";
+            const string fix2 = @"
+class Referenced
+{
+    public static void Foo(int a)
+    {
+        a = 1;
+    }
+}";
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { fix1, fix2 });
+        }
+
+        [Fact]
         public async Task FixWhenTheParametersHasReferenceOnDifferentClass()
         {
             const string source = @"
@@ -539,7 +637,4 @@ class TypeName
         }
 
     }
-
 }
-
-
