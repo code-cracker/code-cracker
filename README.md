@@ -10,7 +10,7 @@ our task board, definition of done, definition of ready, etc.
 [![Nuget downloads](http://img.shields.io/nuget/dt/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
 [![Issues open](http://img.shields.io/github/issues-raw/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker/)
 [![Coverage Status](https://img.shields.io/coveralls/code-cracker/code-cracker/master.svg)](https://coveralls.io/r/code-cracker/code-cracker?branch=master)
-[![Source Browser](https://img.shields.io/badge/Browse-Source-green.svg)](http://sourcebrowser.io/Browse/code-cracker/code-cracker)
+[![Source Browser](https://img.shields.io/badge/Browse-Source-green.svg)](http://ccref.azurewebsites.net)
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this
 software, nor it will be. Ever.
