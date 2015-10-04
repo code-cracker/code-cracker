@@ -55,7 +55,7 @@ namespace CodeCracker.CSharp.Style
             if (expressionStatement?.Expression?.IsNotKind(SyntaxKind.SimpleAssignmentExpression) ?? true) return;
             var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
             if (assignmentExpression.Right.IsNotKind(SyntaxKind.ObjectCreationExpression)) return;
-            if ((assignmentExpression.Right as ObjectCreationExpressionSyntax).Initializer?.IsKind(SyntaxKind.CollectionInitializerExpression) ?? false) return;
+            if (((ObjectCreationExpressionSyntax)assignmentExpression.Right).Initializer?.IsKind(SyntaxKind.CollectionInitializerExpression) ?? false) return;
             var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
             var assignmentExpressions = FindAssignmentExpressions(semanticModel, expressionStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
@@ -73,7 +73,7 @@ namespace CodeCracker.CSharp.Style
             var variable = localDeclarationStatement.Declaration.Variables.Single();
             var equalsValueClauseSyntax = variable.Initializer as EqualsValueClauseSyntax;
             if (equalsValueClauseSyntax?.Value.IsNotKind(SyntaxKind.ObjectCreationExpression) ?? true) return;
-            if ((equalsValueClauseSyntax.Value as ObjectCreationExpressionSyntax).Initializer?.IsKind(SyntaxKind.CollectionInitializerExpression) ?? false) return;
+            if (((ObjectCreationExpressionSyntax)equalsValueClauseSyntax.Value).Initializer?.IsKind(SyntaxKind.CollectionInitializerExpression) ?? false) return;
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
             var assignmentExpressionStatements = FindAssignmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
             if (!assignmentExpressionStatements.Any()) return;
