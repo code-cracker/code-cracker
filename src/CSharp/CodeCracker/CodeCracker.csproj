@@ -136,6 +136,7 @@
     <Compile Include="Usage\RedundantFieldAssignmentCodeFixProvider.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseAnalyzer.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseCodeFixProvider.cs" />
+    <Compile Include="Usage\UnusedParametersCodeFixAllProvider.cs" />
     <Compile Include="Usage\RemoveUnreachableCodeFixAllProvider.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedFixAllProvider.cs" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzer.cs" />

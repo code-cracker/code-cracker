@@ -115,7 +115,10 @@ You should delete the parameter in such cases."
         End Function
 
         Private Function CreateDiagnostic(context As SyntaxNodeAnalysisContext, parameter As ParameterSyntax) As SyntaxNodeAnalysisContext
-            Dim diag = Diagnostic.Create(Rule, parameter.GetLocation(), parameter.Identifier.Identifier.ValueText)
+            Dim propsDic = New Dictionary(Of String, String)
+            propsDic.Add("identifier", parameter.Identifier.Identifier.Text)
+            Dim props = propsDic.ToImmutableDictionary()
+            Dim diag = Diagnostic.Create(Rule, parameter.GetLocation(), props, parameter.Identifier.Identifier.ValueText)
             context.ReportDiagnostic(diag)
             Return context
         End Function

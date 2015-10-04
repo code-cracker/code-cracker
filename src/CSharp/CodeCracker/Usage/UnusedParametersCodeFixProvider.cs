@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Usage
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public sealed override FixAllProvider GetFixAllProvider() => UnusedParametersCodeFixAllProvider.Instance;
 
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -29,21 +29,31 @@ namespace CodeCracker.CSharp.Usage
             return Task.FromResult(0);
         }
 
-        private async static Task<Solution> RemoveParameterAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        public async static Task<Solution> RemoveParameterAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var solution = document.Project.Solution;
+            var newSolution = solution;
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var parameter = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
+            var docs = await RemoveParameterAsync(document, parameter, root, cancellationToken);
+            foreach (var doc in docs)
+                newSolution = newSolution.WithDocumentSyntaxRoot(doc.DocumentId, doc.Root);
+            return newSolution;
+        }
+
+        public async static Task<List<DocumentIdAndRoot>> RemoveParameterAsync(Document document, ParameterSyntax parameter, SyntaxNode root, CancellationToken cancellationToken)
+        {
             var solution = document.Project.Solution;
             var parameterList = (ParameterListSyntax)parameter.Parent;
             var parameterPosition = parameterList.Parameters.IndexOf(parameter);
             var newParameterList = parameterList.WithParameters(parameterList.Parameters.Remove(parameter));
-            var newSolution = solution;
             var foundDocument = false;
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var method = (BaseMethodDeclarationSyntax)parameter.Parent.Parent;
             var methodSymbol = semanticModel.GetDeclaredSymbol(method);
             var references = await SymbolFinder.FindReferencesAsync(methodSymbol, solution, cancellationToken).ConfigureAwait(false);
             var documentGroups = references.SelectMany(r => r.Locations).GroupBy(loc => loc.Document);
+            var docs = new List<DocumentIdAndRoot>();
             foreach (var documentGroup in documentGroups)
             {
                 var referencingDocument = documentGroup.Key;
@@ -85,15 +95,20 @@ namespace CodeCracker.CSharp.Usage
                     }
                 }
                 var newLocRoot = locRoot.ReplaceNodes(replacingArgs.Keys, (original, rewritten) => replacingArgs[original]);
-                newSolution = newSolution.WithDocumentSyntaxRoot(referencingDocument.Id, newLocRoot);
+                docs.Add(new DocumentIdAndRoot { DocumentId = referencingDocument.Id, Root = newLocRoot });
             }
             if (!foundDocument)
             {
                 var newRoot = root.ReplaceNode(parameterList, newParameterList);
                 var newDocument = document.WithSyntaxRoot(newRoot);
-                newSolution = newSolution.WithDocumentSyntaxRoot(document.Id, newRoot);
+                docs.Add(new DocumentIdAndRoot { DocumentId = document.Id, Root = newRoot });
             }
-            return newSolution;
+            return docs;
+        }
+        public struct DocumentIdAndRoot
+        {
+            internal DocumentId DocumentId;
+            internal SyntaxNode Root;
         }
     }
 }

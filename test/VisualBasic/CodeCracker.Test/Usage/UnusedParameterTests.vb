@@ -463,6 +463,57 @@ End Class
             Await VerifyBasicHasNoDiagnosticsAsync(source)
         End Function
 
+        <Fact>
+        Public Async Function FixAllInSameClass() As Task
+            Const source As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo(1, 2, 3, 4)
+    End Sub
+    Public Sub Foo(ByVal a As Integer, ByVal b As Integer, ParamArray ByVal c() As Integer)
+        a = 1
+    End Sub
+End Class"
+            Const fixtest As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo(1)
+    End Sub
+    Public Sub Foo(ByVal a As Integer)
+        a = 1
+    End Sub
+End Class"
+            Await VerifyBasicFixAllAsync(source, fixtest)
+        End Function
+
+        <Fact>
+        Public Async Function FixAllInDifferentClass() As Task
+            Const source1 As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Referenced.Foo(1, 2, 3, 4)
+    End Sub
+End Class"
+            Const source2 As String = "
+Class Referenced
+    Public Shared Sub Foo(ByVal a As Integer, ByVal b As Integer, ParamArray ByVal c() As Integer)
+        a = 1
+    End Sub
+End Class"
+            Const fix1 As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Referenced.Foo(1)
+    End Sub
+End Class"
+            Const fix2 As String = "
+Class Referenced
+    Public Shared Sub Foo(ByVal a As Integer)
+        a = 1
+    End Sub
+End Class"
+            Await VerifyBasicFixAllAsync({source1, source2}, {fix1, fix2})
+        End Function
 
         Private Function CreateDiagnosticResult(parameterName As String, line As Integer, column As Integer) As DiagnosticResult
             Return New DiagnosticResult With {
@@ -472,6 +523,5 @@ End Class
                 .Locations = {New DiagnosticResultLocation("Test0.vb", line, column)}
                 }
         End Function
-
     End Class
 End Namespace
