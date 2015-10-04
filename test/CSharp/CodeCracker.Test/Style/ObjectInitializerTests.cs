@@ -43,6 +43,24 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
+        public async Task WhenUsedWithCollectionDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var ys = new System.Collections.Generic.List<int> { 4 };
+                ys.Capacity = 3;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task WhenVariableIsDeclaredAndObjectIsCreatedButNoAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
@@ -349,6 +367,26 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
+        public async Task WhenUsedWithCollectionDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                System.Collections.Generic.List<int> ys;
+                ys = new System.Collections.Generic.List<int> { 4 };
+                ys.Capacity = 3;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+
+        [Fact]
         public async Task WhenCreatingObjectAndAssigningPropertiesThenAnalyzerCreatesDiagnostic()
         {
             const string source = @"
@@ -394,6 +432,7 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
 
         [Fact]
         public async Task WhenObjectIsCreatedButOnlyUnrelatedAssignmentsHappenLaterAnalyzerDoesNotCreateDiagnostic()
