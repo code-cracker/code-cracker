@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Usage
         private const string Description = "This diagnostic checks the Uri string and triggers if the parsing fail "
                                            + "by throwing an exception.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.Uri.ToDiagnosticId(),
             Title,
             MessageFormat,

@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Usage
         const string Description = "Do not concatenate a string on a loop. It will alocate a lot of memory."
             + "Use a StringBuilder instead. It will will require less allocation, less garbage collector work, less CPU cycles, and less overall time.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
             Title,
             MessageFormat,

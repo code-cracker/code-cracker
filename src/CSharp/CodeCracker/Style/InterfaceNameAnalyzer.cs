@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Style
         internal const string Category = SupportedCategories.Style;
         const string Description = "Consider naming interfaces starting with 'I'.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.InterfaceName.ToDiagnosticId(),
             Title,
             MessageFormat,

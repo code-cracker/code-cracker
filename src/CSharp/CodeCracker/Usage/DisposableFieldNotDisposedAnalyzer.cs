@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Category = SupportedCategories.Usage;
         const string Description = "This class has a disposable field and is not disposing it.";
 
-        internal static DiagnosticDescriptor RuleForReturned = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleForReturned = new DiagnosticDescriptor(
             DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
             Title,
             MessageFormat,
@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Usage
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Returned));
-        internal static DiagnosticDescriptor RuleForCreated = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleForCreated = new DiagnosticDescriptor(
             DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
             Title,
             MessageFormat,

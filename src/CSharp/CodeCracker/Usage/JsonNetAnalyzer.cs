@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Usage
         const string Description = "This diagnostic checks the json string and triggers if the parsing fail "
             + "by throwing an exception.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.JsonNet.ToDiagnosticId(),
             Title,
             MessageFormat,

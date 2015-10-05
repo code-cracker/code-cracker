@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Style
         internal const string Category = SupportedCategories.Style;
         const string Description = "Use private set for automatic properties.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.PropertyPrivateSet.ToDiagnosticId(),
             Title,
             MessageFormat,

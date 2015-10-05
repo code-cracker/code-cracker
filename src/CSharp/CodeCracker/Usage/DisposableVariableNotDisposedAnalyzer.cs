@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Usage
         const string Description = "When a disposable object is created it should be disposed as soon as possible.\n" +
             "This warning will appear if you create a disposable object and don't store, return or dispose it.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
             Title,
             MessageFormat,

@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Style
         internal const string MessageFormat = "Use 'String.Empty' instead of \"\"";
         internal const string Category = SupportedCategories.Style;
         const string Description = "Consider user 'String.Empty' instead of \"\"";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UseStringEmpty.ToDiagnosticId(),
             Title,
             MessageFormat,

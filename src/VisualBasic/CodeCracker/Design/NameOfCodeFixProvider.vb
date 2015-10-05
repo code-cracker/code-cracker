@@ -24,11 +24,11 @@ Namespace Design
             Dim diagnosticspan = diagnostic.Location.SourceSpan
             Dim stringLiteral = root.FindToken(diagnosticspan.Start).Parent.AncestorsAndSelf.OfType(Of LiteralExpressionSyntax).FirstOrDefault
             If stringLiteral IsNot Nothing Then
-                context.RegisterCodeFix(CodeAction.Create("use NameOf()", Function(c) MakeNameOf(context.Document, stringLiteral, root, diagnostic, c), NameOf(NameOfCodeFixProvider)), diagnostic)
+                context.RegisterCodeFix(CodeAction.Create("use NameOf()", Function(c) MakeNameOf(context.Document, stringLiteral, root), NameOf(NameOfCodeFixProvider)), diagnostic)
             End If
         End Function
 
-        Private Function MakeNameOf(document As Document, stringLiteral As LiteralExpressionSyntax, root As SyntaxNode, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+        Private Function MakeNameOf(document As Document, stringLiteral As LiteralExpressionSyntax, root As SyntaxNode) As Task(Of Document)
             Dim newNameof = SyntaxFactory.ParseExpression($"NameOf({stringLiteral.Token.ToString().Replace("""", "")})").
                 WithLeadingTrivia(stringLiteral.GetLeadingTrivia).
                 WithTrailingTrivia(stringLiteral.GetTrailingTrivia).

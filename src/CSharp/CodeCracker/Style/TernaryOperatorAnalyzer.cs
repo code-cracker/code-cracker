@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Style
         internal const string Category = SupportedCategories.Style;
         internal const string MessageFormatForIfWithAssignment = "{0}";
 
-        internal static DiagnosticDescriptor RuleForIfWithReturn = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleForIfWithReturn = new DiagnosticDescriptor(
             DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
             Title,
             MessageFormatForIfWithReturn,
@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Style
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return));
 
-        internal static DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleForIfWithAssignment = new DiagnosticDescriptor(
             DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
             Title,
             MessageFormatForIfWithAssignment,

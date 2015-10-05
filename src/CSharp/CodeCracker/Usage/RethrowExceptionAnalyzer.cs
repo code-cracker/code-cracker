@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Usage
             + "stack trace and will make debugging this exception a lot more difficult.\r\n"
             + "The correct way to rethrow an exception without changing it is by using 'throw' without any parameter.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RethrowException.ToDiagnosticId(),
             Title,
             MessageFormat,

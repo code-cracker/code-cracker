@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string MessageFormat = "Do not call '{0}' method of class '{1}' as a static method";
         internal const string Category = SupportedCategories.Usage;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
             Title,
             MessageFormat,

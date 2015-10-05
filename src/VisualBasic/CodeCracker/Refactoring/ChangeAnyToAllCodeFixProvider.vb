@@ -34,7 +34,7 @@ Namespace Refactoring
         Private Shared Async Function ConvertAsync(Document As Document, diagnosticLocation As Location, cancellationToken As CancellationToken) As Task(Of Document)
             Dim root = Await Document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
             Dim invocation = root.FindNode(diagnosticLocation.SourceSpan).FirstAncestorOfType(Of InvocationExpressionSyntax)
-            Dim newInvocation = createNewInvocation(invocation, root).
+            Dim newInvocation = CreateNewInvocation(invocation).
                 WithAdditionalAnnotations(Formatter.Annotation)
             Dim newRoot = ReplaceInvocation(invocation, newInvocation, root)
             Dim newDocument = Document.WithSyntaxRoot(newRoot)
@@ -50,9 +50,9 @@ Namespace Refactoring
             Return newRoot
         End Function
 
-        Friend Shared Function CreateNewInvocation(invocation As InvocationExpressionSyntax, root As SyntaxNode) As ExpressionSyntax
+        Friend Shared Function CreateNewInvocation(invocation As InvocationExpressionSyntax) As ExpressionSyntax
             Dim methodName = DirectCast(invocation.Expression, MemberAccessExpressionSyntax).Name.ToString
-            Dim nameToCheck = If(methodName = NameOf(System.Linq.Enumerable.Any), ChangeAnyToAllAnalyzer.allName, ChangeAnyToAllAnalyzer.anyName)
+            Dim nameToCheck = If(methodName = NameOf(Enumerable.Any), ChangeAnyToAllAnalyzer.allName, ChangeAnyToAllAnalyzer.anyName)
             Dim newInvocation = invocation.WithExpression(DirectCast(invocation.Expression, MemberAccessExpressionSyntax).WithName(nameToCheck))
             Dim comparisonExpression = DirectCast(DirectCast(newInvocation.ArgumentList.Arguments.First().GetExpression(), SingleLineLambdaExpressionSyntax).Body, ExpressionSyntax)
             Dim newComparisonExpression = CreateNewComparison(comparisonExpression)

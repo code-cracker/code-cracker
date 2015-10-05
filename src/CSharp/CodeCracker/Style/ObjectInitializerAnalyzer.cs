@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Style
         const string Description = "When possible an object initializer should be used to initialize the properties of an "
             + "object instead of multiple assignments.";
 
-        internal static DiagnosticDescriptor RuleAssignment = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleAssignment = new DiagnosticDescriptor(
             DiagnosticId.ObjectInitializer_Assignment.ToDiagnosticId(),
             TitleLocalDeclaration,
             MessageFormat,
@@ -28,7 +28,7 @@ namespace CodeCracker.CSharp.Style
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_Assignment));
 
-        internal static DiagnosticDescriptor RuleLocalDeclaration = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleLocalDeclaration = new DiagnosticDescriptor(
             DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(),
             TitleLocalDeclaration,
             MessageFormat,

@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Usage
         private UnusedParametersCodeFixAllProvider() { }
 
         private const string message = "Remove unused parameter";
-        public static UnusedParametersCodeFixAllProvider Instance = new UnusedParametersCodeFixAllProvider();
+        public static readonly UnusedParametersCodeFixAllProvider Instance = new UnusedParametersCodeFixAllProvider();
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {
             switch (fixAllContext.Scope)

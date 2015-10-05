@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Refactoring
         internal const string MessageFormat = "When the method has more than three parameters, use new class.";
         internal const string Category = SupportedCategories.Refactoring;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ParameterRefactory.ToDiagnosticId(),
             Title,
             MessageFormat,

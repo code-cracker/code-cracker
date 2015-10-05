@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Design
             + "Exception thrown in this context force callers to use 'try' block around any useage of the class "
             + "and should be avoided.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.StaticConstructorException.ToDiagnosticId(),
             Title,
             MessageFormat,

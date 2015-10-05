@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string MessageFormat = "You can remove this comparison.";
         internal const string Category = SupportedCategories.Usage;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.SimplifyRedundantBooleanComparisons.ToDiagnosticId(),
             Title,
             MessageFormat,

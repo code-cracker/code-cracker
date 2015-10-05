@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Category = SupportedCategories.Usage;
         const string Description = "It's recommend not to assign the default value to a field as a performance optimization.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
             Title,
             MessageFormat,

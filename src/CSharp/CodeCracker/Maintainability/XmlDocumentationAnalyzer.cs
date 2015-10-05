@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Maintainability
     {
         internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.XmlDocumentationAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.XmlDocumentation.ToDiagnosticId(),
             Title,
             Title,

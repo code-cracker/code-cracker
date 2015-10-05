@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Category = SupportedCategories.Usage;
         const string Description = "An empty else clause only adds complexity. You may safely remove it.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RemoveRedundantElseClause.ToDiagnosticId(),
             Title,
             MessageFormat,

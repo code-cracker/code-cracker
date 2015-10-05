@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Design
         const string Description = "An empty catch block suppress all errors and shouldn't be used.\r\n"
             +"If the error is expected consider logging it or changing the control flow such that it is explicit.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId.EmptyCatchBlock.ToDiagnosticId(),
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId.EmptyCatchBlock.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,

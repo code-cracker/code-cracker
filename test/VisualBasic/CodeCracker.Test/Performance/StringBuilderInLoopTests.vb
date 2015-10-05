@@ -36,7 +36,7 @@ End Namespace"
 
         <Fact>
         Public Async Function WhileWithoutStringConcatWithMethoParameterDoesNotCreateDiagnostic() As Task
-            Dim source = "
+            Const source = "
     Public Class TypeName
         Public Sub Looper(ByRef a As Integer)
             While a < 10
@@ -464,7 +464,7 @@ End Namespace"
 
         <Fact>
         Public Async Function ForLoopInMethodWithoutStringShouldNotCreateDiagnostic() As Task
-            Dim source = "
+            Const source = "
     Public Class Test
         Private Sub AdjustSample(ByRef readIndex As Integer, writeBuffer() As Single, ByRef writeIndex As Integer)
             For i = 0 To 2

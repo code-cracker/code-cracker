@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Design
         internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.NameOfAnalyzer_MessageFormat), Resources.ResourceManager, typeof(Resources));
         internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.NameOfAnalyzer_Description), Resources.ResourceManager, typeof(Resources));
         internal const string Category = SupportedCategories.Design;
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.NameOf.ToDiagnosticId(),
             Title,
             MessageFormat,
@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Design
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.NameOf));
-        internal static DiagnosticDescriptor RuleExternal = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleExternal = new DiagnosticDescriptor(
             DiagnosticId.NameOf_External.ToDiagnosticId(),
             Title,
             MessageFormat,

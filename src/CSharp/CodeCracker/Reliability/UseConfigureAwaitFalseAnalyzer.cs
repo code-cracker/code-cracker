@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Reliability
         internal const string MessageFormat = "Consider using ConfigureAwait(false) on the awaited task.";
         internal const string Category = SupportedCategories.Reliability;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId(),
             Title,
             MessageFormat,

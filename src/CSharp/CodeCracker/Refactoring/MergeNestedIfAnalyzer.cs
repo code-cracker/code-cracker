@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Refactoring
         internal const string MessageFormat = "Merge nested ifs into a single if";
         internal const string Category = SupportedCategories.Refactoring;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.MergeNestedIf.ToDiagnosticId(),
             Title,
             MessageFormat,

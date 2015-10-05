@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Refactoring
         internal const string TitleAll = MessageAll;
         internal const string Category = SupportedCategories.Refactoring;
 
-        internal static DiagnosticDescriptor RuleAny = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleAny = new DiagnosticDescriptor(
             DiagnosticId.ChangeAnyToAll.ToDiagnosticId(),
             TitleAny,
             MessageAny,
@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Refactoring
             DiagnosticSeverity.Hidden,
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ChangeAnyToAll));
-        internal static DiagnosticDescriptor RuleAll = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleAll = new DiagnosticDescriptor(
             DiagnosticId.ChangeAllToAny.ToDiagnosticId(),
             TitleAll,
             MessageAll,
@@ -42,8 +42,8 @@ namespace CodeCracker.CSharp.Refactoring
         private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
-            var invocation = context.Node as InvocationExpressionSyntax;
-            if (invocation.Parent.IsKind(SyntaxKind.ExpressionStatement)) return;
+            var invocation = (InvocationExpressionSyntax)context.Node;
+            if (invocation.Parent?.IsKind(SyntaxKind.ExpressionStatement) ?? true) return;
             var diagnosticToRaise = GetCorrespondingDiagnostic(context.SemanticModel, invocation);
             if (diagnosticToRaise == null) return;
             var diagnostic = Diagnostic.Create(diagnosticToRaise, ((MemberAccessExpressionSyntax)invocation.Expression).Name.GetLocation());

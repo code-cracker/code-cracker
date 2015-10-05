@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Category = SupportedCategories.Usage;
         const string Description = "A field that is only assigned on the constructor can be made readonly.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(),
             Title,
             Message,

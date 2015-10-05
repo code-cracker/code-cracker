@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Usage
         const string Description = "When a method declares a parameter and does not use it might bring incorrect conclusions for anyone reading the code and also demands the parameter when the method is called, unnecessarily.\r\n"
             + "You should delete the parameter in such cases.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UnusedParameters.ToDiagnosticId(),
             Title,
             Message,

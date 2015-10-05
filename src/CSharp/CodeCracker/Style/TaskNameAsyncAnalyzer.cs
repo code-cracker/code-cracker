@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Style
         internal const string Category = SupportedCategories.Style;
         const string Description = "Async method can be terminating with 'Async' name.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.TaskNameAsync.ToDiagnosticId(),
             Title,
             MessageFormat,

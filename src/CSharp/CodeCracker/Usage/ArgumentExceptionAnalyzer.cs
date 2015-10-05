@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Usage
         const string Description = "The string passed as the 'paramName' argument of ArgumentException constructor "
             + "must be the name of one of the method arguments.\r\n"
             + "It can be either specified directly or using the nameof() operator (C#6 only)";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ArgumentException.ToDiagnosticId(),
             Title,
             MessageFormat,

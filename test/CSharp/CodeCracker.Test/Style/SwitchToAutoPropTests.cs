@@ -323,7 +323,7 @@ namespace ConsoleApplication1
         [Fact]
         public async Task FixSimplePropWithMultipleFieldsIntoAutoProp()
         {
-            var source = @"
+            const string source = @"
                 private int x = 42, y; //comment 1
                 public int X
                 {
@@ -331,7 +331,7 @@ namespace ConsoleApplication1
                     set { x = value; }
                 }";
 
-            var expected = @"
+            const string expected = @"
                 private int y; //comment 1
                 public int X { get; set; } = 42;";
 
@@ -341,7 +341,7 @@ namespace ConsoleApplication1
         [Fact]
         public async Task FixSimplePropWithVaribleDeclarationNotFirstIntoAutoProp()
         {
-            var source = @"
+            const string source = @"
                 private int x, y = 42; //comment 1
                 public int Y
                 {
@@ -349,7 +349,7 @@ namespace ConsoleApplication1
                     set { y = value; }
                 }";
 
-            var expected = @"
+            const string expected = @"
                 private int x; //comment 1
                 public int Y { get; set; } = 42;";
 
@@ -360,7 +360,7 @@ namespace ConsoleApplication1
         [Fact(Skip = "Skip until the FixAll has been fixed.")]
         public async Task FixSimplePropWithMultipleFieldsIntoAutoPropAll()
         {
-            var source = @"
+            const string source = @"
                 private int x = 42, y;
                 private int z = int.MaxValue;
 
@@ -382,7 +382,7 @@ namespace ConsoleApplication1
                     set { z = value; }
                 }";
 
-            var expected = @"
+            const string expected = @"
                 public int X { get; set; } = 42;
                 public int Y { get; set; }
                 public int Z { get; set; } = int.MaxValue;";

@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Style
         internal const string Category = SupportedCategories.Style;
         const string Description = "The extra unnecessary layer of indirection induced by the lambda expression may be avoided by passing the method group instead.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(),
             Title,
             MessageFormat,

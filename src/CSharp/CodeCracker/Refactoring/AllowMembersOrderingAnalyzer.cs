@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Refactoring
         internal const string MessageFormat = "Ordering member inside this type.";
         internal const string Category = SupportedCategories.Refactoring;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.AllowMembersOrdering.ToDiagnosticId(),
             Title,
             MessageFormat,

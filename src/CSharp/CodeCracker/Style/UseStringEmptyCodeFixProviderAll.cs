@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Style
     {
         private static readonly SyntaxAnnotation useStringEmptyAnnotation = new SyntaxAnnotation(nameof(UseStringEmptyCodeFixAllProvider));
         private UseStringEmptyCodeFixAllProvider() { }
-        public static UseStringEmptyCodeFixAllProvider Instance = new UseStringEmptyCodeFixAllProvider();
+        public static readonly UseStringEmptyCodeFixAllProvider Instance = new UseStringEmptyCodeFixAllProvider();
 
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {

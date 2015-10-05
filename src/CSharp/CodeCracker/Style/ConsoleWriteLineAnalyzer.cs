@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Style
         internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.ConsoleWriteLineAnalyzer_MessageFormat), Resources.ResourceManager, typeof(Resources));
         internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.ConsoleWriteLineAnalyzer_Description), Resources.ResourceManager, typeof(Resources));
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ConsoleWriteLine.ToDiagnosticId(),
             Title,
             MessageFormat,

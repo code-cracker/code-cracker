@@ -11,7 +11,7 @@ namespace CodeCracker.CSharp.Usage
     {
         private static readonly SyntaxAnnotation disposeAnnotation = new SyntaxAnnotation(nameof(DisposableVariableNotDisposedFixAllProvider));
         private DisposableVariableNotDisposedFixAllProvider() { }
-        public static DisposableVariableNotDisposedFixAllProvider Instance = new DisposableVariableNotDisposedFixAllProvider();
+        public static readonly DisposableVariableNotDisposedFixAllProvider Instance = new DisposableVariableNotDisposedFixAllProvider();
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {
             switch (fixAllContext.Scope)

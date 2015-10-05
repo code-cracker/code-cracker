@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Design
         const string Description = "In C#6 an event can be invoked using the null-propagating operator (?.) and it's"
             + "invoke method to avoid throwing a NullReference exception when there is no event handler attached.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
             Title,
             MessageFormat,
