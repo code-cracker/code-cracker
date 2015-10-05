@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Refactoring
         internal const string MessageFormat = "Add braces for each section in this switch";
         internal const string Category = SupportedCategories.Refactoring;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(),
             Title,
             MessageFormat,

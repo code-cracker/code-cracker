@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Category = SupportedCategories.Usage;
         const string Description = "When a private method declared  does not used might bring incorrect conclusions.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
              DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId(),
             Title,
             Message,

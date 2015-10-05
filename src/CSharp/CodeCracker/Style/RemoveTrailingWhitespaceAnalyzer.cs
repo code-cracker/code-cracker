@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Style
         internal const string Category = SupportedCategories.Style;
         const string Description = "Trailing whitespaces are ugly and show sloppiness. Remove them.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RemoveTrailingWhitespace.ToDiagnosticId(),
             Title,
             MessageFormat,

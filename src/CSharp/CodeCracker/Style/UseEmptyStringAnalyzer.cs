@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Style
         internal const string Category = SupportedCategories.Style;
         const string Description = "Consider using " + EmptyString + InsteadStringEmpty;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UseEmptyString.ToDiagnosticId(),
             Title,
             MessageFormat,

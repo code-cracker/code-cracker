@@ -11,7 +11,7 @@ namespace CodeCracker.CSharp.Refactoring
     {
         private static readonly SyntaxAnnotation introduceFieldAnnotation = new SyntaxAnnotation(nameof(IntroduceFieldFromConstructorCodeFixAllProvider));
         private IntroduceFieldFromConstructorCodeFixAllProvider() { }
-        public static IntroduceFieldFromConstructorCodeFixAllProvider Instance = new IntroduceFieldFromConstructorCodeFixAllProvider();
+        public static readonly IntroduceFieldFromConstructorCodeFixAllProvider Instance = new IntroduceFieldFromConstructorCodeFixAllProvider();
 
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {

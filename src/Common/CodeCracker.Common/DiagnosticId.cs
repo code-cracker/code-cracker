@@ -83,6 +83,7 @@
         SealMember = 94,
         ConsoleWriteLine = 95,
         ExtractClassToFile = 96,
-        PreferAnyToCountGreaterThanZero = 99
+        PreferAnyToCountGreaterThanZero = 99,
+        NameOf_External = 108,
     }
 }

@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Refactoring
         internal const string Message = "You may change {0} to a {1} literal type.";
         internal const string Category = SupportedCategories.Refactoring;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.NumericLiteral.ToDiagnosticId(),
             Title,
             Message,

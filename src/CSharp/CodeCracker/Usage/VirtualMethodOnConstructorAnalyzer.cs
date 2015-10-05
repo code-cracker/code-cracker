@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Usage
                                    "it is possible that the constructor for the instance that invokes the method " +
                                    "has not executed.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
             Title,
             Message,

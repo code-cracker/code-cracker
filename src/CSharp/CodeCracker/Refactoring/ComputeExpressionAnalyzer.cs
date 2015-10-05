@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Refactoring
         internal const string Category = SupportedCategories.Refactoring;
         const string Description = "You may change an expression for its value if the expression is made of literal values.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ComputeExpression.ToDiagnosticId(),
             Title,
             Message,

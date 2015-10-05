@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Usage
         const string Description = "Classes implementing IDisposable should call the GC.SuppressFinalize method in their "
             + "finalize method to avoid any finalizer from being called.\r\n"
             + "This rule should be followed even if the class doesn't have a finalizer as a derived class could have one.";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
             Title,
             MessageFormat,

@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Performance
             + "inheritence hierarchy of the attribute class. "
             + "Marking the type as sealed eliminate this search and can improve performance";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId.SealedAttribute.ToDiagnosticId(),
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId.SealedAttribute.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,

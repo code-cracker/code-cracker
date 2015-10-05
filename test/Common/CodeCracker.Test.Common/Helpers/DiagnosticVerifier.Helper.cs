@@ -27,12 +27,12 @@ namespace CodeCracker.Test
         private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
         private static readonly MetadataReference JsonNetReference = MetadataReference.CreateFromFile(typeof(JsonConvert).Assembly.Location);
 
-        internal static string DefaultFilePathPrefix = nameof(Test);
-        internal static string CSharpDefaultFileExt = "cs";
-        internal static string VisualBasicDefaultExt = "vb";
-        internal static string CSharpDefaultFilePath = DefaultFilePathPrefix + 0 + "." + CSharpDefaultFileExt;
-        internal static string VisualBasicDefaultFilePath = DefaultFilePathPrefix + 0 + "." + VisualBasicDefaultExt;
-        internal static string TestProjectName = "TestProject";
+        internal static readonly string DefaultFilePathPrefix = nameof(Test);
+        internal static readonly string CSharpDefaultFileExt = "cs";
+        internal static readonly string VisualBasicDefaultExt = "vb";
+        internal static readonly string CSharpDefaultFilePath = DefaultFilePathPrefix + 0 + "." + CSharpDefaultFileExt;
+        internal static readonly string VisualBasicDefaultFilePath = DefaultFilePathPrefix + 0 + "." + VisualBasicDefaultExt;
+        internal static readonly string TestProjectName = "TestProject";
 
         /// <summary>
         /// Given classes in the form of strings, their language, and an IDiagnosticAnlayzer to apply to it, return the diagnostics found in the string after converting it to a document.

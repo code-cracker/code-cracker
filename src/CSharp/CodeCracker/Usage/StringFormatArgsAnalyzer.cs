@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Category = SupportedCategories.Usage;
         const string Description = "The format argument in String.Format determines the number of argument, considering the {} inside. You should pass the correct number of arguments.";
 
-        internal static DiagnosticDescriptor IncorrectNumberOfArgs = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor IncorrectNumberOfArgs = new DiagnosticDescriptor(
             DiagnosticId.StringFormatArgs.ToDiagnosticId(),
             Title,
             IncorrectNumberOfArgsMessage,
@@ -27,7 +27,7 @@ namespace CodeCracker.CSharp.Usage
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringFormatArgs));
 
-        internal static DiagnosticDescriptor InvalidArgsReference = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor InvalidArgsReference = new DiagnosticDescriptor(
             DiagnosticId.StringFormatArgs.ToDiagnosticId(),
             Title,
             InvalidArgsReferenceMessage,

@@ -11,7 +11,7 @@ namespace CodeCracker.CSharp.Refactoring
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StringRepresentationAnalyzer : DiagnosticAnalyzer
     {
-        internal static DiagnosticDescriptor RegularStringRule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RegularStringRule = new DiagnosticDescriptor(
             DiagnosticId.StringRepresentation_RegularString.ToDiagnosticId(),
             "Regular string",
             "Change to regular string",
@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Refactoring
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_RegularString));
 
-        internal static DiagnosticDescriptor VerbatimStringRule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor VerbatimStringRule = new DiagnosticDescriptor(
             DiagnosticId.StringRepresentation_VerbatimString.ToDiagnosticId(),
             "Verbatim string",
             "Change to verbatim string",

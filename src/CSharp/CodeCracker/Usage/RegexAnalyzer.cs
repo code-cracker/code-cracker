@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Usage
         const string Description = "This diagnostic compile the Regex expression and trigger if the compilation fail "
             + "by throwing an exception.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.Regex.ToDiagnosticId(),
             Title,
             MessageFormat,

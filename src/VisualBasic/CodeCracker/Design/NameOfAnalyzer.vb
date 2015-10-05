@@ -24,8 +24,17 @@ Namespace Design
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.NameOf))
+        Protected Shared RuleExtenal As DiagnosticDescriptor = New DiagnosticDescriptor(
+            DiagnosticId.NameOf_External.ToDiagnosticId(),
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault:=True,
+            description:=Description,
+            helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.NameOf_External))
 
-        Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule)
+        Public Overrides ReadOnly Property SupportedDiagnostics() As ImmutableArray(Of DiagnosticDescriptor) = ImmutableArray.Create(Rule, RuleExtenal)
 
         Public Overrides Sub Initialize(context As AnalysisContext)
             context.RegisterSyntaxNodeAction(LanguageVersion.VisualBasic14, AddressOf Analyzer, SyntaxKind.StringLiteralExpression)
@@ -36,32 +45,35 @@ Namespace Design
             Dim stringLiteral = DirectCast(context.Node, LiteralExpressionSyntax)
             If String.IsNullOrWhiteSpace(stringLiteral?.Token.ValueText) Then Return
 
-            Dim programElementName = GetProgramElementNameThatMatchesStringLiteral(stringLiteral, context.SemanticModel)
+            Dim externalSymbol = False
+            Dim programElementName = GetProgramElementNameThatMatchesStringLiteral(stringLiteral, context.SemanticModel, externalSymbol)
             If (Found(programElementName)) Then
-                Dim diag = Diagnostic.Create(Rule, stringLiteral.GetLocation(), programElementName)
+                Dim diag = Diagnostic.Create(If(externalSymbol, RuleExtenal, Rule), stringLiteral.GetLocation(), programElementName)
                 context.ReportDiagnostic(diag)
             End If
         End Sub
 
-        Private Shared Function GetProgramElementNameThatMatchesStringLiteral(stringLiteral As LiteralExpressionSyntax, model As SemanticModel) As String
+        Private Shared Function GetProgramElementNameThatMatchesStringLiteral(stringLiteral As LiteralExpressionSyntax, model As SemanticModel, ByRef externalSymbol As Boolean) As String
             Dim programElementName = GetParameterNameThatMatchesStringLiteral(stringLiteral)
             If Not Found(programElementName) Then
                 Dim literalValueText = stringLiteral.Token.ValueText
                 Dim symbol = model.LookupSymbols(stringLiteral.Token.SpanStart, Nothing, literalValueText).FirstOrDefault()
-                If symbol?.Kind = SymbolKind.Local Then
+                If symbol Is Nothing Then Return Nothing
+                externalSymbol = symbol.Locations.Any(Function(l) l.IsInSource) = False
+                If symbol.Kind = SymbolKind.Local Then
                     ' Only register if local variable is declared before it is used.
                     ' Don't recommend if variable is declared after string literal is used.
                     Dim symbolSpan = symbol.Locations.Min(Function(i) i.SourceSpan)
                     If symbolSpan.CompareTo(stringLiteral.Token.Span) > 0 Then
-                        Return String.Empty
+                        Return Nothing
                     End If
                 End If
                 programElementName = symbol?.ToDisplayParts().
-                        Where(AddressOf IncludeOnlyPartsThatAreName).
-                        LastOrDefault(Function(displayPart) displayPart.ToString() = literalValueText).
-                        ToString()
-                End If
-                Return programElementName
+                    Where(AddressOf IncludeOnlyPartsThatAreName).
+                    LastOrDefault(Function(displayPart) displayPart.ToString() = literalValueText).
+                    ToString()
+            End If
+            Return programElementName
         End Function
 
         Private Shared Function GetParameterNameThatMatchesStringLiteral(stringLiteral As LiteralExpressionSyntax) As String

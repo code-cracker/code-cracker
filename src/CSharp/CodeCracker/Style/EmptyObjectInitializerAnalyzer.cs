@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Style
         const string Description = "An empty object initializer doesn't add any information and only clutter the code.\r\n"
             + "If there is no member to initialize, prefer using the standard constructor syntax.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.EmptyObjectInitializer.ToDiagnosticId(),
             Title,
             MessageFormat,

@@ -11,7 +11,7 @@ namespace CodeCracker.CSharp.Refactoring
     {
         private static readonly SyntaxAnnotation nestedIfAnnotation = new SyntaxAnnotation(nameof(SplitIntoNestedIfFixAllProvider));
         private SplitIntoNestedIfFixAllProvider() { }
-        public static SplitIntoNestedIfFixAllProvider Instance = new SplitIntoNestedIfFixAllProvider();
+        public static readonly SplitIntoNestedIfFixAllProvider Instance = new SplitIntoNestedIfFixAllProvider();
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {
             switch (fixAllContext.Scope)

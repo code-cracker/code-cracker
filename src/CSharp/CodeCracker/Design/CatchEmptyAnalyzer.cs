@@ -12,7 +12,7 @@ namespace CodeCracker.CSharp.Design
         internal const string Title = "Your catch maybe include some Exception";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Design;
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.CatchEmpty.ToDiagnosticId(),
             Title,
             MessageFormat,

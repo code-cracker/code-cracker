@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Style
         const string Description = "Usage of an implicit type improve readability of the code.\r\n"
             + "Code depending on types for their readability should be refactored with better variable "
             + "names or by introducing well-named methods.";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.AlwaysUseVar.ToDiagnosticId(),
             Title,
             MessageFormat,

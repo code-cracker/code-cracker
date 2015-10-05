@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Performance
         const string Description = "Instantiating the Regex object multiple times might be bad for performance. "
             + "You may want to use the static IsMatch method from Regex class and/or compile the regex.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UseStaticRegexIsMatch.ToDiagnosticId(),
             Title,
             MessageFormat,

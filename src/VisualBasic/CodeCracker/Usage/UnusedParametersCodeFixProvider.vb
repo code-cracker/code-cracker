@@ -4,6 +4,7 @@ Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeActions
 Imports Microsoft.CodeAnalysis.CodeFixes
 Imports Microsoft.CodeAnalysis.FindSymbols
+Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Usage
@@ -11,32 +12,45 @@ Namespace Usage
     Public Class UnusedParametersCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
-            Dim diagnostic = context.Diagnostics.First
-            Dim span = diagnostic.Location.SourceSpan
-            Dim parameter = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of ParameterSyntax)
-            context.RegisterCodeFix(CodeAction.Create(String.Format("Remove unused parameter: '{0}'", parameter.Identifier.GetText()), Function(c) RemovePArameterAsync(root, context.Document, parameter, c), NameOf(UnusedParametersCodeFixProvider)), diagnostic)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
+            Dim Diagnostic = context.Diagnostics.First()
+            context.RegisterCodeFix(CodeAction.Create(
+                                    String.Format("Remove unused parameter: '{0}'", Diagnostic.Properties("identifier")),
+                                    Function(c) RemoveParameterAsync(context.Document, Diagnostic, c),
+                                    NameOf(UnusedParametersCodeFixProvider)),
+                                    Diagnostic)
+            Return Task.FromResult(0)
         End Function
 
-        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId())
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.UnusedParameters.ToDiagnosticId())
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
-            Return WellKnownFixAllProviders.BatchFixer
+            Return UnusedParametersCodeFixAllProvider.Instance
+        End Function
+        Private Shared Async Function RemoveParameterAsync(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Solution)
+            Dim solution = document.Project.Solution
+            Dim newSolution = solution
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim parameter = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.FirstAncestorOrSelf(Of ParameterSyntax)
+            Dim docs = Await RemoveParameterAsync(document, parameter, root, cancellationToken)
+            For Each doc In docs
+                newSolution = newSolution.WithDocumentSyntaxRoot(doc.DocumentId, doc.Root)
+            Next
+            Return newSolution
         End Function
 
-        Private Shared Async Function RemovePArameterAsync(root As SyntaxNode, document As Document, parameter As ParameterSyntax, cancellationToken As CancellationToken) As Task(Of Solution)
+        Public Shared Async Function RemoveParameterAsync(document As Document, parameter As ParameterSyntax, root As SyntaxNode, cancellationToken As CancellationToken) As Task(Of List(Of DocumentIdAndRoot))
             Dim solution = document.Project.Solution
             Dim parameterList = DirectCast(parameter.Parent, ParameterListSyntax)
             Dim parameterPosition = parameterList.Parameters.IndexOf(parameter)
             Dim newParameterList = parameterList.WithParameters(parameterList.Parameters.Remove(parameter))
-            Dim newSolution = solution
             Dim foundDocument = False
             Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
             Dim method = parameter.FirstAncestorOfType(GetType(SubNewStatementSyntax), GetType(MethodBlockSyntax))
             Dim methodSymbol = semanticModel.GetDeclaredSymbol(method)
             Dim references = Await SymbolFinder.FindReferencesAsync(methodSymbol, solution, cancellationToken).ConfigureAwait(False)
             Dim documentGroups = references.SelectMany(Function(r) r.Locations).GroupBy(Function(loc) loc.Document)
+            Dim docs = New List(Of DocumentIdAndRoot)
             For Each documentGroup In documentGroups
                 Dim referencingDocument = documentGroup.Key
                 Dim locRoot As SyntaxNode
@@ -57,18 +71,31 @@ Namespace Usage
                     Dim arguments = If(objectCreation IsNot Nothing,
                         objectCreation.ArgumentList,
                         methodIdentifier.FirstAncestorOfType(Of InvocationExpressionSyntax).ArgumentList)
-                    Dim newArguments = arguments.WithArguments(arguments.Arguments.RemoveAt(parameterPosition))
-                    replacingArgs.Add(arguments, newArguments)
+                    If parameter.Modifiers.Any(Function(m) m.IsKind(SyntaxKind.ParamArrayKeyword)) Then
+                        Dim newArguments = arguments
+                        Do
+                            newArguments = newArguments.WithArguments(newArguments.Arguments.RemoveAt(parameterPosition))
+                        Loop While newArguments.Arguments.Count > parameterPosition
+                        replacingArgs.Add(arguments, newArguments)
+                    Else
+                        Dim newArguments = arguments.WithArguments(arguments.Arguments.RemoveAt(parameterPosition))
+                        replacingArgs.Add(arguments, newArguments)
+                    End If
                 Next
                 Dim newLocRoot = locRoot.ReplaceNodes(replacingArgs.Keys, Function(original, rewritten) replacingArgs(original))
-                newSolution = newSolution.WithDocumentSyntaxRoot(referencingDocument.Id, newLocRoot)
+                docs.Add(New DocumentIdAndRoot With {.DocumentId = referencingDocument.Id, .Root = newLocRoot})
             Next
             If Not foundDocument Then
                 Dim newRoot = root.ReplaceNode(parameterList, newParameterList)
                 Dim newDocument = document.WithSyntaxRoot(newRoot)
-                newSolution = newSolution.WithDocumentSyntaxRoot(document.Id, newRoot)
+                docs.Add(New DocumentIdAndRoot With {.DocumentId = document.Id, .Root = newRoot})
             End If
-            Return newSolution
+            Return docs
         End Function
+
+        Public Structure DocumentIdAndRoot
+            Friend DocumentId As DocumentId
+            Friend Root As SyntaxNode
+        End Structure
     End Class
 End Namespace

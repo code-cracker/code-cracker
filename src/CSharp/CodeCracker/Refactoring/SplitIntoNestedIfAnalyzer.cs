@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Refactoring
         internal const string Message = "Split into nested if.";
         internal const string Category = SupportedCategories.Refactoring;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.SplitIntoNestedIf.ToDiagnosticId(),
             Title,
             Message,

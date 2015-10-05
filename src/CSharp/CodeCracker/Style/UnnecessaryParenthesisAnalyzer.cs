@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Style
         const string Description = "There is no need to specify that the no-parameter constructor is used with "
             + " an initializer as it is implicit";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UnnecessaryParenthesis.ToDiagnosticId(),
             Title,
             MessageFormat,

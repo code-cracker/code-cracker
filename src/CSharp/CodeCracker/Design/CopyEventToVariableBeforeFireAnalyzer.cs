@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Design
             + "As in a multi-threading context it is possible for an event to be unsuscribed between "
             + "the moment where it is checked to be non-null and the moment it is raised the event must "
             + "be copied to a temporary variable before the check.";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
             Title,
             MessageFormat,

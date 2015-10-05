@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Style
         internal const string Category = SupportedCategories.Style;
         const string Description = "Usage of an expression bodied members improve readability of the code.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
             Title,
             MessageFormat,

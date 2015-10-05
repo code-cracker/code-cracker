@@ -11,7 +11,7 @@ namespace CodeCracker.CSharp.Usage
     {
         private static readonly SyntaxAnnotation removeUnreachableCodeAnnotation = new SyntaxAnnotation(nameof(RemoveUnreachableCodeFixAllProvider));
         private RemoveUnreachableCodeFixAllProvider() { }
-        public static RemoveUnreachableCodeFixAllProvider Instance = new RemoveUnreachableCodeFixAllProvider();
+        public static readonly RemoveUnreachableCodeFixAllProvider Instance = new RemoveUnreachableCodeFixAllProvider();
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {
             switch (fixAllContext.Scope)

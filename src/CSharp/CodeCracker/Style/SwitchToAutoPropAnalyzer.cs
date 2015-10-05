@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Style
         internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.SwitchToAutoPropAnalyzer_Description), Resources.ResourceManager, typeof(Resources));
         internal const string Category = SupportedCategories.Style;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.SwitchToAutoProp.ToDiagnosticId(),
             Title,
             MessageFormat,

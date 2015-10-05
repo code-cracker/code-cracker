@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Style
         const string Description = "Multiple 'if' and 'else if' on the same variable can be replaced with a 'switch'"
             + "on the variable\r\n\r\n"
             + "Note: This diagnostic trigger for 3 or more 'case' statements";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ConvertToSwitch.ToDiagnosticId(),
             Title,
             MessageFormat,

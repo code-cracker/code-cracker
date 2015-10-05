@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string MessageFormat = "Constructor should not be public.";
         internal const string Category = SupportedCategories.Usage;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId(),
             Title,
             MessageFormat,

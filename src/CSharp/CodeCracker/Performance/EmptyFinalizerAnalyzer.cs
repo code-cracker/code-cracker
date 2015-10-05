@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Performance
             + "Garbage Collector when no longer used."
             + "It will instead be placed in the finalizer queue needlessly using resources.";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
             Title,
             MessageFormat,

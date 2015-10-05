@@ -118,6 +118,22 @@ public class TypeName
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
+        public async Task WhenReferencingExternalSymbolShouldReportDiagnostic()
+        {
+            const string test = @"
+using System;
+public class TypeName
+{
+    public static void Foo()
+    {
+        var a = ""DateTime"";
+    }
+}";
+            var expected = CreateNameofDiagnosticResult("DateTime", 7, 17, DiagnosticId.NameOf_External);
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
         [Theory]
         [InlineData("xyz", false)]
         [InlineData("OtherProperty", true)]
@@ -307,7 +323,7 @@ namespace N1.N2
 
     public class TypeName
     {
-   
+
         void Foo(string a)
         {
             var instance = new OtherTypeName
@@ -331,7 +347,7 @@ public class TypeName
 {
     private readonly int readonlyField;
     public interface IInterface {}
-    
+
     void Foo(string a)
     {
         var tab = new[] { ""readonlyField"", ""xyz"", ""IInterface"" };
@@ -352,7 +368,7 @@ public class TypeName
             const string source = @"
 public struct TypeName
 {
-   
+
     void Foo(string a)
     {
         var instance = new OtherTypeName(""b"", ""xyz"");
@@ -395,7 +411,7 @@ namespace N1.N2
             public string someName = ""variable"";
             public string namespaceName = ""using"";
             public string namespaceName2 = ""N2"";
-    
+
             void Foo() => string.Format(""{0}"", ""xyz"");
             void Foo2() => string.Format(""{0}"", ""readonlyField"");
 
@@ -686,11 +702,11 @@ namespace N1.N2
             await VerifyCSharpFixAllAsync(source.Replace("<REPLACE>", $@"""{stringLiteral}"""), source.Replace("<REPLACE>", $@"nameof({stringLiteral})"));
         }
 
-        private static DiagnosticResult CreateNameofDiagnosticResult(string nameofArgument, int diagnosticLine, int diagnosticColumn)
+        private static DiagnosticResult CreateNameofDiagnosticResult(string nameofArgument, int diagnosticLine, int diagnosticColumn, DiagnosticId id = DiagnosticId.NameOf)
         {
             return new DiagnosticResult
             {
-                Id = DiagnosticId.NameOf.ToDiagnosticId(),
+                Id = id.ToDiagnosticId(),
                 Message = $"Use 'nameof({nameofArgument})' instead of specifying the program element name.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", diagnosticLine, diagnosticColumn) }

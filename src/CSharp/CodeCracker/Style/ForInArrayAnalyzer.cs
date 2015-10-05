@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Style
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Style;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ForInArray.ToDiagnosticId(),
             Title,
             MessageFormat,

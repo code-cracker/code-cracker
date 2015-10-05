@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Style
         const string Description = "When possible an object initializer should be used to initialize the properties of an "
             + "object instead of multiple assignments.";
 
-        internal static DiagnosticDescriptor RuleAssignment = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleAssignment = new DiagnosticDescriptor(
             DiagnosticId.ObjectInitializer_Assignment.ToDiagnosticId(),
             TitleLocalDeclaration,
             MessageFormat,
@@ -28,7 +28,7 @@ namespace CodeCracker.CSharp.Style
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_Assignment));
 
-        internal static DiagnosticDescriptor RuleLocalDeclaration = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor RuleLocalDeclaration = new DiagnosticDescriptor(
             DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(),
             TitleLocalDeclaration,
             MessageFormat,
@@ -55,6 +55,7 @@ namespace CodeCracker.CSharp.Style
             if (expressionStatement?.Expression?.IsNotKind(SyntaxKind.SimpleAssignmentExpression) ?? true) return;
             var assignmentExpression = (AssignmentExpressionSyntax)expressionStatement.Expression;
             if (assignmentExpression.Right.IsNotKind(SyntaxKind.ObjectCreationExpression)) return;
+            if (((ObjectCreationExpressionSyntax)assignmentExpression.Right).Initializer?.IsKind(SyntaxKind.CollectionInitializerExpression) ?? false) return;
             var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
             var assignmentExpressions = FindAssignmentExpressions(semanticModel, expressionStatement, variableSymbol);
             if (!assignmentExpressions.Any()) return;
@@ -70,7 +71,9 @@ namespace CodeCracker.CSharp.Style
             if (localDeclarationStatement == null) return;
             if (localDeclarationStatement.Declaration?.Variables.Count != 1) return;
             var variable = localDeclarationStatement.Declaration.Variables.Single();
-            if ((variable.Initializer as EqualsValueClauseSyntax)?.Value.IsNotKind(SyntaxKind.ObjectCreationExpression) ?? true) return;
+            var equalsValueClauseSyntax = variable.Initializer as EqualsValueClauseSyntax;
+            if (equalsValueClauseSyntax?.Value.IsNotKind(SyntaxKind.ObjectCreationExpression) ?? true) return;
+            if (((ObjectCreationExpressionSyntax)equalsValueClauseSyntax.Value).Initializer?.IsKind(SyntaxKind.CollectionInitializerExpression) ?? false) return;
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
             var assignmentExpressionStatements = FindAssignmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
             if (!assignmentExpressionStatements.Any()) return;

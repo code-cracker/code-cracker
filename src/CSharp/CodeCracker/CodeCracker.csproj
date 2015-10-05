@@ -150,6 +150,7 @@
     <Compile Include="Usage\RedundantFieldAssignmentCodeFixProvider.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseAnalyzer.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseCodeFixProvider.cs" />
+    <Compile Include="Usage\UnusedParametersCodeFixAllProvider.cs" />
     <Compile Include="Usage\RemoveUnreachableCodeFixAllProvider.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedFixAllProvider.cs" />
     <Compile Include="Usage\RemovePrivateMethodNeverUsedAnalyzer.cs" />
@@ -233,8 +234,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc2\analyzers\dotnet\cs\CodeCracker.Common.dll" />
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc2\analyzers\dotnet\cs\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc3-0852\analyzers\dotnet\cs\CodeCracker.Common.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc3-0852\analyzers\dotnet\cs\CodeCracker.CSharp.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>

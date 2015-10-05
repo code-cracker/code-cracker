@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Style
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Style;
         const string Description = "The null-propagating operator allow for terse code to handle potentially null variables.";
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ExistenceOperator.ToDiagnosticId(),
             Title,
             MessageFormat,

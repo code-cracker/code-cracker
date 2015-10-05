@@ -15,7 +15,7 @@ namespace CodeCracker.CSharp.Usage
         const string Description = "Using an if/else to return true/false depending on the condition isn't useful.\r\n"
             + "As the condition is already a boolean it can be returned directly";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.IfReturnTrue.ToDiagnosticId(),
             Title,
             Message,

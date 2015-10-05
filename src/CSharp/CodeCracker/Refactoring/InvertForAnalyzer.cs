@@ -13,7 +13,7 @@ namespace CodeCracker.CSharp.Refactoring
         internal const string MessageFormat = "Make it a for loop that {0} the counter.";
         internal const string Category = SupportedCategories.Refactoring;
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.InvertFor.ToDiagnosticId(),
             Title,
             MessageFormat,
