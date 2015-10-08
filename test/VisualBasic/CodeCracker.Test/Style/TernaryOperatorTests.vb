@@ -221,6 +221,57 @@ End Class"
 
     End Function
 
+    <Fact>
+    Public Async Function WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFix() As Task
+        Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer?
+        If True Then
+            a = 1
+        Else
+            a = Nothing
+        End If
+    End Sub
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer?
+        a = If(True, 1, DirectCast(Nothing, Integer?))
+    End Sub
+End Class"
+
+        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+    End Function
+
+    <Fact>
+    Public Async Function WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFixAll() As Task
+        Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer?
+        If True Then
+            a = 1
+        Else
+            a = Nothing
+        End If
+    End Sub
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer?
+         a = If(True, 1, DirectCast(Nothing, Integer?))
+    End Sub
+End Class"
+
+        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+    End Function
+
 End Class
 
 Public Class TernaryOperatorWithReturnTests
@@ -333,6 +384,53 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
         Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+    End Function
+
+    <Fact>
+    Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFix() As Task
+        Const source = "
+Public Class MyType
+    Public Function Foo() As Integer?
+        If True Then
+            Return 1
+        Else
+            Return Nothing
+        End If
+    End Function
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Function Foo() As Integer?
+        Return If(True, 1, DirectCast(Nothing, Integer?))
+    End Function
+End Class"
+
+        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+    End Function
+
+    <Fact>
+    Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFixAll() As Task
+        Const source = "
+Public Class MyType
+    Public Function Foo() As Integer?
+        If True Then
+            Return 1
+        Else
+            Return Nothing
+        End If
+    End Function
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Function Foo() As Integer?
+        Return If(True, 1, DirectCast(Nothing, Integer?))
+    End Function
+End Class"
+
+        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
     End Function
 
     Private Const sourceReturn = "
