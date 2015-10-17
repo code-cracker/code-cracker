@@ -120,7 +120,9 @@
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.vb" />
     <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.vb" />
     <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.vb" />
+    <Compile Include="Style\PreferAnyToCountGreaterThanZeroAnalyzer.vb" />
     <Compile Include="Style\InterfaceNameAnalyzer.vb" />
+    <Compile Include="Style\PreferAnyToCountGreaterThanZeroCodeFixProvider.vb" />
     <Compile Include="Style\InterfaceNameCodeFixProvider.vb" />
     <Compile Include="Style\TernaryOperatorAnalyzer.vb" />
     <Compile Include="Style\TernaryOperatorCodeFixProviders.vb" />

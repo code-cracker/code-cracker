@@ -135,6 +135,12 @@
   <data name="InconsistentAccessibilityInPropertyType_Title" xml:space="preserve">
     <value>Change property type '{0}' accessibility to be as accessible as property '{1}'</value>
   </data>
+  <data name="InconsistentAccessibilityInOperatorReturnType_Title" xml:space="preserve">
+    <value>Change return type '{0}' accessibility to be as accessible as operator '{1}'</value>
+  </data>
+  <data name="InconsistentAccessibilityInOperatorParameter_Title" xml:space="preserve">
+    <value>Change parameter type '{0}' accessibility to be as accessible as operator '{1}'</value>
+  </data>
   <data name="ConsoleWriteLineAnalyzer_Description" xml:space="preserve">
     <value>String interpolation allows for better reading of the resulting string when compared to Console.WriteLine arguments. You should use Console.WriteLine with arguments only when another method is supplying the format string.</value>
   </data>
@@ -183,6 +189,18 @@
   <data name="XmlDocumentationRemoveNonExistentParametersCodeFixProvider_Title" xml:space="preserve">
     <value>Remove unexistent parameters in xml docs</value>
   </data>
+  <data name="ChangeAsToCastAnalyzer_Title" xml:space="preserve">
+    <value>Toggle between safe cast ('as') and direct cast.</value>
+  </data>
+  <data name="ChangeAsToCastAnalyzer_MessageFormat" xml:space="preserve">
+    <value>Toggle between safe cast ('as') and direct cast.</value>
+  </data>
+  <data name="ChangeAsToCastCodeFixProvider_AsToCast" xml:space="preserve">
+    <value>Change safe cast ('as') to direct cast</value>
+  </data>
+  <data name="ChangeAsToCastCodeFixProvider_CastToAs" xml:space="preserve">
+    <value>Change direct cast to safe cast ('as')</value>
+  </data>
   <data name="SwitchToAutoPropAnalyzer_Description" xml:space="preserve">
     <value>Auto properties offer a more concise way of defining a property. If you are using simple getters and setters you are able to simplify your code with autoproperties.</value>
   </data>
@@ -194,5 +212,65 @@
   </data>
   <data name="SwitchToAutoPropCodeFixProvider_Title" xml:space="preserve">
     <value>Change to auto property</value>
+  </data>
+  <data name="ValidateColorAnalyzer_Description" xml:space="preserve">
+    <value>This diagnostic checks the htmlColor value and triggers if the parsing fail by throwing an exception</value>
+  </data>
+  <data name="ValidateColorAnalyzer_Message" xml:space="preserve">
+    <value>Your htmlColor value doesn't exist</value>
+  </data>
+  <data name="ValidateColorAnalyzer_Title" xml:space="preserve">
+    <value>Validate color</value>
+  </data>
+  <data name="LoopToLinq_Description" xml:space="preserve">
+    <value>You may change this foreach loop to an equivalent Linq Expression.</value>
+  </data>
+  <data name="LoopToLinq_MessageFormat" xml:space="preserve">
+    <value>Change foreach loop to a Linq expression</value>
+  </data>
+  <data name="LoopToLinq_Title" xml:space="preserve">
+    <value>Change foreach loop to a Linq expression</value>
+  </data>
+  <data name="ReturnTaskInsteadOfAwait_Description" xml:space="preserve">
+    <value>Remove async and return task directly.</value>
+  </data>
+  <data name="ReturnTaskInsteadOfAwait_MessageFormat" xml:space="preserve">
+    <value>{0} can directly return a task.</value>
+  </data>
+  <data name="ReturnTaskInsteadOfAwait_Title" xml:space="preserve">
+    <value>Return task instead of await.</value>
+  </data>
+  <data name="ReturnTaskInsteadOfAwaitCodeFixProvider_Title" xml:space="preserve">
+    <value>Remove 'async' and return directly.</value>
+  </data>
+  <data name="SealMemberAnalyzer_Description" xml:space="preserve">
+    <value>If a member is overriding a base member, it could gain in performance by being sealed (not overridable).</value>
+  </data>
+  <data name="SealMemberAnalyzer_ClassMessageFormat" xml:space="preserve">
+    <value>Seal members of class '{0}'</value>
+  </data>
+  <data name="SealMemberAnalyzer_Title" xml:space="preserve">
+    <value>Seal class members</value>
+  </data>
+  <data name="SealMemberCodeFixProvider_ClassTitle" xml:space="preserve">
+    <value>Seal members of class '{0}'</value>
+  </data>
+  <data name="SealMemberAnalyzer_MemberMessageFormat" xml:space="preserve">
+    <value>Seal member '{0}'</value>
+  </data>
+  <data name="SealMemberCodeFixProvider_MemberTitle" xml:space="preserve">
+    <value>Seal member '{0}'</value>
+  </data>
+  <data name="PreferAnyToCountGreaterThanZeroAnalyzer_Title" xml:space="preserve">
+    <value>Prefer 'Any()' to 'Count() &gt; 0'</value>
+  </data>
+  <data name="PreferAnyToCountGreaterThanZeroAnalyzer_MessageFormat" xml:space="preserve">
+    <value>A call to 'Count({0}) &gt; 0' can be changed to 'Any({0})'</value>
+  </data>
+  <data name="InconsistentAccessibilityInDelegateReturnType_Title" xml:space="preserve">
+    <value>Change delegate return type '{0}' accessibility to be as accessible as delegate '{1}'</value>
+  </data>
+  <data name="InconsistentAccessibilityInDelegateParameter_Title" xml:space="preserve">
+    <value>Change parameter type '{0}' accessibility to be as accessible as delegate '{1}'</value>
   </data>
 </root>
