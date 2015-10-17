@@ -64,9 +64,9 @@ namespace CodeCracker.CSharp.Usage
                             var fieldSymbol = syntaxRefSemanticModel.GetSymbolInfo(assignment.Left).Symbol as IFieldSymbol;
                             if (fieldSymbol == null) continue;
                             if (method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
-                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol);
+                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, assignment);
                             else if (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic)
-                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol);
+                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, assignment);
                             else
                                 RemoveVariableThatHasAssignment(variablesToMakeReadonly, fieldSymbol);
                         }
@@ -81,8 +81,18 @@ namespace CodeCracker.CSharp.Usage
             }
         }
 
-        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol)
+        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, AssignmentExpressionSyntax assignment)
         {
+            var parent = assignment.Parent;
+            while (parent != null)
+            {
+                if (parent is AnonymousFunctionExpressionSyntax)
+                    return;
+                if (parent is ConstructorDeclarationSyntax)
+                    break;
+                parent = parent.Parent;
+            }
+
             if (!fieldSymbol.IsReadOnly && !variablesToMakeReadonly.Keys.Contains(fieldSymbol))
                 foreach (var variable in fieldSymbol.DeclaringSyntaxReferences)
                     variablesToMakeReadonly.Add(fieldSymbol, (VariableDeclaratorSyntax)variable.GetSyntax());
