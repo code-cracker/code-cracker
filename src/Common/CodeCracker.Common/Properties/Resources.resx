@@ -267,4 +267,10 @@
   <data name="PreferAnyToCountGreaterThanZeroAnalyzer_MessageFormat" xml:space="preserve">
     <value>A call to 'Count({0}) &gt; 0' can be changed to 'Any({0})'</value>
   </data>
+  <data name="InconsistentAccessibilityInDelegateReturnType_Title" xml:space="preserve">
+    <value>Change delegate return type '{0}' accessibility to be as accessible as delegate '{1}'</value>
+  </data>
+  <data name="InconsistentAccessibilityInDelegateParameter_Title" xml:space="preserve">
+    <value>Change parameter type '{0}' accessibility to be as accessible as delegate '{1}'</value>
+  </data>
 </root>

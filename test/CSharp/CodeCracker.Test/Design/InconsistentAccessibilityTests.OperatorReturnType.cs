@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
+﻿using System.Threading.Tasks;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Design

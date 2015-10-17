@@ -134,6 +134,24 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change parameter type &apos;{0}&apos; accessibility to be as accessible as delegate &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInDelegateParameter_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInDelegateParameter_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change delegate return type &apos;{0}&apos; accessibility to be as accessible as delegate &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInDelegateReturnType_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInDelegateReturnType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change field type &apos;{0}&apos; accessibility to be as accessible as field &apos;{1}&apos;.
         /// </summary>
         public static string InconsistentAccessibilityInFieldType_Title {
