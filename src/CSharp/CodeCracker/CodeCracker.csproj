@@ -34,7 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Design\InconsistentAccessibility\AccessibilityDomainChecker.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFix.cs" />
+    <Compile Include="Design\InconsistentAccessibility\IInconsistentAccessibilityCodeFix.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFixProvider.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInDelegateParameterType.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInDelegateReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfo.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerParameter.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerReturnType.cs" />

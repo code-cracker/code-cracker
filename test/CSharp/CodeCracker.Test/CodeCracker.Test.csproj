@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeCultureTests.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.Delegate.cs" />
     <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
     <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
     <Compile Include="Design\MakeMethodStaticTests.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="Design\InconsistentAccessibilityTests.FieldPropertyType.cs" />
     <Compile Include="Design\InconsistentAccessibilityTests.OperatorReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibilityTests.OperatorParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.AccessibilityDomainChecker.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
