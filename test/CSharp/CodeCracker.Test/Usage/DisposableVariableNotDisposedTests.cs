@@ -118,6 +118,199 @@ m.Dispose();".WrapInCSharpMethod();
         }
 
         [Fact]
+        public async Task IgnoredWhenPassedIntoParenthesizedLambdaExpression()
+        {
+            const string source = @"
+class Container
+{
+    static void Foo()
+    {
+        var container = new Container();
+        container.Register<System.IO.MemoryStream>(() => new System.IO.MemoryStream());
+    }
+    void Register<T>(System.Func<T> f) { }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoredWhenPassedIntoParenthesizedLambdaExpressionWithBlock()
+        {
+            const string source = @"
+class Container
+{
+    static void Foo()
+    {
+        var container = new Container();
+        container.Register<System.IO.MemoryStream>(() => {
+            var memoryStream = new System.IO.MemoryStream();
+            return memoryStream;
+        });
+    }
+    void Register<T>(System.Func<T> f) { }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoredWhenPassedIntoSimpleLambdaExpression()
+        {
+            const string source = @"
+class Container
+{
+    static void Foo()
+    {
+        var container = new Container();
+        container.Register<System.IO.MemoryStream>(i => new System.IO.MemoryStream());
+    }
+    void Register<T>(System.Func<int, T> f) { }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoredWhenPassedIntoAnonymousDelegate()
+        {
+            const string source = @"
+class Container
+{
+    static void Foo()
+    {
+        var container = new Container();
+        container.Register<System.IO.MemoryStream>(delegate () {
+            var memoryStream = new System.IO.MemoryStream();
+            return memoryStream;
+        });
+    }
+    void Register<T>(System.Func<T> f) { }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WhenPassedIntoParenthesizedLambdaExpressionWithoutBlockCreatesDiagnostic()
+        {
+            const string source = @"
+class Container
+{
+    static void Foo()
+    {
+        var container = new Container();
+        container.Register(() => new System.IO.MemoryStream());
+    }
+    void Register(System.Action f) { }
+}
+";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
+                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 34) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenPassedIntoParenthesizedLambdaExpressionCreatesDiagnostic()
+        {
+            const string source = @"
+class Container
+{
+    static void Foo()
+    {
+        var container = new Container();
+        container.Register(() => {
+            var memoryStream = new System.IO.MemoryStream();
+        });
+    }
+    void Register(System.Action f) { }
+}
+";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
+                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 32) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenPassedIntoSimpleLambdaExpressionCreatesDiagnostic()
+        {
+            const string source = @"
+class Container
+{
+    static void Foo()
+    {
+        var container = new Container();
+        container.Register(i => {
+            var memoryStream = new System.IO.MemoryStream();
+        });
+    }
+    void Register(System.Action<int> f) { }
+}
+";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
+                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 32) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenPassedIntoAnonymousDelegateCreatesDiagnostic()
+        {
+            const string source = @"
+class Container
+{
+    static void Foo()
+    {
+        var container = new Container();
+        container.Register(delegate () {
+            var memoryStream = new System.IO.MemoryStream();
+        });
+    }
+    void Register(System.Action f) { }
+}
+";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
+                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 32) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task NoFixForParenthesizedLambdaExpression()
+        {
+            const string source = @"
+class Container
+{
+    static void Foo()
+    {
+        var container = new Container();
+        container.Register(() => new System.IO.MemoryStream());
+    }
+    void Register(System.Action f) { }
+}
+";
+            await VerifyCSharpHasNoFixAsync(source);
+        }
+
+        [Fact]
         public async Task PassedToConstructorDoesNotCreateDiagnostic()
         {
             const string source = @"

@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Category = SupportedCategories.Usage;
         const string Description = "When a disposable object is created it should be disposed as soon as possible.\n" +
             "This warning will appear if you create a disposable object and don't store, return or dispose it.";
-
+        public const string cantFix = "cantFix";
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
             Title,
@@ -36,12 +36,14 @@ namespace CodeCracker.CSharp.Usage
             if (context.IsGenerated()) return;
             var objectCreation = context.Node as ObjectCreationExpressionSyntax;
             if (objectCreation == null) return;
-            if (objectCreation?.Parent is UsingStatementSyntax) return;
-            if (objectCreation?.Parent is ReturnStatementSyntax) return;
+            if (objectCreation.Parent == null) return;
+            if (objectCreation.Parent.IsAnyKind(SyntaxKind.ReturnStatement, SyntaxKind.UsingStatement))
+                return;
             if (objectCreation.Ancestors().Any(i => i.IsAnyKind(
                 SyntaxKind.ThisConstructorInitializer,
                 SyntaxKind.BaseConstructorInitializer,
-                SyntaxKind.ObjectCreationExpression))) return;
+                SyntaxKind.ObjectCreationExpression)))
+                return;
 
             var semanticModel = context.SemanticModel;
             var type = semanticModel.GetSymbolInfo(objectCreation.Type).Symbol as INamedTypeSymbol;
@@ -70,6 +72,14 @@ namespace CodeCracker.CSharp.Usage
                 statement = variableDeclaration.Parent as LocalDeclarationStatementSyntax;
                 if ((statement?.FirstAncestorOrSelf<MethodDeclarationSyntax>()) == null) return;
             }
+            else if (objectCreation.Parent.IsAnyKind(SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression))
+            {
+                var anonymousFunction = objectCreation.Parent as AnonymousFunctionExpressionSyntax;
+                var methodSymbol = semanticModel.GetSymbolInfo(anonymousFunction).Symbol as IMethodSymbol;
+                if (!methodSymbol.ReturnsVoid) return;
+                var props = new Dictionary<string, string> { { "typeName", type.Name }, { cantFix, "" } }.ToImmutableDictionary();
+                context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.GetLocation(), props, type.Name.ToString()));
+            }
             else
             {
                 var props = new Dictionary<string, string> { { "typeName", type.Name } }.ToImmutableDictionary();
@@ -85,30 +95,45 @@ namespace CodeCracker.CSharp.Usage
             }
         }
 
-        private static bool IsDisposedOrAssigned(SemanticModel semanticModel, SyntaxNode node, ILocalSymbol identitySymbol)
+        private static bool IsDisposedOrAssigned(SemanticModel semanticModel, StatementSyntax statement, ILocalSymbol identitySymbol)
         {
-            var method = node.FirstAncestorOrSelf<MethodDeclarationSyntax>();
+            var method = statement.FirstAncestorOrSelf<MethodDeclarationSyntax>();
             if (method == null) return false;
-            if (IsReturned(method, semanticModel, identitySymbol)) return true;
-            foreach (var statement in method.Body.DescendantNodes().OfType<StatementSyntax>())
+            if (IsReturned(method, statement, semanticModel, identitySymbol)) return true;
+            foreach (var childStatements in method.Body.DescendantNodes().OfType<StatementSyntax>())
             {
-                if (statement.SpanStart > node.SpanStart
-                && (IsCorrectDispose(statement as ExpressionStatementSyntax, semanticModel, identitySymbol)
-                || IsAssignedToField(statement as ExpressionStatementSyntax, semanticModel, identitySymbol)))
+                if (childStatements.SpanStart > statement.SpanStart
+                && (IsCorrectDispose(childStatements as ExpressionStatementSyntax, semanticModel, identitySymbol)
+                || IsAssignedToField(childStatements as ExpressionStatementSyntax, semanticModel, identitySymbol)))
                     return true;
             }
             return false;
         }
 
-        private static bool IsReturned(MethodDeclarationSyntax method, SemanticModel semanticModel, ILocalSymbol identitySymbol)
+        private static bool IsReturned(MethodDeclarationSyntax method, StatementSyntax statement, SemanticModel semanticModel, ILocalSymbol identitySymbol)
         {
-            var returnTypeSymbol = semanticModel.GetTypeInfo(method.ReturnType).Type;
+            var anonymousFunction = statement.FirstAncestorOfKind(SyntaxKind.ParenthesizedLambdaExpression,
+                SyntaxKind.SimpleLambdaExpression, SyntaxKind.AnonymousMethodExpression) as AnonymousFunctionExpressionSyntax;
+            IMethodSymbol methodSymbol;
+            BlockSyntax body;
+            if (anonymousFunction != null)
+            {
+                methodSymbol = semanticModel.GetSymbolInfo(anonymousFunction).Symbol as IMethodSymbol;
+                body = anonymousFunction.Body as BlockSyntax;
+            }
+            else
+            {
+                methodSymbol = semanticModel.GetDeclaredSymbol(method);
+                body = method.Body;
+            }
+            if (body == null) return true;
+            var returnExpressions = body.DescendantNodes().OfType<ReturnStatementSyntax>().Select(r => r.Expression);
+            var returnTypeSymbol = methodSymbol?.ReturnType;
             if (returnTypeSymbol == null) return false;
             if (returnTypeSymbol.SpecialType == SpecialType.System_Void) return false;
-            var returns = method.Body.DescendantNodes().OfType<ReturnStatementSyntax>();
-            var isReturning = returns.Any(r =>
+            var isReturning = returnExpressions.Any(returnExpression =>
             {
-                var returnSymbol = semanticModel.GetSymbolInfo(r.Expression).Symbol;
+                var returnSymbol = semanticModel.GetSymbolInfo(returnExpression).Symbol;
                 if (returnSymbol == null) return false;
                 return returnSymbol.Equals(identitySymbol);
             });

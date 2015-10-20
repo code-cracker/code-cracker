@@ -27,6 +27,7 @@ namespace CodeCracker.CSharp.Usage
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
+            if (diagnostic.Properties.ContainsKey(DisposableVariableNotDisposedAnalyzer.cantFix)) return Task.FromResult(0);
             var title = string.Format(MessageFormat, diagnostic.Properties["typeName"]);
             context.RegisterCodeFix(CodeAction.Create(title, c => CreateUsingAsync(context.Document, diagnostic, c), nameof(DisposableVariableNotDisposedCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
