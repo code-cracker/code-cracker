@@ -2,7 +2,7 @@
 Imports Xunit
 
 Namespace Usage
-    Public Class UnusedParameterTests
+    Public Class UnusedParametersTests
         Inherits CodeFixVerifier(Of UnusedParametersAnalyzer, UnusedParametersCodeFixProvider)
         <Fact>
         Public Async Function MethodWithoutParametersDoesNotCreateDiagnostic() As Task
@@ -357,6 +357,31 @@ End Class"
 Class Foo
     Public Sub IsReferencing()
         Dim x = Bar(1, 2, 3, 4)
+    End Sub
+    Public Function Bar(a As Integer, b As Integer, ParamArray c As Integer())
+        b = a
+        return 1
+    End Function
+End Class"
+            Const fix = "
+Class Foo
+    Public Sub IsReferencing()
+        Dim x = Bar(1, 2)
+    End Sub
+    Public Function Bar(a As Integer, b As Integer)
+        b = a
+        return 1
+    End Function
+End Class"
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        <Fact>
+        Public Async Function FixParamsWhenNotInUse() As Task
+            Const source = "
+Class Foo
+    Public Sub IsReferencing()
+        Dim x = Bar(1, 2)
     End Sub
     Public Function Bar(a As Integer, b As Integer, ParamArray c As Integer())
         b = a

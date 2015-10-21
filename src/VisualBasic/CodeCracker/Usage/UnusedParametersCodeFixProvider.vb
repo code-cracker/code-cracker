@@ -73,9 +73,9 @@ Namespace Usage
                         methodIdentifier.FirstAncestorOfType(Of InvocationExpressionSyntax).ArgumentList)
                     If parameter.Modifiers.Any(Function(m) m.IsKind(SyntaxKind.ParamArrayKeyword)) Then
                         Dim newArguments = arguments
-                        Do
+                        While newArguments.Arguments.Count > parameterPosition
                             newArguments = newArguments.WithArguments(newArguments.Arguments.RemoveAt(parameterPosition))
-                        Loop While newArguments.Arguments.Count > parameterPosition
+                        End While
                         replacingArgs.Add(arguments, newArguments)
                     Else
                         Dim newArguments = arguments.WithArguments(arguments.Arguments.RemoveAt(parameterPosition))
