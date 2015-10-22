@@ -23,7 +23,7 @@ namespace CodeCracker.Test.CSharp.Design
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = "Use ?.Invoke operator and method to fire 'MyEvent' event.",
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
             };
@@ -53,7 +53,7 @@ namespace CodeCracker.Test.CSharp.Design
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = "Use ?.Invoke operator and method to fire 'MyEvent' event.",
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
             };
@@ -85,7 +85,7 @@ namespace CodeCracker.Test.CSharp.Design
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = "Use ?.Invoke operator and method to fire 'MyEvent' event.",
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 25) }
             };
@@ -206,7 +206,7 @@ public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = "Use ?.Invoke operator and method to fire 'getter' event.",
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "getter"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 12) }
             };

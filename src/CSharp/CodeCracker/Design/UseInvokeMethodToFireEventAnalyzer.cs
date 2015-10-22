@@ -10,11 +10,11 @@ namespace CodeCracker.CSharp.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UseInvokeMethodToFireEventAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Use Invoke Method To Fire Event Analyzer";
-        internal const string MessageFormat = "Use ?.Invoke operator and method to fire '{0}' event.";
+        internal const string Title = "Use Invoke Method To call on delegate";
+        internal const string MessageFormat = "Use ?.Invoke operator and method to call on '{0}' delegate.";
         internal const string Category = SupportedCategories.Design;
-        const string Description = "In C#6 an event can be invoked using the null-propagating operator (?.) and it's"
-            + "invoke method to avoid throwing a NullReference exception when there is no event handler attached.";
+        const string Description = "In C#6 a delegate can be invoked using the null-propagating operator (?.) and it's"
+            + " invoke method to avoid throwing a NullReference exception when there is no method attached to the delegate.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
