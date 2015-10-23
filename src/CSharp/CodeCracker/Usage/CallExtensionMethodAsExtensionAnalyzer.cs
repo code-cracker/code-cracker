@@ -52,7 +52,9 @@ namespace CodeCracker.CSharp.Usage
             var methodSymbol = GetCallerMethodSymbol(context.SemanticModel, methodCaller.Name, argumentsCount);
             if (methodSymbol == null || !methodSymbol.IsExtensionMethod) return;
             if (ContainsDynamicArgument(context.SemanticModel, childNodes)) return;
-            if (IsSelectingADifferentMethod(childNodes, methodCaller.Name, context.Node.SyntaxTree, methodSymbol, methodInvokeSyntax.FirstAncestorOrSelfThatIsAStatement(), compilation)) return;
+            var invocationStatement = methodInvokeSyntax.FirstAncestorOrSelfThatIsAStatement();
+            if (invocationStatement == null) return;
+            if (IsSelectingADifferentMethod(childNodes, methodCaller.Name, context.Node.SyntaxTree, methodSymbol, invocationStatement, compilation)) return;
             context.ReportDiagnostic(Diagnostic.Create(Rule, methodCaller.GetLocation(), methodSymbol.Name, classSymbol.Name));
         }
 

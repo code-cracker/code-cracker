@@ -262,5 +262,23 @@ public static class ExtensionsTestCase
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+
+        [Fact]
+        public async Task WhenCallExtensionMethodWithoutInvocationStatement()
+        {
+            const string source = @"
+              using System.Linq;
+              namespace ConsoleApplication1
+              {
+                  public class Foo
+                  {
+                      static int[] source = new int[] { 1, 2, 3 };
+                      public static void Bar() => Enumerable.Any(source);
+                  }
+              }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
