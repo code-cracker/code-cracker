@@ -483,7 +483,6 @@ namespace CodeCracker
             return SyntaxFactory.TokenList(accessibilityModifiers.EnsureProtectedBeforeInternal());
         }
 
-<<<<<<< HEAD
         public static SyntaxNode FirstAncestorOfKind(this SyntaxNode node, params SyntaxKind[] kinds)
         {
             var currentNode = node;
@@ -496,7 +495,6 @@ namespace CodeCracker
             }
             return null;
         }
-=======
         public static string GetOperatorName(this BaseMethodDeclarationSyntax operatorSyntax)
         {
             switch (operatorSyntax.Kind())
@@ -519,6 +517,5 @@ namespace CodeCracker
         }
 
         public static bool IsLoopStatement(this SyntaxNode note) => note.IsAnyKind(SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement);
->>>>>>> upstream/vnext
     }
 }
