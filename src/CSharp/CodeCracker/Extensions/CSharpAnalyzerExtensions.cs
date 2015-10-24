@@ -313,10 +313,66 @@ namespace CodeCracker
             return result;
         }
 
+        public static MemberDeclarationSyntax AddModifiers(this MemberDeclarationSyntax declaration, SyntaxTokenList newModifiers) =>
+            declaration.AddModifiers(newModifiers.ToArray());
+
+        public static MemberDeclarationSyntax AddModifiers(this MemberDeclarationSyntax declaration, params SyntaxToken[] newModifiers)
+        {
+            var result = declaration;
+            switch (declaration.Kind())
+            {
+                case SyntaxKind.ClassDeclaration:
+                    result = ((ClassDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.StructDeclaration:
+                    result = ((StructDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.InterfaceDeclaration:
+                    result = ((InterfaceDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.EnumDeclaration:
+                    result = ((EnumDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.DelegateDeclaration:
+                    result = ((DelegateDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.FieldDeclaration:
+                    result = ((FieldDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.EventFieldDeclaration:
+                    result = ((EventFieldDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.MethodDeclaration:
+                    result = ((MethodDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.OperatorDeclaration:
+                    result = ((OperatorDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.ConversionOperatorDeclaration:
+                    result = ((ConversionOperatorDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.ConstructorDeclaration:
+                    result = ((ConstructorDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.DestructorDeclaration:
+                    result = ((DestructorDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.PropertyDeclaration:
+                    result = ((PropertyDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.IndexerDeclaration:
+                    result = ((IndexerDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+                case SyntaxKind.EventDeclaration:
+                    result = ((EventDeclarationSyntax)declaration).AddModifiers(newModifiers);
+                    break;
+            }
+            return result;
+        }
+
         public static MemberDeclarationSyntax WithModifiers(this MemberDeclarationSyntax declaration, SyntaxTokenList newModifiers)
         {
             var result = declaration;
-
             switch (declaration.Kind())
             {
                 case SyntaxKind.ClassDeclaration:
@@ -365,7 +421,6 @@ namespace CodeCracker
                     result = ((EventDeclarationSyntax)declaration).WithModifiers(newModifiers);
                     break;
             }
-
             return result;
         }
 
@@ -418,11 +473,17 @@ namespace CodeCracker
 
         public static SyntaxTokenList CloneAccessibilityModifiers(this SyntaxTokenList modifiers)
         {
-            var accessibilityModifiers = modifiers.Where(token => token.IsKind(SyntaxKind.PublicKeyword) || token.IsKind(SyntaxKind.ProtectedKeyword) || token.IsKind(SyntaxKind.InternalKeyword) || token.IsKind(SyntaxKind.PrivateKeyword)).Select(token => SyntaxFactory.Token(token.Kind()));
+            var accessibilityModifiers =
+                modifiers.Where(
+                    token =>
+                        token.IsKind(SyntaxKind.PublicKeyword) || token.IsKind(SyntaxKind.ProtectedKeyword) ||
+                        token.IsKind(SyntaxKind.InternalKeyword) || token.IsKind(SyntaxKind.PrivateKeyword))
+                    .Select(token => SyntaxFactory.Token(token.Kind()));
 
             return SyntaxFactory.TokenList(accessibilityModifiers.EnsureProtectedBeforeInternal());
         }
 
+<<<<<<< HEAD
         public static SyntaxNode FirstAncestorOfKind(this SyntaxNode node, params SyntaxKind[] kinds)
         {
             var currentNode = node;
@@ -435,5 +496,29 @@ namespace CodeCracker
             }
             return null;
         }
+=======
+        public static string GetOperatorName(this BaseMethodDeclarationSyntax operatorSyntax)
+        {
+            switch (operatorSyntax.Kind())
+            {
+                case SyntaxKind.OperatorDeclaration:
+                    var operatorDeclaration = (OperatorDeclarationSyntax)operatorSyntax;
+                    return $"{operatorSyntax.GetTypeDeclaration().Identifier.ValueText}.{operatorDeclaration.OperatorKeyword} {operatorDeclaration.OperatorToken}{operatorDeclaration.ParameterList}";
+                case SyntaxKind.ConversionOperatorDeclaration:
+                    var conversionOperatorDeclaration = (ConversionOperatorDeclarationSyntax)operatorSyntax;
+                    return $"{operatorSyntax.GetTypeDeclaration().Identifier.ValueText}.{conversionOperatorDeclaration.ImplicitOrExplicitKeyword} {conversionOperatorDeclaration.Type}{conversionOperatorDeclaration.ParameterList}";
+                default:
+                    throw new InvalidOperationException("Passed MethodDeclaration is not any kind of OperatorDeclaration");
+            }
+        }
+
+        public static TypeDeclarationSyntax GetTypeDeclaration(this BaseMethodDeclarationSyntax methodSyntax)
+        {
+            return methodSyntax.FirstAncestorOfType(typeof(ClassDeclarationSyntax),
+                typeof(StructDeclarationSyntax)) as TypeDeclarationSyntax;
+        }
+
+        public static bool IsLoopStatement(this SyntaxNode note) => note.IsAnyKind(SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement);
+>>>>>>> upstream/vnext
     }
 }
