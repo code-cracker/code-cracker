@@ -447,5 +447,33 @@ namespace ConsoleApplication1
 ".WrapInCSharpClass("OtherType");
             await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { expected1, expected2 });
         }
+
+        [Fact]
+        public async Task FixPropIntoAutoPropAndFixKeepingXMLComments()
+        {
+            var source = @"
+        public class Foo
+        {
+            private int x = 10; 
+            /// <summary>
+            /// comment 1
+            /// </summary>
+            public int X 
+            {
+                get { return x; }
+                set { x = value; }
+            }
+        }";
+
+            var expected = @"
+        public class Foo
+        {
+            /// <summary>
+            /// comment 1
+            /// </summary>
+            public int X { get; set; } = 10;
+        }";
+            await VerifyCSharpFixAllAsync(source, expected);
+        }
     }
 }
