@@ -53,8 +53,7 @@ namespace CodeCracker.CSharp.Style
             returnIdentifierSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
 
             var newProperty = GetSimpleProperty(property, variableDeclarator)
-                .WithTrailingTrivia(property.AccessorList.GetTrailingTrivia())
-                .WithLeadingTrivia(property.AccessorList.GetLeadingTrivia())
+                .WithTriviaFrom(property)
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
             var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, returnIdentifierSymbol, property.Identifier.ValueText, document.Project.Solution.Workspace.Options, cancellationToken);
