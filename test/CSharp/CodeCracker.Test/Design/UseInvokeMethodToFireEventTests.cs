@@ -100,13 +100,126 @@ namespace CodeCracker.Test.CSharp.Design
                 public class MyClass
                 {
                     public event System.EventHandler MyEvent;
-
                     public void Execute()
                     {
                         MyEvent?.Invoke(this, System.EventArgs.Empty);
                     }
                 }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
 
+        [Fact]
+        public async void RaiseDiagnosticEvenWhenVerifiedForNullAndNotReturnedOrThrown()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public static void Execute(System.Action action)
+                    {
+                        if (action == null)
+                        {
+                            var a = 1;
+                        }
+                        action();
+                    }
+                }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "action"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void RaiseDiagnosticEvenWhenVerifiedForNullAndNotReturnedOrThrownWithBlocklessIf()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public static void Execute(System.Action action)
+                    {
+                        if (action == null)
+                            System.Console.WriteLine();
+                        action();
+                    }
+                }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "action"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void RaiseDiagnosticIfNullCheckIsAfterInvocation()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public static void Execute(System.Action action)
+                    {
+                        action();
+                        if (action == null) throw new Exception();
+                    }
+                }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "action"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void IgnoreIfAlreadyVerifiedForNullWithThrow()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public static void Execute(System.Action action)
+                    {
+                        if (action == null) throw new Exception();
+                        action();
+                    }
+                }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void IgnoreIfAlreadyVerifiedForNullInverted()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public static void Execute(System.Action action)
+                    {
+                        if (null == action) throw new Exception();
+                        action();
+                    }
+                }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void IgnoreIfAlreadyVerifiedForNullWithReturn()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public static void Execute(System.Action action)
+                    {
+                        if (action == null) return;
+                        action();
+                    }
+                }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -200,7 +313,6 @@ tuple.Item2();".WrapInCSharpMethod();
             var test = @"
 public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T : System.Attribute where TReturn : class
 {
-    if (getter == null) return default(TReturn);
     return getter(default(T));
 }".WrapInCSharpClass();
             var expected = new DiagnosticResult
@@ -208,7 +320,7 @@ public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T
                 Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
                 Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "getter"),
                 Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 12) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 12) }
             };
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
