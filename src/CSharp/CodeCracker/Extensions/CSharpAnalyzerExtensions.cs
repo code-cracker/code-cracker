@@ -483,6 +483,18 @@ namespace CodeCracker
             return SyntaxFactory.TokenList(accessibilityModifiers.EnsureProtectedBeforeInternal());
         }
 
+        public static SyntaxNode FirstAncestorOfKind(this SyntaxNode node, params SyntaxKind[] kinds)
+        {
+            var currentNode = node;
+            while (true)
+            {
+                var parent = currentNode.Parent;
+                if (parent == null) break;
+                if (parent.IsAnyKind(kinds)) return parent;
+                currentNode = parent;
+            }
+            return null;
+        }
         public static string GetOperatorName(this BaseMethodDeclarationSyntax operatorSyntax)
         {
             switch (operatorSyntax.Kind())

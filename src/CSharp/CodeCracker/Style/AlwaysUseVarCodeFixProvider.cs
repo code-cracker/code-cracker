@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
@@ -30,15 +31,49 @@ namespace CodeCracker.CSharp.Style
         private async static Task<Document> UseVarAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
-            var variableDeclaration = localDeclaration.ChildNodes()
-                .OfType<VariableDeclarationSyntax>()
-                .FirstOrDefault();
-            var @var = SyntaxFactory.IdentifierName("var")
-                .WithLeadingTrivia(variableDeclaration.Type.GetLeadingTrivia())
-                .WithTrailingTrivia(variableDeclaration.Type.GetTrailingTrivia());
-            var newRoot = root.ReplaceNode(variableDeclaration.Type, @var);
+            var variableDeclaration = localDeclaration.Declaration;
+            var numVariables = variableDeclaration.Variables.Count;
+
+            var newVariableDeclarations = new VariableDeclarationSyntax[numVariables];
+
+            var varSyntax = SyntaxFactory.IdentifierName("var");
+
+            //Create a new var declaration for each variable.
+            for (var i = 0; i < numVariables; i++)
+            {
+                var originalVariable = variableDeclaration.Variables[i];
+                var newLeadingTrivia = originalVariable.GetLeadingTrivia();
+            
+                //Get the trivia from the separator as well
+                if (i != 0)
+                {
+                    newLeadingTrivia = newLeadingTrivia.InsertRange(0,
+                        variableDeclaration.Variables.GetSeparator(i-1).GetAllTrivia());
+                }
+
+                newVariableDeclarations[i] = SyntaxFactory.VariableDeclaration(varSyntax)
+                    .AddVariables(originalVariable.WithLeadingTrivia(newLeadingTrivia));
+            }
+
+            //ensure trivia for leading type node is preserved
+            var originalTypeSyntax = variableDeclaration.Type;
+            newVariableDeclarations[0] = newVariableDeclarations[0]
+                .WithType((TypeSyntax) varSyntax.WithSameTriviaAs(originalTypeSyntax));
+
+            var newLocalDeclarationStatements = newVariableDeclarations.Select(SyntaxFactory.LocalDeclarationStatement).ToList();
+
+
+            //Preserve the trivia for the entire statement at the start and at the end
+            newLocalDeclarationStatements[0] =
+                newLocalDeclarationStatements[0].WithLeadingTrivia(variableDeclaration.GetLeadingTrivia());
+            var lastIndex = numVariables -1;
+            newLocalDeclarationStatements[lastIndex] =
+                newLocalDeclarationStatements[lastIndex].WithTrailingTrivia(localDeclaration.GetTrailingTrivia());
+
+            var newRoot = root.ReplaceNode(localDeclaration, newLocalDeclarationStatements);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
