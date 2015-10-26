@@ -720,5 +720,24 @@ namespace CodeCracker.Test.CSharp.Usage
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source1, source2);
         }
+
+    [Fact]
+    public async Task FieldsAssignedOnLambdaDoesNotCreateDiagnostic()
+    {
+        const string source = @"
+    namespace ConsoleApplication1
+    {
+        internal class Test
+        {
+            private string _value;
+
+            public Test()
+            {
+                Func<string> factory = () => _value ?? (_value = ""Hello"");
+            }
+        }
+    }";
+        await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }

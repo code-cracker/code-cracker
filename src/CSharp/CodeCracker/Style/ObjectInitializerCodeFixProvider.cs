@@ -80,14 +80,13 @@ namespace CodeCracker.CSharp.Style
                 if (blockStatement.Equals(statement))
                 {
                     var initializationExpressions = new List<AssignmentExpressionSyntax>();
-
                     foreach (var expressionStatement in assignmentExpressions)
                     {
                         var assignmentExpression = expressionStatement.Expression as AssignmentExpressionSyntax;
                         var memberAccess = assignmentExpression.Left as MemberAccessExpressionSyntax;
                         var propertyIdentifier = memberAccess.Name as IdentifierNameSyntax;
                         var newAssignmentExpression = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, propertyIdentifier, assignmentExpression.Right);
-                        initializationExpressions.Add(newAssignmentExpression);
+                        initializationExpressions.Add(newAssignmentExpression.WithTriviaFrom(expressionStatement));
                     }
 
                     if (objectCreationExpression.Initializer != null)
@@ -103,7 +102,15 @@ namespace CodeCracker.CSharp.Style
                         initializationExpressions.InsertRange(0, existentInitilizers);
                     }
 
-                    var initializers = SyntaxFactory.SeparatedList<ExpressionSyntax>(initializationExpressions);
+                    // Trailing trivia will be added before the separator if a simple separator list is used.  This builds the separator token for expression
+                    // such that the trailing trivia from the original expression is added after the comma on the same line.
+                    var initializerSeparators = initializationExpressions.Take(initializationExpressions.Count - 1).Select(expr => SyntaxFactory.Token(SyntaxKind.CommaToken).WithTrailingTrivia(expr.GetTrailingTrivia())).ToList();
+                    var lastInitializer = initializationExpressions.Last(); // Preserve the last initializer before rebuilding the list.
+                    // Get all but the last initializer without the trailing trivia.  Trivia will be added after the separator from the list above.
+                    initializationExpressions = initializationExpressions.Take(initializationExpressions.Count - 1).Select(expr => expr.WithoutTrailingTrivia()).ToList();
+                    initializationExpressions.Add(lastInitializer); // Add the last initializer with all of its trivia.
+
+                    var initializers = SyntaxFactory.SeparatedList<ExpressionSyntax>(initializationExpressions, initializerSeparators);
 
                     var newObjectCreationExpression = objectCreationExpression.WithInitializer(
                         SyntaxFactory.InitializerExpression(
