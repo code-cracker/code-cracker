@@ -98,7 +98,7 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change method Count() to property Count..
+        ///   Looks up a localized string similar to Change method Count() to property Count. .
         /// </summary>
         public static string ChangeCountMethodToPropertyAnalyzer_Description {
             get {

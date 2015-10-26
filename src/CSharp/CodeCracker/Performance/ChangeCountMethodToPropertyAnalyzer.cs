@@ -29,7 +29,9 @@ namespace CodeCracker.CSharp.Performance
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ChangeCountMethodToProperty));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
         public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
+
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
