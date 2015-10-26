@@ -129,6 +129,7 @@
     <Compile Include="Design\MakeMethodStaticTests.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Performance\ChangeCountMethodToPropertyTests.cs" />
     <Compile Include="Performance\SealMemberTests.cs" />
     <Compile Include="Performance\ReturnTaskInsteadOfAwaitTests.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
