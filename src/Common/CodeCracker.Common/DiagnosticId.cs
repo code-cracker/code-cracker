@@ -83,7 +83,6 @@
         SealMember = 94,
         ConsoleWriteLine = 95,
         ExtractClassToFile = 96,
-        ChangeCountMethodToProperty = 98,
         PreferAnyToCountGreaterThanZero = 99,
         NameOf_External = 108,
     }

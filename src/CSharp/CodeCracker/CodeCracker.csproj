@@ -54,8 +54,6 @@
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Extensions\CSharpGeneratedCodeAnalysisExtensions.cs" />
-    <Compile Include="Performance\ChangeCountMethodToPropertyAnalyzer.cs" />
-    <Compile Include="Performance\ChangeCountMethodToPropertyCodeFixProvider.cs" />
     <Compile Include="Performance\SealMemberAnalyzer.cs" />
     <Compile Include="Performance\ReturnTaskInsteadOfAwaitCodeFixProvider.cs" />
     <Compile Include="Performance\ReturnTaskInsteadOfAwaitAnalyzer.cs" />
