@@ -54,7 +54,6 @@ namespace CodeCracker.Test.CSharp.Performance
             };
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
-
         public async Task ChangeCountPropertyHasNoProperty()
         {
             const string test = @"

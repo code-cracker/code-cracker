@@ -273,14 +273,13 @@
   <data name="InconsistentAccessibilityInDelegateParameter_Title" xml:space="preserve">
     <value>Change parameter type '{0}' accessibility to be as accessible as delegate '{1}'</value>
   </data>
-    <data name="ChangeCountMethodToPropertyAnalyzer_Description" xml:space="preserve">
-    <value>Change method Count() to property Count</value>
+  <data name="ChangeCountMethodToPropertyAnalyzer_Description" xml:space="preserve">
+    <value>Change method Count() to property Count.</value>
   </data>
   <data name="ChangeCountMethodToPropertyAnalyzer_MessageFormat" xml:space="preserve">
-    <value>Change method Count() to property Count</value>
+    <value>Change method Count() to property Count.</value>
   </data>
   <data name="ChangeCountMethodToPropertyAnalyzer_Title" xml:space="preserve">
-    <value>Change Count() to Count</value>
+    <value>Change Count() to Count.</value>
   </data>
-
 </root>
