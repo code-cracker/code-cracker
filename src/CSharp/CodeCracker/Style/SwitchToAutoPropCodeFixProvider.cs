@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.SwitchToAutoProp.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public sealed override FixAllProvider GetFixAllProvider() => SwitchToAutoPropCodeFixAllProvider.Instance;
 
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -33,35 +33,30 @@ namespace CodeCracker.CSharp.Style
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var property = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
+            return await MakeAutoPropertyAsync(document, root, property, cancellationToken);
+        }
+
+        public async static Task<Solution> MakeAutoPropertyAsync(Document document, SyntaxNode root, PropertyDeclarationSyntax property, CancellationToken cancellationToken)
+        {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
-
             var getterReturn = (ReturnStatementSyntax)property.AccessorList.Accessors.First(a => a.Keyword.ValueText == "get").Body.Statements.First();
             var returnIdentifier = (IdentifierNameSyntax)getterReturn.Expression;
             var returnIdentifierSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
-
-
             var variableDeclarator = (VariableDeclaratorSyntax)returnIdentifierSymbol.DeclaringSyntaxReferences.First().GetSyntax();
             var fieldDeclaration = variableDeclarator.FirstAncestorOfType<FieldDeclarationSyntax>();
-
-
             root = root.TrackNodes(returnIdentifier, fieldDeclaration, property);
             document = document.WithSyntaxRoot(root);
             root = await document.GetSyntaxRootAsync(cancellationToken);
             semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             returnIdentifier = root.GetCurrentNode(returnIdentifier);
             returnIdentifierSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
-
             var newProperty = GetSimpleProperty(property, variableDeclarator)
                 .WithTriviaFrom(property)
                 .WithAdditionalAnnotations(Formatter.Annotation);
-
             var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, returnIdentifierSymbol, property.Identifier.ValueText, document.Project.Solution.Workspace.Options, cancellationToken);
             document = newSolution.GetDocument(document.Id);
             root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-
             root = root.InsertNodesAfter(root.GetCurrentNode(property), new[] { newProperty });
-
             var multipleVariableDeclaration = fieldDeclaration.Declaration.Variables.Count > 1;
             if (multipleVariableDeclaration)
             {
@@ -73,7 +68,6 @@ namespace CodeCracker.CSharp.Style
             {
                 root = root.RemoveNodes(root.GetCurrentNodes<SyntaxNode>(new SyntaxNode[] { fieldDeclaration, property }), SyntaxRemoveOptions.KeepNoTrivia);
             }
-
             document = document.WithSyntaxRoot(root);
             return document.Project.Solution;
         }
