@@ -278,7 +278,15 @@ public static class ExtensionsTestCase
                   }
               }";
 
-            await VerifyCSharpHasNoDiagnosticsAsync(source);
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
+                Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 51) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
     }
 }
