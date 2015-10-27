@@ -52,25 +52,35 @@ namespace CodeCracker.CSharp.Usage
             var methodSymbol = GetCallerMethodSymbol(context.SemanticModel, methodCaller.Name, argumentsCount);
             if (methodSymbol == null || !methodSymbol.IsExtensionMethod) return;
             if (ContainsDynamicArgument(context.SemanticModel, childNodes)) return;
-            if (IsSelectingADifferentMethod(childNodes, methodCaller.Name, context.Node.SyntaxTree, methodSymbol, methodInvokeSyntax.FirstAncestorOrSelfThatIsAStatement(), compilation)) return;
+            ExpressionSyntax invocationStatement;
+            if (methodInvokeSyntax.Parent.IsNotKind(SyntaxKind.ArrowExpressionClause))
+            {
+                invocationStatement = (methodInvokeSyntax.FirstAncestorOrSelfThatIsAStatement() as ExpressionStatementSyntax).Expression;
+            }
+            else
+            {
+                invocationStatement = methodInvokeSyntax.FirstAncestorOrSelfOfType<ArrowExpressionClauseSyntax>().Expression;
+            }
+            if (invocationStatement == null) return;
+            if (IsSelectingADifferentMethod(childNodes, methodCaller.Name, context.Node.SyntaxTree, methodSymbol, invocationStatement, compilation)) return;
             context.ReportDiagnostic(Diagnostic.Create(Rule, methodCaller.GetLocation(), methodSymbol.Name, classSymbol.Name));
         }
 
-        private static bool IsSelectingADifferentMethod(IEnumerable<SyntaxNode> childNodes, SimpleNameSyntax methodName, SyntaxTree tree, IMethodSymbol methodSymbol, StatementSyntax invocationStatement, Compilation compilation)
+        private static bool IsSelectingADifferentMethod(IEnumerable<SyntaxNode> childNodes, SimpleNameSyntax methodName, SyntaxTree tree, IMethodSymbol methodSymbol, ExpressionSyntax invocationExpression, Compilation compilation)
         {
             var parameterExpressions = CallExtensionMethodAsExtensionCodeFixProvider.GetParameterExpressions(childNodes);
             var firstArgument = parameterExpressions.FirstOrDefault();
             var argumentList = CallExtensionMethodAsExtensionCodeFixProvider.CreateArgumentListSyntaxFrom(parameterExpressions.Skip(1));
-            var newInvocationStatement = SyntaxFactory.ExpressionStatement(
+            var newInvocationStatement =
                 CallExtensionMethodAsExtensionCodeFixProvider.CreateInvocationExpression(
-                    firstArgument, methodName, argumentList)).WithAdditionalAnnotations(introduceExtensionMethodAnnotation);
+                    firstArgument, methodName, argumentList).WithAdditionalAnnotations(introduceExtensionMethodAnnotation);
             var extensionMethodNamespaceUsingDirective = SyntaxFactory.UsingDirective(methodSymbol.ContainingNamespace.ToNameSyntax());
             var speculativeRootWithExtensionMethod = tree.GetCompilationUnitRoot()
-                .ReplaceNode(invocationStatement, newInvocationStatement)
+                .ReplaceNode(invocationExpression, newInvocationStatement)
                 .AddUsings(extensionMethodNamespaceUsingDirective);
             var speculativeModel = compilation.ReplaceSyntaxTree(tree, speculativeRootWithExtensionMethod.SyntaxTree)
                 .GetSemanticModel(speculativeRootWithExtensionMethod.SyntaxTree);
-            var speculativeInvocationStatement = speculativeRootWithExtensionMethod.SyntaxTree.GetCompilationUnitRoot().GetAnnotatedNodes(introduceExtensionMethodAnnotation).Single() as ExpressionStatementSyntax;
+            var speculativeInvocationStatement = speculativeRootWithExtensionMethod.SyntaxTree.GetCompilationUnitRoot().GetAnnotatedNodes(introduceExtensionMethodAnnotation).Single() as InvocationExpressionSyntax;
             var speculativeExtensionMethodSymbol = speculativeModel.GetSymbolInfo(speculativeInvocationStatement.Expression).Symbol as IMethodSymbol;
             var speculativeNonExtensionFormOfTheMethodSymbol = speculativeExtensionMethodSymbol?.GetConstructedReducedFrom();
             return speculativeNonExtensionFormOfTheMethodSymbol == null || !speculativeNonExtensionFormOfTheMethodSymbol.Equals(methodSymbol);
