@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,6 +24,29 @@ namespace CodeCracker.Test.CSharp.Performance
                         var myList = new List<string>();
                         var count = myList.Count;
                     }
+                }
+            }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task ChangeCountNoDiagnosticsWhenDifferentTypes()
+        {
+            const string test = @"
+            class Program
+            {
+                static void Main(string[] args)
+                {
+                    var b = new Bar();
+                    Foo(b.Count());
+                }
+                static void Foo(int i)
+                {
+                }
+
+                class Bar : List<int>
+                {
+                    public string Count { get; set; }
                 }
             }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
@@ -86,6 +110,7 @@ namespace CodeCracker.Test.CSharp.Performance
             const string source = @"
             using System;
             using System.Collections.Generic;
+            using System.Linq;
 
             namespace ConsoleApplication1
             {
@@ -93,14 +118,17 @@ namespace CodeCracker.Test.CSharp.Performance
                 {
                     public void bar()
                     {
+                        var enumerable = Enumerable.Any(new[] { 1, 2 });
                         var myList = new List<string>();
                         var count = myList.Count();
                     }
                 }
             }";
+
             const string expected = @"
             using System;
             using System.Collections.Generic;
+            using System.Linq;
 
             namespace ConsoleApplication1
             {
@@ -108,6 +136,7 @@ namespace CodeCracker.Test.CSharp.Performance
                 {
                     public void bar()
                     {
+                        var enumerable = Enumerable.Any(new[] { 1, 2 });
                         var myList = new List<string>();
                         var count = myList.Count;
                     }

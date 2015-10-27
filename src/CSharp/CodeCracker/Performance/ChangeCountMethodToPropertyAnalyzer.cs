@@ -44,8 +44,11 @@ namespace CodeCracker.CSharp.Performance
             var checkPropertySymbol = context.SemanticModel.GetSpeculativeSymbolInfo(invocation.SpanStart, checkProperty, SpeculativeBindingOption.BindAsExpression);
             if (checkPropertySymbol.Symbol == null) return;
 
+            var newSymbolType = (checkPropertySymbol.Symbol as IPropertySymbol).Type.ToString();
+            var symbolType = context.SemanticModel.GetTypeInfo(invocation).Type.ToString();
+            if (symbolType != newSymbolType) return;
             var diagnostic = Diagnostic.Create(Rule, invocation.GetLocation(), "");
-            context.ReportDiagnostic(diagnostic);
+            context.ReportDiagnostic(diagnostic); 
         }
     }
 }
