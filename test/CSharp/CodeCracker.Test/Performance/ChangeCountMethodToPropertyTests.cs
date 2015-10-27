@@ -52,6 +52,37 @@ namespace CodeCracker.Test.CSharp.Performance
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
+        public async Task ChangeCountNoDiagnosticsWhenDifferentTypesClassWithoutPropertyType()
+        {
+            const string test = @"
+            using System.Linq;
+            class Program
+            {
+                static void Main(string[] args)
+                {
+                    var b = new Bar();
+                    Foo(b.Count());
+                }
+                static void Foo(int i)
+                {
+                }
+
+                class Bar : List<int>
+                {
+                    public int Count;
+                }
+            }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.ChangeCountMethodToProperty.ToDiagnosticId(),
+                Message = ChangeCountMethodToPropertyAnalyzer.MessageFormat.ToString(),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
         public async Task ChangeCountToPropertyNeeded()
         {
             const string test = @"
