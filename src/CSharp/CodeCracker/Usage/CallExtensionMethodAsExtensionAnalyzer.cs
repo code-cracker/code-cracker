@@ -53,7 +53,7 @@ namespace CodeCracker.CSharp.Usage
             if (methodSymbol == null || !methodSymbol.IsExtensionMethod) return;
             if (ContainsDynamicArgument(context.SemanticModel, childNodes)) return;
             ExpressionSyntax invocationStatement;
-            if (methodInvokeSyntax.Parent.GetType().ToString() != "Microsoft.CodeAnalysis.CSharp.Syntax.ArrowExpressionClauseSyntax")
+            if (methodInvokeSyntax.Parent.IsNotKind(SyntaxKind.ArrowExpressionClause))
             {
                 invocationStatement = (methodInvokeSyntax.FirstAncestorOrSelfThatIsAStatement() as ExpressionStatementSyntax).Expression;
             }
@@ -71,7 +71,7 @@ namespace CodeCracker.CSharp.Usage
             var parameterExpressions = CallExtensionMethodAsExtensionCodeFixProvider.GetParameterExpressions(childNodes);
             var firstArgument = parameterExpressions.FirstOrDefault();
             var argumentList = CallExtensionMethodAsExtensionCodeFixProvider.CreateArgumentListSyntaxFrom(parameterExpressions.Skip(1));
-            var newInvocationStatement = 
+            var newInvocationStatement =
                 CallExtensionMethodAsExtensionCodeFixProvider.CreateInvocationExpression(
                     firstArgument, methodName, argumentList).WithAdditionalAnnotations(introduceExtensionMethodAnnotation);
             var extensionMethodNamespaceUsingDirective = SyntaxFactory.UsingDirective(methodSymbol.ContainingNamespace.ToNameSyntax());
