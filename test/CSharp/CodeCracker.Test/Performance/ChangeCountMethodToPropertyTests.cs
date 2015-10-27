@@ -52,6 +52,29 @@ namespace CodeCracker.Test.CSharp.Performance
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
+        public async Task ChangeCountNoDiagnosticsWhenDifferentTypesClassWithoutPropertyType()
+        {
+            const string test = @"
+            class Program
+            {
+                static void Main(string[] args)
+                {
+                    var b = new Bar();
+                    Foo(b.Count());
+                }
+                static void Foo(int i)
+                {
+                }
+
+                class Bar : List<int>
+                {
+                    public string Count { get; set; }
+                }
+            }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
         public async Task ChangeCountToPropertyNeeded()
         {
             const string test = @"
