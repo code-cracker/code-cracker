@@ -262,5 +262,31 @@ public static class ExtensionsTestCase
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+
+        [Fact]
+        public async Task WhenCallExtensionMethodWithoutInvocationStatement()
+        {
+            const string source = @"
+              using System.Linq;
+              namespace ConsoleApplication1
+              {
+                  public class Foo
+                  {
+                      static int[] source = new int[] { 1, 2, 3 };
+                      public static void Bar() => Enumerable.Any(source);
+                  }
+              }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
+                Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 51) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
     }
 }
