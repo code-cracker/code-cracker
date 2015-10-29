@@ -38,6 +38,8 @@
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFix.cs" />
     <Compile Include="Design\InconsistentAccessibility\IInconsistentAccessibilityCodeFix.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFixProvider.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInBaseClass.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInBaseInterface.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInDelegateParameterType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInDelegateReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfo.cs" />
@@ -54,6 +56,8 @@
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Extensions\CSharpGeneratedCodeAnalysisExtensions.cs" />
+    <Compile Include="Performance\ChangeCountMethodToPropertyAnalyzer.cs" />
+    <Compile Include="Performance\ChangeCountMethodToPropertyCodeFixProvider.cs" />
     <Compile Include="Performance\SealMemberAnalyzer.cs" />
     <Compile Include="Performance\ReturnTaskInsteadOfAwaitCodeFixProvider.cs" />
     <Compile Include="Performance\ReturnTaskInsteadOfAwaitAnalyzer.cs" />

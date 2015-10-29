@@ -271,6 +271,28 @@ namespace CodeCracker
             return result;
         }
 
+        public static TypeSyntax FindTypeInBaseTypesList(this SeparatedSyntaxList<BaseTypeSyntax> baseTypesList,
+            string typeName)
+        {
+            TypeSyntax result = null;
+            var lastIdentifierOfTypeName = typeName.GetLastIdentifierIfQualiedTypeName();
+            foreach (var baseType in baseTypesList)
+            {
+                var valueText = GetLastIdentifierValueText(baseType.Type);
+
+                if (!string.IsNullOrEmpty(valueText))
+                {
+                    if (string.Equals(valueText, lastIdentifierOfTypeName, StringComparison.Ordinal))
+                    {
+                        result = baseType.Type;
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
         private static string GetLastIdentifierValueText(CSharpSyntaxNode node)
         {
             var result = string.Empty;

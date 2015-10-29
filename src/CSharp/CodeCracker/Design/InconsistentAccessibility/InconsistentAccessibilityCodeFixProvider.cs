@@ -20,6 +20,8 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
         internal const string InconsistentAccessibilityInOperatorParameterCompilerErrorNumber = "CS0057";
         internal const string InconsistentAccessibilityInDelegateReturnTypeCompilerErrorNumber = "CS0058";
         internal const string InconsistentAccessibilityInDelegateParameterTypeCompilerErrorNumber = "CS0059";
+        internal const string InconsistentAccessibilityInBaseClassCompilerErrorNumber = "CS0060";
+        internal const string InconsistentAccessibilityInBaseInterfaceCompilerErrorNumber = "CS0061";
 
         private readonly IInconsistentAccessibilityCodeFix inconsistentAccessibilityCodeFix =
             new AccessibilityDomainChecker(new InconsistentAccessibilityCodeFix());
@@ -38,7 +40,9 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
                     InconsistentAccessibilityInOperatorReturnTypeCompilerErrorNumber,
                     InconsistentAccessibilityInOperatorParameterCompilerErrorNumber,
                     InconsistentAccessibilityInDelegateReturnTypeCompilerErrorNumber,
-                    InconsistentAccessibilityInDelegateParameterTypeCompilerErrorNumber);
+                    InconsistentAccessibilityInDelegateParameterTypeCompilerErrorNumber,
+                    InconsistentAccessibilityInBaseClassCompilerErrorNumber,
+                    InconsistentAccessibilityInBaseInterfaceCompilerErrorNumber);
 
         private static async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
@@ -75,6 +79,12 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
                     break;
                 case InconsistentAccessibilityInDelegateParameterTypeCompilerErrorNumber:
                     inconsistentAccessibilityProvider = new InconsistentAccessibilityInDelegateParameterType();
+                    break;
+                case InconsistentAccessibilityInBaseClassCompilerErrorNumber:
+                    inconsistentAccessibilityProvider = new InconsistentAccessibilityInBaseClass();
+                    break;
+                case InconsistentAccessibilityInBaseInterfaceCompilerErrorNumber:
+                    inconsistentAccessibilityProvider = new InconsistentAccessibilityInBaseInterface();
                     break;
             }
 

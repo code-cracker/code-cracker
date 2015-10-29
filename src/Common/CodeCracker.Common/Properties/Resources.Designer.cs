@@ -98,6 +98,33 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change method Count() to property Count. .
+        /// </summary>
+        public static string ChangeCountMethodToPropertyAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("ChangeCountMethodToPropertyAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change method Count() to property Count..
+        /// </summary>
+        public static string ChangeCountMethodToPropertyAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("ChangeCountMethodToPropertyAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change Count() to Count..
+        /// </summary>
+        public static string ChangeCountMethodToPropertyAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("ChangeCountMethodToPropertyAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to String interpolation allows for better reading of the resulting string when compared to Console.WriteLine arguments. You should use Console.WriteLine with arguments only when another method is supplying the format string..
         /// </summary>
         public static string ConsoleWriteLineAnalyzer_Description {
@@ -130,6 +157,24 @@ namespace CodeCracker.Properties {
         public static string ConsoleWriteLineCodeFixProvider_Title {
             get {
                 return ResourceManager.GetString("ConsoleWriteLineCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change class &apos;{0}&apos; accessibility to be as accessible as class &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInBaseClass_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInBaseClass_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change interface &apos;{0}&apos; accessibility to be as accessible as interface &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInBaseInterface_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInBaseInterface_Title", resourceCulture);
             }
         }
         

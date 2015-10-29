@@ -123,12 +123,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeCultureTests.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.Class.cs" />
     <Compile Include="Design\InconsistentAccessibilityTests.Delegate.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests.Interface.cs" />
     <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
     <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
     <Compile Include="Design\MakeMethodStaticTests.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Performance\ChangeCountMethodToPropertyTests.cs" />
     <Compile Include="Performance\SealMemberTests.cs" />
     <Compile Include="Performance\ReturnTaskInsteadOfAwaitTests.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
