@@ -1,5 +1,30 @@
 # Change Log
 
+## [v1.0.0-rc4](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc4) (2015-11-02)
+[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc3...v1.0.0-rc4)
+
+**Implemented enhancements:**
+
+- NameOf Analyzer is too noisy [\#518](https://github.com/code-cracker/code-cracker/issues/518)
+
+**Fixed bugs:**
+
+- SwitchToAutoPropCodeFixProvider \(CC0017\) does not keep XML comment trivia [\#548](https://github.com/code-cracker/code-cracker/issues/548)
+- CallExtensionMethodAsExtension \(CC0026\) throws NullReferenceException on expression bodied method statement [\#547](https://github.com/code-cracker/code-cracker/issues/547)
+- CC0022 DI container delegate causes error [\#545](https://github.com/code-cracker/code-cracker/issues/545)
+- BUG on ReadonlyFieldAnalyzer \(CC0052\) with assignment in Func\<T\> in constructor [\#544](https://github.com/code-cracker/code-cracker/issues/544)
+- UnusedParametersCodeFixProvider crashing when removing params [\#539](https://github.com/code-cracker/code-cracker/issues/539)
+- CC0001 Is raised on multiple variable declarations. [\#537](https://github.com/code-cracker/code-cracker/issues/537)
+- Bug: Use ?.Invoke operator and method to fire 'configuration' event, though configuration can't be null [\#536](https://github.com/code-cracker/code-cracker/issues/536)
+- UnusedParametersCodeFixProvider fix all not working \(CC0057\) [\#534](https://github.com/code-cracker/code-cracker/issues/534)
+- UnusedParametersCodeFixProvider will crash when it is trying to remove ParamArray [\#533](https://github.com/code-cracker/code-cracker/issues/533)
+- CC0017 Change to auto property fix all not working [\#514](https://github.com/code-cracker/code-cracker/issues/514)
+- BUG on CC0008 and CC0009 \(ObjectInitializer\) when used with collection [\#501](https://github.com/code-cracker/code-cracker/issues/501)
+- 'TernaryOperatorWithAddignmentCodeFixProvider' encountered and error [\#496](https://github.com/code-cracker/code-cracker/issues/496)
+- CC0009 eats pragmas and trivia [\#493](https://github.com/code-cracker/code-cracker/issues/493)
+- CC0013 \(user ternary\) rule should be more careful with nullable types. \(VB\) [\#468](https://github.com/code-cracker/code-cracker/issues/468)
+
+
 ## [v1.0.0-rc3](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc3) (2015-10-03)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc2...v1.0.0-rc3)
 
