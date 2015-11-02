@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using FluentAssertions;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
@@ -326,7 +327,7 @@ namespace CodeCracker.Test
             {
                 var document = docs[i];
                 var actual = await GetStringFromDocumentAsync(document).ConfigureAwait(true);
-                Assert.Equal(newSources[i], actual);
+                newSources[i].Should().Be(actual);
             }
         }
 
