@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace CodeCracker.CSharp.Design
 {
@@ -49,7 +50,42 @@ namespace CodeCracker.CSharp.Design
             if (invokedMethodSymbol == null) return;
             if (!invokedMethodSymbol.ReturnsVoid && !invokedMethodSymbol.ReturnType.IsReferenceType) return;
 
+            if (HasCheckForNull(invocation, context.SemanticModel, symbol)) return;
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), identifier.Identifier.Text));
+        }
+
+        private static bool HasCheckForNull(InvocationExpressionSyntax invocation, SemanticModel semanticModel, ISymbol symbol)
+        {
+            var method = invocation.FirstAncestorOfKind(SyntaxKind.MethodDeclaration) as MethodDeclarationSyntax;
+            if (method != null)
+            {
+                var ifs = method.Body.Statements.OfKind(SyntaxKind.IfStatement);
+                foreach (IfStatementSyntax @if in ifs)
+                {
+                    if (!@if.Condition?.IsKind(SyntaxKind.EqualsExpression) ?? true) continue;
+                    var equals = (BinaryExpressionSyntax)@if.Condition;
+                    if (equals.Left == null || equals.Right == null) continue;
+                    if (@if.GetLocation().SourceSpan.Start > invocation.GetLocation().SourceSpan.Start) return false;
+                    ISymbol identifierSymbol;
+                    if (equals.Right.IsKind(SyntaxKind.NullLiteralExpression) && equals.Left.IsKind(SyntaxKind.IdentifierName))
+                        identifierSymbol = semanticModel.GetSymbolInfo(equals.Left).Symbol;
+                    else if (equals.Left.IsKind(SyntaxKind.NullLiteralExpression) && equals.Right.IsKind(SyntaxKind.IdentifierName))
+                        identifierSymbol = semanticModel.GetSymbolInfo(equals.Right).Symbol;
+                    else continue;
+                    if (!symbol.Equals(identifierSymbol)) continue;
+                    if (@if.Statement == null) continue;
+                    if (@if.Statement.IsKind(SyntaxKind.Block))
+                    {
+                        var ifBlock = (BlockSyntax)@if.Statement;
+                        if (ifBlock.Statements.OfKind(SyntaxKind.ThrowStatement, SyntaxKind.ReturnStatement).Any()) return true;
+                    }
+                    else
+                    {
+                        if (@if.Statement.IsAnyKind(SyntaxKind.ThrowStatement, SyntaxKind.ReturnStatement)) return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }
