@@ -123,11 +123,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeCultureTests.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.Class.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.Delegate.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.Interface.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.Class.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.Common.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.Delegate.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.Interface.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
     <Compile Include="Design\MakeMethodStaticTests.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
@@ -214,10 +215,11 @@
     <Compile Include="Usage\VirtualMethodOnConstructorTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Design\InconsistentAccessibilityTests.FieldPropertyType.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.OperatorReturnType.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.OperatorParameter.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.AccessibilityDomainChecker.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.FieldPropertyType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.OperatorReturnType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.OperatorParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.AccessibilityDomainChecker.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.AccessibilityModifiers.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

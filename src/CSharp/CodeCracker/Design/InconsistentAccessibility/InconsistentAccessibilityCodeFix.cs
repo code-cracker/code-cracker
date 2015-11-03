@@ -12,30 +12,30 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
     public sealed class InconsistentAccessibilityCodeFix : IInconsistentAccessibilityCodeFix
     {
-        public async Task FixAsync(CodeFixContext context, Diagnostic diagnostic,
-            InconsistentAccessibilityInfo inconsistentAccessibilityInfo)
+        public async Task FixAsync(CodeFixContext context, Diagnostic diagnostic, InconsistentAccessibilitySource source,
+            InconsistentAccessibilityFixInfo fixInfo)
         {
-            if (inconsistentAccessibilityInfo.TypeToChangeFound())
+            if (source.TypeToChangeFound())
             {
                 var typeLocations =
                     await FindTypeLocationsAsync(context.Document,
-                        inconsistentAccessibilityInfo.TypeToChangeAccessibility, context.CancellationToken)
+                        fixInfo.Type, context.CancellationToken)
                         .ConfigureAwait(false);
 
                 if (typeLocations.Length == 1)
                 {
                     context.RegisterCodeFix(
-                        CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage,
+                        CodeAction.Create(source.CodeActionMessage,
                             c => ChangeTypeAccessibilityInDocumentAsync(context.Document.Project.Solution,
-                                inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations[0], c),
+                                fixInfo.Modifiers, typeLocations[0], c),
                             nameof(InconsistentAccessibilityCodeFixProvider)), diagnostic);
                 }
                 else if (typeLocations.Length > 1)
                 {
                     context.RegisterCodeFix(
-                        CodeAction.Create(inconsistentAccessibilityInfo.CodeActionMessage,
+                        CodeAction.Create(source.CodeActionMessage,
                             c => ChangeTypeAccessibilityInSolutionAsync(context.Document.Project.Solution,
-                                inconsistentAccessibilityInfo.NewAccessibilityModifiers, typeLocations, c),
+                                fixInfo.Modifiers, typeLocations, c),
                             nameof(InconsistentAccessibilityCodeFixProvider)), diagnostic);
                 }
             }

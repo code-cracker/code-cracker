@@ -6,16 +6,15 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
-    public sealed class InconsistentAccessibilityInDelegateReturnType : InconsistentAccessibilityInfoProvider
+    public sealed class InconsistentAccessibilityInDelegateReturnType : InconsistentAccessibilitySourceProvider
     {
         private static readonly LocalizableString CodeActionMessage =
             new LocalizableResourceString(nameof(Resources.InconsistentAccessibilityInDelegateReturnType_Title),
                 Resources.ResourceManager, typeof (Resources));
 
-        public async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document,
+        public async Task<InconsistentAccessibilitySource> ExtractInconsistentAccessibilitySourceAsync(Document document,
             Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var result = new InconsistentAccessibilityInfo();
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var nodeWhenErrorOccured = syntaxRoot.FindNode(diagnostic.Location.SourceSpan);
             var delegateDeclarationThatRaisedError =
@@ -24,17 +23,14 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             if (delegateDeclarationThatRaisedError != null)
             {
                 var type = delegateDeclarationThatRaisedError.ReturnType;
-                result.TypeToChangeAccessibility = type;
 
-                result.CodeActionMessage = string.Format(CodeActionMessage.ToString(),
+                return new InconsistentAccessibilitySource(string.Format(CodeActionMessage.ToString(),
                     delegateDeclarationThatRaisedError.ReturnType,
-                    delegateDeclarationThatRaisedError.Identifier.ValueText);
-
-                result.NewAccessibilityModifiers =
-                    delegateDeclarationThatRaisedError.Modifiers.CloneAccessibilityModifiers();
+                    delegateDeclarationThatRaisedError.Identifier.ValueText), type,
+                    delegateDeclarationThatRaisedError.Modifiers.CloneAccessibilityModifiers());
             }
 
-            return result;
+            return InconsistentAccessibilitySource.Invalid;
         }
     }
 }

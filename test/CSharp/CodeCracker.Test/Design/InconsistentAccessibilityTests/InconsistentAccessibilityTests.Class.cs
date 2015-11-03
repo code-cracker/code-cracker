@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.Test.CSharp.Design
+namespace CodeCracker.Test.CSharp.Design.InconsistentAccessibilityTests
 {
     public partial class InconsistentAccessibilityTests
     {
@@ -32,6 +32,38 @@ namespace CodeCracker.Test.CSharp.Design
 
         internal class ClassDerivingFromNestedClass : NestedClass { }
     }";
+
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task ShouldFixInconsistentAccessibilityInNestedProtectedClassDerivingFromTopLevelInternalClassAsync()
+        {
+            var testCode = @"class Program
+{
+static void Main(string[] args)
+    {
+    }
+}
+public class Foo
+{
+    protected class Bar : Program
+    {
+    }
+}";
+
+            var fixedCode = @"public class Program
+{
+static void Main(string[] args)
+    {
+    }
+}
+public class Foo
+{
+    protected class Bar : Program
+    {
+    }
+}";
 
             await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }

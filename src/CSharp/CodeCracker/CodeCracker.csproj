@@ -35,18 +35,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Design\InconsistentAccessibility\AccessibilityDomainChecker.cs" />
+    <Compile Include="Design\InconsistentAccessibility\AccessibilityModifiersEvaluator.cs" />
+    <Compile Include="Design\InconsistentAccessibility\IInconsistentAccessibilityFixInfoProvider.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFix.cs" />
     <Compile Include="Design\InconsistentAccessibility\IInconsistentAccessibilityCodeFix.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFixProvider.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityFixInfo.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInBaseClass.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInBaseInterface.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInDelegateParameterType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInDelegateReturnType.cs" />
-    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfo.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilitySource.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerParameter.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodParameter.cs" />
-    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfoProvider.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilitySourceProvider.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInFieldType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInOperatorParameter.cs" />

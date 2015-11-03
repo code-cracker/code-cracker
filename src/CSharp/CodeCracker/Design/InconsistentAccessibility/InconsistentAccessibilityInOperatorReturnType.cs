@@ -8,13 +8,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
-    public sealed class InconsistentAccessibilityInOperatorReturnType : InconsistentAccessibilityInfoProvider
+    public sealed class InconsistentAccessibilityInOperatorReturnType : InconsistentAccessibilitySourceProvider
     {
         private static readonly LocalizableString CodeActionMessage = new LocalizableResourceString(nameof(Resources.InconsistentAccessibilityInOperatorReturnType_Title), Resources.ResourceManager, typeof(Resources));
 
-        public async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        public async Task<InconsistentAccessibilitySource> ExtractInconsistentAccessibilitySourceAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var result = new InconsistentAccessibilityInfo();
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var nodeWhenErrorOccured = syntaxRoot.FindNode(diagnostic.Location.SourceSpan);
             var operatorThatRaisedError =
@@ -25,12 +24,14 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             if (operatorThatRaisedError != null)
             {
                 var type = GetTypeFromOperator(operatorThatRaisedError);
-                result.TypeToChangeAccessibility = type;
-                result.CodeActionMessage = string.Format(CodeActionMessage.ToString(), type, operatorThatRaisedError.GetOperatorName());
-                result.NewAccessibilityModifiers = operatorThatRaisedError.Modifiers.CloneAccessibilityModifiers();
+
+                var message = string.Format(CodeActionMessage.ToString(), type, operatorThatRaisedError.GetOperatorName());
+
+                return new InconsistentAccessibilitySource(message, type,
+                    operatorThatRaisedError.Modifiers.CloneAccessibilityModifiers());
             }
 
-            return result;
+            return InconsistentAccessibilitySource.Invalid;
         }
 
         private static TypeSyntax GetTypeFromOperator(BaseMethodDeclarationSyntax operatorSyntax)

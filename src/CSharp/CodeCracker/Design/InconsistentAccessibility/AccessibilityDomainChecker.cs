@@ -10,54 +10,29 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
-    public sealed class AccessibilityDomainChecker : IInconsistentAccessibilityCodeFix
+    public sealed class AccessibilityDomainChecker : IInconsistentAccessibilityFixInfoProvider
     {
-        private readonly IInconsistentAccessibilityCodeFix codeFix;
-
-        public AccessibilityDomainChecker(IInconsistentAccessibilityCodeFix codeFix)
-        {
-            if (codeFix == null)
-            {
-                throw new ArgumentNullException(nameof(codeFix));
-            }
-            this.codeFix = codeFix;
-        }
-
-        public async Task FixAsync(CodeFixContext context, Diagnostic diagnostic,
-            InconsistentAccessibilityInfo info)
+        public async Task<InconsistentAccessibilityFixInfo> CreateFixInfoAsync(CodeFixContext context, InconsistentAccessibilitySource source)
         {
             var typeSymbol =
                 await
-                    FindTypeSymbolForAsync(context.Document, info.TypeToChangeAccessibility, context.CancellationToken);
+                    FindTypeSymbolForAsync(context.Document, source.TypeToChangeAccessibility, context.CancellationToken);
 
-            if (typeSymbol == null || IsTypeFromMetada(typeSymbol))
-            {
-                return;
-            }
-
-            if (ReasonForInconsistentAccessibilityIsInAccessibilityDomain(typeSymbol, info.NewAccessibilityModifiers))
+            if (typeSymbol != null && !IsTypeFromMetada(typeSymbol) &&
+                ReasonForInconsistentAccessibilityIsInAccessibilityDomain(typeSymbol, source.Modifiers))
             {
                 foreach (
                     var inconsistentAccessibilityReason in
-                        FindInconsistentAccessibilityReasons(typeSymbol, info.NewAccessibilityModifiers))
+                        FindInconsistentAccessibilityReasons(typeSymbol, source.Modifiers))
                 {
                     var finder = new IdentifierNameFinder(inconsistentAccessibilityReason);
-                    info.TypeToChangeAccessibility.Accept(finder);
+                    source.TypeToChangeAccessibility.Accept(finder);
 
-                    var newInfo = new InconsistentAccessibilityInfo
-                    {
-                        CodeActionMessage = info.CodeActionMessage,
-                        NewAccessibilityModifiers = info.NewAccessibilityModifiers,
-                        TypeToChangeAccessibility = finder.Result
-                    };
-
-                    await codeFix.FixAsync(context, diagnostic, newInfo);
+                    return new InconsistentAccessibilityFixInfo(finder.Result, source.Modifiers);
                 }
             }
-            else
-            {
-                await codeFix.FixAsync(context, diagnostic, info);
-            }
+
+            return new InconsistentAccessibilityFixInfo(source.TypeToChangeAccessibility, source.Modifiers);
         }
 
         private static bool IsTypeFromMetada(ISymbol typeSymbol) => typeSymbol.Locations.All(l => l.IsInMetadata);

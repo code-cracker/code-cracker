@@ -6,6 +6,6 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
     public interface IInconsistentAccessibilityCodeFix
     {
-        Task FixAsync(CodeFixContext context, Diagnostic diagnostic, InconsistentAccessibilityInfo info);
+        Task FixAsync(CodeFixContext context, Diagnostic diagnostic, InconsistentAccessibilitySource source, InconsistentAccessibilityFixInfo fixInfo);
     }
 }

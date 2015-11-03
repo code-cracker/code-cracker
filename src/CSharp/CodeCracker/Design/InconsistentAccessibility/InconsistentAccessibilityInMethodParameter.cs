@@ -9,25 +9,29 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
-    public sealed class InconsistentAccessibilityInMethodParameter : InconsistentAccessibilityInfoProvider
+    public sealed class InconsistentAccessibilityInMethodParameter : InconsistentAccessibilitySourceProvider
     {
         private static readonly LocalizableString CodeActionMessage = new LocalizableResourceString(nameof(Resources.InconsistentAccessibilityInMethodParameter_Title), Resources.ResourceManager, typeof(Resources));
 
-        public async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        public async Task<InconsistentAccessibilitySource> ExtractInconsistentAccessibilitySourceAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var result = new InconsistentAccessibilityInfo();
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var methodThatRaisedError = syntaxRoot.FindNode(diagnostic.Location.SourceSpan).DescendantNodesAndSelf().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
             if (methodThatRaisedError != null)
             {
                 var parameterTypeFromMessage = ExtractParameterTypeFromDiagnosticMessage(diagnostic);
 
-                result.TypeToChangeAccessibility = methodThatRaisedError.ParameterList.Parameters.FindTypeInParametersList(parameterTypeFromMessage);
-                result.CodeActionMessage = string.Format(CodeActionMessage.ToString(), parameterTypeFromMessage, methodThatRaisedError.GetIdentifier().ValueText);
-                result.NewAccessibilityModifiers = methodThatRaisedError.CloneAccessibilityModifiers();
+                var message = string.Format(CodeActionMessage.ToString(), parameterTypeFromMessage,
+                    methodThatRaisedError.GetIdentifier().ValueText);
+
+                return
+                    new InconsistentAccessibilitySource(
+                        message,
+                        methodThatRaisedError.ParameterList.Parameters.FindTypeInParametersList(parameterTypeFromMessage),
+                        methodThatRaisedError.CloneAccessibilityModifiers());
             }
 
-            return result;
+            return InconsistentAccessibilitySource.Invalid;
         }
 
         private static string ExtractParameterTypeFromDiagnosticMessage(Diagnostic diagnostic) =>

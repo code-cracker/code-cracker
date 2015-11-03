@@ -8,15 +8,14 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
-    public sealed class InconsistentAccessibilityInBaseInterface : InconsistentAccessibilityInfoProvider
+    public sealed class InconsistentAccessibilityInBaseInterface : InconsistentAccessibilitySourceProvider
     {
         private static readonly LocalizableString CodeActionMessage =
             new LocalizableResourceString(nameof(Resources.InconsistentAccessibilityInBaseInterface_Title),
                 Resources.ResourceManager, typeof (Resources));
 
-        public async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        public async Task<InconsistentAccessibilitySource> ExtractInconsistentAccessibilitySourceAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var result = new InconsistentAccessibilityInfo();
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var nodeWhenErrorOccured = syntaxRoot.FindNode(diagnostic.Location.SourceSpan);
             var interfaceDeclarationThatRaisedError =
@@ -26,14 +25,15 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
             {
                 var baseInterface = ExtractBaseInterfaceFromDiagnosticMessage(diagnostic);
 
-                result.TypeToChangeAccessibility =
-                    interfaceDeclarationThatRaisedError.BaseList.Types.FindTypeInBaseTypesList(baseInterface);
-                result.CodeActionMessage = string.Format(CodeActionMessage.ToString(), baseInterface,
+                var message = string.Format(CodeActionMessage.ToString(), baseInterface,
                     interfaceDeclarationThatRaisedError.Identifier.ValueText);
-                result.NewAccessibilityModifiers = interfaceDeclarationThatRaisedError.Modifiers.CloneAccessibilityModifiers();
+
+                return new InconsistentAccessibilitySource(message,
+                    interfaceDeclarationThatRaisedError.BaseList.Types.FindTypeInBaseTypesList(baseInterface),
+                    interfaceDeclarationThatRaisedError.Modifiers.CloneAccessibilityModifiers());
             }
 
-            return result;
+            return InconsistentAccessibilitySource.Invalid;
         }
 
         private static string ExtractBaseInterfaceFromDiagnosticMessage(Diagnostic diagnostic) =>

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.Test.CSharp.Design
+namespace CodeCracker.Test.CSharp.Design.InconsistentAccessibilityTests
 {
     public partial class InconsistentAccessibilityTests : CodeFixVerifier
     {
