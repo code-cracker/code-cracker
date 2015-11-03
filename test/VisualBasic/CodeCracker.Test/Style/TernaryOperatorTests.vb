@@ -386,6 +386,7 @@ End Namespace"
         Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
     End Function
 
+
     <Fact>
     Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFix() As Task
         Const source = "
@@ -409,6 +410,26 @@ End Class"
         ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
         Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
     End Function
+
+    <Fact>
+    Public Async Function WhenUsingIfElseIfElseDoesNotCreate() As Task
+        Const sourceWithMultipleStatements = "
+Namespace ConsoleApplication1
+    Class TypeName
+        Public Sub Foo()
+            If 1 > 2 Then
+                Return 1
+            ElseIf 2 > 3 Then
+                Return 2
+            Else
+                Return 3
+            End If
+        End Sub
+    End Class
+End Namespace"
+        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+    End Function
+
 
     <Fact>
     Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFixAll() As Task
