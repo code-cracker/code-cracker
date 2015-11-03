@@ -154,6 +154,8 @@
     <Compile Include="Style\StringFormatAnalyzer.cs" />
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedCodeFixProvider.cs" />
+    <Compile Include="Usage\InconsistentParameterDefaultValueAnalyzer.cs" />
+    <Compile Include="Usage\InconsistentParameterDefaultValueCodeFixProvider.cs" />
     <Compile Include="Usage\RedundantFieldAssignmentCodeFixProvider.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseAnalyzer.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseCodeFixProvider.cs" />
