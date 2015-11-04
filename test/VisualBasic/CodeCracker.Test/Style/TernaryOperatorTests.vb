@@ -121,6 +121,26 @@ End Namespace"
     End Function
 
     <Fact>
+    Public Async Function WhenUsingIfElseIfElseDoesNotCreate() As Task
+        Const sourceWithMultipleStatements = "
+Namespace ConsoleApplication1
+    Class TypeName
+        Public Sub Foo()
+            Dim x = 0
+            If 1 > 2 Then
+                x = 1
+            ElseIf 2 > 3 Then
+                x = 2
+            Else
+                x = 3
+            End If
+        End Sub
+    End Class
+End Namespace"
+        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+    End Function
+
+    <Fact>
     Public Async Function WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic() As Task
         Dim expected As New DiagnosticResult With {
             .Id = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
@@ -248,6 +268,32 @@ End Class"
     End Function
 
     <Fact>
+    Public Async Function WhenUsingCommentsConcatenateAtEndOfTernary() As Task
+        Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer
+        If True Then
+            a = 1 ' One Thing
+        Else
+            a = 2 ' Another
+        End If
+    End Sub
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim a As Integer
+        a = If(True, 1, 2) ' One Thing ' Another
+    End Sub
+End Class"
+
+        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+    End Function
+
+    <Fact>
     Public Async Function WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFixAll() As Task
         Const source = "
 Public Class MyType
@@ -271,6 +317,87 @@ End Class"
 
         Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
     End Function
+
+    <Fact>
+    Public Async Function WhenUsingConcatenationAssignmentExpandsToConcatenateAtEndOfTernary() As Task
+        Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = ""test""
+        If True Then
+            x = ""1"" 
+        Else
+            x &= ""2""
+        End If
+    End Sub
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = ""test""
+        x = If(True, ""1"", x & ""2"")
+    End Sub
+End Class"
+
+        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+    End Function
+
+
+    <Fact>
+    Public Async Function WhenUsingAddAssiginmentExpandsOperationProperly() As Task
+        Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        If True Then
+            x = 1
+        Else
+            x += 1
+        End If
+    End Sub
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        x = If(True, 1, x + 1)
+    End Sub
+End Class"
+
+        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+    End Function
+
+    <Fact>
+    Public Async Function WhenUsingSubtractAssiginmentExpandsOperationProperly() As Task
+        Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        If True Then
+            x = 1
+        Else
+            x -= 1
+        End If
+    End Sub
+End Class"
+
+        Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        x = If(True, 1, x - 1)
+    End Sub
+End Class"
+
+        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+    End Function
+
+
 
 End Class
 
