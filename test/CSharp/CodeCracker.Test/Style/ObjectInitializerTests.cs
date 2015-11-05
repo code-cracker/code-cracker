@@ -7,7 +7,6 @@ namespace CodeCracker.Test.CSharp.Style
 {
     public class ObjectInitializerWithLocalDeclarationTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
     {
-
         [Fact]
         public async Task WhenAssigningButNotCreatingAnalyzerDoesNotCreateDiagnostic()
         {
@@ -698,6 +697,24 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async Task IgnoreSelfAssignment()
+        {
+            const string source = @"
+class Foo
+{
+    public Foo F { get; set; }
+    static void Baz()
+    {
+        Foo foo;
+        foo = new Foo();
+        foo.F = foo;
+    }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }
