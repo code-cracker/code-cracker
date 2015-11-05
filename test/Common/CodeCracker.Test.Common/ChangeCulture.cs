@@ -1,23 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Threading;
 
 namespace CodeCracker.Test
 {
     public class ChangeCulture : IDisposable
     {
+        private readonly CultureInfo _originalCulture;
+        private readonly CultureInfo _originalUICulture;
+        private readonly CultureInfo _originalDefaultCulture;
+        private readonly CultureInfo _originalDefaultUICulture;
+
         public ChangeCulture(string cultureName)
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(cultureName);
-            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(cultureName);
+            _originalCulture = Thread.CurrentThread.CurrentCulture;
+            _originalUICulture = Thread.CurrentThread.CurrentUICulture;
+            _originalDefaultCulture = CultureInfo.DefaultThreadCurrentCulture;
+            _originalDefaultUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+
+            Thread.CurrentThread.CurrentCulture =
+            Thread.CurrentThread.CurrentUICulture =
+            CultureInfo.DefaultThreadCurrentCulture =
+            CultureInfo.DefaultThreadCurrentUICulture =
+                CultureInfo.GetCultureInfo(cultureName);
+
         }
 
         public void Dispose()
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentCulture = _originalCulture;
+            Thread.CurrentThread.CurrentUICulture = _originalUICulture;
+            CultureInfo.DefaultThreadCurrentCulture = _originalDefaultCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = _originalDefaultUICulture;
             GC.SuppressFinalize(this);
         }
     }
