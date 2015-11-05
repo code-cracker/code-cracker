@@ -196,21 +196,22 @@
     <value>Change to auto property</value>
   </data>
   <data name="EmptyCatchBlockAnalyzer_Description" xml:space="preserve">
-    <value>An empty catch block suppress all errors and shouldn't be used.\r\nIf the error is expected consider logging it or changing the control flow such that it is explicit.</value>
+    <value>Un block Catch vide avale toutes les erreurs et devrait être évité.
+Si l'erreur est attendu considérer ajouter du logging ou modifier le flow de contrôle pour gérer l'erreur explicitement.</value>
   </data>
   <data name="EmptyCatchBlockAnalyzer_Message" xml:space="preserve">
-    <value>Empty Catch Block.</value>
+    <value>Block Catch Vide.</value>
   </data>
   <data name="EmptyCatchBlockAnalyzer_Title" xml:space="preserve">
-    <value>Catch block cannot be empty</value>
+    <value>Un block catch ne peut etre vide</value>
   </data>
   <data name="EmptyCatchBlockCodeFixProvider_InsertException" xml:space="preserve">
-    <value>Insert Exception class to Catch</value>
+    <value>Insérer la classe Exception à la clause Catch</value>
   </data>
   <data name="EmptyCatchBlockCodeFixProvider_Remove" xml:space="preserve">
-    <value>Remove Empty Catch Block</value>
+    <value>Enlever le block Catch vide</value>
   </data>
   <data name="EmptyCatchBlockCodeFixProvider_RemoveAndDocumentation" xml:space="preserve">
-    <value>Remove Empty Catch Block and Put a Documentation Link about Try...Catch use</value>
+    <value>Enlever le block Catch vide et ajouter un lien vers la documentation des bonnes pratiques de Try...Catch</value>
   </data>
 </root>
