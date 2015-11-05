@@ -87,7 +87,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -126,7 +126,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, allowNewCompilerDiagnostics: true);
         }
 
         [Fact]
@@ -214,7 +214,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -297,6 +297,43 @@ namespace CodeCracker.Test.CSharp.Style
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+        [Fact]
+        public async Task FixConsidersAssignmentType()
+        {
+            const string source = @"
+class Base { }
+class A : Base { }
+class B : Base { }
+class Test2
+{
+    public static void Foo()
+    {
+        var something = true;
+        Base b;
+        if (something)
+            b = new A();
+        else
+            b = new B();
+    }
+}
+";
+            const string fixtest = @"
+class Base { }
+class A : Base { }
+class B : Base { }
+class Test2
+{
+    public static void Foo()
+    {
+        var something = true;
+        Base b;
+        b = something ? (Base)new A() : new B();
+    }
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 
     public class TernaryOperatorWithReturnTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
@@ -332,7 +369,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -366,7 +403,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, allowNewCompilerDiagnostics: true);
         }
 
         [Fact]
@@ -538,6 +575,41 @@ namespace CodeCracker.Test.CSharp.Style
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixConsidersReturnType()
+        {
+            const string source = @"
+class Base { }
+class A : Base { }
+class B : Base { }
+class Test
+{
+    public static Base Foo()
+    {
+        var something = true;
+        if (something)
+            return new A();
+        else
+            return new B();
+    }
+}
+";
+            const string fixtest = @"
+class Base { }
+class A : Base { }
+class B : Base { }
+class Test
+{
+    public static Base Foo()
+    {
+        var something = true;
+        return something ? (Base)new A() : new B();
+    }
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
         }
     }
 }
