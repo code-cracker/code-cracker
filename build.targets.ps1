@@ -212,7 +212,7 @@ function RunTestWithCoverage($fullTestDllPaths) {
     if ($isAppVeyor) {
         $appVeyor = " -appveyor"
     }
-    $arguments = '-register:user', "`"-target:$xunitConsoleExe`"", "`"-targetargs:$targetArgs $appVeyor -noshadow -nologo -quiet`"", "`"-filter:+[CodeCracker*]* -[CodeCracker.Test*]*`"", "`"-output:$outputXml`"", '-coverbytest:*.Test.*.dll', '-log:All', '-returntargetcode'
+    $arguments = '-register:user', "`"-target:$xunitConsoleExe`"", "`"-targetargs:$targetArgs $appVeyor -noshadow -parallel none -nologo -quiet`"", "`"-filter:+[CodeCracker*]* -[CodeCracker.Test*]*`"", "`"-output:$outputXml`"", '-coverbytest:*.Test.*.dll', '-log:All', '-returntargetcode'
     Exec { . $openCoverExe $arguments }
     Write-Host -ForegroundColor DarkBlue "Exporting code coverage report"
     Exec { . $reportGeneratorExe -verbosity:Info -reports:$outputXml -targetdir:$coverageReportDir }

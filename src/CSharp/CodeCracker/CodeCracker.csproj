@@ -105,6 +105,7 @@
     <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.cs" />
     <Compile Include="Style\ConsoleWriteLineAnalyzer.cs" />
     <Compile Include="Style\ConsoleWriteLineCodeFixProvider.cs" />
+    <Compile Include="Style\SwitchToAutoPropCodeFixAllProvider.cs" />
     <Compile Include="Style\UseEmptyStringAnalyzer.cs" />
     <Compile Include="Style\UseEmptyStringCodeFixProvider.cs" />
     <Compile Include="Style\UseEmptyStringCodeFixProviderAll.cs" />
@@ -159,6 +160,8 @@
     <Compile Include="Style\StringFormatAnalyzer.cs" />
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedCodeFixProvider.cs" />
+    <Compile Include="Usage\InconsistentParameterDefaultValueAnalyzer.cs" />
+    <Compile Include="Usage\InconsistentParameterDefaultValueCodeFixProvider.cs" />
     <Compile Include="Usage\RedundantFieldAssignmentCodeFixProvider.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseAnalyzer.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseCodeFixProvider.cs" />

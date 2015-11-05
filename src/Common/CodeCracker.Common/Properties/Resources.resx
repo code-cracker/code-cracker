@@ -288,4 +288,19 @@
   <data name="ChangeCountMethodToPropertyAnalyzer_MessageFormat" xml:space="preserve">
     <value>Change method Count() to property Count.</value>
   </data>
+  <data name="InconsistentParameterDefaultValueAnalyzer_Title" xml:space="preserve">
+    <value>Inconsistent parameter default value.</value>
+  </data>
+  <data name="InconsistentParameterDefaultValueAnalyzer_MessageFormat" xml:space="preserve">
+    <value>The default value '{0}' of parameter '{1}' doesn't match the default value '{2}' from the base definition '{3}'.</value>
+  </data>
+  <data name="InconsistentParameterDefaultValueCodeFix_UseValueFromBaseDefinition" xml:space="preserve">
+    <value>Use the value from the base definition</value>
+  </data>
+  <data name="InconsistentParameterDefaultValueCodeFix_RemoveDefaultValue" xml:space="preserve">
+    <value>Remove the default value</value>
+  </data>
+  <data name="DefaultValue_None">
+    <value>none</value>
+  </data>
 </root>

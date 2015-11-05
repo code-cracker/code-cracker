@@ -170,6 +170,15 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to none.
+        /// </summary>
+        public static string DefaultValue_None {
+            get {
+                return ResourceManager.GetString("DefaultValue_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change interface &apos;{0}&apos; accessibility to be as accessible as interface &apos;{1}&apos;.
         /// </summary>
         public static string InconsistentAccessibilityInBaseInterface_Title {
@@ -265,6 +274,42 @@ namespace CodeCracker.Properties {
         public static string InconsistentAccessibilityInPropertyType_Title {
             get {
                 return ResourceManager.GetString("InconsistentAccessibilityInPropertyType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default value &apos;{0}&apos; of parameter &apos;{1}&apos; doesn&apos;t match the default value &apos;{2}&apos; from the base definition &apos;{3}&apos;..
+        /// </summary>
+        public static string InconsistentParameterDefaultValueAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("InconsistentParameterDefaultValueAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inconsistent parameter default value..
+        /// </summary>
+        public static string InconsistentParameterDefaultValueAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("InconsistentParameterDefaultValueAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the default value.
+        /// </summary>
+        public static string InconsistentParameterDefaultValueCodeFix_RemoveDefaultValue {
+            get {
+                return ResourceManager.GetString("InconsistentParameterDefaultValueCodeFix_RemoveDefaultValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the value from the base definition.
+        /// </summary>
+        public static string InconsistentParameterDefaultValueCodeFix_UseValueFromBaseDefinition {
+            get {
+                return ResourceManager.GetString("InconsistentParameterDefaultValueCodeFix_UseValueFromBaseDefinition", resourceCulture);
             }
         }
         

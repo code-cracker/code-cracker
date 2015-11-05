@@ -86,5 +86,6 @@
         ChangeCountMethodToProperty = 98,
         PreferAnyToCountGreaterThanZero = 99,
         NameOf_External = 108,
+        InconsistentParameterDefaultValue = 110
     }
 }

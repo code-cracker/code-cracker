@@ -41,9 +41,12 @@ namespace CodeCracker.CSharp.Usage
                 "System.Net.IPAddress.Parse(string)",
                 args =>
                 {
+                    if (!(args[0] is string)) {
+                        return;
+                    }
                     parseMethodInfo.Value.Invoke(null, new[] { args[0].ToString() });
                 }
-                );
+            );
             var checker = new MethodChecker(context, Rule);
             checker.AnalyzeMethod(method);
         }
