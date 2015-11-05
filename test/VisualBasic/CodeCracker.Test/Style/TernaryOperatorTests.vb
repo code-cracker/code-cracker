@@ -233,7 +233,7 @@ Class Tester
     Private Sub Test()
         Dim ExcelRecord As New ExcelLineRecordClass
         Dim lCell As New MyCustomer
-        ExcelRecord.imported = If(lCell Is Nothing, False, If(lCell.Value, lCell.Value.ToString = ""X""))
+        ExcelRecord.imported = If(lCell Is Nothing, False, DirectCast(If(lCell.Value, lCell.Value.ToString = ""X""), Boolean))
     End Sub
 End Class"
 
@@ -267,6 +267,41 @@ End Class"
         Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
     End Function
 
+    <Fact>
+    Public Async Function FixConsidersBaseTypeAssignent() As Task
+        Const source = "
+Public Class Base
+End Class
+Public Class B
+    Inherits Base
+End Class
+Public Class MyType
+    Public Sub Foo()
+        Dim c As Base
+        If True Then
+            c = New Base()
+        Else
+            c = New B()
+        End If
+    End Sub
+End Class"
+
+        Const fix = "
+Public Class Base
+End Class
+Public Class B
+    Inherits Base
+End Class
+Public Class MyType
+    Public Sub Foo()
+        Dim c As Base
+        c = If(True, New Base(), DirectCast(New B(), Base))
+    End Sub
+End Class"
+
+        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+    End Function
     <Fact>
     Public Async Function WhenUsingCommentsConcatenateAtEndOfTernary() As Task
         Const source = "

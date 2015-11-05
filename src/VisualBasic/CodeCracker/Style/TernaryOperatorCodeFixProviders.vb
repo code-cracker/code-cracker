@@ -9,49 +9,49 @@ Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Style
 
-    Public MustInherit Class TernaryOperatorCodeFixProviderBase
-        Inherits CodeFixProvider
+    'Public MustInherit Class TernaryOperatorCodeFixProviderBase
+    '    Inherits CodeFixProvider
 
-        Protected Shared Function ExtractOperand(expression As AssignmentStatementSyntax, semanticModel As SemanticModel, type As ITypeSymbol, typeSyntax As TypeSyntax) As ExpressionSyntax
-            Select Case expression.Kind
-                Case SyntaxKind.AddAssignmentStatement
-                    Return SyntaxFactory.AddExpression(expression.Left, expression.Right)
-                Case SyntaxKind.SubtractAssignmentStatement
-                    Return SyntaxFactory.SubtractExpression(expression.Left, expression.Right)
-                Case SyntaxKind.ConcatenateAssignmentStatement
-                    Return SyntaxFactory.ConcatenateExpression(expression.Left, expression.Right)
-                Case SyntaxKind.DivideAssignmentStatement
-                    Return SyntaxFactory.DivideExpression(expression.Left, expression.Right)
-                Case SyntaxKind.ExponentiateAssignmentStatement
-                    Return SyntaxFactory.ExponentiateExpression(expression.Left, expression.Right)
-                Case SyntaxKind.IntegerDivideAssignmentStatement
-                    Return SyntaxFactory.IntegerDivideExpression(expression.Left, expression.Right)
-                Case SyntaxKind.LeftShiftAssignmentStatement
-                    Return SyntaxFactory.LeftShiftExpression(expression.Left, expression.Right)
-                Case SyntaxKind.MultiplyAssignmentStatement
-                    Return SyntaxFactory.MultiplyExpression(expression.Left, expression.Right)
-                Case SyntaxKind.RightShiftAssignmentStatement
-                    Return SyntaxFactory.RightShiftExpression(expression.Left, expression.Right)
-                Case Else
-                    Return MakeTernaryOperand(expression.Right, semanticModel, type, typeSyntax)
-            End Select
-        End Function
+    '    Protected Shared Function ExtractOperand(expression As AssignmentStatementSyntax, semanticModel As SemanticModel, type As ITypeSymbol, typeSyntax As TypeSyntax) As ExpressionSyntax
+    '        Select Case expression.Kind
+    '            Case SyntaxKind.AddAssignmentStatement
+    '                Return SyntaxFactory.AddExpression(expression.Left, expression.Right)
+    '            Case SyntaxKind.SubtractAssignmentStatement
+    '                Return SyntaxFactory.SubtractExpression(expression.Left, expression.Right)
+    '            Case SyntaxKind.ConcatenateAssignmentStatement
+    '                Return SyntaxFactory.ConcatenateExpression(expression.Left, expression.Right)
+    '            Case SyntaxKind.DivideAssignmentStatement
+    '                Return SyntaxFactory.DivideExpression(expression.Left, expression.Right)
+    '            Case SyntaxKind.ExponentiateAssignmentStatement
+    '                Return SyntaxFactory.ExponentiateExpression(expression.Left, expression.Right)
+    '            Case SyntaxKind.IntegerDivideAssignmentStatement
+    '                Return SyntaxFactory.IntegerDivideExpression(expression.Left, expression.Right)
+    '            Case SyntaxKind.LeftShiftAssignmentStatement
+    '                Return SyntaxFactory.LeftShiftExpression(expression.Left, expression.Right)
+    '            Case SyntaxKind.MultiplyAssignmentStatement
+    '                Return SyntaxFactory.MultiplyExpression(expression.Left, expression.Right)
+    '            Case SyntaxKind.RightShiftAssignmentStatement
+    '                Return SyntaxFactory.RightShiftExpression(expression.Left, expression.Right)
+    '            Case Else
+    '                Return MakeTernaryOperand(expression.Right, semanticModel, type, typeSyntax)
+    '        End Select
+    '    End Function
 
-        Protected Shared Function MakeTernaryOperand(expression As ExpressionSyntax, semanticModel As SemanticModel, type As ITypeSymbol, typeSyntax As TypeSyntax) As ExpressionSyntax
-            If type?.OriginalDefinition.SpecialType = SpecialType.System_Nullable_T Then
-                Dim constValue = semanticModel.GetConstantValue(expression)
-                If constValue.HasValue AndAlso constValue.Value Is Nothing Then
-                    Return SyntaxFactory.DirectCastExpression(expression.WithoutTrailingTrivia(), typeSyntax)
-                End If
-            End If
+    '    Protected Shared Function MakeTernaryOperand(expression As ExpressionSyntax, semanticModel As SemanticModel, type As ITypeSymbol, typeSyntax As TypeSyntax) As ExpressionSyntax
+    '        If type?.OriginalDefinition.SpecialType = SpecialType.System_Nullable_T Then
+    '            Dim constValue = semanticModel.GetConstantValue(expression)
+    '            If constValue.HasValue AndAlso constValue.Value Is Nothing Then
+    '                Return SyntaxFactory.DirectCastExpression(expression.WithoutTrailingTrivia(), typeSyntax)
+    '            End If
+    '        End If
 
-            Return expression
-        End Function
-    End Class
+    '        Return expression
+    '    End Function
+    'End Class
 
     <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(TernaryOperatorWithReturnCodeFixProvider)), Composition.Shared>
     Public Class TernaryOperatorWithReturnCodeFixProvider
-        Inherits TernaryOperatorCodeFixProviderBase
+        Inherits CodeFixProvider
 
         Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First
@@ -74,10 +74,19 @@ Namespace Style
             Dim ifReturn = TryCast(ifBlock.Statements.FirstOrDefault(), ReturnStatementSyntax)
             Dim elseReturn = TryCast(ifBlock.ElseBlock?.Statements.FirstOrDefault(), ReturnStatementSyntax)
             Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
-            Dim type = semanticModel.GetTypeInfo(ifReturn.Expression).ConvertedType
+            Dim type = GetCommonBaseType(semanticModel.GetTypeInfo(ifReturn.Expression).ConvertedType, semanticModel.GetTypeInfo(elseReturn.Expression).ConvertedType)
+
+            Dim ifType = semanticModel.GetTypeInfo(ifReturn.Expression).Type
+            Dim elseType = semanticModel.GetTypeInfo(elseReturn.Expression).Type
+
             Dim typeSyntax = SyntaxFactory.IdentifierName(type.ToMinimalDisplayString(semanticModel, ifReturn.SpanStart))
-            Dim trueExpression = MakeTernaryOperand(ifReturn.Expression, semanticModel, type, typeSyntax)
-            Dim falseExpression = MakeTernaryOperand(elseReturn.Expression, semanticModel, type, typeSyntax)
+            Dim trueExpression = ifReturn.Expression.
+                ConvertToBaseType(ifType, type).
+                EnsureNothingAsType(semanticModel, type, typeSyntax)
+
+            Dim falseExpression = elseReturn.Expression.
+                ConvertToBaseType(elseType, type).
+                EnsureNothingAsType(semanticModel, type, typeSyntax)
 
             Dim leadingTrivia = ifBlock.GetLeadingTrivia()
             leadingTrivia = leadingTrivia.InsertRange(leadingTrivia.Count - 1, ifReturn.GetLeadingTrivia().Where(Function(trivia) trivia.IsKind(SyntaxKind.CommentTrivia)))
@@ -104,7 +113,7 @@ Namespace Style
 
     <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(TernaryOperatorWithAssignmentCodeFixProvider)), Composition.Shared>
     Public Class TernaryOperatorWithAssignmentCodeFixProvider
-        Inherits TernaryOperatorCodeFixProviderBase
+        Inherits CodeFixProvider
 
         Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First
@@ -126,17 +135,29 @@ Namespace Style
             Dim ifAssign = TryCast(ifBlock.Statements.FirstOrDefault(), AssignmentStatementSyntax)
             Dim elseAssign = TryCast(ifBlock.ElseBlock?.Statements.FirstOrDefault(), AssignmentStatementSyntax)
             Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
-            Dim type = semanticModel.GetTypeInfo(ifAssign.Left).ConvertedType
+            Dim type = GetCommonBaseType(semanticModel.GetTypeInfo(ifAssign.Left).ConvertedType, semanticModel.GetTypeInfo(elseAssign.Left).ConvertedType)
             Dim typeSyntax = SyntaxFactory.IdentifierName(type.ToMinimalDisplayString(semanticModel, ifAssign.SpanStart))
 
-            Dim trueExpression = ExtractOperand(ifAssign, semanticModel, type, typeSyntax)
-            Dim falseExpression = ExtractOperand(elseAssign, semanticModel, type, typeSyntax)
+            Dim ifType = semanticModel.GetTypeInfo(ifAssign.Right).Type
+            Dim elseType = semanticModel.GetTypeInfo(elseAssign.Right).Type
+
+            Dim trueExpression = ifAssign.
+                ExtractAssignmentAsExpressionSyntax().
+                EnsureNothingAsType(semanticModel, type, typeSyntax).
+                ConvertToBaseType(ifType, type)
+
+            Dim falseExpression = elseAssign.
+                ExtractAssignmentAsExpressionSyntax().
+                EnsureNothingAsType(semanticModel, type, typeSyntax).
+                ConvertToBaseType(elseType, type)
+
 
             Dim leadingTrivia = ifBlock.GetLeadingTrivia.
                 AddRange(ifAssign.GetLeadingTrivia()).
                 AddRange(trueExpression.GetLeadingTrivia()).
                 AddRange(elseAssign.GetLeadingTrivia()).
                 AddRange(falseExpression.GetLeadingTrivia())
+
             Dim trailingTrivia = ifBlock.GetTrailingTrivia.
                 InsertRange(0, elseAssign.GetTrailingTrivia().Where(Function(trivia) Not trivia.IsKind(SyntaxKind.EndOfLineTrivia))).
                 InsertRange(0, ifAssign.GetTrailingTrivia().Where(Function(trivia) Not trivia.IsKind(SyntaxKind.EndOfLineTrivia)))
