@@ -161,11 +161,29 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change class &apos;{0}&apos; accessibility to be as accessible as class &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInBaseClass_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInBaseClass_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to none.
         /// </summary>
         public static string DefaultValue_None {
             get {
                 return ResourceManager.GetString("DefaultValue_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change interface &apos;{0}&apos; accessibility to be as accessible as interface &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInBaseInterface_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInBaseInterface_Title", resourceCulture);
             }
         }
         
