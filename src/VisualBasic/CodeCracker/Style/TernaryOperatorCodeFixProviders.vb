@@ -9,46 +9,6 @@ Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Style
 
-    'Public MustInherit Class TernaryOperatorCodeFixProviderBase
-    '    Inherits CodeFixProvider
-
-    '    Protected Shared Function ExtractOperand(expression As AssignmentStatementSyntax, semanticModel As SemanticModel, type As ITypeSymbol, typeSyntax As TypeSyntax) As ExpressionSyntax
-    '        Select Case expression.Kind
-    '            Case SyntaxKind.AddAssignmentStatement
-    '                Return SyntaxFactory.AddExpression(expression.Left, expression.Right)
-    '            Case SyntaxKind.SubtractAssignmentStatement
-    '                Return SyntaxFactory.SubtractExpression(expression.Left, expression.Right)
-    '            Case SyntaxKind.ConcatenateAssignmentStatement
-    '                Return SyntaxFactory.ConcatenateExpression(expression.Left, expression.Right)
-    '            Case SyntaxKind.DivideAssignmentStatement
-    '                Return SyntaxFactory.DivideExpression(expression.Left, expression.Right)
-    '            Case SyntaxKind.ExponentiateAssignmentStatement
-    '                Return SyntaxFactory.ExponentiateExpression(expression.Left, expression.Right)
-    '            Case SyntaxKind.IntegerDivideAssignmentStatement
-    '                Return SyntaxFactory.IntegerDivideExpression(expression.Left, expression.Right)
-    '            Case SyntaxKind.LeftShiftAssignmentStatement
-    '                Return SyntaxFactory.LeftShiftExpression(expression.Left, expression.Right)
-    '            Case SyntaxKind.MultiplyAssignmentStatement
-    '                Return SyntaxFactory.MultiplyExpression(expression.Left, expression.Right)
-    '            Case SyntaxKind.RightShiftAssignmentStatement
-    '                Return SyntaxFactory.RightShiftExpression(expression.Left, expression.Right)
-    '            Case Else
-    '                Return MakeTernaryOperand(expression.Right, semanticModel, type, typeSyntax)
-    '        End Select
-    '    End Function
-
-    '    Protected Shared Function MakeTernaryOperand(expression As ExpressionSyntax, semanticModel As SemanticModel, type As ITypeSymbol, typeSyntax As TypeSyntax) As ExpressionSyntax
-    '        If type?.OriginalDefinition.SpecialType = SpecialType.System_Nullable_T Then
-    '            Dim constValue = semanticModel.GetConstantValue(expression)
-    '            If constValue.HasValue AndAlso constValue.Value Is Nothing Then
-    '                Return SyntaxFactory.DirectCastExpression(expression.WithoutTrailingTrivia(), typeSyntax)
-    '            End If
-    '        End If
-
-    '        Return expression
-    '    End Function
-    'End Class
-
     <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(TernaryOperatorWithReturnCodeFixProvider)), Composition.Shared>
     Public Class TernaryOperatorWithReturnCodeFixProvider
         Inherits CodeFixProvider
