@@ -7,22 +7,6 @@ namespace CodeCracker.Test.CSharp.Style
 {
     public class TernaryOperatorWithAssignmentTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithAssignmentCodeFixProvider>
     {
-        private const string source = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public int Foo()
-            {
-                var something = true;
-                if (something)
-                    return 1;
-                else
-                    return 2;
-            }
-        }
-    }";
-
         [Fact]
         public async Task WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic()
         {
@@ -36,110 +20,6 @@ namespace CodeCracker.Test.CSharp.Style
                 var something = true;
                 if (something)
                     return 1;
-            }
-        }
-    }";
-            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
-        }
-
-        [Fact]
-        public async Task WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreateDiagnostic()
-        {
-            const string sourceWithoutElse = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public int Foo()
-            {
-                var something = true;
-                if (something)
-                {
-                    string a = null;
-                    return 1;
-                }
-                else
-                {
-                    return 2;
-                }
-            }
-        }
-    }";
-            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
-        }
-
-        [Fact]
-        public async Task WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreateDiagnostic()
-        {
-            const string sourceWithoutElse = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public int Foo()
-            {
-                var something = true;
-                if (something)
-                {
-                    return 1;
-                }
-                else
-                {
-                    string a = null;
-                    return 2;
-                }
-            }
-        }
-    }";
-            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
-        }
-
-        [Fact]
-        public async Task WhenUsingIfWithElseButWithoutReturnOnElseAnalyzerDoesNotCreateDiagnostic()
-        {
-            const string sourceWithoutElse = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public int Foo()
-            {
-                var something = true;
-                if (something)
-                {
-                    return 2;
-                }
-                else
-                {
-                    string a = null;
-                }
-                return 1;
-            }
-        }
-    }";
-            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
-        }
-
-        [Fact]
-        public async Task WhenUsingIfWithElseButWithoutReturnOnIfAnalyzerDoesNotCreateDiagnostic()
-        {
-            const string sourceWithoutElse = @"
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public int Foo()
-            {
-                var something = true;
-                if (something)
-                {
-                    string a = null;
-                }
-                else
-                {
-                    return 2;
-                }
-                return 1;
             }
         }
     }";
@@ -169,20 +49,6 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
-        }
-
-        [Fact]
-        public async Task WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic()
-        {
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
-                Message = "You can use a ternary operator.",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
-            };
-
-            await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
         [Fact]
@@ -221,7 +87,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -260,7 +126,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, allowNewCompilerDiagnostics: true);
         }
 
         [Fact]
@@ -348,7 +214,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -398,6 +264,76 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAllAsync(new string[] { source, source.Replace("TypeName", "TypeName1") }, new string[] { fixtest, fixtest.Replace("TypeName", "TypeName1") });
         }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithAssignmentAnalyzerCreatesDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                string a;
+                if (something)
+                {
+                    a = ""a"";
+                }
+                else
+                {
+                    a = ""b"";
+                }
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
+                Message = "You can use a ternary operator.",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixConsidersAssignmentType()
+        {
+            const string source = @"
+class Base { }
+class A : Base { }
+class B : Base { }
+class Test2
+{
+    public static void Foo()
+    {
+        var something = true;
+        Base b;
+        if (something)
+            b = new A();
+        else
+            b = new B();
+    }
+}
+";
+            const string fixtest = @"
+class Base { }
+class A : Base { }
+class B : Base { }
+class Test2
+{
+    public static void Foo()
+    {
+        var something = true;
+        Base b;
+        b = something ? (Base)new A() : new B();
+    }
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 
     public class TernaryOperatorWithReturnTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
@@ -433,7 +369,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -467,7 +403,7 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest, allowNewCompilerDiagnostics: true);
         }
 
         [Fact]
@@ -510,7 +446,111 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task WhenUsingIfAndElseWithAssignmentAnalyzerCreatesDiagnostic()
+        public async Task WhenUsingIfWithElseButWithoutReturnOnIfAnalyzerDoesNotCreateDiagnostic()
+        {
+            const string sourceWithoutElse = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                if (something)
+                {
+                    string a = null;
+                }
+                else
+                {
+                    return 2;
+                }
+                return 1;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
+        }
+
+        [Fact]
+        public async Task WhenUsingIfWithElseButWithoutReturnOnElseAnalyzerDoesNotCreateDiagnostic()
+        {
+            const string sourceWithoutElse = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                if (something)
+                {
+                    return 2;
+                }
+                else
+                {
+                    string a = null;
+                }
+                return 1;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
+        }
+
+        [Fact]
+        public async Task WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreateDiagnostic()
+        {
+            const string sourceWithoutElse = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                if (something)
+                {
+                    return 1;
+                }
+                else
+                {
+                    string a = null;
+                    return 2;
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
+        }
+
+        [Fact]
+        public async Task WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreateDiagnostic()
+        {
+            const string sourceWithoutElse = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int Foo()
+            {
+                var something = true;
+                if (something)
+                {
+                    string a = null;
+                    return 1;
+                }
+                else
+                {
+                    return 2;
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(sourceWithoutElse);
+        }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic()
         {
             const string source = @"
     namespace ConsoleApplication1
@@ -520,27 +560,56 @@ namespace CodeCracker.Test.CSharp.Style
             public int Foo()
             {
                 var something = true;
-                string a;
                 if (something)
-                {
-                    a = ""a"";
-                }
+                    return 1;
                 else
-                {
-                    a = ""b"";
-                }
+                    return 2;
             }
         }
     }";
             var expected = new DiagnosticResult
             {
-                Id = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
+                Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
                 Message = "You can use a ternary operator.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
-
             await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixConsidersReturnType()
+        {
+            const string source = @"
+class Base { }
+class A : Base { }
+class B : Base { }
+class Test
+{
+    public static Base Foo()
+    {
+        var something = true;
+        if (something)
+            return new A();
+        else
+            return new B();
+    }
+}
+";
+            const string fixtest = @"
+class Base { }
+class A : Base { }
+class B : Base { }
+class Test
+{
+    public static Base Foo()
+    {
+        var something = true;
+        return something ? (Base)new A() : new B();
+    }
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
         }
     }
 }

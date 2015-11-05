@@ -356,38 +356,83 @@ namespace ConsoleApplication1
             await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
         }
 
-
-        [Fact(Skip = "Skip until the FixAll has been fixed.")]
-        public async Task FixSimplePropWithMultipleFieldsIntoAutoPropAll()
+        [Fact]
+        public async Task FixSimplePropWithMultipleFieldsIntoAutoPropAllInDoc()
         {
-            const string source = @"
+            var source = @"
                 private int x = 42, y;
                 private int z = int.MaxValue;
-
                 public int X
                 {
                     get { return x; }
                     set { x = value; }
                 }
-
                 public int Y
                 {
                     get { return y; }
                     set { y = value; }
                 }
-
                 public int Z
                 {
                     get { return z; }
                     set { z = value; }
-                }";
-
-            const string expected = @"
-                public int X { get; set; } = 42;
+                }".WrapInCSharpClass();
+            var expected = @"public int X { get; set; } = 42;
                 public int Y { get; set; }
-                public int Z { get; set; } = int.MaxValue;";
+                public int Z { get; set; } = int.MaxValue;".WrapInCSharpClass();
+            await VerifyCSharpFixAllAsync(source, expected);
+        }
 
-            await VerifyCSharpFixAllAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
+        [Fact]
+        public async Task FixSimplePropWithMultipleFieldsIntoAutoPropAllInSolution()
+        {
+            var source1 = @"
+                void Foo()
+                {
+                    var other = new OtherType();
+                    other.z = 1;
+                }
+                public int x = 42, y;
+                public int X
+                {
+                    get { return x; }
+                    set { x = value; }
+                }
+                public int Y
+                {
+                    get { return y; }
+                    set { y = value; }
+                }".WrapInCSharpClass();
+            var source2 = @"
+                void Foo()
+                {
+                    var type = new TypeName();
+                    type.x = 1;
+                    type.y = 2;
+                }
+                public int z = int.MaxValue;
+                public int Z
+                {
+                    get { return z; }
+                    set { z = value; }
+                }".WrapInCSharpClass("OtherType");
+            var expected1 = @"
+                void Foo()
+                {
+                    var other = new OtherType();
+                    other.Z = 1;
+                }
+                public int X { get; set; } = 42;
+                public int Y { get; set; }".WrapInCSharpClass();
+            var expected2 = @"
+                void Foo()
+                {
+                    var type = new TypeName();
+                    type.X = 1;
+                    type.Y = 2;
+                }
+                public int Z { get; set; } = int.MaxValue;".WrapInCSharpClass("OtherType");
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { expected1, expected2 });
         }
 
         [Fact]
@@ -446,6 +491,34 @@ namespace ConsoleApplication1
         }
 ".WrapInCSharpClass("OtherType");
             await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { expected1, expected2 });
+        }
+
+        [Fact]
+        public async Task FixPropIntoAutoPropAndFixKeepingXMLComments()
+        {
+            var source = @"
+        public class Foo
+        {
+            private int x = 10;
+            /// <summary>
+            /// comment 1
+            /// </summary>
+            public int X
+            {
+                get { return x; }
+                set { x = value; }
+            }
+        }";
+
+            var expected = @"
+        public class Foo
+        {
+            /// <summary>
+            /// comment 1
+            /// </summary>
+            public int X { get; set; } = 10;
+        }";
+            await VerifyCSharpFixAllAsync(source, expected);
         }
     }
 }

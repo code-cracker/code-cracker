@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Design
         {
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(
-                CodeAction.Create("Use ?.Invoke operator and method to fire an event.", ct => UseInvokeAsync(context.Document, diagnostic, ct), nameof(UseInvokeMethodToFireEventCodeFixProvider)), diagnostic);
+                CodeAction.Create("Change to ?.Invoke to call a delegate", ct => UseInvokeAsync(context.Document, diagnostic, ct), nameof(UseInvokeMethodToFireEventCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

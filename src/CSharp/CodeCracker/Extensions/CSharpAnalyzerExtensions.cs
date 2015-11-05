@@ -505,5 +505,32 @@ namespace CodeCracker
         }
 
         public static bool IsLoopStatement(this SyntaxNode note) => note.IsAnyKind(SyntaxKind.ForEachStatement, SyntaxKind.ForStatement, SyntaxKind.WhileStatement, SyntaxKind.DoStatement);
+
+        public static SyntaxNode FirstAncestorOfKind(this SyntaxNode node, params SyntaxKind[] kinds)
+        {
+            var currentNode = node;
+            while (true)
+            {
+                var parent = currentNode.Parent;
+                if (parent == null) break;
+                if (parent.IsAnyKind(kinds)) return parent;
+                currentNode = parent;
+            }
+            return null;
+        }
+
+        public static IEnumerable<TNode> OfKind<TNode>(this IEnumerable<TNode> nodes, SyntaxKind kind) where TNode : SyntaxNode
+        {
+            foreach (var node in nodes)
+                if (node.IsKind(kind))
+                    yield return node;
+        }
+
+        public static IEnumerable<TNode> OfKind<TNode>(this IEnumerable<TNode> nodes, params SyntaxKind[] kinds) where TNode : SyntaxNode
+        {
+            foreach (var node in nodes)
+                if (node.IsAnyKind(kinds))
+                    yield return node;
+        }
     }
 }

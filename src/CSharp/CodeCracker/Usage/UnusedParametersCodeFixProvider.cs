@@ -82,10 +82,10 @@ namespace CodeCracker.CSharp.Usage
                     if (parameter.Modifiers.Any(m => m.IsKind(SyntaxKind.ParamsKeyword)))
                     {
                         var newArguments = arguments;
-                        do
+                        while (newArguments.Arguments.Count > parameterPosition)
                         {
                             newArguments = newArguments.WithArguments(newArguments.Arguments.RemoveAt(parameterPosition));
-                        } while (newArguments.Arguments.Count > parameterPosition);
+                        }
                         replacingArgs.Add(arguments, newArguments);
                     }
                     else

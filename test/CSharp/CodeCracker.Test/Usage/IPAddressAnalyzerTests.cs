@@ -61,8 +61,23 @@ namespace ConsoleApplication1
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
+        public async Task IfParseIdentifierFoundAndParameterIsNotStringLiteralDoesNotCreatesDiagnostic() 
+        {
+            var test = string.Format(TestCode, @"var ip = ""; ""System.Net.IPAddress.Parse(ip)");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
 
-      private static DiagnosticResult CreateDiagnosticResult(int line, int column, Action getErrorMessageAction) {
+        [Fact]
+        public async Task IfAbbreviateParseIdentifierFoundAndParameterIsNotStringLiteralDoesNotCreatesDiagnostic() 
+        {
+            var test = string.Format(TestCode, @"var ip = ""; ""IPAddress.Parse(ip)");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+
+
+        private static DiagnosticResult CreateDiagnosticResult(int line, int column, Action getErrorMessageAction) {
             return new DiagnosticResult {
                 Id = DiagnosticId.IPAddress.ToDiagnosticId(),
                 Message = GetErrorMessage(getErrorMessageAction),

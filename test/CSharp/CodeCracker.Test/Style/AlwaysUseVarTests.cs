@@ -215,5 +215,83 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { fixtest1, fixtest2 });
         }
+
+
+        [Fact]
+        public async Task FixReplacesMultipleDeclarationWithMultipleVars()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public async Task Foo()
+            {
+                int a = 10, b = 12;
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public async Task Foo()
+            {
+                var a = 10;
+                var b = 12;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
+
+
+
+        [Fact]
+        public async Task FixPreservesTriviaSensibly()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public async Task Foo()
+            {
+                int a = 10; //Blue
+
+                /*variables for use*/ string /*desc of b*/b = /* why not*/ ""12"", /*Formatter does this My next variable*/ c /* is quite nice and it */ = ""23"";
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public async Task Foo()
+            {
+                var a = 10; //Blue
+
+                /*variables for use*/ var /*desc of b*/b = /* why not*/ ""12"";
+                var 
+/*Formatter does this My next variable*/ c /* is quite nice and it */ = ""23"";
+            }
+        }
+    }";
+            await VerifyCSharpFixAllAsync(test, expected);
+        }
     }
 }
+
+
