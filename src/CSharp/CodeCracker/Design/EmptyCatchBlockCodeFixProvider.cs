@@ -20,20 +20,43 @@ namespace CodeCracker.CSharp.Design
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", c => RemoveEmptyCatchBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block and Put a Documentation Link about Try...Catch use", c => RemoveEmptyCatchBlockPutCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider ) + nameof(RemoveEmptyCatchBlockPutCommentAsync)), diagnostic);
+            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var catchStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().First();
+            var tryStatement = (TryStatementSyntax)catchStatement.Parent;
+
+            if (tryStatement.Catches.Count > 1)
+            {
+                context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", c => RemoveEmptyCatchBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
+            }
+            else
+            {
+                context.RegisterCodeFix(CodeAction.Create("Remove Empty Try Block", c => RemoveEmptyTryBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create("Remove Empty Try Block and Put a Documentation Link about Try...Catch use", c => RemoveEmptyCatchBlockPutCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockPutCommentAsync)), diagnostic);
+            }
             context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", c => InsertExceptionClassCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(InsertExceptionClassCommentAsync)), diagnostic);
-            return Task.FromResult(0);
         }
 
-        private async static Task<Document> RemoveEmptyCatchBlockAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
+        private async static Task<Document> RemoveEmptyTryBlockAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
             await RemoveTryAsync(document, diagnostic, cancellationToken, insertComment: false);
 
         private async static Task<Document> RemoveEmptyCatchBlockPutCommentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
             await RemoveTryAsync(document, diagnostic, cancellationToken, insertComment: true);
+
+        private async static Task<Document> RemoveEmptyCatchBlockAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var catchStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().First();
+
+            var newRoot = root.RemoveNode(catchStatement, SyntaxRemoveOptions.KeepNoTrivia);
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            return newDocument;
+
+        }
 
         private async static Task<Document> RemoveTryAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, bool insertComment)
         {

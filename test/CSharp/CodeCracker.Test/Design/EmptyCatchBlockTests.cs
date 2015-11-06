@@ -122,5 +122,56 @@ namespace CodeCracker.Test.CSharp.Design
 
             await VerifyCSharpFixAsync(test, fixtest, 2, false, true);
         }
+
+
+        [Fact]
+        public async Task WhenMultipleCatchOnlyRemoveSelected()
+        {
+            const string test = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public async Task Foo()
+        {
+            try
+            {
+                // do something
+            }
+            catch (System.ArgumentException ae)
+            {
+            }
+            catch (System.Exception ex)
+            {
+                int x = 0;
+            }
+        }
+    }
+}";
+
+            const string fixtest = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class TypeName
+    {
+        public async Task Foo()
+        {
+            try
+            {
+                // do something
+            }
+            catch (System.Exception ex)
+            {
+                int x = 0;
+            }
+        }
+    }
+}";
+            await VerifyCSharpFixAsync(test, fixtest, 0);
+        }
     }
 }

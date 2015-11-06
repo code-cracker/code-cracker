@@ -23,8 +23,23 @@ Namespace Design
             Dim diag = context.Diagnostics.First
             Dim diagSpan = diag.Location.SourceSpan
             Dim declaration = root.FindToken(diagSpan.Start).Parent.AncestorsAndSelf.OfType(Of CatchBlockSyntax).First
-            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", Function(c) RemoveTry(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(RemoveTry)), diag)
+
+            Dim tryBlock = DirectCast(declaration.Parent, TryBlockSyntax)
+            If tryBlock.CatchBlocks.Count > 1 Then
+                context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", Function(c) RemoveCatch(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(RemoveTry)), diag)
+            Else
+                context.RegisterCodeFix(CodeAction.Create("Remove Entire Try Block", Function(c) RemoveTry(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(RemoveTry)), diag)
+            End If
             context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", Function(c) InsertExceptionClassCommentAsync(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(InsertExceptionClassCommentAsync)), diag)
+        End Function
+
+        Private Async Function RemoveCatch(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+
+            Dim newRoot = root.RemoveNode(catchBlock, SyntaxRemoveOptions.KeepNoTrivia)
+
+            Dim newDocument = document.WithSyntaxRoot(newRoot)
+            Return newDocument
         End Function
 
         Private Async Function RemoveTry(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
