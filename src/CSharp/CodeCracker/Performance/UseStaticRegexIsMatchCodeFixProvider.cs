@@ -45,6 +45,9 @@ namespace CodeCracker.CSharp.Performance
                 newArgumentList = newArgumentList.Insert(2, SyntaxFactory.Argument(SyntaxFactory.IdentifierName("RegexOptions.Compiled")));
 
             var memberExpression = (MemberAccessExpressionSyntax)invocationDeclaration.Expression;
+            //todo: use simplification with `.WithAdditionalAnnotations(Simplifier.Annotation)`, like the example below.
+            //right now it is not working because tests can't find System.Text.RegularExpressions.Regex, we need to fix that
+            //var isMatchExpression = SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName("System.Text.RegularExpressions.Regex.IsMatch").WithAdditionalAnnotations(Simplifier.Annotation),
             var isMatchExpression = SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName("Regex.IsMatch"),
                 SyntaxFactory.ArgumentList(newArgumentList))
                 .WithLeadingTrivia(memberExpression.GetLeadingTrivia())

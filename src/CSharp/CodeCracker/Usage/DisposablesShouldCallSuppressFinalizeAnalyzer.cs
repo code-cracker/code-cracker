@@ -59,8 +59,13 @@ namespace CodeCracker.CSharp.Usage
 
         private static ISymbol FindDisposeMethod(INamedTypeSymbol symbol)
         {
-            return symbol.GetMembers().Where(x => x.ToString().Contains($"{x.ContainingType.Name}.Dispose(")).Cast<IMethodSymbol>()
+            var disposeSymbol = symbol.GetMembers().Where(x =>
+                x.Kind == SymbolKind.Method
+                && (x.ToString().Contains($"{x.ContainingType.Name }.Dispose(")
+                || (((IMethodSymbol)x).ExplicitInterfaceImplementations.Any(i => i.ToString() == "System.IDisposable.Dispose()"))))
+                .Cast<IMethodSymbol>()
                 .FirstOrDefault(m => m.Parameters == null || m.Parameters.Length == 0);
+            return disposeSymbol;
         }
 
         public static bool ContainsUserDefinedFinalizer(INamedTypeSymbol symbol)

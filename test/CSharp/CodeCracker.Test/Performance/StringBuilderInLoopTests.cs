@@ -220,6 +220,7 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task FixesAddAssignmentInWhileWithSystemTextInContext()
         {
             const string source = @"
+    using System;
     using System.Text;
     namespace ConsoleApplication1
     {
@@ -236,6 +237,7 @@ namespace CodeCracker.Test.CSharp.Performance
         }
     }";
             const string fixtest = @"
+    using System;
     using System.Text;
     namespace ConsoleApplication1
     {
@@ -399,7 +401,7 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task ForWithStringConcatOnLoopLocalVariableShouldNotCreateDiagnostic()
         {
-            var source = @"                
+            var source = @"
                 for (;;)
                 {
                     var myString = """";
