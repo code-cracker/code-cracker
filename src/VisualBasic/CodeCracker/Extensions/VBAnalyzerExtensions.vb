@@ -5,6 +5,85 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Public Module VBAnalyzerExtensions
+
+    <Extension>
+    Public Function GetCommonBaseType(source As ITypeSymbol, other As ITypeSymbol) As ITypeSymbol
+        If source Is Nothing AndAlso other IsNot Nothing Then
+            Return other
+        End If
+        If source IsNot Nothing AndAlso other Is Nothing Then
+            Return source
+        End If
+
+        Dim baseType = source
+        While baseType IsNot Nothing
+            Dim otherBaseType = other
+            While otherBaseType IsNot Nothing
+                If baseType.Equals(otherBaseType) Then Return baseType
+                otherBaseType = otherBaseType.BaseType
+            End While
+            baseType = baseType.BaseType
+        End While
+        Return Nothing
+    End Function
+
+    <Extension>
+    Public Function CanBeAssignedTo(source As ITypeSymbol, targetType As ITypeSymbol) As Boolean
+        If source Is Nothing OrElse targetType Is Nothing Then Return True
+        If source.Kind = SymbolKind.ErrorType OrElse targetType.Kind = SymbolKind.ErrorType Then Return True
+
+        Dim baseType = source
+        While baseType IsNot Nothing AndAlso baseType.SpecialType <> SpecialType.System_Object
+            If baseType.Equals(targetType) Then Return True
+            baseType = baseType.BaseType
+        End While
+        Return False
+    End Function
+
+    <Extension>
+    Public Function ConvertToBaseType(source As ExpressionSyntax, sourceType As ITypeSymbol, targetType As ITypeSymbol) As ExpressionSyntax
+        If targetType?.OriginalDefinition.SpecialType = SpecialType.System_Nullable_T Then Return source
+        Return If(sourceType IsNot Nothing AndAlso sourceType.Name = targetType.Name, source, SyntaxFactory.DirectCastExpression(source.WithoutTrailingTrivia, SyntaxFactory.ParseTypeName(targetType.Name))).WithTrailingTrivia(source.GetTrailingTrivia())
+    End Function
+
+    <Extension>
+    Public Function EnsureNothingAsType(expression As ExpressionSyntax, semanticModel As SemanticModel, type As ITypeSymbol, typeSyntax As TypeSyntax) As ExpressionSyntax
+        If type?.OriginalDefinition.SpecialType = SpecialType.System_Nullable_T Then
+            Dim constValue = semanticModel.GetConstantValue(expression)
+            If constValue.HasValue AndAlso constValue.Value Is Nothing Then
+                Return SyntaxFactory.DirectCastExpression(expression.WithoutTrailingTrivia(), typeSyntax)
+            End If
+        End If
+
+        Return expression
+    End Function
+
+    <Extension>
+    Public Function ExtractAssignmentAsExpressionSyntax(expression As AssignmentStatementSyntax) As ExpressionSyntax
+        Select Case expression.Kind
+            Case SyntaxKind.AddAssignmentStatement
+                Return SyntaxFactory.AddExpression(expression.Left, expression.Right)
+            Case SyntaxKind.SubtractAssignmentStatement
+                Return SyntaxFactory.SubtractExpression(expression.Left, expression.Right)
+            Case SyntaxKind.ConcatenateAssignmentStatement
+                Return SyntaxFactory.ConcatenateExpression(expression.Left, expression.Right)
+            Case SyntaxKind.DivideAssignmentStatement
+                Return SyntaxFactory.DivideExpression(expression.Left, expression.Right)
+            Case SyntaxKind.ExponentiateAssignmentStatement
+                Return SyntaxFactory.ExponentiateExpression(expression.Left, expression.Right)
+            Case SyntaxKind.IntegerDivideAssignmentStatement
+                Return SyntaxFactory.IntegerDivideExpression(expression.Left, expression.Right)
+            Case SyntaxKind.LeftShiftAssignmentStatement
+                Return SyntaxFactory.LeftShiftExpression(expression.Left, expression.Right)
+            Case SyntaxKind.MultiplyAssignmentStatement
+                Return SyntaxFactory.MultiplyExpression(expression.Left, expression.Right)
+            Case SyntaxKind.RightShiftAssignmentStatement
+                Return SyntaxFactory.RightShiftExpression(expression.Left, expression.Right)
+            Case Else
+                Return expression.Right
+        End Select
+    End Function
+
     <Extension> Public Sub RegisterSyntaxNodeAction(Of TLanguageKindEnum As Structure)(context As AnalysisContext, languageVersion As LanguageVersion, action As Action(Of SyntaxNodeAnalysisContext), ParamArray syntaxKinds As TLanguageKindEnum())
         context.RegisterCompilationStartAction(languageVersion, Sub(compilationContext) compilationContext.RegisterSyntaxNodeAction(action, syntaxKinds))
     End Sub
@@ -36,7 +115,7 @@ Public Module VBAnalyzerExtensions
     End Sub
 
     <Extension> Public Sub RunWithVB14OrGreater(languageVersion As LanguageVersion, action As Action)
-        languageVersion.RunWithVBVersionOrGreater(action, languageVersion.VisualBasic14)
+        languageVersion.RunWithVBVersionOrGreater(action, LanguageVersion.VisualBasic14)
     End Sub
 
     <Extension> Public Sub RunWithVBVersionOrGreater(languageVersion As LanguageVersion, action As Action, greaterOrEqualThanLanguageVersion As LanguageVersion)
