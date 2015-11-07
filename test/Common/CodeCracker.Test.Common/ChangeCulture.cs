@@ -6,17 +6,17 @@ namespace CodeCracker.Test
 {
     public class ChangeCulture : IDisposable
     {
-        private readonly CultureInfo _originalCulture;
-        private readonly CultureInfo _originalUICulture;
-        private readonly CultureInfo _originalDefaultCulture;
-        private readonly CultureInfo _originalDefaultUICulture;
+        private readonly CultureInfo originalCulture;
+        private readonly CultureInfo originalUICulture;
+        private readonly CultureInfo originalDefaultCulture;
+        private readonly CultureInfo originalDefaultUICulture;
 
         public ChangeCulture(string cultureName)
         {
-            _originalCulture = Thread.CurrentThread.CurrentCulture;
-            _originalUICulture = Thread.CurrentThread.CurrentUICulture;
-            _originalDefaultCulture = CultureInfo.DefaultThreadCurrentCulture;
-            _originalDefaultUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+            originalCulture = Thread.CurrentThread.CurrentCulture;
+            originalUICulture = Thread.CurrentThread.CurrentUICulture;
+            originalDefaultCulture = CultureInfo.DefaultThreadCurrentCulture;
+            originalDefaultUICulture = CultureInfo.DefaultThreadCurrentUICulture;
 
             Thread.CurrentThread.CurrentCulture =
             Thread.CurrentThread.CurrentUICulture =
@@ -28,10 +28,10 @@ namespace CodeCracker.Test
 
         public void Dispose()
         {
-            Thread.CurrentThread.CurrentCulture = _originalCulture;
-            Thread.CurrentThread.CurrentUICulture = _originalUICulture;
-            CultureInfo.DefaultThreadCurrentCulture = _originalDefaultCulture;
-            CultureInfo.DefaultThreadCurrentUICulture = _originalDefaultUICulture;
+            Thread.CurrentThread.CurrentCulture = originalCulture;
+            Thread.CurrentThread.CurrentUICulture = originalUICulture;
+            CultureInfo.DefaultThreadCurrentCulture = originalDefaultCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = originalDefaultUICulture;
             GC.SuppressFinalize(this);
         }
     }
