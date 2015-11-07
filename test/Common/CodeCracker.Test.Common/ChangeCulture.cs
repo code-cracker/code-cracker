@@ -1,23 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Threading;
 
 namespace CodeCracker.Test
 {
     public class ChangeCulture : IDisposable
     {
+        private readonly CultureInfo originalCulture;
+        private readonly CultureInfo originalUICulture;
+        private readonly CultureInfo originalDefaultCulture;
+        private readonly CultureInfo originalDefaultUICulture;
+
         public ChangeCulture(string cultureName)
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(cultureName);
-            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(cultureName);
+            originalCulture = Thread.CurrentThread.CurrentCulture;
+            originalUICulture = Thread.CurrentThread.CurrentUICulture;
+            originalDefaultCulture = CultureInfo.DefaultThreadCurrentCulture;
+            originalDefaultUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+
+            Thread.CurrentThread.CurrentCulture =
+            Thread.CurrentThread.CurrentUICulture =
+            CultureInfo.DefaultThreadCurrentCulture =
+            CultureInfo.DefaultThreadCurrentUICulture =
+                CultureInfo.GetCultureInfo(cultureName);
+
         }
 
         public void Dispose()
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentCulture = originalCulture;
+            Thread.CurrentThread.CurrentUICulture = originalUICulture;
+            CultureInfo.DefaultThreadCurrentCulture = originalDefaultCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = originalDefaultUICulture;
             GC.SuppressFinalize(this);
         }
     }
