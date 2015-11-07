@@ -4,9 +4,10 @@ $projectDir =  "$baseDir\cecil"
 $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\cecil.log"
 $analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
+$analyzerCommonDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.Common.dll")
 $gitPath = "https://github.com/jbevain/cecil.git"
-if (Test-Path "C:\proj\cecil") {
-    $gitPath = "c:\proj\cecil"
+if (Test-Path "C:\p\cecil") {
+    $gitPath = "c:\p\cecil"
 }
 
 echo "Saving to log file $logFile"
@@ -56,7 +57,10 @@ foreach($csproj in $csprojs)
     $itemGroup = $xmlProj.CreateElement("ItemGroup", $xmlProj.Project.xmlns)
     $analyzer = $xmlProj.CreateElement("Analyzer", $xmlProj.Project.xmlns)
     $analyzer.SetAttribute("Include", $analyzerDll)
+    $analyzerCommon = $xmlProj.CreateElement("Analyzer", $xmlProj.Project.xmlns)
+    $analyzerCommon.SetAttribute("Include", $analyzerCommonDll)
     $itemGroup.AppendChild($analyzer) | Out-Null
+    $itemGroup.AppendChild($analyzerCommon) | Out-Null
     $xmlProj.DocumentElement.AppendChild($itemGroup) | Out-Null
     $xmlProj.Save($csproj.FullName)
 }
@@ -66,9 +70,9 @@ echo "Building..."
 foreach($sln in $slns)
 {
     echo "Building $($sln.FullName)..."
-    msbuild $sln.FullName /m /t:rebuild /v:detailed /p:Configuration="net_4_0_Debug" >> $logFile
+    msbuild $sln.FullName /m /t:rebuild /v:detailed /p:Configuration="net_4_5_Debug" >> $logFile
 }
-$ccBuildErrors = cat $logFile | Select-String "info AnalyzerDriver: The Compiler Analyzer 'CodeCracker"
+$ccBuildErrors = cat $logFile | Select-String "info AD0001: The Compiler Analyzer 'CodeCracker"
 if ($ccBuildErrors -ne $null)
 {
     write-host "Errors found (see $logFile):"

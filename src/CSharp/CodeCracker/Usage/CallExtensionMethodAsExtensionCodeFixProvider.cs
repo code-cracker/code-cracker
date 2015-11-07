@@ -4,12 +4,12 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 namespace CodeCracker.CSharp.Usage
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CallExtensionMethodAsExtensionCodeFixProvider)), Shared]
@@ -40,7 +40,7 @@ namespace CodeCracker.CSharp.Usage
                 .First();
 
             var childNodes = staticInvocationExpression.ChildNodes();
-            var parameterExpressions = GetParameterExpressions(childNodes);
+            var parameterExpressions = CallExtensionMethodAsExtensionAnalyzer.GetParameterExpressions(childNodes);
 
             var firstArgument = parameterExpressions.FirstOrDefault();
             var callerMethod = childNodes.OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
@@ -50,7 +50,7 @@ namespace CodeCracker.CSharp.Usage
                         staticInvocationExpression,
                         firstArgument,
                         callerMethod.Name,
-                        CreateArgumentListSyntaxFrom(parameterExpressions.Skip(1))
+                        CallExtensionMethodAsExtensionAnalyzer.CreateArgumentListSyntaxFrom(parameterExpressions.Skip(1))
                    ).WithAdditionalAnnotations(Formatter.Annotation);
 
             var semanticModel = await document.GetSemanticModelAsync();
@@ -60,26 +60,12 @@ namespace CodeCracker.CSharp.Usage
             return newDocument;
         }
 
-        public static IEnumerable<ExpressionSyntax> GetParameterExpressions(IEnumerable<SyntaxNode> childNodes) =>
-            childNodes.OfType<ArgumentListSyntax>().SelectMany(s => s.Arguments).Select(s => s.Expression);
-
-        public static ArgumentListSyntax CreateArgumentListSyntaxFrom(IEnumerable<ExpressionSyntax> expressions) =>
-            SyntaxFactory.ArgumentList().AddArguments(expressions.Select(s => SyntaxFactory.Argument(s)).ToArray());
-
         private static CompilationUnitSyntax ReplaceStaticCallWithExtionMethodCall(CompilationUnitSyntax root, InvocationExpressionSyntax staticInvocationExpression, ExpressionSyntax sourceExpression, SimpleNameSyntax methodName, ArgumentListSyntax argumentList)
         {
-            var extensionInvocationExpression = CreateInvocationExpression(sourceExpression, methodName, argumentList)
+            var extensionInvocationExpression = CallExtensionMethodAsExtensionAnalyzer.CreateInvocationExpression(sourceExpression, methodName, argumentList)
                 .WithLeadingTrivia(staticInvocationExpression.GetLeadingTrivia());
             return root.ReplaceNode(staticInvocationExpression, extensionInvocationExpression);
         }
-
-        public static InvocationExpressionSyntax CreateInvocationExpression(ExpressionSyntax sourceExpression, SimpleNameSyntax methodName, ArgumentListSyntax argumentList) =>
-            SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression,
-                sourceExpression,
-                methodName),
-                argumentList);
 
         private static CompilationUnitSyntax ImportNeededNamespace(CompilationUnitSyntax root, SemanticModel semanticModel, MemberAccessExpressionSyntax callerMethod)
         {

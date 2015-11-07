@@ -14,7 +14,7 @@ namespace CodeCracker.Test.CSharp.Usage
             const string source = @"
                     using System.Linq;
                     namespace ConsoleApplication1
-                    { 
+                    {
                         public class Foo
                         {
                             public void Bar()
@@ -33,7 +33,7 @@ namespace CodeCracker.Test.CSharp.Usage
             const string source = @"
                     using System.Linq;
                     namespace ConsoleApplication1
-                    { 
+                    {
                         public class Foo
                         {
                             public void Bar()
@@ -60,7 +60,7 @@ namespace CodeCracker.Test.CSharp.Usage
         {
             const string source = @"
                     namespace ConsoleApplication1
-                    { 
+                    {
                         public class Foo
                         {
                             public void Bar()
@@ -88,7 +88,7 @@ namespace CodeCracker.Test.CSharp.Usage
             const string source = @"
                     using System.Linq;
                     namespace ConsoleApplication1
-                    { 
+                    {
                         public class Foo
                         {
                             public void Bar()
@@ -102,13 +102,47 @@ namespace CodeCracker.Test.CSharp.Usage
             const string expected = @"
                     using System.Linq;
                     namespace ConsoleApplication1
-                    { 
+                    {
                         public class Foo
                         {
                             public void Bar()
                             {
                                 var source = new int[] { 1, 2, 3 };
                                 source.Any(x => x > 1);
+                            }
+                        }
+                    }";
+
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenCallExtensionMethodAsStaticMenthodShouldFixWithReturnStatement()
+        {
+            const string source = @"
+                    using System.Linq;
+                    namespace ConsoleApplication1
+                    {
+                        public class Foo
+                        {
+                            public bool Bar()
+                            {
+                                var source = new int[] { 1, 2, 3 };
+                                return Enumerable.Any(source, x => x > 1);
+                            }
+                        }
+                    }";
+
+            const string expected = @"
+                    using System.Linq;
+                    namespace ConsoleApplication1
+                    {
+                        public class Foo
+                        {
+                            public bool Bar()
+                            {
+                                var source = new int[] { 1, 2, 3 };
+                                return source.Any(x => x > 1);
                             }
                         }
                     }";
@@ -125,7 +159,7 @@ namespace CodeCracker.Test.CSharp.Usage
                     using System.Collections.Generic;
 
                     namespace ConsoleApplication1
-                    { 
+                    {
                         public class Foo
                         {
                             public void Bar()
@@ -143,7 +177,7 @@ namespace CodeCracker.Test.CSharp.Usage
                     using System.Linq;
 
                     namespace ConsoleApplication1
-                    { 
+                    {
                         public class Foo
                         {
                             public void Bar()
@@ -179,7 +213,7 @@ namespace CodeCracker.Test.CSharp.Usage
                     using System.Linq;
 
                     namespace ConsoleApplication1
-                    { 
+                    {
                         public class Foo
                         {
                             public void Bar()
