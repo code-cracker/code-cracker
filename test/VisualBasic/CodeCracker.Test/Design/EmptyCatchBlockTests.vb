@@ -9,12 +9,12 @@ Namespace Design
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
-        Public Async Function Foo() As Task
+        Public Sub Foo()
             Try
                 Dim a = ""A""
             Catch
             End Try
-        End Function
+        End Sub
     End Class
 End Namespace"
 
@@ -24,13 +24,13 @@ End Namespace"
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
-        Public Async Function Foo() As Task
+        Public Sub Foo()
             Try
                 Dim a = ""A""
             Catch
                 Throw
             End Try
-        End Function
+        End Sub
     End Class
 End Namespace"
 
@@ -43,9 +43,9 @@ End Namespace"
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
-        Public Async Function Foo() As Task
+        Public Sub Foo()
             Dim a = ""A""
-        End Function
+        End Sub
     End Class
 End Namespace"
 
@@ -58,13 +58,13 @@ End Namespace"
 Imports System
 Namespace ConsoleApplication1
     Class TypeName
-        Public Async Function Foo() As Task
+        Public Sub Foo()
             Try
                 Dim a = ""A""
             Catch ex As Exception
                 Throw
             End Try
-        End Function
+        End Sub
     End Class
 End Namespace"
 
