@@ -117,7 +117,7 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
-        public async Task WhenCallExtensionMethodAsStaticMenthodShouldFixWithReturnStatement()
+        public async Task WhenCallExtensionMethodAsStaticMethodShouldFixWithReturnStatement()
         {
             const string source = @"
                     using System.Linq;
