@@ -77,9 +77,21 @@ namespace CodeCracker.CSharp.Design
             }
 
             if (IsTestMethod(method, methodSymbol)) return;
+            if (IsWebFormsMethod(methodSymbol)) return;
 
             var diagnostic = Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier.ValueText);
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static readonly string[] webFormsMethods = new string[] {
+            "Application_AuthenticateRequest", "Application_BeginRequest",
+            "Application_End", "Application_EndRequest",
+            "Application_Error", "Application_Start",
+            "Session_End", "Session_Start" };
+        private static bool IsWebFormsMethod(IMethodSymbol methodSymbol)
+        {
+            if (!webFormsMethods.Contains(methodSymbol.Name)) return false;
+            return (methodSymbol.ContainingType.AllBaseTypes().Any(t => t.ToString() == "System.Web.HttpApplication"));
         }
 
         private static bool IsTestMethod(MethodDeclarationSyntax method, IMethodSymbol methodSymbol)
