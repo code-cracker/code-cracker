@@ -666,5 +666,102 @@ class TypeName
             await VerifyCSharpDiagnosticAsync(source, CreateDiagnosticResult("out2", 4, 49));
         }
 
+        [Fact]
+        public async Task CallWithUnusedParameterExtensionMethodNoDiagnostic()
+        {
+            const string source = @"
+static class C
+{
+    private static void Bar()
+    {
+        """".Foo();
+    }
+    private static void Foo(this string s)
+    {
+        s += """";
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task CallWithUnusedParameterExtensionMethodCreateDiagnostic()
+        {
+            const string source = @"
+static class C
+{
+    private static void Bar()
+    {
+        """".Foo(1);
+    }
+    private static void Foo(this string s, int i)
+    {
+        s += """";
+    }
+}";
+            await VerifyCSharpDiagnosticAsync(source,CreateDiagnosticResult("i", 8, 44));
+        }
+
+        [Fact]
+        public async Task CallWithUnusedParameterExtensionMethodFix()
+        {
+            const string source = @"
+static class C
+{
+    private static void Bar()
+    {
+        """".Foo(1);
+    }
+    private static void Foo(this string s, int i)
+    {
+        s += """";
+    }
+}";
+
+            const string fixtest = @"
+static class C
+{
+    private static void Bar()
+    {
+        """".Foo();
+    }
+    private static void Foo(this string s)
+    {
+        s += """";
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task CallWithUnusedTwoParameterExtensionMethodFix()
+        {
+            const string source = @"
+static class C
+{
+    private static void Bar()
+    {
+        """".Foo(1,""a"");
+    }
+    private static void Foo(this string s, int i, string j)
+    {
+        s += i.ToString();
+    }
+}";
+
+            const string fixtest = @"
+static class C
+{
+    private static void Bar()
+    {
+        """".Foo(1);
+    }
+    private static void Foo(this string s, int i)
+    {
+        s += i.ToString();
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }
