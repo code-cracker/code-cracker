@@ -16,7 +16,7 @@ namespace CodeCracker.Test.CSharp.Usage
                 {
                     public void Dispose()
                     {
-                        GC.SuppressFinalize(this);
+                        System.GC.SuppressFinalize(this);
                     }
                 }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
@@ -62,6 +62,7 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task NoWarningIfClassImplementsDisposableCallsSuppressFinalizeAndCallsDisposeWithThis()
         {
             const string source = @"
+            using System;
             public class MyType : System.IDisposable
             {
                 public void Dispose()
@@ -78,6 +79,7 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task NoWarningIfClassImplementsDisposableCallsSuppressFinalize()
         {
             const string source = @"
+            using System;
             public class MyType : System.IDisposable
             {
                 public void Dispose()
@@ -331,7 +333,7 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
-        [Fact()]
+        [Fact]
         public async void AddsSystemGCWhenSystemIsNotImported()
         {
             const string source = @"
@@ -363,7 +365,7 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
-        [Fact()]
+        [Fact]
         public async void CallingSystemGCSupressFinalizeShouldNotGenerateDiags()
         {
             const string source = @"
@@ -382,5 +384,26 @@ namespace CodeCracker.Test.CSharp.Usage
 
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async void CallingGCSupressFinalizeWithAliasShouldNotGenerateDiags()
+        {
+            const string source = @"using A = System;
+                    public class MyType : System.IDisposable
+                    {
+                        void IDisposable.Dispose()
+                        {
+                            Dispose(true);
+                            A.GC.SuppressFinalize(this);
+                        }
+                        protected virtual void Dispose(bool disposing)
+                        {
+
+                        }
+                    }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
     }
 }
