@@ -1,8 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -28,44 +30,52 @@ namespace CodeCracker.CSharp.Usage
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context) =>
-            context.RegisterSymbolAction(Analyze, SymbolKind.NamedType);
+            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyze, SyntaxKind.MethodDeclaration);
 
-        private static void Analyze(SymbolAnalysisContext context)
+        private static void Analyze(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
-            var symbol = (INamedTypeSymbol)context.Symbol;
+
+            var semanticModel = context.SemanticModel;
+            var method = (MethodDeclarationSyntax)context.Node;
+
+            var methodSymbol = semanticModel.GetDeclaredSymbol(method);
+            var isImplicitDispose = methodSymbol.ToString().Contains($"{methodSymbol.ContainingType.Name}.Dispose(");
+            var isExplicitDispose =
+                methodSymbol.ExplicitInterfaceImplementations.Any(i => i.ToString() == "System.IDisposable.Dispose()");
+
+            if (!isImplicitDispose && !isExplicitDispose)
+                return;
+
+            if (methodSymbol.Parameters != null && methodSymbol.Parameters.Length > 0)
+                return;
+
+            var symbol = methodSymbol.ContainingType;
             if (symbol.TypeKind != TypeKind.Class) return;
             if (!symbol.Interfaces.Any(i => i.SpecialType == SpecialType.System_IDisposable)) return;
             if (symbol.IsSealed && !ContainsUserDefinedFinalizer(symbol)) return;
             if (!ContainsNonPrivateConstructors(symbol)) return;
-            var disposeMethod = FindDisposeMethod(symbol);
-            if (disposeMethod == null) return;
-            var syntaxTree = disposeMethod.DeclaringSyntaxReferences[0]?.GetSyntax();
 
-            var statements = ((MethodDeclarationSyntax)syntaxTree)?.Body?.Statements.OfType<ExpressionStatementSyntax>();
+            var statements = method.Body?.Statements.OfType<ExpressionStatementSyntax>();
             if (statements != null)
             {
                 foreach (var statement in statements)
                 {
                     var invocation = statement.Expression as InvocationExpressionSyntax;
-                    var method = invocation?.Expression as MemberAccessExpressionSyntax;
-                    var identifierSyntax = method?.Expression as IdentifierNameSyntax;
-                    if (identifierSyntax != null && identifierSyntax.Identifier.ToString() == "GC" && method.Name.ToString() == "SuppressFinalize")
+                    var suppress = invocation?.Expression as MemberAccessExpressionSyntax;
+
+                    if (suppress?.Name.ToString() != "SuppressFinalize")
+                        continue;
+
+                    var containingType = semanticModel.GetSymbolInfo(suppress.Expression).Symbol as INamedTypeSymbol;
+                    if (containingType?.ContainingNamespace.Name != "System")
+                        continue;
+
+                    if (containingType.Name == "GC")
                         return;
                 }
             }
-            context.ReportDiagnostic(Diagnostic.Create(Rule, disposeMethod.Locations[0], symbol.Name));
-        }
-
-        private static ISymbol FindDisposeMethod(INamedTypeSymbol symbol)
-        {
-            var disposeSymbol = symbol.GetMembers().Where(x =>
-                x.Kind == SymbolKind.Method
-                && (x.ToString().Contains($"{x.ContainingType.Name }.Dispose(")
-                || (((IMethodSymbol)x).ExplicitInterfaceImplementations.Any(i => i.ToString() == "System.IDisposable.Dispose()"))))
-                .Cast<IMethodSymbol>()
-                .FirstOrDefault(m => m.Parameters == null || m.Parameters.Length == 0);
-            return disposeSymbol;
+            context.ReportDiagnostic(Diagnostic.Create(Rule, methodSymbol.Locations[0], symbol.Name));
         }
 
         public static bool ContainsUserDefinedFinalizer(INamedTypeSymbol symbol)
@@ -83,7 +93,7 @@ namespace CodeCracker.CSharp.Usage
                 .Any(m => m.MetadataName == ".ctor" && m.DeclaredAccessibility != Accessibility.Private);
         }
 
-        private static bool IsNestedPrivateType(INamedTypeSymbol symbol)
+        private static bool IsNestedPrivateType(ISymbol symbol)
         {
             if (symbol == null)
                 return false;
