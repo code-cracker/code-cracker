@@ -49,16 +49,18 @@ namespace CodeCracker.CSharp.Usage
             if (memberExpresion?.Name?.ToString() != "Format") return;
             var memberSymbol = context.SemanticModel.GetSymbolInfo(memberExpresion).Symbol;
             if (memberSymbol == null) return;
-            if (!memberSymbol.ToString().StartsWith("string.Format(string, ")) return;
+            var memberSignature = memberSymbol.ToString();
+            if (!memberSignature.StartsWith("string.Format(string, ")) return;
             var argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
-            if (argumentList?.Arguments.Count < 2) return;
-            if (!argumentList.Arguments[0]?.Expression?.IsKind(SyntaxKind.StringLiteralExpression) ?? false) return;
-            if (memberSymbol.ToString() == "string.Format(string, params object[])" && argumentList.Arguments.Skip(1).Any(a => context.SemanticModel.GetTypeInfo(a.Expression).Type.TypeKind == TypeKind.Array)) return;
-            var formatLiteral = (LiteralExpressionSyntax)argumentList.Arguments[0].Expression;
+            if (argumentList == null) return;
+            var arguments = argumentList.Arguments;
+            if (!arguments[0]?.Expression?.IsKind(SyntaxKind.StringLiteralExpression) ?? false) return;
+            if (memberSignature == "string.Format(string, params object[])" && arguments.Count == 2 && context.SemanticModel.GetTypeInfo(arguments[1].Expression).Type.TypeKind == TypeKind.Array) return;
+            var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;
             var analyzingInterpolation = (InterpolatedStringExpressionSyntax)SyntaxFactory.ParseExpression($"${formatLiteral.Token.Text}");
             var allInterpolations = analyzingInterpolation.Contents.Where(c => c.IsKind(SyntaxKind.Interpolation)).Select(c => (InterpolationSyntax)c);
             var distinctInterpolations = allInterpolations.Select(c => c.Expression.ToString()).Distinct();
-            if (distinctInterpolations.Count() < argumentList.Arguments.Count - 1)
+            if (distinctInterpolations.Count() < arguments.Count - 1)
             {
                 var diag = Diagnostic.Create(ExtraArgs, invocationExpression.GetLocation());
                 context.ReportDiagnostic(diag);
@@ -70,7 +72,7 @@ namespace CodeCracker.CSharp.Usage
                 int argIndexReference;
                 if (int.TryParse(interpolation, out argIndexReference))
                 {
-                    validIndexReference = argIndexReference >= 0 && argIndexReference < argumentList.Arguments.Count - 1;
+                    validIndexReference = argIndexReference >= 0 && argIndexReference < arguments.Count - 1;
                 }
                 if (!validIndexReference)
                 {

@@ -79,6 +79,20 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async Task NoParametersCreatesError()
+        {
+            var source = @"var result = string.Format(""{0}"");".WrapInCSharpMethod();
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(),
+                Message = StringFormatArgsAnalyzer.InvalidArgsReferenceMessage,
+                Severity = DiagnosticSeverity.Error,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
         public async Task LessParametersCreatesError()
         {
             var source = @"var result = string.Format(""one {0} two {1}"", ""a"");".WrapInCSharpMethod();
