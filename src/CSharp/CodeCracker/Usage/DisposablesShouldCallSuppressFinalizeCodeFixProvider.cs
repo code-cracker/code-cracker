@@ -9,6 +9,7 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Simplification;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -40,35 +41,39 @@ namespace CodeCracker.CSharp.Usage
             var token = root.FindToken(startLocation);
             var method = token.Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-            var gc = IsThereUsingSystem(root)
-                ? (ExpressionSyntax) SyntaxFactory.IdentifierName("GC")
-                : SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    SyntaxFactory.IdentifierName("System"),
-                    SyntaxFactory.IdentifierName("GC")
-                    );
+            var systemGc = SyntaxFactory.MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                SyntaxFactory.IdentifierName("System"),
+                SyntaxFactory.IdentifierName("GC")
+                );
+
+            var suppressFinalize = SyntaxFactory.IdentifierName("SuppressFinalize");
+
+            var arguments = SyntaxFactory.ArgumentList()
+                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ThisExpression()));
+
+            var suppressFinalizeCall =
+                SyntaxFactory.ExpressionStatement(
+                    SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            systemGc,
+                            suppressFinalize
+                            ),
+                        arguments
+                        ))
+                    .WithAdditionalAnnotations(Simplifier.Annotation)
+                    .WithAdditionalAnnotations(Formatter.Annotation);
+                
+
+            var modifiedMethod = method.AddBodyStatements(
+                suppressFinalizeCall
+                );
+
 
             return document
-                .WithSyntaxRoot(root
-                .ReplaceNode(method, method.AddBodyStatements(
-                    SyntaxFactory.ExpressionStatement(
-                        SyntaxFactory.InvocationExpression(
-                            SyntaxFactory.MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                gc,
-                                SyntaxFactory.IdentifierName("SuppressFinalize")),
-                            SyntaxFactory.ArgumentList().AddArguments(
-                                SyntaxFactory.Argument(SyntaxFactory.ThisExpression())))))
-                    .WithAdditionalAnnotations(Formatter.Annotation)));
-        }
+                .WithSyntaxRoot(root.ReplaceNode(method, modifiedMethod));
 
-
-        public static bool IsThereUsingSystem(SyntaxNode root)
-        {
-            return root
-                .DescendantNodesAndSelf()
-                .OfType<UsingDirectiveSyntax>()
-                .Any(u => u.Name.ToString() == "System");
         }
     }
 }

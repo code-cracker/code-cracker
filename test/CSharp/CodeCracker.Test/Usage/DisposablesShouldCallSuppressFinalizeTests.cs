@@ -405,5 +405,43 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
+        [Fact]
+        public async void UseSystemGCWhenSystemNamespaceWasNotImportedInCurrentContext()
+        {
+            const string source = @"
+                    namespace A
+                    {
+                        using System;
+                    }
+                    namespace B
+                    {
+                        class Foo : System.IDisposable
+                        {
+                            public void Dispose()
+                            {
+                            }
+                        }
+                    }";
+
+            const string fixtest = @"
+                    namespace A
+                    {
+                        using System;
+                    }
+                    namespace B
+                    {
+                        class Foo : System.IDisposable
+                        {
+                            public void Dispose()
+                            {
+                                System.GC.SuppressFinalize(this);
+                            }
+                        }
+                    }";
+
+
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
     }
 }
