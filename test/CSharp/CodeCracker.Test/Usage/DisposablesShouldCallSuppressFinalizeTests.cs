@@ -331,7 +331,7 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
-        [Fact(Skip = "ToDo")]
+        [Fact()]
         public async void AddsSystemGCWhenSystemIsNotImported()
         {
             const string source = @"
@@ -361,6 +361,26 @@ namespace CodeCracker.Test.CSharp.Usage
                         }
                     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact()]
+        public async void CallingSystemGCSupressFinalizeShouldNotGenerateDiags()
+        {
+            const string source = @"
+                    public class MyType : System.IDisposable
+                    {
+                        void IDisposable.Dispose()
+                        {
+                            Dispose(true);
+                            System.GC.SuppressFinalize(this);
+                        }
+                        protected virtual void Dispose(bool disposing)
+                        {
+
+                        }
+                    }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }

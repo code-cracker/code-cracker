@@ -49,9 +49,15 @@ namespace CodeCracker.CSharp.Usage
                 {
                     var invocation = statement.Expression as InvocationExpressionSyntax;
                     var method = invocation?.Expression as MemberAccessExpressionSyntax;
-                    var identifierSyntax = method?.Expression as IdentifierNameSyntax;
-                    if (identifierSyntax != null && identifierSyntax.Identifier.ToString() == "GC" && method.Name.ToString() == "SuppressFinalize")
-                        return;
+                    if (method?.Name.ToString() == "SuppressFinalize")
+                    {
+                        var identifierSyntax = method?.Expression as IdentifierNameSyntax;
+                        if (identifierSyntax?.Identifier.ToString() == "GC")
+                            return;
+                        var simpleMemberAccess = method?.Expression as MemberAccessExpressionSyntax;
+                        if (simpleMemberAccess?.ToString() == "System.GC")
+                            return;
+                    }
                 }
             }
             context.ReportDiagnostic(Diagnostic.Create(Rule, disposeMethod.Locations[0], symbol.Name));
