@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Style
         private async static Task<Document> UseVarAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            
+
             var diagnosticSpan = diagnostic.Location.SourceSpan;
             var localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LocalDeclarationStatementSyntax>().First();
             var variableDeclaration = localDeclaration.Declaration;
@@ -46,7 +46,7 @@ namespace CodeCracker.CSharp.Style
             {
                 var originalVariable = variableDeclaration.Variables[i];
                 var newLeadingTrivia = originalVariable.GetLeadingTrivia();
-            
+
                 //Get the trivia from the separator as well
                 if (i != 0)
                 {

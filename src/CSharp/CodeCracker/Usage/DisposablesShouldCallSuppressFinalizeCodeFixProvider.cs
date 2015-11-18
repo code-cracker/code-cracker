@@ -9,6 +9,7 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Simplification;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -28,21 +29,51 @@ namespace CodeCracker.CSharp.Usage
             return Task.FromResult(0);
         }
 
-        private async static Task<Document> AddSuppressFinalizeAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private async static Task<Document> AddSuppressFinalizeAsync(
+            Document document,
+            Diagnostic diagnostic,
+            CancellationToken cancellationToken
+            )
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var method = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+
+            var startLocation = diagnostic.Location.SourceSpan.Start;
+            var token = root.FindToken(startLocation);
+            var method = token.Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+
+            var systemGc = SyntaxFactory.MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                SyntaxFactory.IdentifierName("System"),
+                SyntaxFactory.IdentifierName("GC")
+                );
+
+            var suppressFinalize = SyntaxFactory.IdentifierName("SuppressFinalize");
+
+            var arguments = SyntaxFactory.ArgumentList()
+                .AddArguments(SyntaxFactory.Argument(SyntaxFactory.ThisExpression()));
+
+            var suppressFinalizeCall =
+                SyntaxFactory.ExpressionStatement(
+                    SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            systemGc,
+                            suppressFinalize
+                            ),
+                        arguments
+                        ))
+                    .WithAdditionalAnnotations(Simplifier.Annotation)
+                    .WithAdditionalAnnotations(Formatter.Annotation);
+
+
+            var modifiedMethod = method.AddBodyStatements(
+                suppressFinalizeCall
+                );
+
+
             return document
-                .WithSyntaxRoot(root
-                .ReplaceNode(method, method.AddBodyStatements(
-                    SyntaxFactory.ExpressionStatement(
-                        SyntaxFactory.InvocationExpression(
-                            SyntaxFactory.MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                SyntaxFactory.IdentifierName("GC"),
-                                SyntaxFactory.IdentifierName("SuppressFinalize")),
-                            SyntaxFactory.ArgumentList().AddArguments(SyntaxFactory.Argument(SyntaxFactory.ThisExpression())))))
-                    .WithAdditionalAnnotations(Formatter.Annotation)));
+                .WithSyntaxRoot(root.ReplaceNode(method, modifiedMethod));
+
         }
     }
 }

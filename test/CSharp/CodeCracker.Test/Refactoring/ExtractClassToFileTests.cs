@@ -180,7 +180,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     class Bar2
                     {
                     }
-        
+
                     /// <summary>
                     /// test
                     /// </summary>
@@ -207,7 +207,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 using System.IO;
                 namespace Bar
                 {
-        
+
                     /// <summary>
                     /// test
                     /// </summary>
@@ -225,7 +225,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     }
                 }
             }";
-            await VerifyCSharpFixAsync(test, expected, 0, documentsCount: 2);
+            await VerifyCSharpFixAsync(test, expected, codeFixIndex: 0, documentsCount: 2, diagnosticIndex: 0);
         }
 
 
@@ -243,7 +243,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     class Bar2
                     {
                     }
-        
+
                     /// <summary>
                     /// test
                     /// </summary>
@@ -266,7 +266,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 using System.IO;
                 namespace Bar
                 {
-        
+
                     /// <summary>
                     /// test
                     /// </summary>

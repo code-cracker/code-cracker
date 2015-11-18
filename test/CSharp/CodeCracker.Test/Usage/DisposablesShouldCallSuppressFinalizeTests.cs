@@ -16,7 +16,7 @@ namespace CodeCracker.Test.CSharp.Usage
                 {
                     public void Dispose()
                     {
-                        GC.SuppressFinalize(this);
+                        System.GC.SuppressFinalize(this);
                     }
                 }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
@@ -27,10 +27,10 @@ namespace CodeCracker.Test.CSharp.Usage
         {
             const string test = @"
                 public struct MyType : System.IDisposable
-                { 
-                    public void Dispose() 
-                    { 
-                    } 
+                {
+                    public void Dispose()
+                    {
+                    }
                 }";
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
@@ -41,10 +41,10 @@ namespace CodeCracker.Test.CSharp.Usage
         {
             const string test = @"
                 public class MyType : System.IDisposable
-                { 
-                    public void Dispose() 
-                    { 
-                    } 
+                {
+                    public void Dispose()
+                    {
+                    }
                 }";
 
             var expected = new DiagnosticResult
@@ -62,6 +62,7 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task NoWarningIfClassImplementsDisposableCallsSuppressFinalizeAndCallsDisposeWithThis()
         {
             const string source = @"
+            using System;
             public class MyType : System.IDisposable
             {
                 public void Dispose()
@@ -78,6 +79,7 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task NoWarningIfClassImplementsDisposableCallsSuppressFinalize()
         {
             const string source = @"
+            using System;
             public class MyType : System.IDisposable
             {
                 public void Dispose()
@@ -95,13 +97,13 @@ namespace CodeCracker.Test.CSharp.Usage
         {
             const string test = @"
                 public class MyType : System.IDisposable
-                { 
-                    private MyType() 
+                {
+                    private MyType()
                     {
                     }
 
-                    public void Dispose() 
-                    { 
+                    public void Dispose()
+                    {
                     }
 
                     ~MyType() {}
@@ -118,9 +120,9 @@ namespace CodeCracker.Test.CSharp.Usage
                 public class MyType
                 {
                     private class MyNestedType : System.IDisposable
-                    { 
-                        public void Dispose() 
-                        { 
+                    {
+                        public void Dispose()
+                        {
                         }
 
                         ~MyType() {}
@@ -139,9 +141,9 @@ namespace CodeCracker.Test.CSharp.Usage
                     private class MyType
                     {
                         public class MyNestedType : System.IDisposable
-                        { 
-                            public void Dispose() 
-                            { 
+                        {
+                            public void Dispose()
+                            {
                             }
 
                             ~MyType() {}
@@ -157,7 +159,7 @@ namespace CodeCracker.Test.CSharp.Usage
         {
             const string test = @"
                 public struct MyType
-                { 
+                {
                 }";
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
@@ -168,10 +170,10 @@ namespace CodeCracker.Test.CSharp.Usage
         {
             const string test = @"
                 public sealed class MyType : System.IDisposable
-                { 
-                    public void Dispose() 
-                    { 
-                    } 
+                {
+                    public void Dispose()
+                    {
+                    }
                 }"
                 ;
 
@@ -183,12 +185,12 @@ namespace CodeCracker.Test.CSharp.Usage
         {
             const string test = @"
                 public sealed class MyType : System.IDisposable
-                { 
-                    public void Dispose() 
-                    { 
+                {
+                    public void Dispose()
+                    {
                     }
 
-                    ~MyType() {} 
+                    ~MyType() {}
                 }";
 
             var expected = new DiagnosticResult
@@ -206,8 +208,8 @@ namespace CodeCracker.Test.CSharp.Usage
         public async void NoWarningIfClassDoesNotImplementsIDisposable()
         {
             const string test = @"
-                public class MyType 
-                { 
+                public class MyType
+                {
                 }";
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
@@ -218,22 +220,22 @@ namespace CodeCracker.Test.CSharp.Usage
         public async void WhenClassImplementsIDisposableCallSuppressFinalize()
         {
             const string source = @"
+                    using System;
                     public class MyType : System.IDisposable
-                    { 
-                        public void Dispose() 
-                        { 
-                            var x = 123;
-                        } 
+                    {
+                        public void Dispose()
+                        {
+                        }
                     }";
 
             const string fixtest = @"
+                    using System;
                     public class MyType : System.IDisposable
-                    { 
-                        public void Dispose() 
-                        { 
-                            var x = 123;
+                    {
+                        public void Dispose()
+                        {
                             GC.SuppressFinalize(this);
-                        } 
+                        }
                     }";
 
             await VerifyCSharpFixAsync(source, fixtest, 0);
@@ -243,34 +245,31 @@ namespace CodeCracker.Test.CSharp.Usage
         public async void WhenClassHasParametrizedDisposeMethod()
         {
             const string source = @"
+                    using System;
                     public class MyType : System.IDisposable
-                    { 
-                        public void Dispose() 
-                        { 
+                    {
+                        public void Dispose()
+                        {
                             Dispose(true);
-                        } 
-
+                        }
                         protected virtual void Dispose(bool disposing)
                         {
-                            
                         }
                     }";
 
             const string fixtest = @"
+                    using System;
                     public class MyType : System.IDisposable
-                    { 
-                        public void Dispose() 
-                        { 
+                    {
+                        public void Dispose()
+                        {
                             Dispose(true);
                             GC.SuppressFinalize(this);
-                        } 
-
+                        }
                         protected virtual void Dispose(bool disposing)
                         {
-                            
                         }
                     }";
-
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
@@ -278,24 +277,23 @@ namespace CodeCracker.Test.CSharp.Usage
         public async void WhenClassExplicitImplementsOfIDisposableCallSuppressFinalize()
         {
             const string source = @"
-                    public class MyType : System.IDisposable
-                    { 
-                        public void IDisposable.Dispose() 
-                        { 
-                            var x = 123;
-                        } 
+                    using System;
+                    public class MyType : IDisposable
+                    {
+                        void IDisposable.Dispose()
+                        {
+                        }
                     }";
 
             const string fixtest = @"
-                    public class MyType : System.IDisposable
-                    { 
-                        public void IDisposable.Dispose() 
-                        { 
-                            var x = 123;
+                    using System;
+                    public class MyType : IDisposable
+                    {
+                        void IDisposable.Dispose()
+                        {
                             GC.SuppressFinalize(this);
-                        } 
+                        }
                     }";
-
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
@@ -303,35 +301,147 @@ namespace CodeCracker.Test.CSharp.Usage
         public async void WhenClassHasParametrizedDisposeMethodAndExplicitlyImplementsIDisposable()
         {
             const string source = @"
+                    using System;
                     public class MyType : System.IDisposable
-                    { 
-                        public void IDisposable.Dispose() 
-                        { 
+                    {
+                        void IDisposable.Dispose()
+                        {
                             Dispose(true);
-                        } 
+                        }
 
                         protected virtual void Dispose(bool disposing)
                         {
-                            
+
+                        }
+                    }";
+
+            const string fixtest = @"
+                    using System;
+                    public class MyType : System.IDisposable
+                    {
+                        void IDisposable.Dispose()
+                        {
+                            Dispose(true);
+                            GC.SuppressFinalize(this);
+                        }
+
+                        protected virtual void Dispose(bool disposing)
+                        {
+
+                        }
+                    }";
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async void AddsSystemGCWhenSystemIsNotImported()
+        {
+            const string source = @"
+                    public class MyType : System.IDisposable
+                    {
+                        void IDisposable.Dispose()
+                        {
+                            Dispose(true);
+                        }
+                        protected virtual void Dispose(bool disposing)
+                        {
+
                         }
                     }";
 
             const string fixtest = @"
                     public class MyType : System.IDisposable
-                    { 
-                        public void IDisposable.Dispose() 
-                        { 
+                    {
+                        void IDisposable.Dispose()
+                        {
                             Dispose(true);
-                            GC.SuppressFinalize(this);
-                        } 
-
+                            System.GC.SuppressFinalize(this);
+                        }
                         protected virtual void Dispose(bool disposing)
                         {
-                            
+
+                        }
+                    }";
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async void CallingSystemGCSupressFinalizeShouldNotGenerateDiags()
+        {
+            const string source = @"
+                    public class MyType : System.IDisposable
+                    {
+                        void IDisposable.Dispose()
+                        {
+                            Dispose(true);
+                            System.GC.SuppressFinalize(this);
+                        }
+                        protected virtual void Dispose(bool disposing)
+                        {
+
                         }
                     }";
 
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async void CallingGCSupressFinalizeWithAliasShouldNotGenerateDiags()
+        {
+            const string source = @"using A = System;
+                    public class MyType : System.IDisposable
+                    {
+                        void IDisposable.Dispose()
+                        {
+                            Dispose(true);
+                            A.GC.SuppressFinalize(this);
+                        }
+                        protected virtual void Dispose(bool disposing)
+                        {
+
+                        }
+                    }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async void UseSystemGCWhenSystemNamespaceWasNotImportedInCurrentContext()
+        {
+            const string source = @"
+                    namespace A
+                    {
+                        using System;
+                    }
+                    namespace B
+                    {
+                        class Foo : System.IDisposable
+                        {
+                            public void Dispose()
+                            {
+                            }
+                        }
+                    }";
+
+            const string fixtest = @"
+                    namespace A
+                    {
+                        using System;
+                    }
+                    namespace B
+                    {
+                        class Foo : System.IDisposable
+                        {
+                            public void Dispose()
+                            {
+                                System.GC.SuppressFinalize(this);
+                            }
+                        }
+                    }";
+
+
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
     }
 }

@@ -996,6 +996,25 @@ m.Dispose();".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
+        [Fact]
+        public async Task AfterFixCommentsArePreserved()
+        {
+
+            var source = @"
+// comment
+var mem = new System.IO.MemoryStream();
+var b = mem.ReadByte();
+".WrapInCSharpMethod();
+
+            var fixtest = @"
+// comment
+using (var mem = new System.IO.MemoryStream())
+{
+    var b = mem.ReadByte();
+}
+".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
 
         [Fact]
         public async Task ExplicitlyDisposedObjectDoesNotCreateDiagnostic()

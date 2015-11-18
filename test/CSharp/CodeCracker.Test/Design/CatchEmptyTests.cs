@@ -44,7 +44,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
         class TypeName
         {
-            public async Task Foo()
+            public void Foo()
             {
                 try
                 {
@@ -65,7 +65,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
         class TypeName
         {
-            public async Task Foo()
+            public void Foo()
             {
                 try
                 {
@@ -78,7 +78,7 @@ namespace CodeCracker.Test.CSharp.Design
             }
         }
     }";
-            await VerifyCSharpFixAsync(test, fixtest, 0);
+            await VerifyCSharpFixAsync(test, fixtest, 0, allowNewCompilerDiagnostics: true);
         }
     }
 }

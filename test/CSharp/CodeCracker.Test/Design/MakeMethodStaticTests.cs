@@ -123,7 +123,7 @@ static string i;")]
 #endregion")]
         [InlineData(@"
 ///<summary>Method summary</summary>
-void Foo() { }", 
+void Foo() { }",
             @"
 ///<summary>Method summary</summary>
 static void Foo() { }")]
@@ -539,6 +539,33 @@ void Bar()
                 nunitWithoutTestFixtureWithTestCaseAttributeAndOtherNonAttributedMethodsSource,
                 nunitWithoutTestFixtureWithTestCaseSourceAttributeAndOtherNonAttributedMethodsSource
             });
+        }
+
+        [Theory]
+        [InlineData(@"void Application_AuthenticateRequest() { }")]
+        [InlineData(@"void Application_BeginRequest() { }")]
+        [InlineData(@"void Application_End() { }")]
+        [InlineData(@"void Application_EndRequest() { }")]
+        [InlineData(@"void Application_Error() { }")]
+        [InlineData(@"void Application_Start(object sender, EventArgs e) { }")]
+        [InlineData(@"void Session_End() { }")]
+        [InlineData(@"void Session_Start() { }")]
+        public async Task IgnoreKnownWebFormsMethods(string code)
+        {
+            var source =  $@"
+    using System;
+    namespace System.Web
+    {{
+        public class HttpApplication {{ }}
+    }}
+    namespace MyWebApp1
+    {{
+        public class Global : System.Web.HttpApplication
+        {{
+            {code}
+        }}
+    }}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }

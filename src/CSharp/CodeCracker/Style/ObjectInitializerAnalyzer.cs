@@ -57,8 +57,9 @@ namespace CodeCracker.CSharp.Style
             if (assignmentExpression.Right.IsNotKind(SyntaxKind.ObjectCreationExpression)) return;
             if (((ObjectCreationExpressionSyntax)assignmentExpression.Right).Initializer?.IsKind(SyntaxKind.CollectionInitializerExpression) ?? false) return;
             var variableSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
-            var assignmentExpressions = FindAssignmentExpressions(semanticModel, expressionStatement, variableSymbol);
-            if (!assignmentExpressions.Any()) return;
+            var assignmentExpressionStatements = FindAssignmentExpressions(semanticModel, expressionStatement, variableSymbol);
+            if (!assignmentExpressionStatements.Any()) return;
+            if (HasAssignmentUsingDeclaredVariable(semanticModel, variableSymbol, assignmentExpressionStatements)) return;
             var diagnostic = Diagnostic.Create(RuleAssignment, expressionStatement.GetLocation(), "You can use initializers in here.");
             context.ReportDiagnostic(diagnostic);
         }

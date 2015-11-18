@@ -53,7 +53,7 @@
         ReadonlyField = 52,
         ValidateColor = 53,
         JsonNet = 54,
-        StringFormatArgs = 56,
+        StringFormatArgs_InvalidArgs = 56,
         UnusedParameters = 57,
         AbstractClassShouldNotHavePublicCtors = 60,
         TaskNameAsync = 61,
@@ -86,6 +86,7 @@
         ChangeCountMethodToProperty = 98,
         PreferAnyToCountGreaterThanZero = 99,
         NameOf_External = 108,
-        InconsistentParameterDefaultValue = 110
+        InconsistentParameterDefaultValue = 110,
+        StringFormatArgs_ExtraArgs = 111
     }
 }

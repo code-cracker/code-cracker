@@ -61,7 +61,7 @@ namespace CodeCracker.CSharp.Usage
                 var variableDeclarator = (VariableDeclaratorSyntax)objectCreation.Parent.Parent;
                 var variableDeclaration = (VariableDeclarationSyntax)variableDeclarator.Parent;
                 var statement = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
-                newRoot = CreateRootWithUsing(root, statement, u => u.WithDeclaration(variableDeclaration));
+                newRoot = CreateRootWithUsing(root, statement, u => u.WithDeclaration(variableDeclaration.WithoutLeadingTrivia()));
             }
             else if (objectCreation.Parent.IsKind(SyntaxKind.Argument))
             {
