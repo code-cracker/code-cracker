@@ -78,9 +78,9 @@ namespace CodeCracker.CSharp.Refactoring
             else if (statementInFor.IsKind(SyntaxKind.IfStatement))
             {
                 var ifStatement = (IfStatementSyntax)statementInFor;
-                var statementInIf = ifStatement.Statement.GetSingleStatementFromPossibleBlock();
+                var statementInIf = ifStatement.Statement.GetSingleStatementFromPossibleBlock() as ExpressionStatementSyntax;
                 if (statementInIf == null) return null;
-                return GetCollectionIdentifier((ExpressionStatementSyntax)statementInIf);
+                return GetCollectionIdentifier(statementInIf);
             }
             else return null;
         }
