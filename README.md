@@ -1,14 +1,14 @@
 # Code Cracker
 
-An analyzer library for C# and VB that uses [Roslyn](http://msdn.microsoft.com/en-us/vstudio/roslyn.aspx) to produce refactorings, code analysis, and other niceties.
+An analyzer library for C# and VB that uses [Roslyn](https://github.com/dotnet/roslyn) to produce refactorings, code analysis, and other niceties.
 
 Check the official project site on [code-cracker.github.io](http://code-cracker.github.io). There you will find information on how to contribute,
 our task board, definition of done, definition of ready, etc.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/h21sli3jkumuswyi?svg=true)](https://ci.appveyor.com/project/code-cracker/code-cracker)
-[![Nuget count](http://img.shields.io/nuget/v/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
-[![Nuget downloads](http://img.shields.io/nuget/dt/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
-[![Issues open](http://img.shields.io/github/issues-raw/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker/)
+[![Nuget count](https://img.shields.io/nuget/v/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
+[![Nuget downloads](https://img.shields.io/nuget/dt/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
+[![Issues open](https://img.shields.io/github/issues-raw/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker/)
 [![Coverage Status](https://img.shields.io/coveralls/code-cracker/code-cracker/master.svg)](https://coveralls.io/r/code-cracker/code-cracker?branch=master)
 [![Source Browser](https://img.shields.io/badge/Browse-Source-green.svg)](http://ccref.azurewebsites.net)
 
@@ -177,7 +177,7 @@ unless they are meaningful. For most analyzers and code fixes a single commit sh
 prefer to work with a lot commits at the end squash them.
 
 Make your first commit lines mean something, specially the first one.
-[Here](http://robots.thoughtbot.com/5-useful-tips-for-a-better-commit-message) and
+[Here](https://robots.thoughtbot.com/5-useful-tips-for-a-better-commit-message) and
 [here](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) are some tips on a good
 commit first line/message.
 
@@ -245,9 +245,9 @@ Small code changes or updates outside code files will eventually be made by the 
 
 ## Maintainers/Core team
 
-* [Giovanni Bassi](http://blog.lambda3.com.br/L3/giovannibassi/), aka Giggio, [Lambda3](http://www.lambda3.com.br), [@giovannibassi](http://twitter.com/giovannibassi)
-* [Elemar Jr.](http://elemarjr.net/), [Promob](http://promob.com/), [@elemarjr](http://twitter.com/elemarjr)
-* [Carlos dos Santos](http://carloscds.net/), [CDS Informática](http://www.cds-software.com.br/), [@cdssoftware](http://twitter.com/cdssoftware)
+* [Giovanni Bassi](http://blog.lambda3.com.br/L3/giovannibassi/), aka Giggio, [Lambda3](http://www.lambda3.com.br), [@giovannibassi](https://twitter.com/giovannibassi)
+* [Elemar Jr.](http://elemarjr.net/), [Promob](http://promob.com/), [@elemarjr](https://twitter.com/elemarjr)
+* [Carlos dos Santos](http://carloscds.net/), [CDS Informática](http://www.cds-software.com.br/), [@cdssoftware](https://twitter.com/cdssoftware)
 
 Contributors can be found at the [contributors](https://github.com/code-cracker/code-cracker/graphs/contributors) page on Github.
 
