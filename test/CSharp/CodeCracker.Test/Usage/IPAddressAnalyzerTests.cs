@@ -62,14 +62,14 @@ namespace ConsoleApplication1
         }
 
         [Fact]
-        public async Task IfParseIdentifierFoundAndParameterIsNotStringLiteralDoesNotCreatesDiagnostic() 
+        public async Task IfParseIdentifierFoundAndParameterIsNotStringLiteralDoesNotCreatesDiagnostic()
         {
             var test = string.Format(TestCode, @"var ip = ""; ""System.Net.IPAddress.Parse(ip)");
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
-        public async Task IfAbbreviateParseIdentifierFoundAndParameterIsNotStringLiteralDoesNotCreatesDiagnostic() 
+        public async Task IfAbbreviateParseIdentifierFoundAndParameterIsNotStringLiteralDoesNotCreatesDiagnostic()
         {
             var test = string.Format(TestCode, @"var ip = ""; ""IPAddress.Parse(ip)");
             await VerifyCSharpHasNoDiagnosticsAsync(test);

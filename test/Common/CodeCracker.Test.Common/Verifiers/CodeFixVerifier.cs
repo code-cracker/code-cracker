@@ -111,10 +111,9 @@ namespace CodeCracker.Test
 
                 if (!actions.Any()) break;
 
-                if (codeFixIndex != null)
-                    document = await ApplyFixAsync(document, actions.ElementAt((int)codeFixIndex)).ConfigureAwait(true);
-                else
-                    document = await ApplyFixAsync(document, actions.ElementAt(0)).ConfigureAwait(true);
+                document = codeFixIndex != null
+                    ? await ApplyFixAsync(document, actions.ElementAt((int)codeFixIndex)).ConfigureAwait(true)
+                    : await ApplyFixAsync(document, actions.ElementAt(0)).ConfigureAwait(true);
 
                 analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }).ConfigureAwait(true);
 
@@ -154,10 +153,9 @@ namespace CodeCracker.Test
 
                 if (!actions.Any()) break;
 
-                if (codeFixIndex != null)
-                    document = await ApplyFixAsync(document, actions.ElementAt((int)codeFixIndex)).ConfigureAwait(true);
-                else
-                    document = await ApplyFixAsync(document, actions.ElementAt(0)).ConfigureAwait(true);
+                document = codeFixIndex != null
+                    ? await ApplyFixAsync(document, actions.ElementAt((int)codeFixIndex)).ConfigureAwait(true)
+                    : await ApplyFixAsync(document, actions.ElementAt(0)).ConfigureAwait(true);
 
                 var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document).ConfigureAwait(true));
                 compilerDiagnostics = (await GetCompilerDiagnosticsAsync(document).ConfigureAwait(true)).ToList();

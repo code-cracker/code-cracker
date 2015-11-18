@@ -496,7 +496,7 @@ namespace ConsoleApplication1
         [Fact]
         public async Task FixPropIntoAutoPropAndFixKeepingXMLComments()
         {
-            var source = @"
+            const string source = @"
         public class Foo
         {
             private int x = 10;
@@ -510,7 +510,7 @@ namespace ConsoleApplication1
             }
         }";
 
-            var expected = @"
+            const string expected = @"
         public class Foo
         {
             /// <summary>
