@@ -49,7 +49,7 @@
         SimplifyRedundantBooleanComparisons = 49,
         ReadonlyField = 52,
         JsonNet = 54,
-        StringFormatArgs = 56,
+        StringFormatArgs_InvalidArgs = 56,
         UnusedParameters = 57,
         AbstractClassShouldNotHavePublicCtors = 60,
         TaskNameAsync = 61,
@@ -78,5 +78,6 @@
         ChangeAllToAny = 92,
         ConsoleWriteLine = 95,
         NameOf_External = 108,
+        StringFormatArgs_ExtraArgs = 111,
     }
 }

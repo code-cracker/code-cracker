@@ -9,12 +9,18 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CodeCracker.Properties;
 
 namespace CodeCracker.CSharp.Design
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(EmptyCatchBlockCodeFixProvider)), Shared]
     public class EmptyCatchBlockCodeFixProvider : CodeFixProvider
     {
+        internal static readonly LocalizableString FixRemoveEmptyCatchBlock = new LocalizableResourceString(nameof(Resources.EmptyCatchBlockCodeFixProvider_Remove), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString FixRemoveEmptyCatchBlockAndPutDocumentationLink = new LocalizableResourceString(nameof(Resources.EmptyCatchBlockCodeFixProvider_RemoveAndDocumentation), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString FixInsertExceptionClass = new LocalizableResourceString(nameof(Resources.EmptyCatchBlockCodeFixProvider_InsertException), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString FixRemoveTry = new LocalizableResourceString(nameof(Resources.EmptyCatchBlockCodeFixProvider_RemoveTry), Resources.ResourceManager, typeof(Resources));
+
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.EmptyCatchBlock.ToDiagnosticId());
 
@@ -30,14 +36,14 @@ namespace CodeCracker.CSharp.Design
 
             if (tryStatement.Catches.Count > 1)
             {
-                context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", c => RemoveEmptyCatchBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(FixRemoveEmptyCatchBlock.ToString(), c => RemoveEmptyCatchBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
             }
             else
             {
-                context.RegisterCodeFix(CodeAction.Create("Remove Empty Try Block", c => RemoveEmptyTryBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
-                context.RegisterCodeFix(CodeAction.Create("Remove Empty Try Block and Put a Documentation Link about Try...Catch use", c => RemoveEmptyCatchBlockPutCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockPutCommentAsync)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(FixRemoveTry.ToString(), c => RemoveEmptyTryBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(FixRemoveEmptyCatchBlockAndPutDocumentationLink.ToString(), c => RemoveEmptyCatchBlockPutCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockPutCommentAsync)), diagnostic);
             }
-            context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", c => InsertExceptionClassCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(InsertExceptionClassCommentAsync)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(FixInsertExceptionClass.ToString(), c => InsertExceptionClassCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(InsertExceptionClassCommentAsync)), diagnostic);
         }
 
         private async static Task<Document> RemoveEmptyTryBlockAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>

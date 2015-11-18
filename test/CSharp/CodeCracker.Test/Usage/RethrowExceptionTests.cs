@@ -12,7 +12,7 @@ namespace CodeCracker.Test.CSharp.Usage
     {
         class TypeName
         {
-            public async Task Foo()
+            public void Foo()
             {
                 try { }
                 catch (System.Exception ex)
@@ -48,7 +48,7 @@ namespace CodeCracker.Test.CSharp.Usage
     {
         class TypeName
         {
-            public async Task Foo()
+            public void Foo()
             {
                 try { }
                 catch (System.Exception ex)
@@ -70,7 +70,7 @@ namespace CodeCracker.Test.CSharp.Usage
     {
         class TypeName
         {
-            public async Task Foo()
+            public void Foo()
             {
                 try { }
                 catch (System.Exception ex)
@@ -80,7 +80,7 @@ namespace CodeCracker.Test.CSharp.Usage
             }
         }
     }";
-            await VerifyCSharpFixAsync(sourceWithUsingSystem, fixtest, 1);
+            await VerifyCSharpFixAsync(sourceWithUsingSystem, fixtest, 1, allowNewCompilerDiagnostics: true);
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace CodeCracker.Test.CSharp.Usage
     {
         class TypeName
         {
-            public async Task Foo()
+            public void Foo()
             {
                 try { }
                 catch (System.Exception ex)

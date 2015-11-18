@@ -46,6 +46,7 @@ namespace CodeCracker.CSharp.Usage
             var solution = document.Project.Solution;
             var parameterList = (ParameterListSyntax)parameter.Parent;
             var parameterPosition = parameterList.Parameters.IndexOf(parameter);
+            if (parameterList.Parameters.First().ToString().Contains("this")) parameterPosition--;
             var newParameterList = parameterList.WithParameters(parameterList.Parameters.Remove(parameter));
             var foundDocument = false;
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);

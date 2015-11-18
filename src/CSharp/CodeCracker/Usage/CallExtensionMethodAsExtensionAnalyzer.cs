@@ -6,7 +6,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -52,28 +51,17 @@ namespace CodeCracker.CSharp.Usage
             var methodSymbol = GetCallerMethodSymbol(context.SemanticModel, methodCaller.Name, argumentsCount);
             if (methodSymbol == null || !methodSymbol.IsExtensionMethod) return;
             if (ContainsDynamicArgument(context.SemanticModel, childNodes)) return;
-            ExpressionSyntax invocationStatement;
-            if (methodInvokeSyntax.Parent.IsNotKind(SyntaxKind.ArrowExpressionClause))
-            {
-                invocationStatement = (methodInvokeSyntax.FirstAncestorOrSelfThatIsAStatement() as ExpressionStatementSyntax).Expression;
-            }
-            else
-            {
-                invocationStatement = methodInvokeSyntax.FirstAncestorOrSelfOfType<ArrowExpressionClauseSyntax>().Expression;
-            }
-            if (invocationStatement == null) return;
-            if (IsSelectingADifferentMethod(childNodes, methodCaller.Name, context.Node.SyntaxTree, methodSymbol, invocationStatement, compilation)) return;
+            if (IsSelectingADifferentMethod(childNodes, methodCaller.Name, context.Node.SyntaxTree, methodSymbol, methodInvokeSyntax, compilation)) return;
             context.ReportDiagnostic(Diagnostic.Create(Rule, methodCaller.GetLocation(), methodSymbol.Name, classSymbol.Name));
         }
 
         private static bool IsSelectingADifferentMethod(IEnumerable<SyntaxNode> childNodes, SimpleNameSyntax methodName, SyntaxTree tree, IMethodSymbol methodSymbol, ExpressionSyntax invocationExpression, Compilation compilation)
         {
-            var parameterExpressions = CallExtensionMethodAsExtensionCodeFixProvider.GetParameterExpressions(childNodes);
+            var parameterExpressions = GetParameterExpressions(childNodes);
             var firstArgument = parameterExpressions.FirstOrDefault();
-            var argumentList = CallExtensionMethodAsExtensionCodeFixProvider.CreateArgumentListSyntaxFrom(parameterExpressions.Skip(1));
-            var newInvocationStatement =
-                CallExtensionMethodAsExtensionCodeFixProvider.CreateInvocationExpression(
-                    firstArgument, methodName, argumentList).WithAdditionalAnnotations(introduceExtensionMethodAnnotation);
+            var argumentList = CreateArgumentListSyntaxFrom(parameterExpressions.Skip(1));
+            var newInvocationStatement = CreateInvocationExpression(firstArgument, methodName, argumentList)
+                .WithAdditionalAnnotations(introduceExtensionMethodAnnotation);
             var extensionMethodNamespaceUsingDirective = SyntaxFactory.UsingDirective(methodSymbol.ContainingNamespace.ToNameSyntax());
             var speculativeRootWithExtensionMethod = tree.GetCompilationUnitRoot()
                 .ReplaceNode(invocationExpression, newInvocationStatement)
@@ -107,5 +95,19 @@ namespace CodeCracker.CSharp.Usage
                 .OfType<ArgumentListSyntax>()
                 .SelectMany(s => s.Arguments)
                 .Any(a => sm.GetTypeInfo(a.Expression).Type?.Name == "dynamic");
+
+        public static IEnumerable<ExpressionSyntax> GetParameterExpressions(IEnumerable<SyntaxNode> childNodes) =>
+            childNodes.OfType<ArgumentListSyntax>().SelectMany(s => s.Arguments).Select(s => s.Expression);
+
+        public static ArgumentListSyntax CreateArgumentListSyntaxFrom(IEnumerable<ExpressionSyntax> expressions) =>
+            SyntaxFactory.ArgumentList().AddArguments(expressions.Select(s => SyntaxFactory.Argument(s)).ToArray());
+
+        public static InvocationExpressionSyntax CreateInvocationExpression(ExpressionSyntax sourceExpression, SimpleNameSyntax methodName, ArgumentListSyntax argumentList) =>
+            SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                sourceExpression,
+                methodName),
+                argumentList);
     }
 }

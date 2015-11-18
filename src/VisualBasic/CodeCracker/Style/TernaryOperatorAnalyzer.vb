@@ -55,6 +55,10 @@ Namespace Style
             If ifStatement Is Nothing Then Exit Sub
             Dim ifBlock = TryCast(ifStatement.Parent, MultiLineIfBlockSyntax)
             If ifBlock Is Nothing Then Exit Sub
+
+            ' Can't handle elseif clauses in ternary conditional
+            If ifBlock.ElseIfBlocks.Any() Then Exit Sub
+
             If ifBlock.ElseBlock Is Nothing Then Exit Sub
             If ifBlock.Statements.Count <> 1 OrElse ifBlock.ElseBlock.Statements.Count <> 1 Then Exit Sub
 

@@ -98,6 +98,69 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An empty catch block suppress all errors and shouldn&apos;t be used.\r\nIf the error is expected consider logging it or changing the control flow such that it is explicit..
+        /// </summary>
+        public static string EmptyCatchBlockAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("EmptyCatchBlockAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Empty Catch Block..
+        /// </summary>
+        public static string EmptyCatchBlockAnalyzer_Message {
+            get {
+                return ResourceManager.GetString("EmptyCatchBlockAnalyzer_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Catch block cannot be empty.
+        /// </summary>
+        public static string EmptyCatchBlockAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("EmptyCatchBlockAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert Exception class to Catch.
+        /// </summary>
+        public static string EmptyCatchBlockCodeFixProvider_InsertException {
+            get {
+                return ResourceManager.GetString("EmptyCatchBlockCodeFixProvider_InsertException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove Empty Catch Block.
+        /// </summary>
+        public static string EmptyCatchBlockCodeFixProvider_Remove {
+            get {
+                return ResourceManager.GetString("EmptyCatchBlockCodeFixProvider_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove Empty Catch Block and Put a Documentation Link about Try...Catch use.
+        /// </summary>
+        public static string EmptyCatchBlockCodeFixProvider_RemoveAndDocumentation {
+            get {
+                return ResourceManager.GetString("EmptyCatchBlockCodeFixProvider_RemoveAndDocumentation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove wrapping Try Block.
+        /// </summary>
+        public static string EmptyCatchBlockCodeFixProvider_RemoveTry {
+            get {
+                return ResourceManager.GetString("EmptyCatchBlockCodeFixProvider_RemoveTry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change field type &apos;{0}&apos; accessibility to be as accessible as field &apos;{1}&apos;.
         /// </summary>
         public static string InconsistentAccessibilityInFieldType_Title {

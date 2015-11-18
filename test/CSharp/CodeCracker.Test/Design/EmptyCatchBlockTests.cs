@@ -8,6 +8,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
         readonly string test = @"
     using System;
+    using System.Threading.Tasks;
 
     namespace ConsoleApplication1
     {
@@ -57,6 +58,7 @@ namespace CodeCracker.Test.CSharp.Design
 
             const string fixtest = @"
     using System;
+    using System.Threading.Tasks;
 
     namespace ConsoleApplication1
     {
@@ -70,7 +72,7 @@ namespace CodeCracker.Test.CSharp.Design
             }
         }
     }";
-            await VerifyCSharpFixAsync(test, fixtest, 0,false,true);
+            await VerifyCSharpFixAsync(test, fixtest, 0, allowNewCompilerDiagnostics: false, formatBeforeCompare: true);
         }
 
         [Fact]
@@ -78,6 +80,7 @@ namespace CodeCracker.Test.CSharp.Design
         {
             const string fixtest = @"
     using System;
+    using System.Threading.Tasks;
 
     namespace ConsoleApplication1
     {
@@ -93,7 +96,7 @@ namespace CodeCracker.Test.CSharp.Design
         }
     }";
 
-            await VerifyCSharpFixAsync(test, fixtest, 1, false, true);
+            await VerifyCSharpFixAsync(test, fixtest, 1, allowNewCompilerDiagnostics: false, formatBeforeCompare: true);
         }
 
         [Fact]
@@ -101,6 +104,7 @@ namespace CodeCracker.Test.CSharp.Design
         {
             const string fixtest = @"
     using System;
+    using System.Threading.Tasks;
 
     namespace ConsoleApplication1
     {
@@ -119,8 +123,7 @@ namespace CodeCracker.Test.CSharp.Design
             }
         }
     }";
-
-            await VerifyCSharpFixAsync(test, fixtest, 2, false, true);
+            await VerifyCSharpFixAsync(test, fixtest, 2, allowNewCompilerDiagnostics: true, formatBeforeCompare: true);
         }
 
 
@@ -136,6 +139,7 @@ namespace ConsoleApplication1
     {
         public async Task Foo()
         {
+            int x;
             try
             {
                 // do something
@@ -145,7 +149,7 @@ namespace ConsoleApplication1
             }
             catch (System.Exception ex)
             {
-                int x = 0;
+                x = 1;
             }
         }
     }
@@ -160,13 +164,14 @@ namespace ConsoleApplication1
     {
         public async Task Foo()
         {
+            int x;
             try
             {
                 // do something
             }
             catch (System.Exception ex)
             {
-                int x = 0;
+                x = 1;
             }
         }
     }
