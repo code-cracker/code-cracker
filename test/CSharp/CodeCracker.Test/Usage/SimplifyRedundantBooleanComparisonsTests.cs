@@ -111,7 +111,7 @@ namespace CodeCracker.Test.CSharp.Usage
 struct ProjectCompilation {}
 class Foo
 {
-    public void Comp(bool obj)
+    public bool Comp(bool obj)
     {
         if (obj is ProjectCompilation == false) return false;
     }
@@ -121,7 +121,7 @@ class Foo
 struct ProjectCompilation {}
 class Foo
 {
-    public void Comp(bool obj)
+    public bool Comp(bool obj)
     {
         if (!(obj is ProjectCompilation)) return false;
     }
