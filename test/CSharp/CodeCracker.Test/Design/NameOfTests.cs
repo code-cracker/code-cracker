@@ -417,12 +417,13 @@ namespace N1.N2
 
             public @class() : base(""SomeDelegate"") { }
 
-            void Foo3(string a)
+            void Foo3(string a, BaseTypeName d)
             {
                 Dictionary<string, string> dict = new Dictionary<string, string>
                 {
                     { ""b"", ""readonlyField"" },
-                    { ""xyz"", ""ParticularEvent"" }
+                    { ""xyz"", ""ParticularEvent"" },
+                    { ""c"", ""Foo3""},
                 };
             }
 
@@ -452,7 +453,8 @@ lines"";
                 CreateNameofDiagnosticResult("readonlyField", 27, 49),
                 CreateNameofDiagnosticResult("SomeDelegate", 29, 36),
                 CreateNameofDiagnosticResult("readonlyField", 35, 28),
-                CreateNameofDiagnosticResult("ParticularEvent", 36, 30)
+                CreateNameofDiagnosticResult("ParticularEvent", 36, 30),
+                CreateNameofDiagnosticResult("Foo3", 37, 28)
             };
 
             await VerifyCSharpDiagnosticAsync(source, expected);
