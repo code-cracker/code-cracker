@@ -114,6 +114,7 @@ class Foo
     public bool Comp(bool obj)
     {
         if (obj is ProjectCompilation == false) return false;
+        return true;
     }
 }";
 
@@ -124,6 +125,7 @@ class Foo
     public bool Comp(bool obj)
     {
         if (!(obj is ProjectCompilation)) return false;
+        return true;
     }
 }";
             await VerifyCSharpFixAsync(test, fixtest);
