@@ -1,14 +1,14 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using System.Composition;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using System.Collections.Immutable;
-using System.Composition;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -31,7 +31,11 @@ namespace CodeCracker.CSharp.Usage
         private static async Task<Document> RemoveRedundantComparisonAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var comparison = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<BinaryExpressionSyntax>().First();
+            var comparison = root.FindToken(diagnostic.Location.SourceSpan.Start)
+                .Parent.AncestorsAndSelf()
+                .OfType<BinaryExpressionSyntax>()
+                .First(bes => !bes.IsKind(SyntaxKind.IsExpression));
+
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             bool constValue;
             ExpressionSyntax replacer;
@@ -49,9 +53,19 @@ namespace CodeCracker.CSharp.Usage
             }
 
 
-            if ((!constValue && comparison.IsKind(SyntaxKind.EqualsExpression)) || (constValue && comparison.IsKind(SyntaxKind.NotEqualsExpression)))
+            if ((!constValue && comparison.IsKind(SyntaxKind.EqualsExpression)) ||
+                (constValue && comparison.IsKind(SyntaxKind.NotEqualsExpression)))
+            {
+                if (comparison.Left is BinaryExpressionSyntax)
+                {
+                    replacer = SyntaxFactory.ParenthesizedExpression(replacer);
+                }
                 replacer = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, replacer);
-            replacer = replacer.WithAdditionalAnnotations(Formatter.Annotation);
+            }
+
+            replacer = replacer
+                .WithAdditionalAnnotations(Formatter.Annotation);
+            
 
             var newRoot = root.ReplaceNode(comparison, replacer);
             var newDocument = document.WithSyntaxRoot(newRoot);
