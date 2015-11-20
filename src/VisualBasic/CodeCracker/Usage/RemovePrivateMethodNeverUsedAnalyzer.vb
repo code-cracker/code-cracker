@@ -39,7 +39,8 @@ Namespace Usage
             If methodStatement.HandlesClause IsNot Nothing Then Exit Sub
             If Not methodStatement.Modifiers.Any(Function(a) a.ValueText = SyntaxFactory.Token(SyntaxKind.PrivateKeyword).ValueText) Then Exit Sub
             If IsMethodUsed(methodStatement, context.SemanticModel) Then Exit Sub
-            Dim diag = Diagnostic.Create(Rule, methodStatement.GetLocation())
+            Dim props = New Dictionary(Of String, String) From {{"identifier", methodStatement.Identifier.Text}}.ToImmutableDictionary()
+            Dim diag = Diagnostic.Create(Rule, methodStatement.GetLocation(), props)
             context.ReportDiagnostic(diag)
         End Sub
 

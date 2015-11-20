@@ -18,19 +18,20 @@ Namespace Design
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diag = context.Diagnostics.First
-            Dim diagSpan = diag.Location.SourceSpan
-            Dim declaration = root.FindToken(diagSpan.Start).Parent.AncestorsAndSelf.OfType(Of CatchBlockSyntax).First
-            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", Function(c) RemoveTry(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(RemoveTry)), diag)
-            context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", Function(c) InsertExceptionClassCommentAsync(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(InsertExceptionClassCommentAsync)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", Function(c) RemoveTry(context.Document, diag, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(RemoveTry)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", Function(c) InsertExceptionClassCommentAsync(context.Document, diag, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(InsertExceptionClassCommentAsync)), diag)
+            Return Task.FromResult(0)
         End Function
 
-        Private Async Function RemoveTry(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+        Private Async Function RemoveTry(document As Document, diag As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim diagSpan = diag.Location.SourceSpan
+            Dim catchBlock = root.FindToken(diagSpan.Start).Parent.FirstAncestorOrSelfOfType(Of CatchBlockSyntax)
+
             Dim tryBlock = DirectCast(catchBlock.Parent, TryBlockSyntax)
             Dim statements = tryBlock.Statements
-            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
 
             Dim newRoot = root.ReplaceNode(catchBlock.Parent,
                                        statements.Select(Function(s) s.
@@ -41,7 +42,11 @@ Namespace Design
             Return newDocument
         End Function
 
-        Private Async Function InsertExceptionClassCommentAsync(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+        Private Async Function InsertExceptionClassCommentAsync(document As Document, diag As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim diagSpan = diag.Location.SourceSpan
+            Dim catchBlock = root.FindToken(diagSpan.Start).Parent.FirstAncestorOrSelfOfType(Of CatchBlockSyntax)
+
             Dim statements = New SyntaxList(Of SyntaxNode)().Add(SyntaxFactory.ThrowStatement())
 
             Dim catchStatement = SyntaxFactory.CatchStatement(
@@ -54,7 +59,6 @@ Namespace Design
             WithTrailingTrivia(catchBlock.GetTrailingTrivia).
             WithAdditionalAnnotations(Formatter.Annotation)
 
-            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
             Dim newRoot = root.ReplaceNode(catchBlock, catchClause)
             Dim newDocument = document.WithSyntaxRoot(newRoot)
             Return newDocument

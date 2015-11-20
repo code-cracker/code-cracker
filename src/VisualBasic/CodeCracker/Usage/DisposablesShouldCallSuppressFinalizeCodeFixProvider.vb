@@ -12,12 +12,10 @@ Namespace Usage
     Public Class DisposablesShouldCallSuppressFinalizeCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First
-            Dim span = diagnostic.Location.SourceSpan
-            Dim method = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MethodBlockSyntax)()
-            context.RegisterCodeFix(CodeAction.Create("Call GC.SuppressFinalize", Function(ct) AddSuppressFinalizeAsync(context.Document, method, ct), NameOf(DisposablesShouldCallSuppressFinalizeCodeFixProvider)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Call GC.SuppressFinalize", Function(ct) AddSuppressFinalizeAsync(context.Document, diagnostic, ct), NameOf(DisposablesShouldCallSuppressFinalizeCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
         End Function
 
         Public NotOverridable Overrides Function GetFixAllProvider() As FixAllProvider
@@ -26,7 +24,11 @@ Namespace Usage
 
         Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId())
 
-        Public Async Function AddSuppressFinalizeAsync(document As Document, method As MethodBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+        Public Async Function AddSuppressFinalizeAsync(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim span = diagnostic.Location.SourceSpan
+            Dim method = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MethodBlockSyntax)()
+
             Dim suppressInvocation =
                     SyntaxFactory.ExpressionStatement(
                         SyntaxFactory.InvocationExpression(
