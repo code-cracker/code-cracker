@@ -14,16 +14,13 @@ Namespace Usage
     Public Class DisposableFieldNotDisposedCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First
-            Dim span = diagnostic.Location.SourceSpan
-            Dim variableDeclarator = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of VariableDeclaratorSyntax)()
-            context.RegisterCodeFix(CodeAction.Create("Dispose field '" & variableDeclarator.Names.First().ToString(),
-                                              Function(c) DisposeField(context.Document, variableDeclarator, c),
+            context.RegisterCodeFix(CodeAction.Create($"Dispose field '{diagnostic.Properties!variableIdentifier}",
+                                              Function(c) DisposeField(context.Document, diagnostic, c),
                                               NameOf(DisposableFieldNotDisposedCodeFixProvider)),
                             diagnostic)
-
+            Return Task.FromResult(0)
         End Function
 
         Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(), DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId())
@@ -32,13 +29,16 @@ Namespace Usage
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Private Async Function DisposeField(document As Document, variableDeclarator As VariableDeclaratorSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+        Private Async Function DisposeField(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim span = diagnostic.Location.SourceSpan
+            Dim variableDeclarator = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of VariableDeclaratorSyntax)()
+
             Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
             Dim type = variableDeclarator.FirstAncestorOrSelf(Of ClassBlockSyntax)
             Dim typeSymbol = semanticModel.GetDeclaredSymbol(type)
             Dim newTypeImplementingIDisposable = AddIDisposableImplementationToType(type, typeSymbol)
             Dim newTypeWithDisposeMethod = AddDisposeDeclarationToDisposeMethod(variableDeclarator, newTypeImplementingIDisposable, typeSymbol)
-            Dim root = Await document.GetSyntaxRootAsync()
             Dim newRoot = root.ReplaceNode(type, newTypeWithDisposeMethod)
             Dim newDocument = document.WithSyntaxRoot(newRoot)
             Return newDocument

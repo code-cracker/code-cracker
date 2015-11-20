@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Immutable
+Imports System.Threading
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeActions
 Imports Microsoft.CodeAnalysis.CodeFixes
@@ -17,11 +18,15 @@ Namespace Reliability
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public NotOverridable Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
+        Public NotOverridable Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First()
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+            context.RegisterCodeFix(CodeAction.Create("Use ConfigureAwait(False)", Function(c) CreateUseConfigureAwaitAsync(context.Document, diagnostic, c), NameOf(UseConfigureAwaitFalseCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
+        End Function
+        Private Shared Async Function CreateUseConfigureAwaitAsync(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
             Dim awaitExpression = root.FindNode(diagnostic.Location.SourceSpan).ChildNodes.OfType(Of AwaitExpressionSyntax).FirstOrDefault()
-            If awaitExpression Is Nothing Then Exit Function
+            If awaitExpression Is Nothing Then Return document
 
             Dim newExpression = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
@@ -35,12 +40,8 @@ Namespace Reliability
                 WithTrailingTrivia(awaitExpression.Expression.GetTrailingTrivia()).
                 WithAdditionalAnnotations(Formatter.Annotation)
             Dim newRoot = root.ReplaceNode(awaitExpression.Expression, newExpression)
-            Dim newDocument = context.Document.WithSyntaxRoot(newRoot)
-            context.RegisterCodeFix(CodeAction.Create("Use ConfigureAwait(False)",
-                                                      Function(ct)
-                                                          Return Task.FromResult(newDocument)
-                                                      End Function,
-                                                      NameOf(UseConfigureAwaitFalseCodeFixProvider)), diagnostic)
+            Dim newDocument = document.WithSyntaxRoot(newRoot)
+            Return newDocument
         End Function
     End Class
 End Namespace

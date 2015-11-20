@@ -11,13 +11,10 @@ Namespace Usage
     Public Class MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diag = context.Diagnostics.First()
-            Dim span = diag.Location.SourceSpan
-
-            Dim constructor = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of SubNewStatementSyntax)
-            context.RegisterCodeFix(CodeAction.Create("Use 'Protected' in stead of 'Public'", Function(c) ReplacePublicWithProtectedAsync(context.Document, constructor, c), NameOf(MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Use 'Friend' instead of 'Public'", Function(c) ReplacePublicWithProtectedAsync(context.Document, diag, c), NameOf(MustInheritClassShouldNotHavePublicConstructorsCodeFixProvider)), diag)
+            Return Task.FromResult(0)
         End Function
 
 
@@ -27,13 +24,17 @@ Namespace Usage
 
         Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId())
 
-        Private Async Function ReplacePublicWithProtectedAsync(document As Document, constructor As SubNewStatementSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+        Private Async Function ReplacePublicWithProtectedAsync(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim span = diagnostic.Location.SourceSpan
+
+            Dim constructor = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of SubNewStatementSyntax)
+
             Dim [public] = constructor.Modifiers.First(Function(m) m.IsKind(SyntaxKind.PublicKeyword))
             Dim [protected] = SyntaxFactory.Token([public].LeadingTrivia, SyntaxKind.ProtectedKeyword, [public].TrailingTrivia)
 
             Dim newModifiers = constructor.Modifiers.Replace([public], [protected])
             Dim newConstructor = constructor.WithModifiers(newModifiers)
-            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
             Dim newRoot = root.ReplaceNode(constructor, newConstructor)
             Dim newDocumnent = document.WithSyntaxRoot(newRoot)
             Return newDocumnent

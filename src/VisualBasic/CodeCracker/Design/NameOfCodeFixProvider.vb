@@ -1,4 +1,5 @@
-﻿Imports System.Collections.Immutable
+﻿Imports CodeCracker.Properties
+Imports System.Collections.Immutable
 Imports System.Threading
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.CodeActions
@@ -18,24 +19,24 @@ Namespace Design
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First
-            Dim diagnosticspan = diagnostic.Location.SourceSpan
-            Dim stringLiteral = root.FindToken(diagnosticspan.Start).Parent.AncestorsAndSelf.OfType(Of LiteralExpressionSyntax).FirstOrDefault
-            If stringLiteral IsNot Nothing Then
-                context.RegisterCodeFix(CodeAction.Create("use NameOf()", Function(c) MakeNameOf(context.Document, stringLiteral, root), NameOf(NameOfCodeFixProvider)), diagnostic)
-            End If
+            context.RegisterCodeFix(CodeAction.Create(Resources.NameOfAnalyzer_Title, Function(c) MakeNameOf(context.Document, diagnostic, c), NameOf(NameOfCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
         End Function
 
-        Private Function MakeNameOf(document As Document, stringLiteral As LiteralExpressionSyntax, root As SyntaxNode) As Task(Of Document)
+        Private Async Function MakeNameOf(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim diagnosticspan = diagnostic.Location.SourceSpan
+            Dim stringLiteral = root.FindToken(diagnosticspan.Start).Parent.AncestorsAndSelf.OfType(Of LiteralExpressionSyntax).FirstOrDefault
+
             Dim newNameof = SyntaxFactory.ParseExpression($"NameOf({stringLiteral.Token.ToString().Replace("""", "")})").
                 WithLeadingTrivia(stringLiteral.GetLeadingTrivia).
                 WithTrailingTrivia(stringLiteral.GetTrailingTrivia).
                 WithAdditionalAnnotations(Formatter.Annotation)
 
             Dim newRoot = root.ReplaceNode(stringLiteral, newNameof)
-            Return Task.FromResult(document.WithSyntaxRoot(newRoot))
+            Return document.WithSyntaxRoot(newRoot)
         End Function
 
     End Class

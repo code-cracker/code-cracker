@@ -65,7 +65,9 @@ Namespace Performance
                 Exit Sub
             End If
 
-            Dim diag = Diagnostic.Create(Rule, assignmentExpression.GetLocation(), assignmentExpression.Left.ToString())
+            Dim assignmentExpressionLeft = assignmentExpression.Left.ToString()
+            Dim props = New Dictionary(Of String, String) From {{NameOf(assignmentExpressionLeft), assignmentExpressionLeft}}.ToImmutableDictionary()
+            Dim diag = Diagnostic.Create(Rule, assignmentExpression.GetLocation(), props, assignmentExpression.Left.ToString())
             context.ReportDiagnostic(diag)
         End Sub
     End Class

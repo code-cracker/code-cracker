@@ -18,17 +18,19 @@ Namespace Style
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public NotOverridable Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public NotOverridable Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First()
-            Dim diagnosticSpan = diagnostic.Location.SourceSpan
-            Dim declaration = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOrSelfOfType(GetType(InterfaceStatementSyntax))
             context.RegisterCodeFix(CodeAction.Create("Consider start Interface name with letter 'I'.",
-                                              Function(c) ChangeInterfaceNameAsync(context.Document, DirectCast(declaration, InterfaceStatementSyntax), c), NameOf(InterfaceNameCodeFixProvider)), diagnostic)
-
+                                              Function(c) ChangeInterfaceNameAsync(context.Document, diagnostic, c), NameOf(InterfaceNameCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
         End Function
 
-        Private Async Function ChangeInterfaceNameAsync(document As Document, interfaceStatement As InterfaceStatementSyntax, cancellationToken As CancellationToken) As Task(Of Solution)
+        Private Async Function ChangeInterfaceNameAsync(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Solution)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim diagnosticSpan = diagnostic.Location.SourceSpan
+            Dim declaration = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOrSelfOfType(GetType(InterfaceStatementSyntax))
+            Dim interfaceStatement = DirectCast(declaration, InterfaceStatementSyntax)
+
             Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
             Dim newName = "I" & interfaceStatement.Identifier.Text
 
