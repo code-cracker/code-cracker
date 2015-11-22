@@ -53,12 +53,15 @@ Namespace Usage
             Dim variableDeclarator = TryCast(fieldSyntaxRef.GetSyntax().Parent, VariableDeclaratorSyntax)
             If variableDeclarator Is Nothing Then Exit Sub
             If ContainingTypeImplementsIDisposableAndCallsItOnTheField(context, fieldSymbol, fieldSymbol.ContainingType) Then Exit Sub
+
+            Dim props = New Dictionary(Of String, String) From {{"variableIdentifier", variableDeclarator.Names.First().Identifier.ValueText}}.ToImmutableDictionary()
+
             If variableDeclarator.AsClause.Kind = SyntaxKind.AsNewClause Then
-                context.ReportDiagnostic(Diagnostic.Create(RuleForCreated, variableDeclarator.GetLocation(), fieldSymbol.Name))
+                context.ReportDiagnostic(Diagnostic.Create(RuleForCreated, variableDeclarator.GetLocation(), props, fieldSymbol.Name))
             ElseIf TypeOf (variableDeclarator.Initializer?.Value) Is InvocationExpressionSyntax Then
-                context.ReportDiagnostic(Diagnostic.Create(RuleForReturned, variableDeclarator.GetLocation(), fieldSymbol.Name))
+                context.ReportDiagnostic(Diagnostic.Create(RuleForReturned, variableDeclarator.GetLocation(), props, fieldSymbol.Name))
             ElseIf TypeOf (variableDeclarator.Initializer?.Value) Is ObjectCreationExpressionSyntax Then
-                context.ReportDiagnostic(Diagnostic.Create(RuleForCreated, variableDeclarator.GetLocation(), fieldSymbol.Name))
+                context.ReportDiagnostic(Diagnostic.Create(RuleForCreated, variableDeclarator.GetLocation(), props, fieldSymbol.Name))
             End If
         End Sub
 

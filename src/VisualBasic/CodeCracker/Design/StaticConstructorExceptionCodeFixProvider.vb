@@ -16,15 +16,17 @@ Namespace Design
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First
-            Dim sourceSpan = diagnostic.Location.SourceSpan
-            Dim throwBlock = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf.OfType(Of ThrowStatementSyntax).First
-            context.RegisterCodeFix(CodeAction.Create("Remove this exception", Function(ct) RemoveThrow(context.Document, throwBlock, ct), NameOf(StaticConstructorExceptionCodeFixProvider)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Remove this exception", Function(ct) RemoveThrow(context.Document, diagnostic, ct), NameOf(StaticConstructorExceptionCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
         End Function
 
-        Private Async Function RemoveThrow(document As Document, throwBlock As ThrowStatementSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+        Private Async Function RemoveThrow(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim sourceSpan = diagnostic.Location.SourceSpan
+            Dim throwBlock = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf.OfType(Of ThrowStatementSyntax).First
+
             Return document.WithSyntaxRoot((Await document.GetSyntaxRootAsync(cancellationToken)).RemoveNode(throwBlock, SyntaxRemoveOptions.KeepNoTrivia))
         End Function
     End Class

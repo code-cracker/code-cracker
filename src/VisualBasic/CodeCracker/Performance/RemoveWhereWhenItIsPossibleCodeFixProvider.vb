@@ -17,18 +17,20 @@ Namespace Performance
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First
+            Dim name = diagnostic.Properties!methodName
+            Dim message = $"Remove 'Where' moving predicate to '{name}'"
+            context.RegisterCodeFix(CodeAction.Create(message, Function(c) RemoveWhere(context.Document, diagnostic, c), NameOf(RemoveWhereWhenItIsPossibleCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
+        End Function
+
+        Private Async Function RemoveWhere(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
             Dim diagnosticSpan = diagnostic.Location.SourceSpan
             Dim whereInvoke = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType(Of InvocationExpressionSyntax)().First()
             Dim nextMethodInvoke = whereInvoke.Parent.FirstAncestorOrSelf(Of InvocationExpressionSyntax)()
-            Dim message = "Remove 'Where' moving predicate to '" + RemoveWhereWhenItIsPossibleAnalyzer.GetNameOfTheInvokeMethod(nextMethodInvoke) + "'"
-            context.RegisterCodeFix(CodeAction.Create(message, Function(c) RemoveWhere(context.Document, whereInvoke, nextMethodInvoke, c), NameOf(RemoveWhereWhenItIsPossibleCodeFixProvider)), diagnostic)
-        End Function
 
-        Private Async Function RemoveWhere(document As Document, whereInvoke As InvocationExpressionSyntax, nextMethodInvoke As InvocationExpressionSyntax, cancellationToken As CancellationToken) As Task(Of Document)
-            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
             Dim whereMemberAccess = whereInvoke.ChildNodes.OfType(Of MemberAccessExpressionSyntax)().FirstOrDefault()
             Dim nextMethodMemberAccess = nextMethodInvoke.ChildNodes.OfType(Of MemberAccessExpressionSyntax)().FirstOrDefault()
 

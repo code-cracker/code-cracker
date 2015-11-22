@@ -18,15 +18,16 @@ Namespace Design
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diag = context.Diagnostics.First()
-            Dim diagSpan = diag.Location.SourceSpan
-            Dim declaration = root.FindToken(diagSpan.Start).Parent.AncestorsAndSelf.OfType(Of CatchBlockSyntax).First()
-            context.RegisterCodeFix(CodeAction.Create("Add an Exception class", Function(c) MakeCatchEmptyAsync(context.Document, declaration, c), NameOf(CatchEmptyCodeFixProvider)), diag)
+            context.RegisterCodeFix(CodeAction.Create("Add an Exception class", Function(c) MakeCatchEmptyAsync(context.Document, diag, c), NameOf(CatchEmptyCodeFixProvider)), diag)
+            Return Task.FromResult(0)
         End Function
 
-        Private Async Function MakeCatchEmptyAsync(document As Document, catchStatement As CatchBlockSyntax, cancellationtoken As CancellationToken) As Task(Of Document)
+        Private Async Function MakeCatchEmptyAsync(document As Document, diag As Diagnostic, cancellationtoken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationtoken).ConfigureAwait(False)
+            Dim diagSpan = diag.Location.SourceSpan
+            Dim catchStatement = root.FindToken(diagSpan.Start).Parent.AncestorsAndSelf.OfType(Of CatchBlockSyntax).First()
             Dim semanticModel = Await document.GetSemanticModelAsync(cancellationtoken)
 
             Dim newCatch = SyntaxFactory.CatchBlock(
@@ -39,7 +40,6 @@ Namespace Design
                 WithTrailingTrivia(catchStatement.GetTrailingTrivia).
                 WithAdditionalAnnotations(Formatter.Annotation)
 
-            Dim root = Await document.GetSyntaxRootAsync()
             Dim newRoot = root.ReplaceNode(catchStatement, newCatch)
             Dim newDoc = document.WithSyntaxRoot(newRoot)
             Return newDoc

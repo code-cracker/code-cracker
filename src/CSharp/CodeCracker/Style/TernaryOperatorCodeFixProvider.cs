@@ -114,10 +114,9 @@ namespace CodeCracker.CSharp.Style
             if (ifConvertedType?.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
             {
                 var constValue = semanticModel.GetConstantValue(ifExpression);
-                if (constValue.HasValue && constValue.Value == null)
-                    trueExpression = SyntaxFactory.CastExpression(typeSyntax, ifExpression);
-                else
-                    trueExpression = ifExpression;
+                trueExpression = constValue.HasValue && constValue.Value == null
+                    ? SyntaxFactory.CastExpression(typeSyntax, ifExpression)
+                    : ifExpression;
                 isNullable = true;
             }
             else
@@ -127,10 +126,9 @@ namespace CodeCracker.CSharp.Style
             if (elseConvertedType?.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
             {
                 var constValue = semanticModel.GetConstantValue(elseExpression);
-                if (constValue.HasValue && constValue.Value == null)
-                    falseExpression = SyntaxFactory.CastExpression(typeSyntax, elseExpression);
-                else
-                    falseExpression = elseExpression;
+                falseExpression = constValue.HasValue && constValue.Value == null
+                    ? SyntaxFactory.CastExpression(typeSyntax, elseExpression)
+                    : elseExpression;
                 isNullable = true;
             }
             else

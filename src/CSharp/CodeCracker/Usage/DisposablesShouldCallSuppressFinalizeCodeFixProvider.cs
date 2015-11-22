@@ -30,8 +30,8 @@ namespace CodeCracker.CSharp.Usage
         }
 
         private async static Task<Document> AddSuppressFinalizeAsync(
-            Document document, 
-            Diagnostic diagnostic, 
+            Document document,
+            Diagnostic diagnostic,
             CancellationToken cancellationToken
             )
         {
@@ -64,7 +64,7 @@ namespace CodeCracker.CSharp.Usage
                         ))
                     .WithAdditionalAnnotations(Simplifier.Annotation)
                     .WithAdditionalAnnotations(Formatter.Annotation);
-                
+
 
             var modifiedMethod = method.AddBodyStatements(
                 suppressFinalizeCall

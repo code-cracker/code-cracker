@@ -19,27 +19,28 @@ Namespace Performance
             Return Nothing
         End Function
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First
-            Dim diagosticSpan = diagnostic.Location.SourceSpan
-            Dim assignmentExpression = root.FindToken(diagosticSpan.Start).Parent.AncestorsAndSelf.OfType(Of AssignmentStatementSyntax).First
-            context.RegisterCodeFix(CodeAction.Create("Use StringBuilder to create a value for " & assignmentExpression.Left.ToString(), Function(c) UseStringBuilder(context.Document, assignmentExpression, c), NameOf(StringBuilderInLoopCodeFixProvider)), diagnostic)
-
+            context.RegisterCodeFix(CodeAction.Create($"Use StringBuilder to create a value for '{diagnostic.Properties!assignmentExpressionLeft}'", Function(c) UseStringBuilder(context.Document, diagnostic, c), NameOf(StringBuilderInLoopCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
         End Function
 
-        Private Async Function UseStringBuilder(document As Document, assignmentStatement As AssignmentStatementSyntax, cancellationToken As CancellationToken) As Task(Of Document)
-            Dim expressionStatement = assignmentStatement
+        Private Async Function UseStringBuilder(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim diagosticSpan = diagnostic.Location.SourceSpan
+            Dim expressionStatement = root.FindToken(diagosticSpan.Start).Parent.AncestorsAndSelf.OfType(Of AssignmentStatementSyntax).First
+
+
             Dim expressionStatementParent = expressionStatement.Parent
             Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
-            Dim builderName = FindAvailableStringBuilderVariableName(assignmentStatement, semanticModel)
+            Dim builderName = FindAvailableStringBuilderVariableName(expressionStatement, semanticModel)
             Dim loopStatement = expressionStatement.FirstAncestorOrSelfOfType(
             GetType(WhileBlockSyntax),
             GetType(ForBlockSyntax),
             GetType(ForEachBlockSyntax),
             GetType(DoLoopBlockSyntax))
 
-            Dim newExpressionStatementParent = ReplaceAddExpressionByStringBuilderAppendExpression(assignmentStatement, expressionStatement, expressionStatementParent, builderName)
+            Dim newExpressionStatementParent = ReplaceAddExpressionByStringBuilderAppendExpression(expressionStatement, expressionStatement, expressionStatementParent, builderName)
             Dim newLoopStatement = loopStatement.ReplaceNode(expressionStatementParent, newExpressionStatementParent)
             Dim stringBuilderType = SyntaxFactory.ParseTypeName("System.Text.StringBuilder").WithAdditionalAnnotations(Simplifier.Annotation)
 
@@ -51,14 +52,13 @@ Namespace Performance
             Dim stringBuilderDeclaration = SyntaxFactory.LocalDeclarationStatement(SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.DimKeyword)),
                                                                                declarators).NormalizeWhitespace(" ").WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)
 
-            Dim appendExpressionOnInitialization = SyntaxFactory.ParseExecutableStatement(builderName & ".Append(" & assignmentStatement.Left.ToString() & ")").WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed) '.WithLeadingTrivia(assignmentStatement.GetLeadingTrivia()).WithTrailingTrivia(assignmentStatement.GetTrailingTrivia())
-            Dim stringBuilderToString = SyntaxFactory.ParseExecutableStatement(assignmentStatement.Left.ToString() & " = " & builderName & ".ToString()").WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed) '.WithLeadingTrivia(assignmentStatement.GetLeadingTrivia()).WithTrailingTrivia(assignmentStatement.GetTrailingTrivia())
+            Dim appendExpressionOnInitialization = SyntaxFactory.ParseExecutableStatement(builderName & ".Append(" & expressionStatement.Left.ToString() & ")").WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)
+            Dim stringBuilderToString = SyntaxFactory.ParseExecutableStatement(expressionStatement.Left.ToString() & " = " & builderName & ".ToString()").WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed)
 
             Dim loopParent = loopStatement.Parent
             Dim newLoopParent = loopParent.ReplaceNode(loopStatement,
                                                    {stringBuilderDeclaration, appendExpressionOnInitialization, newLoopStatement, stringBuilderToString}).
                                                    WithAdditionalAnnotations(Formatter.Annotation)
-            Dim root = Await document.GetSyntaxRootAsync()
             Dim newroot = root.ReplaceNode(loopParent, newLoopParent)
             Dim newDocument = document.WithSyntaxRoot(newroot)
             Return newDocument

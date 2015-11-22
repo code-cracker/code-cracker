@@ -18,17 +18,18 @@ Namespace Performance
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First()
-            Dim diagnosticSpan = diagnostic.Location.SourceSpan
-            Dim localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType(Of LocalDeclarationStatementSyntax).First()
             Const message = "Make constant"
-            context.RegisterCodeFix(CodeAction.Create(message, Function(c) MakeConstantAsync(context.Document, localDeclaration, c), NameOf(MakeLocalVariableConstWhenPossibleCodeFixProvider)), diagnostic)
-
+            context.RegisterCodeFix(CodeAction.Create(message, Function(c) MakeConstantAsync(context.Document, diagnostic, c), NameOf(MakeLocalVariableConstWhenPossibleCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
         End Function
 
-        Public Async Function MakeConstantAsync(document As Document, localDeclaration As LocalDeclarationStatementSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+        Public Async Function MakeConstantAsync(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim diagnosticSpan = diagnostic.Location.SourceSpan
+            Dim localDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType(Of LocalDeclarationStatementSyntax).First()
+
             Dim declaration = localDeclaration.Declarators.First
 
             Dim dimModifier = localDeclaration.Modifiers.First()
@@ -46,7 +47,6 @@ Namespace Performance
             WithTrailingTrivia(localDeclaration.GetTrailingTrivia()).
             WithAdditionalAnnotations(Formatter.Annotation)
 
-            Dim root = Await document.GetSyntaxRootAsync(cancellationToken)
             Dim newRoot = root.ReplaceNode(localDeclaration, newLocalDeclaration)
             Return document.WithSyntaxRoot(newRoot)
         End Function

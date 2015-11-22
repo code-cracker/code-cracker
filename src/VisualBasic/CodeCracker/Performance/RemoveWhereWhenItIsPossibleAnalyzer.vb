@@ -43,8 +43,8 @@ Namespace Performance
             If Not supportedMethods.Contains(candidate) Then Exit Sub
 
             If nextMethodInvoke.ArgumentList.Arguments.Any Then Return
-
-            Dim diag = Diagnostic.Create(Rule, GetNameExpressionOfTheInvokedMethod(whereInvoke).GetLocation(), candidate)
+            Dim props = New Dictionary(Of String, String) From {{"methodName", candidate}}.ToImmutableDictionary()
+            Dim diag = Diagnostic.Create(Rule, GetNameExpressionOfTheInvokedMethod(whereInvoke).GetLocation(), props, candidate)
 
             context.ReportDiagnostic(diag)
         End Sub
