@@ -42,6 +42,7 @@ namespace CodeCracker.CSharp.Usage
             if (!IsCandidateForRemoval(methodOrConstructor, semanticModel)) return;
             var parameters = methodOrConstructor.ParameterList.Parameters.ToDictionary(p => p, p => semanticModel.GetDeclaredSymbol(p));
             var ctor = methodOrConstructor as ConstructorDeclarationSyntax;
+
             if (ctor?.Initializer != null)
             {
                 var symbolsTouched = new List<ISymbol>();
@@ -56,23 +57,59 @@ namespace CodeCracker.CSharp.Usage
                 foreach (var parameter in parametersToRemove)
                     parameters.Remove(parameter.Key);
             }
+
             if (methodOrConstructor.Body.Statements.Any())
             {
-                var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(methodOrConstructor.Body.Statements.First(), methodOrConstructor.Body.Statements.Last());
-                if (!dataFlowAnalysis.Succeeded) return;
                 foreach (var parameter in parameters)
                 {
-                    var parameterSymbol = parameter.Value;
-                    if (parameterSymbol == null) continue;
-                    if (!dataFlowAnalysis.ReadInside.Contains(parameterSymbol) && !dataFlowAnalysis.WrittenInside.Contains(parameterSymbol))
-                        context = ReportDiagnostic(context, parameter.Key);
+                    var used = methodOrConstructor.Body
+                        .DescendantNodesAndSelf()
+                        .OfType<IdentifierNameSyntax>()
+                        .Any(iName => IdentifierRefersToParam(iName, parameter.Key));
+
+                    if (!used)
+                    {
+                        ReportDiagnostic(context, parameter.Key);
+                    }
                 }
+                // 
+                // THIS IS THE RIGHT WAY TO DO THIS VERIFICATION. 
+                // BUT, WE HAVE TO WAIT FOR A "BUGFIX" FROM ROSLYN TEAM
+                // IN DataFlowAnalysis
+                //
+                // https://github.com/dotnet/roslyn/issues/6967
+                //
+                //var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(methodOrConstructor.Body);
+                //if (!dataFlowAnalysis.Succeeded) return;
+                //foreach (var parameter in parameters)
+                //{
+
+                //    var parameterSymbol = parameter.Value;
+                //    if (parameterSymbol == null) continue;
+                //    if (!dataFlowAnalysis.ReadInside.Contains(parameterSymbol) &&
+                //        !dataFlowAnalysis.WrittenInside.Contains(parameterSymbol))
+                //    {
+                //        ReportDiagnostic(context, parameter.Key);
+                //    }
+                //}
             }
             else
             {
                 foreach (var parameter in parameters.Keys)
-                    context = ReportDiagnostic(context, parameter);
+                    ReportDiagnostic(context, parameter);
             }
+        }
+
+        private static bool IdentifierRefersToParam(IdentifierNameSyntax iName, ParameterSyntax param)
+        {
+            if (iName.Identifier.ToString() != param.Identifier.ToString())
+                return false;
+
+            var mae = iName.Parent as MemberAccessExpressionSyntax;
+            if (mae == null)
+                return true;
+
+            return mae.DescendantNodes().FirstOrDefault() == iName;
         }
 
         private static bool IsCandidateForRemoval(BaseMethodDeclarationSyntax methodOrConstructor, SemanticModel semanticModel)
