@@ -15,16 +15,17 @@ Namespace Usage
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First()
-            Dim span = diagnostic.Location.SourceSpan
-            Dim methodNotUsed = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MethodStatementSyntax)
-            context.RegisterCodeFix(CodeAction.Create("Remove unused private method: " & methodNotUsed.Identifier.ValueText, Function(c) RemoveMethodAsync(context.Document, methodNotUsed, c), NameOf(RemovePrivateMethodNeverUsedCodeFixProvider)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create($"Remove unused private method: {diagnostic.Properties!identifier}", Function(c) RemoveMethodAsync(context.Document, diagnostic, c), NameOf(RemovePrivateMethodNeverUsedCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
         End Function
 
-        Private Async Function RemoveMethodAsync(document As Document, methodNotUsed As MethodStatementSyntax, cancellationToken As Threading.CancellationToken) As Task(Of Document)
+        Private Async Function RemoveMethodAsync(document As Document, diagnostic As Diagnostic, cancellationToken As Threading.CancellationToken) As Task(Of Document)
             Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim span = diagnostic.Location.SourceSpan
+            Dim methodNotUsed = root.FindToken(span.Start).Parent.FirstAncestorOrSelf(Of MethodStatementSyntax)
+
             Dim newRoot = root.RemoveNode(methodNotUsed.Parent, SyntaxRemoveOptions.KeepNoTrivia)
             Return document.WithSyntaxRoot(newRoot)
         End Function

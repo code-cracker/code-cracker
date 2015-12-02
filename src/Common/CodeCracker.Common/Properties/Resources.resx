@@ -321,4 +321,7 @@
   <data name="EmptyCatchBlockCodeFixProvider_RemoveAndDocumentation" xml:space="preserve">
     <value>Remove Empty Catch Block and Put a Documentation Link about Try...Catch use</value>
   </data>
+  <data name="EmptyCatchBlockCodeFixProvider_RemoveTry" xml:space="preserve">
+    <value>Remove wrapping Try Block</value>
+  </data>
 </root>

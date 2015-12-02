@@ -12,15 +12,10 @@ Namespace Refactoring
     Public Class ParameterRefactoryCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides Async Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
-            Dim root = Await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(False)
-
+        Public Overrides Function RegisterCodeFixesAsync(context As CodeFixContext) As Task
             Dim diagnostic = context.Diagnostics.First()
-            Dim diagnosticSpan = diagnostic.Location.SourceSpan
-            Dim declarationClass = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of ClassBlockSyntax)
-            Dim declarationNamespace = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of NamespaceBlockSyntax)
-            Dim declarationMethod = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of MethodBlockSyntax)
-            context.RegisterCodeFix(CodeAction.Create("Change to new Class", Function(c) NewClassAsync(context.Document, declarationNamespace, declarationClass, declarationMethod, c), NameOf(ParameterRefactoryCodeFixProvider)), diagnostic)
+            context.RegisterCodeFix(CodeAction.Create("Change to new Class", Function(c) NewClassAsync(context.Document, diagnostic, c), NameOf(ParameterRefactoryCodeFixProvider)), diagnostic)
+            Return Task.FromResult(0)
         End Function
 
         Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.ParameterRefactory.ToDiagnosticId())
@@ -29,16 +24,21 @@ Namespace Refactoring
             Return WellKnownFixAllProviders.BatchFixer
         End Function
 
-        Private Async Function NewClassAsync(document As Document, oldNamespace As NamespaceBlockSyntax, oldClass As ClassBlockSyntax, oldMethod As MethodBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+        Private Async Function NewClassAsync(document As Document, diagnostic As Diagnostic, cancellationToken As CancellationToken) As Task(Of Document)
             Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+            Dim diagnosticSpan = diagnostic.Location.SourceSpan
+            Dim declarationClass = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of ClassBlockSyntax)
+            Dim declarationNamespace = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of NamespaceBlockSyntax)
+            Dim declarationMethod = root.FindToken(diagnosticSpan.Start).Parent.FirstAncestorOfType(Of MethodBlockSyntax)
+
             Dim newRootParameter As SyntaxNode
-            If oldNamespace Is Nothing Then
-                Dim newCompilation = NewCompilationFactory(DirectCast(oldClass.Parent, CompilationUnitSyntax), oldClass, oldMethod)
-                newRootParameter = root.ReplaceNode(oldClass.Parent, newCompilation)
+            If declarationNamespace Is Nothing Then
+                Dim newCompilation = NewCompilationFactory(DirectCast(declarationClass.Parent, CompilationUnitSyntax), declarationClass, declarationMethod)
+                newRootParameter = root.ReplaceNode(declarationClass.Parent, newCompilation)
                 Return document.WithSyntaxRoot(newRootParameter)
             End If
-            Dim newNamespace = NewNamespaceFactory(oldNamespace, oldClass, oldMethod)
-            newRootParameter = root.ReplaceNode(oldNamespace, newNamespace)
+            Dim newNamespace = NewNamespaceFactory(declarationNamespace, declarationClass, declarationMethod)
+            newRootParameter = root.ReplaceNode(declarationNamespace, newNamespace)
             Return document.WithSyntaxRoot(newRootParameter)
         End Function
 

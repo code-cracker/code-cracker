@@ -224,6 +224,15 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove wrapping Try Block.
+        /// </summary>
+        public static string EmptyCatchBlockCodeFixProvider_RemoveTry {
+            get {
+                return ResourceManager.GetString("EmptyCatchBlockCodeFixProvider_RemoveTry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change class &apos;{0}&apos; accessibility to be as accessible as class &apos;{1}&apos;.
         /// </summary>
         public static string InconsistentAccessibilityInBaseClass_Title {

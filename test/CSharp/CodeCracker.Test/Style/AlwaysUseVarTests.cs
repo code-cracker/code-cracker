@@ -7,6 +7,7 @@ namespace CodeCracker.Test.CSharp.Style
 {
     public class AlwaysUseVarTests : CodeFixVerifier<AlwaysUseVarAnalyzer, AlwaysUseVarCodeFixProvider>
     {
+
         [Fact]
         public async Task IgnoresConstantDeclarations()
         {
@@ -93,10 +94,12 @@ namespace CodeCracker.Test.CSharp.Style
 
         }
 
-        [Fact]
-        public async Task CreateDiagnosticsWhenAssigningValueWithSameDeclaringType()
+        [Theory]
+        [InlineData("int")]
+        [InlineData("System.Int32")]
+        public async Task CreateDiagnosticsWhenAssigningValueWithSameDeclaringTypePrimitive(string value)
         {
-            const string test = @"
+            var test = @"
     using System;
 
     namespace ConsoleApplication1
@@ -105,7 +108,36 @@ namespace CodeCracker.Test.CSharp.Style
         {
             public async Task Foo()
             {
-                int a = 10;
+                " + value + @" a = 10;
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.AlwaysUseVarOnPrimitives.ToDiagnosticId(),
+                Message = "Use 'var' instead of specifying the type name.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Theory]
+        [InlineData("string a = \"10\";")]
+        [InlineData("DateTime date1 = new DateTime(2013, 6, 1, 12, 32, 30);")]
+        public async Task CreateDiagnosticsWhenAssigningValueWithSameDeclaringTypeNonPrimitive(string value)
+        {
+            var test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public async Task Foo()
+            {
+                " + value + @"
             }
         }
     }";

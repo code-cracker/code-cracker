@@ -70,5 +70,40 @@ End Namespace"
 
             Await VerifyBasicFixAsync(test, fix, 1)
         End Function
+
+        <Fact>
+        Public Async Function WhenMultipleCatchRemoveOnlySelectedEmpty() As Task
+            Const multipleTest As String = "
+Imports System
+Namespace ConsoleApplication1
+    Class TypeName
+        Public Async Function Foo() As Task
+            Try
+                Dim a = ""A""
+            Catch aex As ArgumentException
+            Catch ex As Exception
+                a = ""B""
+            End Try
+        End Function
+    End Class
+End Namespace"
+
+            Const multipleFix = "
+Imports System
+Namespace ConsoleApplication1
+    Class TypeName
+        Public Async Function Foo() As Task
+            Try
+                Dim a = ""A""
+            Catch ex As Exception
+                a = ""B""
+            End Try
+        End Function
+    End Class
+End Namespace"
+
+            Await VerifyBasicFixAsync(multipleTest, multipleFix, 0)
+
+        End Function
     End Class
 End Namespace

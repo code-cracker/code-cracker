@@ -21,6 +21,30 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async Task UsedParameterDoesNotCreateDiagnostic2()
+        {
+            const string source = @"
+using System.Globalization;
+using System.Reflection;
+
+namespace ClassLibrary1
+{
+    public class Class1
+    {
+        protected Class1() { }
+
+        public static void SetDefaultThreadCulture(CultureInfo currentCulture, CultureInfo currentUICulture)
+        {
+            typeof(CultureInfo).InvokeMember(""s_userDefaultCulture"", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.SetField, null, null, new object[] { currentCulture }, CultureInfo.InvariantCulture);
+            typeof(CultureInfo).InvokeMember(""s_userDefaultUICulture"", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.SetField, null, null, new object[] { currentUICulture }, CultureInfo.InvariantCulture);
+        }
+    }
+}
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task UsedParameterDoesNotCreateDiagnostic()
         {
             const string source = @"

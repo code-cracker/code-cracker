@@ -19,26 +19,50 @@ namespace CodeCracker.CSharp.Design
         internal static readonly LocalizableString FixRemoveEmptyCatchBlock = new LocalizableResourceString(nameof(Resources.EmptyCatchBlockCodeFixProvider_Remove), Resources.ResourceManager, typeof(Resources));
         internal static readonly LocalizableString FixRemoveEmptyCatchBlockAndPutDocumentationLink = new LocalizableResourceString(nameof(Resources.EmptyCatchBlockCodeFixProvider_RemoveAndDocumentation), Resources.ResourceManager, typeof(Resources));
         internal static readonly LocalizableString FixInsertExceptionClass = new LocalizableResourceString(nameof(Resources.EmptyCatchBlockCodeFixProvider_InsertException), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString FixRemoveTry = new LocalizableResourceString(nameof(Resources.EmptyCatchBlockCodeFixProvider_RemoveTry), Resources.ResourceManager, typeof(Resources));
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.EmptyCatchBlock.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create(FixRemoveEmptyCatchBlock.ToString(), c => RemoveEmptyCatchBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
-            context.RegisterCodeFix(CodeAction.Create(FixRemoveEmptyCatchBlockAndPutDocumentationLink.ToString(), c => RemoveEmptyCatchBlockPutCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider ) + nameof(RemoveEmptyCatchBlockPutCommentAsync)), diagnostic);
+            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var catchStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().First();
+            var tryStatement = (TryStatementSyntax)catchStatement.Parent;
+
+            if (tryStatement.Catches.Count > 1)
+            {
+                context.RegisterCodeFix(CodeAction.Create(FixRemoveEmptyCatchBlock.ToString(), c => RemoveEmptyCatchBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
+            }
+            else
+            {
+                context.RegisterCodeFix(CodeAction.Create(FixRemoveTry.ToString(), c => RemoveEmptyTryBlockAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockAsync)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(FixRemoveEmptyCatchBlockAndPutDocumentationLink.ToString(), c => RemoveEmptyCatchBlockPutCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(RemoveEmptyCatchBlockPutCommentAsync)), diagnostic);
+            }
             context.RegisterCodeFix(CodeAction.Create(FixInsertExceptionClass.ToString(), c => InsertExceptionClassCommentAsync(context.Document, diagnostic, c), nameof(EmptyCatchBlockCodeFixProvider) + nameof(InsertExceptionClassCommentAsync)), diagnostic);
-            return Task.FromResult(0);
         }
 
-        private async static Task<Document> RemoveEmptyCatchBlockAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
+        private async static Task<Document> RemoveEmptyTryBlockAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
             await RemoveTryAsync(document, diagnostic, cancellationToken, insertComment: false);
 
         private async static Task<Document> RemoveEmptyCatchBlockPutCommentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken) =>
             await RemoveTryAsync(document, diagnostic, cancellationToken, insertComment: true);
+
+        private async static Task<Document> RemoveEmptyCatchBlockAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var catchStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<CatchClauseSyntax>().First();
+
+            var newRoot = root.RemoveNode(catchStatement, SyntaxRemoveOptions.KeepNoTrivia);
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            return newDocument;
+
+        }
 
         private async static Task<Document> RemoveTryAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken, bool insertComment)
         {

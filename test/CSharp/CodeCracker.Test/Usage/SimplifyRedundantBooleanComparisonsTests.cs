@@ -42,6 +42,7 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
+        
 
         [Theory]
         [InlineData("if (foo == 0) {}")]
@@ -100,6 +101,33 @@ namespace CodeCracker.Test.CSharp.Usage
             var test = original.WrapInCSharpMethod();
             var fixtest = result.WrapInCSharpMethod();
 
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWithoutThrowingAnyException()
+        {
+            var test = @" 
+struct ProjectCompilation {}
+class Foo
+{
+    public bool Comp(bool obj)
+    {
+        if (obj is ProjectCompilation == false) return false;
+        return true;
+    }
+}";
+
+            var fixtest = @" 
+struct ProjectCompilation {}
+class Foo
+{
+    public bool Comp(bool obj)
+    {
+        if (!(obj is ProjectCompilation)) return false;
+        return true;
+    }
+}";
             await VerifyCSharpFixAsync(test, fixtest);
         }
     }

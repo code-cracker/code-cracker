@@ -6,13 +6,18 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports System.Collections.Immutable
 Imports System.Threading
+Imports CCProp = CodeCracker.Properties
 
 Namespace Design
     <ExportCodeFixProvider(LanguageNames.VisualBasic, Name:=NameOf(EmptyCatchBlockCodeFixProvider)), Composition.Shared>
     Public Class EmptyCatchBlockCodeFixProvider
         Inherits CodeFixProvider
 
-        Public Overrides NotOverridable ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.EmptyCatchBlock.ToDiagnosticId())
+        Friend Shared ReadOnly FixRemoveEmptyCatchBlock As New LocalizableResourceString(NameOf(CCProp.Resources.EmptyCatchBlockCodeFixProvider_Remove), CCProp.Resources.ResourceManager, GetType(CCProp.Resources))
+        Friend Shared ReadOnly FixInsertExceptionClass As New LocalizableResourceString(NameOf(CCProp.Resources.EmptyCatchBlockCodeFixProvider_InsertException), CCProp.Resources.ResourceManager, GetType(CCProp.Resources))
+        Friend Shared ReadOnly FixRemoveTry As New LocalizableResourceString(NameOf(CCProp.Resources.EmptyCatchBlockCodeFixProvider_RemoveTry), CCProp.Resources.ResourceManager, GetType(CCProp.Resources))
+
+        Public NotOverridable Overrides ReadOnly Property FixableDiagnosticIds As ImmutableArray(Of String) = ImmutableArray.Create(DiagnosticId.EmptyCatchBlock.ToDiagnosticId())
 
         Public Overrides Function GetFixAllProvider() As FixAllProvider
             Return WellKnownFixAllProviders.BatchFixer
@@ -23,8 +28,23 @@ Namespace Design
             Dim diag = context.Diagnostics.First
             Dim diagSpan = diag.Location.SourceSpan
             Dim declaration = root.FindToken(diagSpan.Start).Parent.AncestorsAndSelf.OfType(Of CatchBlockSyntax).First
-            context.RegisterCodeFix(CodeAction.Create("Remove Empty Catch Block", Function(c) RemoveTry(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(RemoveTry)), diag)
-            context.RegisterCodeFix(CodeAction.Create("Insert Exception class to Catch", Function(c) InsertExceptionClassCommentAsync(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(InsertExceptionClassCommentAsync)), diag)
+
+            Dim tryBlock = DirectCast(declaration.Parent, TryBlockSyntax)
+            If tryBlock.CatchBlocks.Count > 1 Then
+                context.RegisterCodeFix(CodeAction.Create(FixRemoveEmptyCatchBlock.ToString(), Function(c) RemoveCatch(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(RemoveTry)), diag)
+            Else
+                context.RegisterCodeFix(CodeAction.Create(FixRemoveTry.ToString(), Function(c) RemoveTry(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(RemoveTry)), diag)
+            End If
+            context.RegisterCodeFix(CodeAction.Create(FixInsertExceptionClass.ToString(), Function(c) InsertExceptionClassCommentAsync(context.Document, declaration, c), NameOf(EmptyCatchBlockCodeFixProvider) & NameOf(InsertExceptionClassCommentAsync)), diag)
+        End Function
+
+        Private Async Function RemoveCatch(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)
+            Dim root = Await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(False)
+
+            Dim newRoot = root.RemoveNode(catchBlock, SyntaxRemoveOptions.KeepNoTrivia)
+
+            Dim newDocument = document.WithSyntaxRoot(newRoot)
+            Return newDocument
         End Function
 
         Private Async Function RemoveTry(document As Document, catchBlock As CatchBlockSyntax, cancellationToken As CancellationToken) As Task(Of Document)

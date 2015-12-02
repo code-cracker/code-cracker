@@ -17,7 +17,7 @@ namespace CodeCracker.CSharp.Style
     public class AlwaysUseVarCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
-            ImmutableArray.Create(DiagnosticId.AlwaysUseVar.ToDiagnosticId());
+            ImmutableArray.Create(DiagnosticId.AlwaysUseVar.ToDiagnosticId(), DiagnosticId.AlwaysUseVarOnPrimitives.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

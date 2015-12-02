@@ -50,14 +50,16 @@ It can be either specified directly or using nameof() (VB 14 and above only)."
             If Not paramNameOpt.HasValue Then Exit Sub
 
             Dim paramName = paramNameOpt.Value.ToString()
-            If IsParamNameCompatibleWithCreatingContext(objectCreationExpression, paramName) Then Exit Sub
 
-            Dim diag = Diagnostic.Create(Rule, paramNameLiteral.GetLocation, paramName)
+            Dim parameters As IEnumerable(Of String) = Nothing
+            If IsParamNameCompatibleWithCreatingContext(objectCreationExpression, paramName, parameters) Then Exit Sub
+            Dim props = parameters.ToImmutableDictionary(Function(p) $"param{p}", Function(p) p)
+            Dim diag = Diagnostic.Create(Rule, paramNameLiteral.GetLocation, props.ToImmutableDictionary(), paramName)
             context.ReportDiagnostic(diag)
         End Sub
 
-        Private Function IsParamNameCompatibleWithCreatingContext(node As SyntaxNode, paramName As String) As Boolean
-            Dim parameters = GetParameterNamesFromCreationContext(node)
+        Private Function IsParamNameCompatibleWithCreatingContext(node As SyntaxNode, paramName As String, ByRef parameters As IEnumerable(Of String)) As Boolean
+            parameters = GetParameterNamesFromCreationContext(node)
             If parameters Is Nothing Then Return True
             Return parameters.Contains(paramName)
         End Function
