@@ -57,7 +57,7 @@ namespace CodeCracker.CSharp.Design
         private static bool HasCheckForNull(InvocationExpressionSyntax invocation, SemanticModel semanticModel, ISymbol symbol)
         {
             var method = invocation.FirstAncestorOfKind(SyntaxKind.MethodDeclaration) as MethodDeclarationSyntax;
-            if (method != null)
+            if (method != null && method.Body != null)
             {
                 var ifs = method.Body.Statements.OfKind(SyntaxKind.IfStatement);
                 foreach (IfStatementSyntax @if in ifs)
