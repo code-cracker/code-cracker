@@ -63,10 +63,9 @@ namespace CodeCracker.CSharp.Usage
                         {
                             var fieldSymbol = syntaxRefSemanticModel.GetSymbolInfo(assignment.Left).Symbol as IFieldSymbol;
                             if (fieldSymbol == null) continue;
-                            if (method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
-                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, assignment);
-                            else if (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic)
-                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, assignment);
+                            if ((method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
+                            || (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic))
+                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, assignment, syntaxRefSemanticModel);
                             else
                                 RemoveVariableThatHasAssignment(variablesToMakeReadonly, fieldSymbol);
                         }
@@ -81,7 +80,7 @@ namespace CodeCracker.CSharp.Usage
             }
         }
 
-        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, AssignmentExpressionSyntax assignment)
+        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, AssignmentExpressionSyntax assignment, SemanticModel semanticModel)
         {
             var parent = assignment.Parent;
             while (parent != null)
@@ -94,8 +93,15 @@ namespace CodeCracker.CSharp.Usage
             }
 
             if (!fieldSymbol.IsReadOnly && !variablesToMakeReadonly.Keys.Contains(fieldSymbol))
+            {
+                var containingType = assignment.FirstAncestorOfKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
+                if (containingType == null) return;
+                var containingTypeSymbol = semanticModel.GetDeclaredSymbol(containingType) as INamedTypeSymbol;
+                if (containingTypeSymbol == null) return;
+                if (!fieldSymbol.ContainingType.Equals(containingTypeSymbol)) return;
                 foreach (var variable in fieldSymbol.DeclaringSyntaxReferences)
                     variablesToMakeReadonly.Add(fieldSymbol, (VariableDeclaratorSyntax)variable.GetSyntax());
+            }
         }
 
         private static void RemoveVariableThatHasAssignment(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol)
