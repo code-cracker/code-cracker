@@ -8,6 +8,26 @@ namespace CodeCracker.Test.CSharp.Usage
     public class ReadonlyFieldTests : CodeFixVerifier<ReadonlyFieldAnalyzer, ReadonlyFieldCodeFixProvider>
     {
         [Fact]
+        public async Task IgnoreAssignmentToFieldsInOtherTypes()
+        {
+            const string source1 = @"
+class TypeName1
+{
+    public int i;
+}";
+            const string source2 = @"
+class TypeName2
+{
+    public TypeName2()
+    {
+        var t = new TypeName1();
+        t.i = 1;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source1, source2 });
+        }
+
+        [Fact]
         public async Task FieldWithoutAssignmentDoesNotCreateDiagnostic()
         {
             const string source = @"
