@@ -42,7 +42,7 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
-        
+
 
         [Theory]
         [InlineData("if (foo == 0) {}")]
@@ -107,7 +107,7 @@ namespace CodeCracker.Test.CSharp.Usage
         [Fact]
         public async Task FixWithoutThrowingAnyException()
         {
-            var test = @" 
+            const string test = @"
 struct ProjectCompilation {}
 class Foo
 {
@@ -118,7 +118,7 @@ class Foo
     }
 }";
 
-            var fixtest = @" 
+            const string fixtest = @"
 struct ProjectCompilation {}
 class Foo
 {
