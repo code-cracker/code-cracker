@@ -36,11 +36,19 @@ namespace CodeCracker.CSharp.Usage
                 var assignedFields = new List<ISymbol>();
 
                 compilationStartContext.RegisterSyntaxNodeAction(
-                    syntaxNodeAnalysisContext => CaptureCandidateFields(syntaxNodeAnalysisContext.Node as FieldDeclarationSyntax, syntaxNodeAnalysisContext.SemanticModel, candidateFields),
+                    syntaxNodeAnalysisContext =>
+                    {
+                        if (syntaxNodeAnalysisContext.IsGenerated()) return;
+                        CaptureCandidateFields(syntaxNodeAnalysisContext.Node as FieldDeclarationSyntax, syntaxNodeAnalysisContext.SemanticModel, candidateFields);
+                    },
                     SyntaxKind.FieldDeclaration);
 
                 compilationStartContext.RegisterSyntaxNodeAction(
-                    syntaxNodeAnalysisContext => CaptureAssignedFields(syntaxNodeAnalysisContext.Node as TypeDeclarationSyntax, syntaxNodeAnalysisContext.SemanticModel, assignedFields),
+                    syntaxNodeAnalysisContext =>
+                    {
+                        if (syntaxNodeAnalysisContext.IsGenerated()) return;
+                        CaptureAssignedFields(syntaxNodeAnalysisContext.Node as TypeDeclarationSyntax, syntaxNodeAnalysisContext.SemanticModel, assignedFields);
+                    },
                     SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
 
                 compilationStartContext.RegisterCompilationEndAction(compilationEndContext =>
