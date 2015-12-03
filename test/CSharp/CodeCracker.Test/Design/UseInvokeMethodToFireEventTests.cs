@@ -32,6 +32,47 @@ namespace CodeCracker.Test.CSharp.Design
         }
 
         [Fact]
+        public async void AcceptExpressionBodiedMethods()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public event System.EventHandler MyEvent;
+                    public void Execute() =>
+                        MyEvent(this, System.EventArgs.Empty);
+                }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void FixExpressionBodiedMethods()
+        {
+            const string source = @"
+                public class MyClass
+                {
+                    public event System.EventHandler MyEvent;
+                    public void Execute() =>
+                        MyEvent(this, System.EventArgs.Empty);
+                }";
+            const string fixtest = @"
+                public class MyClass
+                {
+                    public event System.EventHandler MyEvent;
+                    public void Execute() =>
+                        MyEvent?.Invoke(this, System.EventArgs.Empty);
+                }";
+
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
         public async void WarningIfCustomEventIsFiredDirectly()
         {
             const string test = @"
@@ -268,7 +309,7 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -295,8 +336,7 @@ namespace CodeCracker.Test.CSharp.Design
                         MyEvent?.Invoke(this, System.EventArgs.Empty); //Some Comment
                     }
                 }";
-
-            await VerifyCSharpFixAsync(source, fixtest, 0);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]

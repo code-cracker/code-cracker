@@ -65,7 +65,7 @@ namespace CodeCracker.CSharp.Usage
 
             replacer = replacer
                 .WithAdditionalAnnotations(Formatter.Annotation);
-            
+
 
             var newRoot = root.ReplaceNode(comparison, replacer);
             var newDocument = document.WithSyntaxRoot(newRoot);

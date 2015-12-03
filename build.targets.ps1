@@ -15,7 +15,7 @@ Properties {
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
     $nupkgPathJoint = "$rootDir\CodeCracker.{0}.nupkg"
-    $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.0.0\tools\xunit.console.x86.exe"
+    $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.1.0\tools\xunit.console.x86.exe"
     $openCoverExe = "$packagesDir\OpenCover.4.6.166\tools\OpenCover.Console.exe"
     $testDllCS = "CodeCracker.Test.CSharp.dll"
     $testDllVB = "CodeCracker.Test.VisualBasic.dll"
@@ -23,7 +23,7 @@ Properties {
     $testDirVB = "$testDir\VisualBasic\CodeCracker.Test\bin\Debug"
     $logDir = "$rootDir\log"
     $outputXml = "$logDir\CodeCoverageResults.xml"
-    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.1.8.0\tools\ReportGenerator.exe"
+    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.3.5.0\tools\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
     $converallsNetExe = "$packagesDir\coveralls.io.1.3.4\tools\coveralls.net.exe"
     $isRelease = $isAppVeyor -and ($env:APPVEYOR_REPO_BRANCH -eq "release")
@@ -212,7 +212,7 @@ function RunTestWithCoverage($fullTestDllPaths) {
     if ($isAppVeyor) {
         $appVeyor = " -appveyor"
     }
-    $arguments = '-register:user', "`"-target:$xunitConsoleExe`"", "`"-targetargs:$targetArgs $appVeyor -noshadow -parallel none -nologo -quiet`"", "`"-filter:+[CodeCracker*]* -[CodeCracker.Test*]*`"", "`"-output:$outputXml`"", '-coverbytest:*.Test.*.dll', '-log:All', '-returntargetcode'
+    $arguments = '-register:user', "`"-target:$xunitConsoleExe`"", "`"-targetargs:$targetArgs $appVeyor -noshadow -parallel none -nologo`"", "`"-filter:+[CodeCracker*]* -[CodeCracker.Test*]*`"", "`"-output:$outputXml`"", '-coverbytest:*.Test.*.dll', '-log:All', '-returntargetcode'
     Exec { . $openCoverExe $arguments }
     Write-Host -ForegroundColor DarkBlue "Exporting code coverage report"
     Exec { . $reportGeneratorExe -verbosity:Info -reports:$outputXml -targetdir:$coverageReportDir }
