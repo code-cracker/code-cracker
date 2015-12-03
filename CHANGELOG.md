@@ -1,5 +1,32 @@
 # Change Log
 
+## [v1.0.0-rc5](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc5) (2015-12-03)
+[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc4...v1.0.0-rc5)
+
+**Fixed bugs:**
+
+- BUG: UseInvokeMethodToFireEventAnalyzer throwing when method body is null [\#611](https://github.com/code-cracker/code-cracker/issues/611)
+- BUG: ReadonlyFieldAnalyzer is crashing Visual Studio 2015 Update 1 because of reporting diagnostic at unexpected locations [\#610](https://github.com/code-cracker/code-cracker/issues/610)
+- NoPrivateReadonlyFieldAnalyzer \(0074\) is missing the Generated file check [\#609](https://github.com/code-cracker/code-cracker/issues/609)
+- BUG on CC0049 [\#597](https://github.com/code-cracker/code-cracker/issues/597)
+- BUG: DisposablesShouldCallSuppressFinalize should use full name when System is not imported [\#590](https://github.com/code-cracker/code-cracker/issues/590)
+- Remove empty Catch Block too aggressive [\#587](https://github.com/code-cracker/code-cracker/issues/587)
+- BUG: CC0056 \(StringFormatAnalyzer\) raised incorrectly [\#585](https://github.com/code-cracker/code-cracker/issues/585)
+- BUG on CC0022 \(disposable not disposed\) when a comment is present [\#577](https://github.com/code-cracker/code-cracker/issues/577)
+- BUG on CC0057 \(unused parameter\) with extension methods [\#576](https://github.com/code-cracker/code-cracker/issues/576)
+- IP Parsing fails for variables [\#571](https://github.com/code-cracker/code-cracker/issues/571)
+- CC0057 mistaken 'Parameter is not used' warning [\#562](https://github.com/code-cracker/code-cracker/issues/562)
+- Code fix error in CC0013 TernaryOperatorAnalyzer \(return\) [\#552](https://github.com/code-cracker/code-cracker/issues/552)
+- Code fix in CC0014 TernaryOperatorAnalyzer remove comments [\#551](https://github.com/code-cracker/code-cracker/issues/551)
+- Code fix error in CC0014 TernaryOperatorAnalyzer \(assignment\)  [\#550](https://github.com/code-cracker/code-cracker/issues/550)
+- Bug with CC0009 when using the created object in the initialization [\#525](https://github.com/code-cracker/code-cracker/issues/525)
+- CC0013 Should check for a common type and cast is necessary. [\#521](https://github.com/code-cracker/code-cracker/issues/521)
+
+**Implemented enhancements:**
+
+- Change CC0001 so that it does not apply to primitives [\#407](https://github.com/code-cracker/code-cracker/issues/407)
+- Update all existing code fixes that are doing too much work on RegisterCodeFixesAsync \(VB\) [\#348](https://github.com/code-cracker/code-cracker/issues/348)
+
 ## [v1.0.0-rc4](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc4) (2015-11-02)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc3...v1.0.0-rc4)
 
