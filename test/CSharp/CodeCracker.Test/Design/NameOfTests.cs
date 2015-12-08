@@ -703,6 +703,28 @@ namespace N1.N2
 }";
             await VerifyCSharpFixAllAsync(source.Replace("<REPLACE>", $@"""{stringLiteral}"""), source.Replace("<REPLACE>", $@"nameof({stringLiteral})"));
         }
+        [Fact]
+        public async Task ReplacesUsingMethodName()
+        {
+            const string source = @"
+public class TypeName
+{
+    void Foo(TypeName d)
+    {
+        var bar = new [] { ""Foo"" };
+    }
+}";
+
+            const string fixtest = @"
+public class TypeName
+{
+    void Foo(TypeName d)
+    {
+        var bar = new [] { nameof(Foo) };
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
 
         private static DiagnosticResult CreateNameofDiagnosticResult(string nameofArgument, int diagnosticLine, int diagnosticColumn, DiagnosticId id = DiagnosticId.NameOf)
         {
