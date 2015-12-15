@@ -49,7 +49,7 @@ namespace CodeCracker.CSharp.Design
                 return parameter.Identifier.Text;
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             var symbol = semanticModel.LookupSymbols(stringLiteral.Token.SpanStart, null, stringLiteral.Token.ValueText).First();
-            return symbol.ToDisplayParts(NameOfSymbolDisplayForamt).Last(AnalyzerExtensions.IsName).ToString();
+            return symbol.ToDisplayParts(NameOfSymbolDisplayFormat).Last(AnalyzerExtensions.IsName).ToString();
         }
 
         private static ParameterSyntax FindParameterThatStringLiteralRefers(SyntaxNode root, int diagnosticSpanStart, LiteralExpressionSyntax stringLiteral)
@@ -57,6 +57,6 @@ namespace CodeCracker.CSharp.Design
             var method = root.FindToken(diagnosticSpanStart).Parent.FirstAncestorOfType(typeof(ConstructorDeclarationSyntax), typeof(MethodDeclarationSyntax)) as BaseMethodDeclarationSyntax;
             return method?.ParameterList.Parameters.FirstOrDefault(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString());
         }
-        private static SymbolDisplayFormat NameOfSymbolDisplayForamt = new SymbolDisplayFormat(memberOptions: SymbolDisplayMemberOptions.None, miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
+        private static SymbolDisplayFormat NameOfSymbolDisplayFormat = new SymbolDisplayFormat(memberOptions: SymbolDisplayMemberOptions.None, miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
     }
 }
