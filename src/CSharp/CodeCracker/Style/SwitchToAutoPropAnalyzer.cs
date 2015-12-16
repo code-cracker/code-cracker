@@ -45,7 +45,6 @@ namespace CodeCracker.CSharp.Style
             if (property.AccessorList?.Accessors.Count != 2) return;
             if (property.AccessorList.Accessors.Any(a => a.Body == null)) return;
             if (property.AccessorList.Accessors.Any(a => a.Body.Statements.Count != 1)) return;
-            if (property.AccessorList.Accessors.Any(a => a.Body.Statements.Count != 1)) return;
             var getter = property.AccessorList.Accessors.First(a => a.Keyword.ValueText == "get");
             var getterReturn = getter.Body.Statements.First() as ReturnStatementSyntax;
             if (getterReturn == null) return;
@@ -53,12 +52,12 @@ namespace CodeCracker.CSharp.Style
             var setterExpressionStatement = setter.Body.Statements.First() as ExpressionStatementSyntax;
             var setterAssignmentExpression = setterExpressionStatement?.Expression as AssignmentExpressionSyntax;
             if (setterAssignmentExpression == null) return;
-            var returnIdentifier = getterReturn.Expression as IdentifierNameSyntax;
+            var returnIdentifier = (getterReturn.Expression is MemberAccessExpressionSyntax ? ((MemberAccessExpressionSyntax)getterReturn.Expression).Name : getterReturn.Expression) as IdentifierNameSyntax;
             if (returnIdentifier == null) return;
             var semanticModel = context.SemanticModel;
             var returnIdentifierSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
             if (returnIdentifierSymbol == null) return;
-            var assignmentLeftIdentifier = setterAssignmentExpression.Left as IdentifierNameSyntax;
+            var assignmentLeftIdentifier = (setterAssignmentExpression.Left is MemberAccessExpressionSyntax ? ((MemberAccessExpressionSyntax)setterAssignmentExpression.Left).Name : setterAssignmentExpression.Left) as IdentifierNameSyntax;
             if (assignmentLeftIdentifier == null) return;
             var assignmentLeftIdentifierSymbol = semanticModel.GetSymbolInfo(assignmentLeftIdentifier).Symbol;
             if (!assignmentLeftIdentifierSymbol.Equals(returnIdentifierSymbol)) return;

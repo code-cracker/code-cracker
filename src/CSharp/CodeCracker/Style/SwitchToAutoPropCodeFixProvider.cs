@@ -40,7 +40,7 @@ namespace CodeCracker.CSharp.Style
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var getterReturn = (ReturnStatementSyntax)property.AccessorList.Accessors.First(a => a.Keyword.ValueText == "get").Body.Statements.First();
-            var returnIdentifier = (IdentifierNameSyntax)getterReturn.Expression;
+            var returnIdentifier = (IdentifierNameSyntax)(getterReturn.Expression is MemberAccessExpressionSyntax ? ((MemberAccessExpressionSyntax)getterReturn.Expression).Name : getterReturn.Expression);
             var returnIdentifierSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
             var variableDeclarator = (VariableDeclaratorSyntax)returnIdentifierSymbol.DeclaringSyntaxReferences.First().GetSyntax();
             var fieldDeclaration = variableDeclarator.FirstAncestorOfType<FieldDeclarationSyntax>();
