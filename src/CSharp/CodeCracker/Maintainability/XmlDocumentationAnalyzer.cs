@@ -32,6 +32,10 @@ namespace CodeCracker.CSharp.Maintainability
             var documentationNode = (DocumentationCommentTriviaSyntax)context.Node;
             var method = GetMethodFromXmlDocumentation(documentationNode);
             if (method == null) return;
+            var elementNames = documentationNode.Content
+                                .OfType<XmlEmptyElementSyntax>()
+                                .Select(element => element.Name?.LocalName.ValueText);
+            if (elementNames.Contains("inheritdoc")) return;
             var methodParameters = method.ParameterList.Parameters;
             var xElementsWitAttrs = documentationNode.Content.OfType<XmlElementSyntax>()
                                     .Where(xEle => xEle.StartTag?.Name?.LocalName.ValueText == "param")
@@ -43,14 +47,14 @@ namespace CodeCracker.CSharp.Maintainability
                 .ToImmutableHashSet();
 
             var parameterWithDocParameter = (from key in keys
-                                            where key != null
-                                            let Parameter = methodParameters.FirstOrDefault(p => p.Identifier.ValueText == key)
-                                            let DocParameter = xElementsWitAttrs.FirstOrDefault(p => p.Identifier?.Identifier.ValueText == key)
-                                            select new { Parameter, DocParameter });
+                                             where key != null
+                                             let Parameter = methodParameters.FirstOrDefault(p => p.Identifier.ValueText == key)
+                                             let DocParameter = xElementsWitAttrs.FirstOrDefault(p => p.Identifier?.Identifier.ValueText == key)
+                                             select new { Parameter, DocParameter });
 
             if (parameterWithDocParameter.Any(p => p.Parameter == null))
             {
-                var properties = new Dictionary<string, string> {["kind"] = "nonexistentParam" }.ToImmutableDictionary();
+                var properties = new Dictionary<string, string> { ["kind"] = "nonexistentParam" }.ToImmutableDictionary();
                 var diagnostic = Diagnostic.Create(Rule, documentationNode.GetLocation(), properties);
                 context.ReportDiagnostic(diagnostic);
             }
