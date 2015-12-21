@@ -58,16 +58,28 @@ namespace CodeCracker.CSharp.Usage
                         var syntaxRefSemanticModel = syntaxReference.SyntaxTree.Equals(context.Tree)
                                 ? semanticModel
                                 : compilation.GetSemanticModel(syntaxReference.SyntaxTree);
-                        var assignments = syntaxReference.GetSyntax().DescendantNodes().OfType<AssignmentExpressionSyntax>();
-                        foreach (var assignment in assignments)
+                        var descendants = syntaxReference.GetSyntax().DescendantNodes().ToList();
+                        var assignments = descendants.OfKind(SyntaxKind.SimpleAssignmentExpression,
+                            SyntaxKind.AddAssignmentExpression, SyntaxKind.AndAssignmentExpression, SyntaxKind.DivideAssignmentExpression,
+                            SyntaxKind.ExclusiveOrAssignmentExpression, SyntaxKind.LeftShiftAssignmentExpression, SyntaxKind.ModuloAssignmentExpression,
+                            SyntaxKind.MultiplyAssignmentExpression, SyntaxKind.OrAssignmentExpression, SyntaxKind.RightShiftAssignmentExpression,
+                            SyntaxKind.SubtractAssignmentExpression);
+                        foreach (AssignmentExpressionSyntax assignment in assignments)
                         {
                             var fieldSymbol = syntaxRefSemanticModel.GetSymbolInfo(assignment.Left).Symbol as IFieldSymbol;
-                            if (fieldSymbol == null) continue;
-                            if ((method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
-                            || (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic))
-                                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, assignment, syntaxRefSemanticModel);
-                            else
-                                RemoveVariableThatHasAssignment(variablesToMakeReadonly, fieldSymbol);
+                            VerifyVariable(variablesToMakeReadonly, method, syntaxRefSemanticModel, assignment, fieldSymbol);
+                        }
+                        var postFixUnaries = descendants.OfKind(SyntaxKind.PostIncrementExpression, SyntaxKind.PostDecrementExpression);
+                        foreach (PostfixUnaryExpressionSyntax postFixUnary in postFixUnaries)
+                        {
+                            var fieldSymbol = syntaxRefSemanticModel.GetSymbolInfo(postFixUnary.Operand).Symbol as IFieldSymbol;
+                            VerifyVariable(variablesToMakeReadonly, method, syntaxRefSemanticModel, postFixUnary, fieldSymbol);
+                        }
+                        var preFixUnaries = descendants.OfKind(SyntaxKind.PreDecrementExpression, SyntaxKind.PreIncrementExpression);
+                        foreach (PrefixUnaryExpressionSyntax preFixUnary in preFixUnaries)
+                        {
+                            var fieldSymbol = syntaxRefSemanticModel.GetSymbolInfo(preFixUnary.Operand).Symbol as IFieldSymbol;
+                            VerifyVariable(variablesToMakeReadonly, method, syntaxRefSemanticModel, preFixUnary, fieldSymbol);
                         }
                     }
                 }
@@ -80,7 +92,18 @@ namespace CodeCracker.CSharp.Usage
             }
         }
 
-        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, AssignmentExpressionSyntax assignment, SemanticModel semanticModel)
+        private static void VerifyVariable(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IMethodSymbol method,
+            SemanticModel syntaxRefSemanticModel, SyntaxNode node, IFieldSymbol fieldSymbol)
+        {
+            if (fieldSymbol == null) return;
+            if ((method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
+            || (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic))
+                AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, node, syntaxRefSemanticModel);
+            else
+                RemoveVariableThatHasAssignment(variablesToMakeReadonly, fieldSymbol);
+        }
+
+        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, SyntaxNode assignment, SemanticModel semanticModel)
         {
             var parent = assignment.Parent;
             while (parent != null)
