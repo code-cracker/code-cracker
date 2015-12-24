@@ -94,6 +94,52 @@ namespace CodeCracker.Test.CSharp.Style
 
         }
 
+        [Fact]
+        public async Task IgnoresDeclarationsWithDynamicVaribleName()
+        {
+            const string test = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                dynamic fee = Fee();
+            }
+            object Fee() { return 42; }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+
+        [Fact]
+        public async Task DeclarationsWithDynamicVaribleNameWithInitializerAlsoDynamicCreatesDiagnosic()
+        {
+            const string test = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                dynamic fee = Fee();
+            }
+            dynamic Fee() { return 42; }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.AlwaysUseVar.ToDiagnosticId(),
+                Message = "Use 'var' instead of specifying the type name.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
         [Theory]
         [InlineData("int")]
         [InlineData("System.Int32")]
@@ -316,7 +362,7 @@ namespace CodeCracker.Test.CSharp.Style
                 var a = 10; //Blue
 
                 /*variables for use*/ var /*desc of b*/b = /* why not*/ ""12"";
-                var 
+                var
 /*Formatter does this My next variable*/ c /* is quite nice and it */ = ""23"";
             }
         }
@@ -325,5 +371,3 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }
 }
-
-

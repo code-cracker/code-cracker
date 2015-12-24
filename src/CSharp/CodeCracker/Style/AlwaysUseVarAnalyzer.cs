@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Style
             Category,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description:Description,
+            description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AlwaysUseVar));
 
         internal static readonly DiagnosticDescriptor RulePrimitives = new DiagnosticDescriptor(
@@ -53,6 +53,7 @@ namespace CodeCracker.CSharp.Style
                 .FirstOrDefault();
 
             if (variableDeclaration.Type.IsVar) return;
+            var isDynamic = (variableDeclaration.Type as IdentifierNameSyntax)?.Identifier.ValueText == "dynamic";
 
             var semanticModel = context.SemanticModel;
             var variableTypeName = localDeclaration.Declaration.Type;
@@ -63,6 +64,11 @@ namespace CodeCracker.CSharp.Style
                 if (variable.Initializer == null) return;
                 var conversion = semanticModel.ClassifyConversion(variable.Initializer.Value, variableType);
                 if (!conversion.IsIdentity) return;
+                if (isDynamic)
+                {
+                    var expressionReturnType = semanticModel.GetTypeInfo(variable.Initializer.Value);
+                    if (expressionReturnType.Type.SpecialType == SpecialType.System_Object) return;
+                }
             }
 
             var rule = IsPrimitvie(variableType) ? RulePrimitives : RuleNonPrimitives;
