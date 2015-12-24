@@ -53,10 +53,7 @@ namespace CodeCracker.CSharp.Style
                 .FirstOrDefault();
 
             if (variableDeclaration.Type.IsVar) return;
-            if ((variableDeclaration
-                .ChildNodes()
-                .FirstOrDefault(i => i.IsKind(SyntaxKind.IdentifierName)) as IdentifierNameSyntax)?
-                .Identifier == SyntaxFactory.Identifier("dynamic")) return;
+            var isDynamic = (variableDeclaration.Type as IdentifierNameSyntax)?.Identifier.ValueText == "dynamic";
 
             var semanticModel = context.SemanticModel;
             var variableTypeName = localDeclaration.Declaration.Type;
@@ -67,6 +64,9 @@ namespace CodeCracker.CSharp.Style
                 if (variable.Initializer == null) return;
                 var conversion = semanticModel.ClassifyConversion(variable.Initializer.Value, variableType);
                 if (!conversion.IsIdentity) return;
+                if (!isDynamic) continue;
+                var expressionReturnType = semanticModel.GetTypeInfo(variable.Initializer.Value);
+                if (expressionReturnType.Type.SpecialType == SpecialType.System_Object) return;
             }
 
             var rule = IsPrimitvie(variableType) ? RulePrimitives : RuleNonPrimitives;

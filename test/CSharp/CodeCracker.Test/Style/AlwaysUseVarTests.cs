@@ -94,6 +94,29 @@ namespace CodeCracker.Test.CSharp.Style
 
         }
 
+        [Fact]
+        public async Task IgnoresDeclarationsWithDynamicVaribleName()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            void Foo()
+            {
+                dynamic fee = Fee();
+            }
+
+            object Fee() { return 42; }
+        }
+    }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+
+        }
+
         [Theory]
         [InlineData("int")]
         [InlineData("System.Int32")]
