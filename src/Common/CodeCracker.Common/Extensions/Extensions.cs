@@ -23,5 +23,12 @@ namespace CodeCracker
                 if (text.EndsWith(value, comparisonType)) return true;
             return false;
         }
+
+        public static string ToLowerCaseFirstLetter(this string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return text;
+            if (text.Length == 1) return text.ToLower();
+            return char.ToLowerInvariant(text[0]) + text.Substring(1);
+        }
     }
 }

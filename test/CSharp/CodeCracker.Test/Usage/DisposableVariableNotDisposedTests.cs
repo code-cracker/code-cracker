@@ -1332,6 +1332,75 @@ using (var mem = new System.IO.MemoryStream())
 
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task ChainingFixesCorrectly()
+        {
+            var source = @"
+new System.IO.MemoryStream().Flush();
+".WrapInCSharpMethod();
+            var fixtest = @"using (var memoryStream = new System.IO.MemoryStream())
+{
+    memoryStream.Flush();
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task ChainingFixesCorrectlyWhenThereIsANameConflict()
+        {
+            var source = @"
+var memoryStream = 0;
+new System.IO.MemoryStream().Flush();
+".WrapInCSharpMethod();
+            var fixtest = @"
+var memoryStream = 0;
+using (var memoryStream1 = new System.IO.MemoryStream())
+{
+    memoryStream1.Flush();
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task ChainingFixesCorrectlyWhenThereIsAssignment()
+        {
+            var source = @"//comment
+var length = new System.IO.MemoryStream().Length;
+".WrapInCSharpMethod();
+            var fixtest = @"using (var memoryStream = new System.IO.MemoryStream())
+{
+    //comment
+    var length = memoryStream.Length;
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task ChainingFixesCorrectlyWhenPassedAsArgument()
+        {
+            const string source = @"
+class Foo
+{
+    static void Bar(long i) { }
+    static void Baz()
+    {
+        Bar(new System.IO.MemoryStream().Length);
+    }
+}";
+            const string fixtest = @"
+class Foo
+{
+    static void Bar(long i) { }
+    static void Baz()
+    {
+        using (var memoryStream = new System.IO.MemoryStream())
+        {
+            Bar(memoryStream.Length);
+        }
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }
-
