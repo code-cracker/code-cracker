@@ -449,5 +449,30 @@ namespace CodeCracker
                 if (node.IsAnyKind(kinds))
                     yield return node;
         }
+
+        public static StatementSyntax GetPreviousStatement(this StatementSyntax statement)
+        {
+            var parent = statement.Parent;
+            SyntaxList<StatementSyntax> statements;
+            if (parent.IsKind(SyntaxKind.Block))
+            {
+                var block = (BlockSyntax)parent;
+                statements = block.Statements;
+            }
+            else if (parent.IsKind(SyntaxKind.SwitchSection))
+            {
+                var section = (SwitchSectionSyntax)parent;
+                statements = section.Statements;
+            }
+            else return null;
+            if (statement.Equals(statements[0])) return null;
+            for (int i = 1; i < statements.Count; i++)
+            {
+                var someStatement = statements[i];
+                if (statement.Equals(someStatement))
+                    return statements[i - 1];
+            }
+            return null;
+        }
     }
 }
