@@ -8,6 +8,54 @@ namespace CodeCracker.Test.CSharp.Usage
     public class ReadonlyFieldTests : CodeFixVerifier<ReadonlyFieldAnalyzer, ReadonlyFieldCodeFixProvider>
     {
         [Fact]
+        public async Task IgnorePreIncrement()
+        {
+            const string source = @"
+class TypeName
+{
+    static int counter = 1;
+    static void Main() => ++counter;
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
+        }
+
+        [Fact]
+        public async Task IgnorePostIncrement()
+        {
+            const string source = @"
+class TypeName
+{
+    static int counter = 1;
+    static void Main() => counter++;
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
+        }
+
+        [Fact]
+        public async Task IgnorePreDecrement()
+        {
+            const string source = @"
+class TypeName
+{
+    static int counter = 1;
+    static void Main() => --counter;
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
+        }
+
+        [Fact]
+        public async Task IgnorePostDecrement()
+        {
+            const string source = @"
+class TypeName
+{
+    static int counter = 1;
+    static void Main() => counter--;
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
+        }
+
+        [Fact]
         public async Task IgnoreAssignmentToFieldsInOtherTypes()
         {
             const string source1 = @"
@@ -262,6 +310,21 @@ class TypeName2
         }
 
         [Fact]
+        public async Task FieldWithAddAssignmentDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class TypeName
+{
+    private int i = 0;
+    public void Foo()
+    {
+        i += 0;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task FieldWithAssignmentDoesNotCreateDiagnostic()
         {
             const string source = @"
@@ -269,7 +332,7 @@ class TypeName2
     {
         class TypeName
         {
-            private int i;
+            private int i = 0;
             public void Foo()
             {
                 i = 0;
@@ -285,9 +348,9 @@ class TypeName2
             const string source = @"
     namespace ConsoleApplication1
     {
-        class TypeName
+        struct TypeName
         {
-            private int i;
+            private int i = 0;
             public void Foo()
             {
                 i = 0;
