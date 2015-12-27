@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace CodeCracker.CSharp.Design
 {
@@ -34,6 +35,13 @@ namespace CodeCracker.CSharp.Design
             if (catchStatement == null || catchStatement.Declaration != null) return;
             if (catchStatement.Block?.Statements.Count == 0) return; // there is another analizer for this: EmptyCatchBlock
 
+            if (catchStatement.Block != null)
+            {
+                // Allow empty catch when the block ends with a throw.
+                var controlFlow = context.SemanticModel.AnalyzeControlFlow(catchStatement.Block);
+                if (!controlFlow.EndPointIsReachable && 
+                    controlFlow.ExitPoints.All(i => i.IsKind(SyntaxKind.ThrowStatement))) return;
+            }
             var diagnostic = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Consider put an Exception Class in catch.");
             context.ReportDiagnostic(diagnostic);
         }
