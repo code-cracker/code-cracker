@@ -436,6 +436,13 @@ namespace CodeCracker
             return null;
         }
 
+        public static IEnumerable<TNode> OfKind<TNode>(this IEnumerable<SyntaxNode> nodes, SyntaxKind kind) where TNode : SyntaxNode
+        {
+            foreach (var node in nodes)
+                if (node.IsKind(kind))
+                    yield return (TNode)node;
+        }
+
         public static IEnumerable<TNode> OfKind<TNode>(this IEnumerable<TNode> nodes, SyntaxKind kind) where TNode : SyntaxNode
         {
             foreach (var node in nodes)
