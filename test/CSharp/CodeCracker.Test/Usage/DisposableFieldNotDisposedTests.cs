@@ -7,7 +7,6 @@ namespace CodeCracker.Test.CSharp.Usage
 {
     public class DisposableFieldNotDisposedTests : CodeFixVerifier<DisposableFieldNotDisposedAnalyzer, DisposableFieldNotDisposedCodeFixProvider>
     {
-
         [Fact]
         public async Task FieldNotDisposableDoesNotCreateDiagnostic()
         {
@@ -19,6 +18,30 @@ namespace CodeCracker.Test.CSharp.Usage
             private int i;
         }
     }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WhenUsingTheDisposablePatternItDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+using System;
+using System.IO;
+public class A : IDisposable
+{
+    private MemoryStream disposableField = new MemoryStream();
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    private void Dispose(bool disposing)
+    {
+        if (disposing)
+            if (disposableField != null)
+                disposableField.Dispose();
+    }
+}";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
