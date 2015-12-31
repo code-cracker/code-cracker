@@ -3,12 +3,15 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace CodeCracker.CSharp.Refactoring
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ChangeAnyToAllAnalyzer : DiagnosticAnalyzer
     {
+        private const string speculativeAnnotationDescription = "ChangeAnyToAllAnalyzer_speculativeAnnotation";
+        private static readonly SyntaxAnnotation speculativeAnnotation = new SyntaxAnnotation(speculativeAnnotationDescription);
         internal const string MessageAny = "Change Any to All";
         internal const string MessageAll = "Change All to Any";
         internal const string TitleAny = MessageAny;
@@ -55,15 +58,11 @@ namespace CodeCracker.CSharp.Refactoring
             var methodName = (invocation?.Expression as MemberAccessExpressionSyntax)?.Name?.ToString();
             var nameToCheck = methodName == "Any" ? allName : methodName == "All" ? anyName : null;
             if (nameToCheck == null) return null;
-            var invocationSymbol = semanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
-            if (invocationSymbol?.Parameters.Length != 1) return null;
+            var methodSymbol = semanticModel.GetSymbolInfo(invocation.Expression).Symbol as IMethodSymbol;
+            if (methodSymbol?.Parameters.Length != 1) return null;
             if (!IsLambdaWithoutBody(invocation)) return null;
-            var otherInvocation = invocation.WithExpression(((MemberAccessExpressionSyntax)invocation.Expression).WithName(nameToCheck));
-            var otherInvocationSymbol = semanticModel.GetSpeculativeSymbolInfo(invocation.SpanStart, otherInvocation, SpeculativeBindingOption.BindAsExpression);
-            if (otherInvocationSymbol.Symbol == null) return null;
-            if (methodName == "Any")
-                return RuleAny;
-            return RuleAll;
+            if (!OtherMethodExists(invocation, nameToCheck, semanticModel)) return null;
+            return methodName == "Any" ? RuleAny : RuleAll;
         }
 
         private static bool IsLambdaWithoutBody(InvocationExpressionSyntax invocation)
@@ -72,6 +71,17 @@ namespace CodeCracker.CSharp.Refactoring
             var lambda = arg.Expression as LambdaExpressionSyntax;
             if (lambda == null) return false;
             return !(lambda.Body is BlockSyntax);
+        }
+
+        private static bool OtherMethodExists(InvocationExpressionSyntax invocation, SimpleNameSyntax nameToCheck, SemanticModel semanticModel)
+        {
+            var otherExpression = ((MemberAccessExpressionSyntax)invocation.Expression).WithName(nameToCheck).WithAdditionalAnnotations(speculativeAnnotation);
+            var statement = invocation.FirstAncestorOrSelfThatIsAStatement();
+            var otherStatement = statement.ReplaceNode(invocation.Expression, otherExpression);
+            SemanticModel speculativeModel;
+            if (!semanticModel.TryGetSpeculativeSemanticModel(statement.SpanStart, otherStatement, out speculativeModel)) return false;
+            var otherInvocationSymbol = speculativeModel.GetSymbolInfo(speculativeModel.SyntaxTree.GetRoot().GetAnnotatedNodes(speculativeAnnotationDescription).First());
+            return otherInvocationSymbol.Symbol != null;
         }
     }
 }

@@ -179,5 +179,58 @@ namespace CodeCracker.Test.CSharp.Refactoring
         public async Task ConvertsSpecialCases(string original, string fix) =>
             await VerifyCSharpFixAsync(original.WrapInCSharpMethod(usings: "\nusing System.Linq;"),
                 fix.WrapInCSharpMethod(usings: "\nusing System.Linq;"));
+
+        [Theory]
+        [InlineData("Any", DiagnosticId.ChangeAnyToAll)]
+        [InlineData("All", DiagnosticId.ChangeAllToAny)]
+        public async Task WithElvisOperatorCreatesDiagnostic(string methodName, DiagnosticId diagnosticId)
+        {
+            var source = $@"
+using System;
+using System.Linq;
+class TypeSymbol
+{{
+    public System.Collections.Generic.IList<int> AllInterfaces;
+}}
+class TypeName
+{{
+    void Foo()
+    {{
+        var typeSymbol = new TypeSymbol();
+        var y = typeSymbol?.AllInterfaces.{methodName}(i => i == 1);
+    }}
+}}";
+            var expected = new DiagnosticResult
+            {
+                Id = diagnosticId.ToDiagnosticId(),
+                Message = diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll,
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 43) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Theory]
+        [InlineData("typeSymbol?.AllInterfaces.Any(i => i == 1)", "!typeSymbol?.AllInterfaces.All(i => i != 1)")]
+        [InlineData("!typeSymbol?.AllInterfaces.All(i => i != 1)", "typeSymbol?.AllInterfaces.Any(i => i == 1)")]
+        public async Task FixesWithElvisOperator(string code, string fixedCode)
+        {
+            const string source = @"
+using System;
+using System.Linq;
+class TypeSymbol
+{{
+    public System.Collections.Generic.IList<int> AllInterfaces;
+}}
+class TypeName
+{{
+    void Foo()
+    {{
+        var typeSymbol = new TypeSymbol();
+        var y = {0};
+    }}
+}}";
+            await VerifyCSharpFixAsync(string.Format(source, code), string.Format(source, fixedCode));
+        }
     }
 }
