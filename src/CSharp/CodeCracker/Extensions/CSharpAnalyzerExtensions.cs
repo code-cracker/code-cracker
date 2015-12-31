@@ -146,6 +146,28 @@ namespace CodeCracker
             return false;
         }
 
+        public static MemberDeclarationSyntax FirstAncestorOrSelfThatIsAMember(this SyntaxNode node)
+        {
+            var currentNode = node;
+            while (true)
+            {
+                if (currentNode == null) break;
+                if (currentNode.IsAnyKind(
+                    SyntaxKind.EnumDeclaration, SyntaxKind.ClassDeclaration,
+                    SyntaxKind.InterfaceDeclaration, SyntaxKind.StructDeclaration,
+                    SyntaxKind.ConstructorDeclaration, SyntaxKind.DestructorDeclaration,
+                    SyntaxKind.MethodDeclaration, SyntaxKind.PropertyDeclaration,
+                    SyntaxKind.EventDeclaration, SyntaxKind.DelegateDeclaration,
+                    SyntaxKind.EventFieldDeclaration, SyntaxKind.FieldDeclaration,
+                    SyntaxKind.ConversionOperatorDeclaration, SyntaxKind.OperatorDeclaration,
+                    SyntaxKind.IndexerDeclaration, SyntaxKind.NamespaceDeclaration))
+                    return (MemberDeclarationSyntax)currentNode;
+                currentNode = currentNode.Parent;
+            }
+            return null;
+
+        }
+
         public static StatementSyntax FirstAncestorOrSelfThatIsAStatement(this SyntaxNode node)
         {
             var currentNode = node;
