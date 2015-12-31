@@ -77,11 +77,21 @@ namespace CodeCracker.CSharp.Refactoring
         {
             var otherExpression = ((MemberAccessExpressionSyntax)invocation.Expression).WithName(nameToCheck).WithAdditionalAnnotations(speculativeAnnotation);
             var statement = invocation.FirstAncestorOrSelfThatIsAStatement();
-            var otherStatement = statement.ReplaceNode(invocation.Expression, otherExpression);
             SemanticModel speculativeModel;
-            if (!semanticModel.TryGetSpeculativeSemanticModel(statement.SpanStart, otherStatement, out speculativeModel)) return false;
-            var otherInvocationSymbol = speculativeModel.GetSymbolInfo(speculativeModel.SyntaxTree.GetRoot().GetAnnotatedNodes(speculativeAnnotationDescription).First());
-            return otherInvocationSymbol.Symbol != null;
+            if (statement != null)
+            {
+                var otherStatement = statement.ReplaceNode(invocation.Expression, otherExpression);
+                if (!semanticModel.TryGetSpeculativeSemanticModel(statement.SpanStart, otherStatement, out speculativeModel)) return false;
+            }
+            else
+            {
+                var arrow = (ArrowExpressionClauseSyntax)invocation.FirstAncestorOfKind(SyntaxKind.ArrowExpressionClause);
+                if (arrow == null) return false;
+                var otherArrow = arrow.ReplaceNode(invocation.Expression, otherExpression);
+                if (!semanticModel.TryGetSpeculativeSemanticModel(arrow.SpanStart, otherArrow, out speculativeModel)) return false;
+            }
+            var symbol = speculativeModel.GetSymbolInfo(speculativeModel.SyntaxTree.GetRoot().GetAnnotatedNodes(speculativeAnnotationDescription).First()).Symbol;
+            return symbol != null;
         }
     }
 }
