@@ -49,20 +49,31 @@ namespace CodeCracker.CSharp.Refactoring
             if (invocation.Parent?.IsKind(SyntaxKind.ExpressionStatement) ?? true) return;
             var diagnosticToRaise = GetCorrespondingDiagnostic(context.SemanticModel, invocation);
             if (diagnosticToRaise == null) return;
-            var diagnostic = Diagnostic.Create(diagnosticToRaise, ((MemberAccessExpressionSyntax)invocation.Expression).Name.GetLocation());
+            var diagnostic = Diagnostic.Create(diagnosticToRaise, GetName(invocation).GetLocation());
             context.ReportDiagnostic(diagnostic);
         }
 
         private static DiagnosticDescriptor GetCorrespondingDiagnostic(SemanticModel semanticModel, InvocationExpressionSyntax invocation)
         {
-            var methodName = (invocation?.Expression as MemberAccessExpressionSyntax)?.Name?.ToString();
-            var nameToCheck = methodName == "Any" ? allName : methodName == "All" ? anyName : null;
+            var methodName = GetName(invocation);
+            var methodNameText = methodName?.ToString();
+            var nameToCheck = methodNameText == "Any" ? allName : methodNameText == "All" ? anyName : null;
             if (nameToCheck == null) return null;
             var methodSymbol = semanticModel.GetSymbolInfo(invocation.Expression).Symbol as IMethodSymbol;
             if (methodSymbol?.Parameters.Length != 1) return null;
             if (!IsLambdaWithoutBody(invocation)) return null;
             if (!OtherMethodExists(invocation, nameToCheck, semanticModel)) return null;
-            return methodName == "Any" ? RuleAny : RuleAll;
+            return methodNameText == "Any" ? RuleAny : RuleAll;
+        }
+
+        public static SimpleNameSyntax GetName(InvocationExpressionSyntax invocation)
+        {
+            SimpleNameSyntax methodName = null;
+            if (invocation.Expression.IsKind(SyntaxKind.MemberBindingExpression))
+                methodName = ((MemberBindingExpressionSyntax)invocation.Expression).Name;
+            else if (invocation.Expression.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+                methodName = ((MemberAccessExpressionSyntax)invocation.Expression).Name;
+            return methodName;
         }
 
         private static bool IsLambdaWithoutBody(InvocationExpressionSyntax invocation)
@@ -75,7 +86,7 @@ namespace CodeCracker.CSharp.Refactoring
 
         private static bool OtherMethodExists(InvocationExpressionSyntax invocation, SimpleNameSyntax nameToCheck, SemanticModel semanticModel)
         {
-            var otherExpression = ((MemberAccessExpressionSyntax)invocation.Expression).WithName(nameToCheck).WithAdditionalAnnotations(speculativeAnnotation);
+            var otherExpression = CreateExpressionWithNewName(invocation, nameToCheck);
             var statement = invocation.FirstAncestorOrSelfThatIsAStatement();
             SemanticModel speculativeModel;
             if (statement != null)
@@ -92,6 +103,16 @@ namespace CodeCracker.CSharp.Refactoring
             }
             var symbol = speculativeModel.GetSymbolInfo(speculativeModel.SyntaxTree.GetRoot().GetAnnotatedNodes(speculativeAnnotationDescription).First()).Symbol;
             return symbol != null;
+        }
+
+        public static ExpressionSyntax CreateExpressionWithNewName(InvocationExpressionSyntax invocation, SimpleNameSyntax nameToCheck)
+        {
+            ExpressionSyntax otherExpression = null;
+            if (invocation.Expression.IsKind(SyntaxKind.MemberBindingExpression))
+                otherExpression = ((MemberBindingExpressionSyntax)invocation.Expression).WithName(nameToCheck).WithAdditionalAnnotations(speculativeAnnotation);
+            else //avoid this, already checked before: if (invocation.Expression.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+                otherExpression = ((MemberAccessExpressionSyntax)invocation.Expression).WithName(nameToCheck).WithAdditionalAnnotations(speculativeAnnotation);
+            return otherExpression;
         }
     }
 }

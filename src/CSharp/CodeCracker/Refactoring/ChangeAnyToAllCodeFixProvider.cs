@@ -43,7 +43,8 @@ namespace CodeCracker.CSharp.Refactoring
         private static SyntaxNode ReplaceInvocation(InvocationExpressionSyntax invocation, ExpressionSyntax newInvocation, SyntaxNode root)
         {
             ExpressionSyntax lastExpression = invocation;
-            while (lastExpression.Parent is ExpressionSyntax)
+            while (lastExpression.Parent.IsAnyKind(SyntaxKind.MemberBindingExpression, SyntaxKind.SimpleMemberAccessExpression,
+                SyntaxKind.ConditionalAccessExpression, SyntaxKind.LogicalNotExpression))
                 lastExpression = (ExpressionSyntax)lastExpression.Parent;
             var lastExpressionWithNewInvocation = lastExpression.ReplaceNode(invocation, newInvocation);
             if (lastExpression.IsKind(SyntaxKind.LogicalNotExpression))
@@ -55,9 +56,9 @@ namespace CodeCracker.CSharp.Refactoring
 
         internal static ExpressionSyntax CreateNewInvocation(InvocationExpressionSyntax invocation)
         {
-            var methodName = ((MemberAccessExpressionSyntax)invocation.Expression).Name.ToString();
+            var methodName = ChangeAnyToAllAnalyzer.GetName(invocation).ToString();
             var nameToCheck = methodName == "Any" ? ChangeAnyToAllAnalyzer.allName : ChangeAnyToAllAnalyzer.anyName;
-            var newInvocation = invocation.WithExpression(((MemberAccessExpressionSyntax)invocation.Expression).WithName(nameToCheck));
+            var newInvocation = invocation.WithExpression(ChangeAnyToAllAnalyzer.CreateExpressionWithNewName(invocation, nameToCheck));
             var comparisonExpression = (ExpressionSyntax)((LambdaExpressionSyntax)newInvocation.ArgumentList.Arguments.First().Expression).Body;
             var newComparisonExpression = CreateNewComparison(comparisonExpression);
             newComparisonExpression = RemoveParenthesis(newComparisonExpression);
