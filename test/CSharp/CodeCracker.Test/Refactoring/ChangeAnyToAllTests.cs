@@ -232,5 +232,72 @@ class TypeName
 }}";
             await VerifyCSharpFixAsync(string.Format(source, code), string.Format(source, fixedCode));
         }
+
+        [Theory]
+        [InlineData("Any", DiagnosticId.ChangeAnyToAll)]
+        [InlineData("All", DiagnosticId.ChangeAllToAny)]
+        public async Task ExpressionBodiedMemberCreatesDiagnostic(string methodName, DiagnosticId diagnosticId)
+        {
+            var source = $@"
+using System;
+using System.Linq;
+class TypeName
+{{
+    private System.Collections.Generic.IList<int> xs;
+    bool Foo() => xs.{methodName}(i => i == 1);
+}}";
+            var expected = new DiagnosticResult
+            {
+                Id = diagnosticId.ToDiagnosticId(),
+                Message = diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll,
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 22) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Theory]
+        [InlineData("xs.Any(i => i == 1)", "!xs.All(i => i != 1)")]
+        [InlineData("!xs.All(i => i != 1)", "xs.Any(i => i == 1)")]
+        public async Task FixesExpressionBodiedMember(string code, string fixedCode)
+        {
+            var source = @"
+using System;
+using System.Linq;
+class TypeName
+{{
+    private System.Collections.Generic.IList<int> xs;
+    bool Foo() => {0};
+}}";
+            await VerifyCSharpFixAsync(string.Format(source, code), string.Format(source, fixedCode));
+        }
+
+        [Theory]
+        [InlineData("Any", DiagnosticId.ChangeAnyToAll)]
+        [InlineData("All", DiagnosticId.ChangeAllToAny)]
+        public async Task NegationWithCoalesceExpressionCreatesDiagnostic(string methodName, DiagnosticId diagnosticId)
+        {
+            var source = $@"
+var ints = new [] {{ 1 }};
+var query = !ints?.{methodName}(i => i == 1) ?? true;";
+            var expected = new DiagnosticResult
+            {
+                Id = diagnosticId.ToDiagnosticId(),
+                Message = diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll,
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 20) }
+            };
+            await VerifyCSharpDiagnosticAsync(source.WrapInCSharpMethod(usings: "\nusing System.Linq;"), expected);
+        }
+
+        [Theory]
+        [InlineData(@"
+            var ints = new [] {1, 2};
+            var query = !ints?.Any(i => i == 1) ?? true;", @"
+            var ints = new [] {1, 2};
+            var query = ints?.All(i => i != 1) ?? true;")]
+        public async Task FixesNegationWithCoalesceExpression(string original, string fix) =>
+            await VerifyCSharpFixAsync(original.WrapInCSharpMethod(usings: "\nusing System.Linq;"),
+                fix.WrapInCSharpMethod(usings: "\nusing System.Linq;"));
     }
 }
