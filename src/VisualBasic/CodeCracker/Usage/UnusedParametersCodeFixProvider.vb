@@ -77,7 +77,7 @@ Namespace Usage
                             newArguments = newArguments.WithArguments(newArguments.Arguments.RemoveAt(parameterPosition))
                         End While
                         replacingArgs.Add(arguments, newArguments)
-                    Else
+                    ElseIf parameterPosition < arguments.Arguments.Count Then
                         Dim newArguments = arguments.WithArguments(arguments.Arguments.RemoveAt(parameterPosition))
                         replacingArgs.Add(arguments, newArguments)
                     End If

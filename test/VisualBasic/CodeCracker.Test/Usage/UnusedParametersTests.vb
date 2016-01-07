@@ -540,6 +540,133 @@ End Class"
             Await VerifyBasicFixAllAsync({source1, source2}, {fix1, fix2})
         End Function
 
+        <Fact>
+        Public Async Function FixAllWithOnlyAnOptionalNotPassedInSameClass() As Task
+            Const source As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo()
+    End Sub
+    Public Sub Foo(Optional ByVal b As String = Nothing)
+        dim a = 1
+    End Sub
+End Class"
+            Const fixtest As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo()
+    End Sub
+    Public Sub Foo()
+        dim a = 1
+    End Sub
+End Class"
+            Await VerifyBasicFixAllAsync(source, fixtest)
+        End Function
+
+        <Fact>
+        Public Async Function FixAllWithOptionalNotPassedInSameClass() As Task
+            Const source As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo(1, 2, , 3, 4)
+    End Sub
+    Public Sub Foo(ByVal a As Integer, ByVal b As Integer, Optional ByVal c As String = Nothing, ParamArray ByVal d() As Integer)
+        a = 1
+    End Sub
+End Class"
+            Const fixtest As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo(1)
+    End Sub
+    Public Sub Foo(ByVal a As Integer)
+        a = 1
+    End Sub
+End Class"
+            Await VerifyBasicFixAllAsync(source, fixtest)
+        End Function
+
+        <Fact>
+        Public Async Function FixAllWithOptionalPassedInSameClass() As Task
+            Const source As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo(1, 2, """", 3, 4)
+    End Sub
+    Public Sub Foo(ByVal a As Integer, ByVal b As Integer, Optional ByVal c As String = Nothing, ParamArray ByVal d() As Integer)
+        a = 1
+    End Sub
+End Class"
+            Const fixtest As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo(1)
+    End Sub
+    Public Sub Foo(ByVal a As Integer)
+        a = 1
+    End Sub
+End Class"
+            Await VerifyBasicFixAllAsync(source, fixtest)
+        End Function
+
+        <Fact>
+        Public Async Function FixAllWithOptionalNotPassedInDifferentClass() As Task
+            Const source1 As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Referenced.Foo(1, 2, , 3, 4)
+    End Sub
+End Class"
+            Const source2 As String = "
+Class Referenced
+    Public Shared Sub Foo(ByVal a As Integer, ByVal b As Integer, Optional ByVal c As String = Nothing, ParamArray ByVal d() As Integer)
+        a = 1
+    End Sub
+End Class"
+            Const fix1 As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Referenced.Foo(1)
+    End Sub
+End Class"
+            Const fix2 As String = "
+Class Referenced
+    Public Shared Sub Foo(ByVal a As Integer)
+        a = 1
+    End Sub
+End Class"
+            Await VerifyBasicFixAllAsync({source1, source2}, {fix1, fix2})
+        End Function
+
+        <Fact>
+        Public Async Function FixAllWithOptionalPassedInDifferentClass() As Task
+            Const source1 As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Referenced.Foo(1, 2, """", 3, 4)
+    End Sub
+End Class"
+            Const source2 As String = "
+Class Referenced
+    Public Shared Sub Foo(ByVal a As Integer, ByVal b As Integer, Optional ByVal c As String = Nothing, ParamArray ByVal d() As Integer)
+        a = 1
+    End Sub
+End Class"
+            Const fix1 As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Referenced.Foo(1)
+    End Sub
+End Class"
+            Const fix2 As String = "
+Class Referenced
+    Public Shared Sub Foo(ByVal a As Integer)
+        a = 1
+    End Sub
+End Class"
+            Await VerifyBasicFixAllAsync({source1, source2}, {fix1, fix2})
+        End Function
+
         Private Function CreateDiagnosticResult(parameterName As String, line As Integer, column As Integer) As DiagnosticResult
             Return New DiagnosticResult With {
                 .Id = DiagnosticId.UnusedParameters.ToDiagnosticId(),
