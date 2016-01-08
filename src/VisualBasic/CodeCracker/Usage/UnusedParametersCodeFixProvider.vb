@@ -45,10 +45,10 @@ Namespace Usage
             Dim parameterPosition = parameterList.Parameters.IndexOf(parameter)
             Dim newParameterList = parameterList.WithParameters(parameterList.Parameters.Remove(parameter))
             Dim foundDocument = False
-            Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken)
+            Dim semanticModel = Await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(False)
             Dim method = parameter.FirstAncestorOfType(GetType(SubNewStatementSyntax), GetType(MethodBlockSyntax))
             Dim methodSymbol = semanticModel.GetDeclaredSymbol(method)
-            Dim references = Await SymbolFinder.FindReferencesAsync(methodSymbol, solution, cancellationToken).ConfigureAwait(False)
+            Dim references = Await SymbolFinder.FindReferencesAsync(methodSymbol, solution, cancellationToken)
             Dim documentGroups = references.SelectMany(Function(r) r.Locations).GroupBy(Function(loc) loc.Document)
             Dim docs = New List(Of DocumentIdAndRoot)
             For Each documentGroup In documentGroups
@@ -71,9 +71,15 @@ Namespace Usage
                     Dim arguments = If(objectCreation IsNot Nothing,
                         objectCreation.ArgumentList,
                         methodIdentifier.FirstAncestorOfType(Of InvocationExpressionSyntax).ArgumentList)
-                    If parameter.Modifiers.Any(Function(m) m.IsKind(SyntaxKind.ParamArrayKeyword)) Then
+
+                    ' Attempt to find the parameter as a named argument.  Named arguments can only appear once in the argument list.
+                    Dim namedArg = arguments.Arguments.Where(Function(arg) arg.IsNamed).OfType(Of SimpleArgumentSyntax).SingleOrDefault(Function(arg) arg.NameColonEquals.Name.Identifier.Text = parameter.Identifier.Identifier.Text)
+                    If namedArg IsNot Nothing Then
+                        Dim newArguments = arguments.WithArguments(arguments.Arguments.Remove(namedArg))
+                        replacingArgs.Add(arguments, newArguments)
+                    ElseIf parameter.Modifiers.Any(Function(m) m.IsKind(SyntaxKind.ParamArrayKeyword)) Then
                         Dim newArguments = arguments
-                        While newArguments.Arguments.Count > parameterPosition
+                        While parameterPosition < newArguments.Arguments.Count
                             newArguments = newArguments.WithArguments(newArguments.Arguments.RemoveAt(parameterPosition))
                         End While
                         replacingArgs.Add(arguments, newArguments)
