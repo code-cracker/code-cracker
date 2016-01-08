@@ -667,6 +667,29 @@ End Class"
             Await VerifyBasicFixAllAsync({source1, source2}, {fix1, fix2})
         End Function
 
+        <Fact>
+        Public Async Function FixAllWithNamedParametersInSameClass() As Task
+            Const source As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo(b:= 2, a:= 1)
+    End Sub
+    Public Sub Foo(ByVal a As Integer, ByVal b As Integer)
+        a = 1
+    End Sub
+End Class"
+            Const fixtest As String = "
+Class TypeName
+    Public Sub IsReferencing()
+        Me.Foo(a:= 1)
+    End Sub
+    Public Sub Foo(ByVal a As Integer)
+        a = 1
+    End Sub
+End Class"
+            Await VerifyBasicFixAllAsync(source, fixtest)
+        End Function
+
         Private Function CreateDiagnosticResult(parameterName As String, line As Integer, column As Integer) As DiagnosticResult
             Return New DiagnosticResult With {
                 .Id = DiagnosticId.UnusedParameters.ToDiagnosticId(),
