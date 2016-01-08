@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name =nameof(IntroduceFieldFromConstructorCodeFixProvider)), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(IntroduceFieldFromConstructorCodeFixProvider)), Shared]
     public class IntroduceFieldFromConstructorCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.IntroduceFieldFromConstructor.ToDiagnosticId());
@@ -48,22 +48,30 @@ namespace CodeCracker.CSharp.Refactoring
             var fieldType = parameter.Type;
             var members = ExtractMembersFromClass(oldClass.Members);
 
+            var addMember = false;
             if (!members.Any(p => p.Key == fieldName && p.Value == fieldType.ToString()))
             {
                 var identifierPostFix = 0;
                 while (members.Any(p => p.Key == fieldName))
                     fieldName = parameter.Identifier.ValueText + ++identifierPostFix;
+
+                addMember = true;
+            }
+
+            var assignmentField = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                                               SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(),
+                                               SyntaxFactory.IdentifierName(fieldName)), SyntaxFactory.IdentifierName(parameter.Identifier.ValueText)));
+            var newConstructor = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignmentField));
+            newClass = newClass.ReplaceNode(constructorStatement, newConstructor);
+
+            if (addMember)
+            {
                 var newField = SyntaxFactory.FieldDeclaration(SyntaxFactory.VariableDeclaration(parameter.Type)
                                     .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(fieldName)))))
                                     .WithModifiers(SyntaxFactory.TokenList(new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword) }))
                                     .WithAdditionalAnnotations(Formatter.Annotation);
                 newClass = newClass.WithMembers(newClass.Members.Insert(0, newField)).WithoutAnnotations(Formatter.Annotation);
             }
-            var assignmentField = SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                                               SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(),
-                                               SyntaxFactory.IdentifierName(fieldName)), SyntaxFactory.IdentifierName(parameter.Identifier.ValueText)));
-            var newConstructor = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignmentField));
-            newClass = newClass.ReplaceNode(newClass.DescendantNodes().OfType<ConstructorDeclarationSyntax>().First(), newConstructor);
             var newRoot = root.ReplaceNode(oldClass, newClass);
             return newRoot;
         }
