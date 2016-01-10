@@ -5,6 +5,54 @@ namespace CodeCracker.Test.CSharp.Usage
 {
     public class RemovePrivateMethodNeverUsedAnalyzerTest : CodeFixVerifier<RemovePrivateMethodNeverUsedAnalyzer, RemovePrivateMethodNeverUsedCodeFixProvider>
     {
+
+        [Theory]
+        [InlineData("Fact")]
+        [InlineData("ContractInvariantMethod")]
+        [InlineData("DataMember")]
+        public async void DoesNotGenerateDiagnosticsWhenMethodAttributeIsAnException(string value)
+        {
+            var source = @"
+class Foo
+{
+    [" + value + @"]
+    private void PrivateFoo() { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Theory]
+        [InlineData("[Obsolete, Fact]")]
+        [InlineData("[Obsolete]\n[Fact]")]
+        public async void DoesNotGenerateDiagnosticsWhenMethodAttributeIsAnExceptionAndMixedWithOtherAttributes(string value)
+        {
+            var source = @"
+class Foo
+{
+    " + value + @"
+    private void PrivateFoo() { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async void GenerateDiagnosticsOnNotIgnoredAttributes()
+        {
+            const string source = @"
+class Foo
+{
+    [Obsolete]
+    private void PrivateFoo() { }
+}";
+            const string fixtest = @"
+class Foo
+{
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+
+
         [Fact]
         public async void DoesNotGenerateDiagnostics()
         {
