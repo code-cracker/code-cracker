@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Usage
         const string Description = "When a private method declared  does not used might bring incorrect conclusions.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-             DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId(),
+            DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId(),
             Title,
             Message,
             Category,
@@ -40,12 +40,38 @@ namespace CodeCracker.CSharp.Usage
             if (methodDeclaration.ExplicitInterfaceSpecifier != null) return;
             var methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
             if (methodSymbol.DeclaredAccessibility != Accessibility.Private) return;
+            if (IsMethodAttributeAnException(methodDeclaration)) return;
             if (IsMethodUsed(methodDeclaration, context.SemanticModel)) return;
             if (IsMainMethodEntryPoint(methodDeclaration, context.SemanticModel)) return;
             if (methodDeclaration.Modifiers.Any(SyntaxKind.ExternKeyword)) return;
             var props = new Dictionary<string, string> { { "identifier", methodDeclaration.Identifier.Text } }.ToImmutableDictionary();
             var diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation(), props);
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static bool IsMethodAttributeAnException(MethodDeclarationSyntax methodDeclaration)
+        {
+            if (methodDeclaration == null) return false;
+
+            foreach (var attributeList in methodDeclaration.AttributeLists)
+            {
+                foreach (var attribute in attributeList.Attributes)
+                {
+                    var identifierName = attribute.Name as IdentifierNameSyntax;
+                    var nameText = identifierName?.Identifier.Text;
+                    if (nameText == null) continue;
+                    if (IsExcludedAttributeName(nameText)) return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool IsExcludedAttributeName(string attributeName)
+        {
+            // Some Attributes make it valid to have an unused private Method, this is a list of them
+            string[] excludedAttributeNames = { "Fact", "ContractInvariantMethod", "DataMember" };
+
+            return excludedAttributeNames.Contains(attributeName) ? true : false;
         }
 
         private static bool IsMethodUsed(MethodDeclarationSyntax methodTarget, SemanticModel semanticModel)
