@@ -66,13 +66,11 @@ namespace CodeCracker.CSharp.Usage
             return false;
         }
 
-        private static bool IsExcludedAttributeName(string attributeName)
-        {
-            // Some Attributes make it valid to have an unused private Method, this is a list of them
-            string[] excludedAttributeNames = { "Fact", "ContractInvariantMethod", "DataMember" };
+        // Some Attributes make it valid to have an unused private Method, this is a list of them
+        private static readonly string[] excludedAttributeNames = { "Fact", "ContractInvariantMethod", "DataMember" };
 
-            return excludedAttributeNames.Contains(attributeName) ? true : false;
-        }
+        private static bool IsExcludedAttributeName(string attributeName) =>
+            excludedAttributeNames.Contains(attributeName);
 
         private static bool IsMethodUsed(MethodDeclarationSyntax methodTarget, SemanticModel semanticModel)
         {
