@@ -87,16 +87,16 @@ namespace CodeCracker.CSharp.Usage
 
         private static bool CallsDisposeOnField(IFieldSymbol fieldSymbol, MethodDeclarationSyntax method, SemanticModel semanticModel)
         {
-            var hasDisposeCall = method.Body.DescendantNodes().OfKind<ExpressionStatementSyntax>(SyntaxKind.ExpressionStatement)
-                .Any(exp =>
+            var body = (SyntaxNode)method.Body ?? method.ExpressionBody;
+            var hasDisposeCall = body.DescendantNodes().OfKind<InvocationExpressionSyntax>(SyntaxKind.InvocationExpression)
+                .Any(invocation =>
                 {
-                    var invocation = exp.Expression as InvocationExpressionSyntax;
                     if (!invocation?.Expression?.IsKind(SyntaxKind.SimpleMemberAccessExpression) ?? true) return false;
                     var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
+                    if (memberAccess?.Name == null) return false;
                     if (memberAccess.Name.Identifier.ToString() != "Dispose" || memberAccess.Name.Arity != 0) return false;
-                    var memberAccessIdentificer = memberAccess.Expression as IdentifierNameSyntax;
-                    if (memberAccessIdentificer == null) return false;
-                    return fieldSymbol.Equals(semanticModel.GetSymbolInfo(memberAccessIdentificer).Symbol);
+                    if (!memberAccess.Expression.IsKind(SyntaxKind.IdentifierName)) return false;
+                    return fieldSymbol.Equals(semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol);
                 });
             return hasDisposeCall;
         }
