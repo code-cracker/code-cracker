@@ -1,9 +1,9 @@
-﻿using CodeCracker.CSharp.Design.InconsistentAccessibility;
+﻿using System.Threading.Tasks;
+using CodeCracker.CSharp.Design.InconsistentAccessibility;
 using Microsoft.CodeAnalysis.CodeFixes;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace CodeCracker.Test.CSharp.Design
+namespace CodeCracker.Test.CSharp.Design.InconsistentAccessibilityTests
 {
     public partial class InconsistentAccessibilityTests : CodeFixVerifier
     {

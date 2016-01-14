@@ -7,23 +7,27 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeCracker.CSharp.Design.InconsistentAccessibility
 {
-    public sealed class InconsistentAccessibilityInPropertyType : InconsistentAccessibilityInfoProvider
+    public sealed class InconsistentAccessibilityInPropertyType : InconsistentAccessibilitySourceProvider
     {
         private static readonly LocalizableString CodeActionMessage = new LocalizableResourceString(nameof(Resources.InconsistentAccessibilityInPropertyType_Title), Resources.ResourceManager, typeof(Resources));
 
-        public async Task<InconsistentAccessibilityInfo> GetInconsistentAccessibilityInfoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        public async Task<InconsistentAccessibilitySource> ExtractInconsistentAccessibilitySourceAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var result = new InconsistentAccessibilityInfo();
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var propertyThatRaisedError = syntaxRoot.FindNode(diagnostic.Location.SourceSpan).AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().FirstOrDefault();
             if (propertyThatRaisedError != null)
             {
-                result.TypeToChangeAccessibility = propertyThatRaisedError.Type;
-                result.CodeActionMessage = string.Format(CodeActionMessage.ToString(), result.TypeToChangeAccessibility, propertyThatRaisedError.Identifier.ValueText);
-                result.NewAccessibilityModifiers = propertyThatRaisedError.Modifiers.CloneAccessibilityModifiers();
+                var type = propertyThatRaisedError.Type;
+
+                var message = string.Format(CodeActionMessage.ToString(), type, propertyThatRaisedError.Identifier.ValueText);
+
+                return
+                    new InconsistentAccessibilitySource(
+                        message,
+                        type, propertyThatRaisedError.Modifiers.CloneAccessibilityModifiers());
             }
 
-            return result;
+            return InconsistentAccessibilitySource.Invalid;
         }
     }
 }
