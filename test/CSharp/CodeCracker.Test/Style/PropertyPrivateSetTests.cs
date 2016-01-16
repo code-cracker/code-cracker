@@ -1,4 +1,5 @@
 ﻿using CodeCracker.CSharp.Style;
+using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -20,6 +21,46 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task NotWarningPrivatePropertyDeclaration()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private int MyProperty { get; set; }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task WarningOnPublicPropertyDeclaration()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public int MyProperty { get; set; }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.PropertyPrivateSet.ToDiagnosticId(),
+                Message = "Consider use a 'private set'.",
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
 
