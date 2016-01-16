@@ -48,7 +48,7 @@ namespace CodeCracker.CSharp.Design
             var symbol = context.SemanticModel.GetSymbolInfo(identifier).Symbol;
 
             if (typeInfo.ConvertedType.BaseType.Name != typeof(MulticastDelegate).Name ||
-                symbol is ILocalSymbol || symbol is IParameterSymbol || IsReadOnlyAndInitializedForCertain(context, symbol)) return;
+                symbol.Kind == SymbolKind.Local || symbol.Kind == SymbolKind.Parameter || IsReadOnlyAndInitializedForCertain(context, symbol)) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), identifier.Identifier.Text));
         }
@@ -67,14 +67,14 @@ namespace CodeCracker.CSharp.Design
         /// </remarks>
         private static bool IsReadOnlyAndInitializedForCertain(SyntaxNodeAnalysisContext context, ISymbol symbol)
         {
-            if (!(symbol is IFieldSymbol)) return false;
+            if (symbol.Kind != SymbolKind.Field) return false;
 
-            var field = symbol as IFieldSymbol;
+            var field = (IFieldSymbol)symbol;
             foreach (var declaringSyntaxReference in symbol.DeclaringSyntaxReferences)
             {
                 var variableDeclarator = declaringSyntaxReference.GetSyntax(context.CancellationToken) as VariableDeclaratorSyntax;
-                
-                if (variableDeclarator != null && variableDeclarator.Initializer != null && field.IsReadOnly && 
+
+                if (variableDeclarator != null && variableDeclarator.Initializer != null && field.IsReadOnly &&
                     !variableDeclarator.Initializer.Value.IsKind(SyntaxKind.NullLiteralExpression)) return true;
             }
 
@@ -82,11 +82,10 @@ namespace CodeCracker.CSharp.Design
             {
                 foreach (var declaringSyntaxReference in constructor.DeclaringSyntaxReferences)
                 {
-                    var constructorSyntax = declaringSyntaxReference.GetSyntax() as ConstructorDeclarationSyntax;
+                    var constructorSyntax = declaringSyntaxReference.GetSyntax(context.CancellationToken) as ConstructorDeclarationSyntax;
                     if (constructorSyntax != null)
-                    {
-                        if (DoesBlockContainCertainInitializer(context, symbol, constructorSyntax.Body.Statements) == InitializerState.Initializer && field.IsReadOnly) return true;
-                    }
+                        if (field.IsReadOnly && DoesBlockContainCertainInitializer(context, symbol, constructorSyntax.Body.Statements) == InitializerState.Initializer)
+                            return true;
                 }
             }
 
@@ -123,97 +122,97 @@ namespace CodeCracker.CSharp.Design
         /// <param name="symbol">The symbol.</param>
         /// <param name="statements">The statements.</param>
         /// <returns>
-        /// True if the symbol is initialized for certain in the block of statements give; otherwise false.
+        /// The initializer state found
         /// </returns>
         /// <remarks>
         /// Code blocks that might not always be called are:
         /// - An if or else statement.
         /// - The body of a for, while or for-each loop.
         /// - Switch statements
-        /// 
+        ///
         /// The following exceptions are taken into account:
         /// - If both if and else statements contain a certain initialization.
         /// - If all cases in a switch contain a certain initialization (this means a default case must exist as well).
-        /// 
+        ///
         /// Please note that this is a recursive function so we can check a block of code in an if statement for example.
         /// </remarks>
         private static InitializerState DoesBlockContainCertainInitializer(SyntaxNodeAnalysisContext context, ISymbol symbol, IEnumerable<StatementSyntax> statements)
         {
             // Keep track of the current initializer state. This can only be None
-            // or Initializer, WayToSkipInitialezer will always be returned immediately.
+            // or Initializer, WayToSkipInitializer will always be returned immediately.
             // Only way to go back from Initializer to None is if there is an assignment
             // to null after a previous assignment to a non-null value.
             var currentState = InitializerState.None;
-            
+
             foreach (var statement in statements)
             {
-                if (statement is ReturnStatementSyntax && currentState == InitializerState.None)
+                if (statement.IsKind(SyntaxKind.ReturnStatement) && currentState == InitializerState.None)
                 {
                     return InitializerState.WayToSkipInitializer;
                 }
-                else if (statement is BlockSyntax)
+                else if (statement.IsKind(SyntaxKind.Block))
                 {
-                    var blockResult = DoesBlockContainCertainInitializer(context, symbol, (statement as BlockSyntax).Statements);
-                    if (blockResult == InitializerState.WayToSkipInitializer && currentState == InitializerState.None)
-                        return blockResult;
+                    var blockResult = DoesBlockContainCertainInitializer(context, symbol, ((BlockSyntax)statement).Statements);
+                    if (CanSkipInitializer(blockResult, currentState))
+                        return InitializerState.WayToSkipInitializer;
                     if (blockResult == InitializerState.Initializer)
                         currentState = blockResult;
                 }
-                else if (statement is UsingStatementSyntax)
+                else if (statement.IsKind(SyntaxKind.UsingStatement))
                 {
-                    var blockResult = DoesBlockContainCertainInitializer(context, symbol, new[] { (statement as UsingStatementSyntax).Statement });
-                    if (blockResult == InitializerState.WayToSkipInitializer && currentState == InitializerState.None)
-                        return blockResult;
+                    var blockResult = DoesBlockContainCertainInitializer(context, symbol, new[] { ((UsingStatementSyntax)statement).Statement });
+                    if (CanSkipInitializer(blockResult, currentState))
+                        return InitializerState.WayToSkipInitializer;
                     if (blockResult == InitializerState.Initializer)
                         currentState = blockResult;
                 }
-                else if (statement is ExpressionStatementSyntax)
+                else if (statement.IsKind(SyntaxKind.ExpressionStatement))
                 {
-                    var expression = (statement as ExpressionStatementSyntax).Expression;
-                    if (expression is AssignmentExpressionSyntax)
+                    var expression = ((ExpressionStatementSyntax)statement).Expression;
+                    if (expression.IsKind(SyntaxKind.SimpleAssignmentExpression))
                     {
-                        var identifier = (expression as AssignmentExpressionSyntax).Left;
+                        var assignmentExpression = (AssignmentExpressionSyntax)expression;
+                        var identifier = assignmentExpression.Left;
                         if (identifier != null)
                         {
-                            var right = (expression as AssignmentExpressionSyntax).Right;
-                            if (right != null && right.IsKind(SyntaxKind.NullLiteralExpression))
-                                currentState = InitializerState.None;
-                            else if (context.SemanticModel.GetSymbolInfo(identifier).Symbol == symbol)
-                                currentState = InitializerState.Initializer;
+                            var right = assignmentExpression.Right;
+                            if (right != null)
+                            {
+                                if (right.IsKind(SyntaxKind.NullLiteralExpression))
+                                    currentState = InitializerState.None;
+                                else if (symbol.Equals(context.SemanticModel.GetSymbolInfo(identifier).Symbol))
+                                    currentState = InitializerState.Initializer;
+                            }
                         }
                     }
                 }
-                else if(statement is SwitchStatementSyntax)
+                else if (statement.IsKind(SyntaxKind.SwitchStatement))
                 {
-                    var switchStatement = statement as SwitchStatementSyntax;
-                    if(switchStatement.Sections.Any(s => s.Labels.Any(l => l is DefaultSwitchLabelSyntax)))
+                    var switchStatement = (SwitchStatementSyntax)statement;
+                    if (switchStatement.Sections.Any(s => s.Labels.Any(l => l.IsKind(SyntaxKind.DefaultSwitchLabel))))
                     {
-                        var results = switchStatement.Sections.Select(s => DoesBlockContainCertainInitializer(context, symbol, s.Statements));
-                        if(results.All(r => r == InitializerState.Initializer))
+                        var sectionInitializerStates = switchStatement.Sections.Select(s => DoesBlockContainCertainInitializer(context, symbol, s.Statements)).ToList();
+                        if (sectionInitializerStates.All(sectionInitializerState => sectionInitializerState == InitializerState.Initializer))
                             currentState = InitializerState.Initializer;
-                        else if(results.Any(r => r == InitializerState.WayToSkipInitializer && currentState == InitializerState.None))
+                        else if (sectionInitializerStates.Any(sectionInitializerState => CanSkipInitializer(sectionInitializerState, currentState)))
                             return InitializerState.WayToSkipInitializer;
-                    }                    
+                    }
                 }
-                else if (statement is IfStatementSyntax)
+                else if (statement.IsKind(SyntaxKind.IfStatement))
                 {
-                    var ifStatement = statement as IfStatementSyntax;
+                    var ifStatement = (IfStatementSyntax)statement;
 
                     var ifResult = DoesBlockContainCertainInitializer(context, symbol, new[] { ifStatement.Statement });
                     if (ifStatement.Else != null)
-                    {                       
+                    {
                         var elseResult = DoesBlockContainCertainInitializer(context, symbol, new[] { ifStatement.Else.Statement });
 
                         if (ifResult == InitializerState.Initializer && elseResult == InitializerState.Initializer)
-                        {
                             currentState = InitializerState.Initializer;
-                        }
-                        if (elseResult == InitializerState.WayToSkipInitializer && currentState == InitializerState.None)
-                        {
+                        if (CanSkipInitializer(elseResult, currentState))
                             return InitializerState.WayToSkipInitializer;
-                        }
                     }
-                    if (ifResult == InitializerState.WayToSkipInitializer && currentState == InitializerState.None)
+                    if (CanSkipInitializer(ifResult, currentState))
                     {
                         return InitializerState.WayToSkipInitializer;
                     }
@@ -221,5 +220,8 @@ namespace CodeCracker.CSharp.Design
             }
             return currentState;
         }
+
+        private static bool CanSkipInitializer(InitializerState foundState, InitializerState currentState) =>
+            foundState == InitializerState.WayToSkipInitializer && currentState == InitializerState.None;
     }
 }
