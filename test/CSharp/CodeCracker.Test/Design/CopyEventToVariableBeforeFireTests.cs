@@ -23,7 +23,7 @@ namespace CodeCracker.Test.CSharp.Design
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
-                Message = "Copy the 'MyEvent' event to a variable before fire it.",
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
             };
@@ -53,7 +53,7 @@ namespace CodeCracker.Test.CSharp.Design
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
-                Message = "Copy the 'MyEvent' event to a variable before fire it.",
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
             };
@@ -85,7 +85,7 @@ namespace CodeCracker.Test.CSharp.Design
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
-                Message = "Copy the 'MyEvent' event to a variable before fire it.",
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 25) }
             };
@@ -106,6 +106,503 @@ namespace CodeCracker.Test.CSharp.Design
                         var handler = MyEvent;
                         if (handler != null)
                             handler(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyButNotAssignedInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly int SomeOtherField;
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass()
+                    {
+                        SomeOtherField = 42;
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedInIfInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(bool shouldAssign)
+                    {
+                        if(shouldAssign)
+                        {
+                            MyEvent = (sender, args) => { };
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedInForeachInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(int[] values)
+                    {
+                        foreach(var value in values)
+                        {
+                            MyEvent = (sender, args) => { };
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedInForInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(int number)
+                    {
+                        for(int i = 0; i < number; i++)
+                        {
+                            MyEvent = (sender, args) => { };
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedInWhileInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(int number)
+                    {
+                        while(number > 0)
+                        {
+                            MyEvent = (sender, args) => { };
+                            number--;
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 17, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedAfterReturnInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(bool returnEarly)
+                    {
+                        if(returnEarly)
+                        {
+                            return;
+                        }
+                        MyEvent = (sender, args) => { };
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 17, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedToNullRegularAssignmentOnFieldDeclaration()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent = null;
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedToNullInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(bool returnEarly)
+                    {
+                        MyEvent = null;
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedToNullAfterRegularAssignmentInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(bool returnEarly)
+                    {
+                        MyEvent = (sender, args) => { };
+                        MyEvent = null;
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedInAllSwitchCasesButNoDefaultInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(int value)
+                    {
+                        switch(value)
+                        {
+                            case 1: MyEvent = (sender, args) => { }; break;
+                            case 2: MyEvent = (sender, args) => { }; break;
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 17, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndAssignedInASwitchCaseButNotAllInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(int value)
+                    {
+                        switch(value)
+                        {
+                            case 1: MyEvent = (sender, args) => { }; break;
+                            default: break;
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CopyEventToVariableBeforeFire.ToDiagnosticId(),
+                Message = "Copy the 'MyEvent' event to a variable before firing it.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 17, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void NotWarningIfEventIsReadOnlyAndAssignedInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass()
+                    {
+                        MyEvent = (sender, args) => { };
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void NotWarningIfEventIsReadOnlyAndAssignedInBlockInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(bool shouldAssign)
+                    {
+                        {
+                            MyEvent = (sender, args) => { };
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void NotWarningIfEventIsReadOnlyAndAssignedInIfAndElseInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(bool shouldAssign)
+                    {
+                        if(shouldAssign)
+                        {
+                            MyEvent = (sender, args) => { };
+                        }
+                        else
+                        {
+                            MyEvent = (sender, args) => { };
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void NotWarningIfEventIsReadOnlyAndAssignedInAllSwitchCasesInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(int value)
+                    {
+                        switch(value)
+                        {
+                            case 1: MyEvent = (sender, args) => { }; break;
+                            case 2: MyEvent = (sender, args) => { }; break;
+                            default: MyEvent = (sender, args) => { }; break;
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void WarningIfEventIsReadOnlyAndReturnAfterAssignmentInConstructor()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent;
+
+                    public MyClass(bool returnEarly)
+                    {
+                        MyEvent = (sender, args) => { };
+                        if(returnEarly)
+                        {
+                            return;
+                        }
+                    }
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void NotWarningIfEventIsReadOnlyAndAssignedOnFieldDeclaration()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    readonly System.EventHandler MyEvent = (sender, args) => { };
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
                     }
                 }";
 
