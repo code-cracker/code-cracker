@@ -55,7 +55,7 @@ namespace CodeCracker.Test.CSharp.Style
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.PropertyPrivateSet.ToDiagnosticId(),
-                Message = "Consider use a 'private set'.",
+                Message = PropertyPrivateSetAnalyzer.MessageFormat,
                 Severity = DiagnosticSeverity.Hidden,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
             };
@@ -74,7 +74,7 @@ namespace CodeCracker.Test.CSharp.Style
     {
         class TypeName
         {
-            public int MyProperty 
+            public int MyProperty
             {
                get { return 0; }
                private set {  }
@@ -166,7 +166,7 @@ namespace CodeCracker.Test.CSharp.Style
     {
         class TypeName
         {
-            public int MyProperty 
+            public int MyProperty
             {
                get { return 0; }
                set {  }
@@ -181,10 +181,10 @@ namespace CodeCracker.Test.CSharp.Style
     {
         class TypeName
         {
-            public int MyProperty 
+            public int MyProperty
             {
                get { return 0; }
-               private set 
+               private set
                {  }
             }
         }
@@ -204,7 +204,7 @@ namespace CodeCracker.Test.CSharp.Style
     {
         class TypeName
         {
-            public int MyProperty 
+            public int MyProperty
             {
                get { return 0; }
                set {  }
@@ -219,10 +219,10 @@ namespace CodeCracker.Test.CSharp.Style
     {
         class TypeName
         {
-            public int MyProperty 
+            public int MyProperty
             {
                get { return 0; }
-               protected set 
+               protected set
                {  }
             }
         }
@@ -242,7 +242,7 @@ namespace CodeCracker.Test.CSharp.Style
         class TypeName
         {
             [Obsolete(""this property is obsolete"")]
-            public int MyProperty 
+            public int MyProperty
             {
                get { return 0; }
                set {  }
@@ -258,10 +258,10 @@ namespace CodeCracker.Test.CSharp.Style
         class TypeName
         {
             [Obsolete(""this property is obsolete"")]
-            public int MyProperty 
+            public int MyProperty
             {
                get { return 0; }
-               protected set 
+               protected set
                {  }
             }
         }
