@@ -10,7 +10,7 @@ namespace CodeCracker.CSharp.Style
     public class PropertyPrivateSetAnalyzer : DiagnosticAnalyzer
     {
         internal const string Title = "You should change to 'private set' whenever possible.";
-        internal const string MessageFormat = "Consider use a 'private set'.";
+        internal const string MessageFormat = "Consider using a 'private set'.";
         internal const string Category = SupportedCategories.Style;
         const string Description = "Use private set for automatic properties.";
 
@@ -39,6 +39,7 @@ namespace CodeCracker.CSharp.Style
             var setAcessor = (invocationExpression.AccessorList.Accessors[0].Keyword.Text == "set") ? invocationExpression.AccessorList.Accessors[0] : invocationExpression.AccessorList.Accessors[1];
 
             if (setAcessor.Modifiers.Count != 0) return;
+            if (invocationExpression.Modifiers.Any(SyntaxKind.PrivateKeyword)) return;
 
             var error = string.Format(MessageFormat, MessageFormat);
 
