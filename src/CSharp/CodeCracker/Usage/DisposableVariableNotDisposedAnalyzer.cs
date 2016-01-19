@@ -37,8 +37,8 @@ namespace CodeCracker.CSharp.Usage
             var objectCreation = context.Node as ObjectCreationExpressionSyntax;
             if (objectCreation == null) return;
             if (objectCreation.Parent == null) return;
-            if (objectCreation.Parent.IsAnyKind(SyntaxKind.ReturnStatement, SyntaxKind.UsingStatement))
-                return;
+            if (IsAnyParentUsingStatementOrReturnStatement(objectCreation)) return;
+
             if (objectCreation.Ancestors().Any(i => i.IsAnyKind(
                 SyntaxKind.ThisConstructorInitializer,
                 SyntaxKind.BaseConstructorInitializer,
@@ -93,6 +93,19 @@ namespace CodeCracker.CSharp.Usage
                 var props = new Dictionary<string, string> { { "typeName", type.Name } }.ToImmutableDictionary();
                 context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.GetLocation(), props, type.Name.ToString()));
             }
+        }
+
+        private static bool IsAnyParentUsingStatementOrReturnStatement(SyntaxNode node)
+        {
+            var currentNode = node;
+            while (currentNode != null && currentNode.IsNotKind(SyntaxKind.MethodDeclaration))
+            {
+                if (currentNode.IsAnyKind(SyntaxKind.ReturnStatement, SyntaxKind.UsingStatement))
+                    return true;
+                currentNode = currentNode.Parent;
+            }
+
+            return false;
         }
 
         private static bool IsDisposedOrAssigned(SemanticModel semanticModel, StatementSyntax statement, ILocalSymbol identitySymbol)

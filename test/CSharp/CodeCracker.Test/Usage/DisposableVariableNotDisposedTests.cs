@@ -8,6 +8,35 @@ namespace CodeCracker.Test.CSharp.Usage
     public class DisposableVariableNotDisposedTests : CodeFixVerifier<DisposableVariableNotDisposedAnalyzer, DisposableVariableNotDisposedCodeFixProvider>
     {
         [Fact]
+        public async Task IgnoresDisposableObjectsCreatedDirectParentIsNotAnUsingStatement()
+        {
+            var source = "using (((new System.IO.MemoryStream()))) { }".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoresDisposableObjectsBeingCreatedWithTernaryInUsingStatement()
+        {
+            var source = @"
+namespace CSharpNamespace
+{
+    public class DisposableClass : System.IDisposable  { }
+
+    public class ActualClass
+    {
+        public DisposableClass Method()
+        {
+            using(true ? new DisposableClass() : null)
+            { }
+        }
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+
+
+        [Fact]
         public async Task VariableNotCreatedDoesNotCreateDiagnostic()
         {
             var source = "int i;".WrapInCSharpMethod();
@@ -45,7 +74,6 @@ namespace CodeCracker.Test.CSharp.Usage
         [Fact]
         public async Task DisposableVariableDeclaredWithAnotherVariableCreatesOnlyOneDiagnostic()
         {
-
             var source = "System.IO.MemoryStream a, b = new System.IO.MemoryStream();".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
