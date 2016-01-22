@@ -787,5 +787,35 @@ static class C
 }";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task FixAllWithNamedParametersInSameClass()
+        {
+            const string source = @"
+public static class C
+{
+    public static void IsReferencing()
+    {
+        Foo(b: 2, a: 1);
+    }
+    public static void Foo(int a, int b)
+    {
+        a = 1;
+    }
+}";
+            const string fixtest = @"
+public static class C
+{
+    public static void IsReferencing()
+    {
+        Foo(a: 1);
+    }
+    public static void Foo(int a)
+    {
+        a = 1;
+    }
+}";
+            await VerifyCSharpFixAllAsync(source, fixtest);
+        }
     }
 }

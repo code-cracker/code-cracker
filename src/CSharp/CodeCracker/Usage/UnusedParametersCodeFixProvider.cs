@@ -49,10 +49,10 @@ namespace CodeCracker.CSharp.Usage
             if (parameterList.Parameters.First().ToString().Contains("this")) parameterPosition--;
             var newParameterList = parameterList.WithParameters(parameterList.Parameters.Remove(parameter));
             var foundDocument = false;
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             var method = (BaseMethodDeclarationSyntax)parameter.Parent.Parent;
             var methodSymbol = semanticModel.GetDeclaredSymbol(method);
-            var references = await SymbolFinder.FindReferencesAsync(methodSymbol, solution, cancellationToken).ConfigureAwait(false);
+            var references = await SymbolFinder.FindReferencesAsync(methodSymbol, solution, cancellationToken);
             var documentGroups = references.SelectMany(r => r.Locations).GroupBy(loc => loc.Document);
             var docs = new List<DocumentIdAndRoot>();
             foreach (var documentGroup in documentGroups)
@@ -80,7 +80,15 @@ namespace CodeCracker.CSharp.Usage
                     var arguments = objectCreation != null
                         ? objectCreation.ArgumentList
                         : methodIdentifier.FirstAncestorOfType<InvocationExpressionSyntax>().ArgumentList;
-                    if (parameter.Modifiers.Any(m => m.IsKind(SyntaxKind.ParamsKeyword)))
+
+                    // Attempt to find the parameter as a named argument.  Named arguments can only appear once in the argument list.
+                    var namedArg = arguments.Arguments.SingleOrDefault(arg => arg.NameColon != null && arg.NameColon.Name.Identifier.Text == parameter.Identifier.Text);
+                    if (namedArg != null)
+                    {
+                        var newArguments = arguments.WithArguments(arguments.Arguments.Remove(namedArg));
+                        replacingArgs.Add(arguments, newArguments);
+                    }
+                    else if (parameter.Modifiers.Any(m => m.IsKind(SyntaxKind.ParamsKeyword)))
                     {
                         var newArguments = arguments;
                         while (newArguments.Arguments.Count > parameterPosition)

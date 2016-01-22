@@ -761,5 +761,21 @@ public class A : IDisposable
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task AlreadyDisposedDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class TypeName : System.IDisposable
+{
+    private D field = new D();
+    public void Dispose() => field.Dispose();
+}
+class D : System.IDisposable
+{
+    public void Dispose() { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
