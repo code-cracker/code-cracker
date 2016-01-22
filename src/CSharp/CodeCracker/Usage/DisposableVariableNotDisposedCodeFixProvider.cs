@@ -51,81 +51,112 @@ namespace CodeCracker.CSharp.Usage
             if (objectCreation.Parent.IsKind(SyntaxKind.SimpleAssignmentExpression))
             {
                 var assignmentExpression = (AssignmentExpressionSyntax)objectCreation.Parent;
-                var statement = assignmentExpression.Parent as ExpressionStatementSyntax;
-                var identitySymbol = (ILocalSymbol)semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
-                newRoot = UsedOutsideParentBlock(semanticModel, statement, identitySymbol)
-                    ? CreateRootAddingDisposeToEndOfMethod(root, statement, identitySymbol)
-                    : CreateRootWithUsing(root, statement, u => u.WithExpression(assignmentExpression));
+                newRoot = CreateRootWithUsingFromSimpleAssigmentExpression(root, semanticModel, assignmentExpression);
             }
             else if (objectCreation.Parent.IsKind(SyntaxKind.EqualsValueClause) && objectCreation.Parent.Parent.IsKind(SyntaxKind.VariableDeclarator))
             {
                 var variableDeclarator = (VariableDeclaratorSyntax)objectCreation.Parent.Parent;
-                var variableDeclaration = (VariableDeclarationSyntax)variableDeclarator.Parent;
-                var statement = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
-                newRoot = CreateRootWithUsing(root, statement, u => u.WithDeclaration(variableDeclaration.WithoutLeadingTrivia()));
+                newRoot = CreateRootWithUsingFromVaribleDeclaration(root, variableDeclarator);
             }
             else if (objectCreation.Parent.IsKind(SyntaxKind.Argument))
             {
                 var identifierName = GetIdentifierName(objectCreation, semanticModel);
+                var childOfArgumentNode = objectCreation;
 
-                var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(@"var"))
-                    .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(identifierName))
-                    .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.Token(SyntaxKind.EqualsToken), objectCreation))));
-
-                var arg = objectCreation.Parent as ArgumentSyntax;
-                var args = objectCreation.Parent.Parent as ArgumentListSyntax;
-                var newArgs = args.ReplaceNode(arg, arg.WithExpression(SyntaxFactory.IdentifierName(identifierName)));
-
-                StatementSyntax statement = objectCreation.FirstAncestorOfType<ExpressionStatementSyntax>();
-                if (statement != null)
-                {
-                    var exprStatement = statement.ReplaceNode(args, newArgs);
-                    var newUsingStatment = CreateUsingStatement(exprStatement, SyntaxFactory.Block(exprStatement))
-                        .WithDeclaration(variableDeclaration);
-                    return root.ReplaceNode(statement, newUsingStatment);
-                }
-
-                statement = (StatementSyntax)objectCreation.Ancestors().First(node => node is StatementSyntax);
-                var newStatement = statement.ReplaceNode(args, newArgs);
-                var statementsForUsing = new[] { newStatement }.Concat(GetChildStatementsAfter(statement));
-                var usingBlock = SyntaxFactory.Block(statementsForUsing);
-                var usingStatement = CreateUsingStatement(newStatement, usingBlock)
-                    .WithDeclaration(variableDeclaration);
-                var statementsToReplace = new List<StatementSyntax> { statement };
-                statementsToReplace.AddRange(statementsForUsing.Skip(1));
-                newRoot = root.ReplaceNodes(statementsToReplace, (node, _) => node.Equals(statement) ? usingStatement : null);
+                newRoot = CreateRootWithUsingFromArgument(root, childOfArgumentNode, identifierName);
             }
             else if (objectCreation.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
             {
                 var newVariableName = objectCreation.Type.ToString();
-                var newVariableNameParts = newVariableName.Split('.');
-                newVariableName = newVariableNameParts[newVariableNameParts.Length - 1].ToLowerCaseFirstLetter();
-                var parentStatement = objectCreation.Parent.FirstAncestorOrSelfThatIsAStatement();
-                var originalName = newVariableName;
-                for (int nameIncrement = 1; ; nameIncrement++)
-                {
-                    var speculativeSymbol = semanticModel.GetSpeculativeSymbolInfo(parentStatement.GetLocation().SourceSpan.Start, SyntaxFactory.IdentifierName(newVariableName), SpeculativeBindingOption.BindAsExpression);
-                    if (speculativeSymbol.Symbol == null) break;
-                    newVariableName = originalName + nameIncrement;
-                }
-                var newVariable = SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("var"),
-                    SyntaxFactory.SeparatedList(new[] {
-                        SyntaxFactory.VariableDeclarator(newVariableName).WithInitializer(SyntaxFactory.EqualsValueClause(objectCreation))
-                    })));
-                newRoot = root.TrackNodes(parentStatement, objectCreation);
-                newRoot = newRoot.ReplaceNode(newRoot.GetCurrentNode(objectCreation), SyntaxFactory.IdentifierName(newVariableName));
-                var newTrackedParentStatement = newRoot.GetCurrentNode(parentStatement);
-                newRoot = newRoot.InsertNodesBefore(newTrackedParentStatement, new[] { newVariable });
-                var statement = (LocalDeclarationStatementSyntax)newRoot.GetCurrentNode(parentStatement).GetPreviousStatement();
-                var variableDeclaration = statement.Declaration;
-                var variableDeclarator = variableDeclaration.Variables.First();
-                newRoot = CreateRootWithUsing(newRoot, statement, u => u.WithDeclaration(variableDeclaration.WithoutLeadingTrivia()));
+                var accessedNode = objectCreation;
+                newRoot = CreatRootWithUsingFromMemberAccessedNode(root, semanticModel, ref newVariableName, accessedNode);
             }
             else
             {
                 newRoot = CreateRootWithUsing(root, (ExpressionStatementSyntax)objectCreation.Parent, u => u.WithExpression(objectCreation));
             }
             return newRoot;
+        }
+
+        private static SyntaxNode CreatRootWithUsingFromMemberAccessedNode(SyntaxNode root, SemanticModel semanticModel, ref string newVariableName, ExpressionSyntax accessedNode)
+        {
+            SyntaxNode newRoot;
+            var memberAccessStatement = accessedNode.Parent;
+            var newVariableNameParts = newVariableName.Split('.');
+            newVariableName = newVariableNameParts[newVariableNameParts.Length - 1].ToLowerCaseFirstLetter();
+            var parentStatement = memberAccessStatement.FirstAncestorOrSelfThatIsAStatement();
+            var originalName = newVariableName;
+            for (int nameIncrement = 1; ; nameIncrement++)
+            {
+                var speculativeSymbol = semanticModel.GetSpeculativeSymbolInfo(parentStatement.GetLocation().SourceSpan.Start, SyntaxFactory.IdentifierName(newVariableName), SpeculativeBindingOption.BindAsExpression);
+                if (speculativeSymbol.Symbol == null) break;
+                newVariableName = originalName + nameIncrement;
+            }
+            var newVariable = SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("var"),
+                SyntaxFactory.SeparatedList(new[] {
+                        SyntaxFactory.VariableDeclarator(newVariableName).WithInitializer(SyntaxFactory.EqualsValueClause(accessedNode))
+                })));
+            newRoot = root.TrackNodes(parentStatement, accessedNode);
+            newRoot = newRoot.ReplaceNode(newRoot.GetCurrentNode(accessedNode), SyntaxFactory.IdentifierName(newVariableName));
+            var newTrackedParentStatement = newRoot.GetCurrentNode(parentStatement);
+            newRoot = newRoot.InsertNodesBefore(newTrackedParentStatement, new[] { newVariable });
+            var statement = (LocalDeclarationStatementSyntax)newRoot.GetCurrentNode(parentStatement).GetPreviousStatement();
+            var variableDeclaration = statement.Declaration;
+            var variableDeclarator = variableDeclaration.Variables.First();
+            newRoot = CreateRootWithUsing(newRoot, statement, u => u.WithDeclaration(variableDeclaration.WithoutLeadingTrivia()));
+            return newRoot;
+        }
+
+        private static SyntaxNode CreateRootWithUsingFromVaribleDeclaration(SyntaxNode root, VariableDeclaratorSyntax variableDeclarator)
+        {
+            SyntaxNode newRoot;
+            var variableDeclaration = (VariableDeclarationSyntax)variableDeclarator.Parent;
+            var statement = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
+            newRoot = CreateRootWithUsing(root, statement, u => u.WithDeclaration(variableDeclaration.WithoutLeadingTrivia()));
+            return newRoot;
+        }
+
+        private static SyntaxNode CreateRootWithUsingFromSimpleAssigmentExpression(SyntaxNode root, SemanticModel semanticModel, AssignmentExpressionSyntax assignmentExpression)
+        {
+            SyntaxNode newRoot;
+            var statement = assignmentExpression.Parent as ExpressionStatementSyntax;
+            var identitySymbol = (ILocalSymbol)semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
+            newRoot = UsedOutsideParentBlock(semanticModel, statement, identitySymbol)
+                ? CreateRootAddingDisposeToEndOfMethod(root, statement, identitySymbol)
+                : CreateRootWithUsing(root, statement, u => u.WithExpression(assignmentExpression));
+            return newRoot;
+        }
+
+        private static SyntaxNode CreateRootWithUsingFromArgument(SyntaxNode root, ExpressionSyntax childOfArgumentNode, string identifierName)
+        {
+            var arg = childOfArgumentNode.Parent as ArgumentSyntax;
+
+            var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(@"var"))
+                .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(identifierName))
+                .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.Token(SyntaxKind.EqualsToken), childOfArgumentNode))));
+
+
+            var args = arg.Parent as ArgumentListSyntax;
+            var newArgs = args.ReplaceNode(arg, arg.WithExpression(SyntaxFactory.IdentifierName(identifierName)));
+
+            StatementSyntax statement = childOfArgumentNode.FirstAncestorOfType<ExpressionStatementSyntax>();
+            if (statement != null)
+            {
+                var exprStatement = statement.ReplaceNode(args, newArgs);
+                var newUsingStatment = CreateUsingStatement(exprStatement, SyntaxFactory.Block(exprStatement))
+                    .WithDeclaration(variableDeclaration);
+                return root.ReplaceNode(statement, newUsingStatment);
+            }
+
+            statement = (StatementSyntax)childOfArgumentNode.Ancestors().First(node => node is StatementSyntax);
+            var newStatement = statement.ReplaceNode(args, newArgs);
+            var statementsForUsing = new[] { newStatement }.Concat(GetChildStatementsAfter(statement));
+            var usingBlock = SyntaxFactory.Block(statementsForUsing);
+            var usingStatement = CreateUsingStatement(newStatement, usingBlock)
+                .WithDeclaration(variableDeclaration);
+            var statementsToReplace = new List<StatementSyntax> { statement };
+            statementsToReplace.AddRange(statementsForUsing.Skip(1));
+            return root.ReplaceNodes(statementsToReplace, (node, _) => node.Equals(statement) ? usingStatement : null);
         }
 
         private static string GetIdentifierName(ObjectCreationExpressionSyntax objectCreation, SemanticModel semanticModel)
