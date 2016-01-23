@@ -54,6 +54,25 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
+        public async Task WhenHasStringIniParameterShouldNotRaiseDiagnostic()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo(string name = "")
+            {
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+
+        }
+
+        [Fact]
         public async Task MethodNotUsingStringEmpty()
         {
             const string test = @"

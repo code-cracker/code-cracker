@@ -33,10 +33,16 @@ namespace CodeCracker.CSharp.Style
         {
             if (context.IsGenerated()) return;
             var literal = context.Node as LiteralExpressionSyntax;
-            if (literal.ToString() != "\"\"" || literal.Ancestors().OfType<AttributeArgumentSyntax>().Any())
-                return;
+            if (IsNoCandidateDiagnostic(literal)) return;
             var diagnostic = Diagnostic.Create(Rule, literal.GetLocation());
             context.ReportDiagnostic(diagnostic);
         }
+        private static bool IsNoCandidateDiagnostic(LiteralExpressionSyntax literal)
+        {
+            return literal.ToString() != "\"\"" ||
+                   literal.Ancestors().OfType<AttributeArgumentSyntax>().Any() ||
+                   literal.Ancestors().OfType<ParameterListSyntax>().Any();
+        }
+
     }
 }
