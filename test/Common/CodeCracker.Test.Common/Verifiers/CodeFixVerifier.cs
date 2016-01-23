@@ -38,7 +38,8 @@ namespace CodeCracker.Test
         /// <param name="formatBeforeCompare">Format the code before comparing, bot the old source and the new.</param>
         /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
         /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
-        protected async Task VerifyCSharpFixAsync(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6)
+        /// <param name="diagnosticIndex">Index determining which analyzer diagnostic to use if there are multiple</param>
+        protected async Task VerifyCSharpFixAsync(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6, int documentsCount = 1, int? diagnosticIndex = null)
         {
             if (formatBeforeCompare)
             {
@@ -48,9 +49,9 @@ namespace CodeCracker.Test
             codeFixProvider = codeFixProvider ?? GetCodeFixProvider();
             var diagnosticAnalyzer = GetDiagnosticAnalyzer();
             if (diagnosticAnalyzer != null)
-                await VerifyFixAsync(LanguageNames.CSharp, diagnosticAnalyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
+                await VerifyFixAsync(LanguageNames.CSharp, diagnosticAnalyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14, documentsCount, diagnosticIndex).ConfigureAwait(true);
             else
-                await VerifyFixAsync(LanguageNames.CSharp, codeFixProvider.FixableDiagnosticIds, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
+                await VerifyFixAsync(LanguageNames.CSharp, codeFixProvider.FixableDiagnosticIds, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14, documentsCount, diagnosticIndex).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -63,7 +64,8 @@ namespace CodeCracker.Test
         /// <param name="formatBeforeCompare">Format the code before comparing, bot the old source and the new.</param>
         /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
         /// <param name="languageVersionVB">The VB language version.</param>
-        protected async Task VerifyBasicFixAsync(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = false, CodeFixProvider codeFixProvider = null, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14)
+        /// <param name="diagnosticIndex">Index determining which analyzer diagnostic to use if there are multiple</param>
+        protected async Task VerifyBasicFixAsync(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = false, CodeFixProvider codeFixProvider = null, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14, int documentsCount = 1, int? diagnosticIndex = null)
         {
             if (formatBeforeCompare)
             {
@@ -73,9 +75,9 @@ namespace CodeCracker.Test
             codeFixProvider = codeFixProvider ?? GetCodeFixProvider();
             var diagnosticAnalyzer = GetDiagnosticAnalyzer();
             if (diagnosticAnalyzer != null)
-                await VerifyFixAsync(LanguageNames.VisualBasic, diagnosticAnalyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, LanguageVersion.CSharp6, languageVersionVB).ConfigureAwait(true);
+                await VerifyFixAsync(LanguageNames.VisualBasic, diagnosticAnalyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, LanguageVersion.CSharp6, languageVersionVB, documentsCount, diagnosticIndex).ConfigureAwait(true);
             else
-                await VerifyFixAsync(LanguageNames.VisualBasic, codeFixProvider.FixableDiagnosticIds, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, LanguageVersion.CSharp6, languageVersionVB).ConfigureAwait(true);
+                await VerifyFixAsync(LanguageNames.VisualBasic, codeFixProvider.FixableDiagnosticIds, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, LanguageVersion.CSharp6, languageVersionVB, documentsCount, diagnosticIndex).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -93,13 +95,16 @@ namespace CodeCracker.Test
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
         /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
         /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
-        private async static Task VerifyFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
+        /// <param name="diagnosticIndex">Index determining which analyzer diagnostic to use if there are multiple</param>
+        private async static Task VerifyFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB, int documentsCount, int? diagnosticIndex)
         {
             var supportedDiagnostics = analyzer.SupportedDiagnostics.Select(d => d.Id);
             var codeFixFixableDiagnostics = codeFixProvider.FixableDiagnosticIds;
             Assert.True(codeFixFixableDiagnostics.Any(d => supportedDiagnostics.Contains(d)), "Code fix provider does not fix the diagnostic provided by the analyzer.");
             var document = CreateDocument(oldSource, language, languageVersionCSharp, languageVersionVB);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }).ConfigureAwait(true);
+            if (diagnosticIndex != null)
+                analyzerDiagnostics = new Diagnostic[] { analyzerDiagnostics[diagnosticIndex.Value] };
             var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document).ConfigureAwait(true);
             var attempts = analyzerDiagnostics.Length;
 
@@ -136,13 +141,19 @@ namespace CodeCracker.Test
             //after applying all of the code fixes, compare the resulting string to the inputted one
             var actual = await GetStringFromDocumentAsync(document).ConfigureAwait(true);
             Assert.Equal(newSource, actual);
+            if (documentsCount != 1)
+            {
+                Assert.Equal(documentsCount, document.Project.Documents.Count());
+            }
         }
 
-        private async static Task VerifyFixAsync(string language, ImmutableArray<string> diagnosticIds, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
+        private async static Task VerifyFixAsync(string language, ImmutableArray<string> diagnosticIds, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB, int documentsCount, int? diagnosticIndex)
         {
             var document = CreateDocument(oldSource, language, languageVersionCSharp, languageVersionVB);
             var compilerDiagnostics = (await GetCompilerDiagnosticsAsync(document).ConfigureAwait(true)).ToList();
             var analyzerDiagnostics = compilerDiagnostics.Where(c => diagnosticIds.Contains(c.Id)).ToList();
+            if (diagnosticIndex != null)
+                analyzerDiagnostics = new List<Diagnostic> { analyzerDiagnostics[diagnosticIndex.Value] };
             var attempts = analyzerDiagnostics.Count;
 
             for (int i = 0; i < attempts; ++i)
@@ -178,6 +189,10 @@ namespace CodeCracker.Test
             //after applying all of the code fixes, compare the resulting string to the inputted one
             var actual = await GetStringFromDocumentAsync(document).ConfigureAwait(true);
             Assert.Equal(newSource, actual);
+            if (documentsCount != 1)
+            {
+                Assert.Equal(documentsCount, document.Project.Documents.Count());
+            }
         }
 
         protected async Task VerifyCSharpFixAllAsync(string[] oldSources, string[] newSources, bool allowNewCompilerDiagnostics = false, bool formatBeforeCompare = true, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6, string equivalenceKey = null)
