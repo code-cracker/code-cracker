@@ -62,6 +62,69 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Toggle between safe cast (&apos;as&apos;) and direct cast..
+        /// </summary>
+        public static string ChangeAsToCastAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("ChangeAsToCastAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle between safe cast (&apos;as&apos;) and direct cast..
+        /// </summary>
+        public static string ChangeAsToCastAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("ChangeAsToCastAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change safe cast (&apos;as&apos;) to direct cast.
+        /// </summary>
+        public static string ChangeAsToCastCodeFixProvider_AsToCast {
+            get {
+                return ResourceManager.GetString("ChangeAsToCastCodeFixProvider_AsToCast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change direct cast to safe cast (&apos;as&apos;).
+        /// </summary>
+        public static string ChangeAsToCastCodeFixProvider_CastToAs {
+            get {
+                return ResourceManager.GetString("ChangeAsToCastCodeFixProvider_CastToAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change method Count() to property Count. .
+        /// </summary>
+        public static string ChangeCountMethodToPropertyAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("ChangeCountMethodToPropertyAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change method Count() to property Count..
+        /// </summary>
+        public static string ChangeCountMethodToPropertyAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("ChangeCountMethodToPropertyAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change Count() to Count..
+        /// </summary>
+        public static string ChangeCountMethodToPropertyAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("ChangeCountMethodToPropertyAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to String interpolation allows for better reading of the resulting string when compared to Console.WriteLine arguments. You should use Console.WriteLine with arguments only when another method is supplying the format string..
         /// </summary>
         public static string ConsoleWriteLineAnalyzer_Description {
@@ -94,6 +157,15 @@ namespace CodeCracker.Properties {
         public static string ConsoleWriteLineCodeFixProvider_Title {
             get {
                 return ResourceManager.GetString("ConsoleWriteLineCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to none.
+        /// </summary>
+        public static string DefaultValue_None {
+            get {
+                return ResourceManager.GetString("DefaultValue_None", resourceCulture);
             }
         }
         
@@ -161,6 +233,42 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change class &apos;{0}&apos; accessibility to be as accessible as class &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInBaseClass_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInBaseClass_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change interface &apos;{0}&apos; accessibility to be as accessible as interface &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInBaseInterface_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInBaseInterface_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change parameter type &apos;{0}&apos; accessibility to be as accessible as delegate &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInDelegateParameter_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInDelegateParameter_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change delegate return type &apos;{0}&apos; accessibility to be as accessible as delegate &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInDelegateReturnType_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInDelegateReturnType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change field type &apos;{0}&apos; accessibility to be as accessible as field &apos;{1}&apos;.
         /// </summary>
         public static string InconsistentAccessibilityInFieldType_Title {
@@ -206,11 +314,92 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change parameter type &apos;{0}&apos; accessibility to be as accessible as operator &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInOperatorParameter_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInOperatorParameter_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change return type &apos;{0}&apos; accessibility to be as accessible as operator &apos;{1}&apos;.
+        /// </summary>
+        public static string InconsistentAccessibilityInOperatorReturnType_Title {
+            get {
+                return ResourceManager.GetString("InconsistentAccessibilityInOperatorReturnType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change property type &apos;{0}&apos; accessibility to be as accessible as property &apos;{1}&apos;.
         /// </summary>
         public static string InconsistentAccessibilityInPropertyType_Title {
             get {
                 return ResourceManager.GetString("InconsistentAccessibilityInPropertyType_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default value &apos;{0}&apos; of parameter &apos;{1}&apos; doesn&apos;t match the default value &apos;{2}&apos; from the base definition &apos;{3}&apos;..
+        /// </summary>
+        public static string InconsistentParameterDefaultValueAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("InconsistentParameterDefaultValueAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inconsistent parameter default value..
+        /// </summary>
+        public static string InconsistentParameterDefaultValueAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("InconsistentParameterDefaultValueAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the default value.
+        /// </summary>
+        public static string InconsistentParameterDefaultValueCodeFix_RemoveDefaultValue {
+            get {
+                return ResourceManager.GetString("InconsistentParameterDefaultValueCodeFix_RemoveDefaultValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the value from the base definition.
+        /// </summary>
+        public static string InconsistentParameterDefaultValueCodeFix_UseValueFromBaseDefinition {
+            get {
+                return ResourceManager.GetString("InconsistentParameterDefaultValueCodeFix_UseValueFromBaseDefinition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You may change this foreach loop to an equivalent Linq Expression..
+        /// </summary>
+        public static string LoopToLinq_Description {
+            get {
+                return ResourceManager.GetString("LoopToLinq_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change foreach loop to a Linq expression.
+        /// </summary>
+        public static string LoopToLinq_MessageFormat {
+            get {
+                return ResourceManager.GetString("LoopToLinq_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change foreach loop to a Linq expression.
+        /// </summary>
+        public static string LoopToLinq_Title {
+            get {
+                return ResourceManager.GetString("LoopToLinq_Title", resourceCulture);
             }
         }
         
@@ -256,6 +445,114 @@ namespace CodeCracker.Properties {
         public static string NameOfCodeFixProvider_Title {
             get {
                 return ResourceManager.GetString("NameOfCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A call to &apos;Count({0}) &gt; 0&apos; can be changed to &apos;Any({0})&apos;.
+        /// </summary>
+        public static string PreferAnyToCountGreaterThanZeroAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("PreferAnyToCountGreaterThanZeroAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prefer &apos;Any()&apos; to &apos;Count() &gt; 0&apos;.
+        /// </summary>
+        public static string PreferAnyToCountGreaterThanZeroAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("PreferAnyToCountGreaterThanZeroAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove async and return task directly..
+        /// </summary>
+        public static string ReturnTaskInsteadOfAwait_Description {
+            get {
+                return ResourceManager.GetString("ReturnTaskInsteadOfAwait_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} can directly return a task..
+        /// </summary>
+        public static string ReturnTaskInsteadOfAwait_MessageFormat {
+            get {
+                return ResourceManager.GetString("ReturnTaskInsteadOfAwait_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return task instead of await..
+        /// </summary>
+        public static string ReturnTaskInsteadOfAwait_Title {
+            get {
+                return ResourceManager.GetString("ReturnTaskInsteadOfAwait_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove &apos;async&apos; and return directly..
+        /// </summary>
+        public static string ReturnTaskInsteadOfAwaitCodeFixProvider_Title {
+            get {
+                return ResourceManager.GetString("ReturnTaskInsteadOfAwaitCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seal members of class &apos;{0}&apos;.
+        /// </summary>
+        public static string SealMemberAnalyzer_ClassMessageFormat {
+            get {
+                return ResourceManager.GetString("SealMemberAnalyzer_ClassMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If a member is overriding a base member, it could gain in performance by being sealed (not overridable)..
+        /// </summary>
+        public static string SealMemberAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("SealMemberAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seal member &apos;{0}&apos;.
+        /// </summary>
+        public static string SealMemberAnalyzer_MemberMessageFormat {
+            get {
+                return ResourceManager.GetString("SealMemberAnalyzer_MemberMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seal class members.
+        /// </summary>
+        public static string SealMemberAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("SealMemberAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seal members of class &apos;{0}&apos;.
+        /// </summary>
+        public static string SealMemberCodeFixProvider_ClassTitle {
+            get {
+                return ResourceManager.GetString("SealMemberCodeFixProvider_ClassTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seal member &apos;{0}&apos;.
+        /// </summary>
+        public static string SealMemberCodeFixProvider_MemberTitle {
+            get {
+                return ResourceManager.GetString("SealMemberCodeFixProvider_MemberTitle", resourceCulture);
             }
         }
         
@@ -328,6 +625,33 @@ namespace CodeCracker.Properties {
         public static string SwitchToAutoPropCodeFixProvider_Title {
             get {
                 return ResourceManager.GetString("SwitchToAutoPropCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This diagnostic checks the htmlColor value and triggers if the parsing fail by throwing an exception.
+        /// </summary>
+        public static string ValidateColorAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("ValidateColorAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your htmlColor value doesn&apos;t exist.
+        /// </summary>
+        public static string ValidateColorAnalyzer_Message {
+            get {
+                return ResourceManager.GetString("ValidateColorAnalyzer_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Validate color.
+        /// </summary>
+        public static string ValidateColorAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("ValidateColorAnalyzer_Title", resourceCulture);
             }
         }
         

@@ -177,6 +177,7 @@
     <Compile Include="Refactoring\ChangeAnyToAllTests.vb" />
     <Compile Include="Refactoring\ParameterRefactoryTests.vb" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.vb" />
+    <Compile Include="Style\PreferAnyToCountGreaterThanZeroTests.vb" />
     <Compile Include="Style\InterfaceNameTests.vb" />
     <Compile Include="Style\TernaryOperatorTests.vb" />
     <Compile Include="Usage\DisposablesShouldCallSuppressFinalizeTests.vb" />
