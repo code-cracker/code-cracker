@@ -7,6 +7,98 @@ namespace CodeCracker.Test.CSharp.Usage
 {
     public class DisposableVariableNotDisposedTests : CodeFixVerifier<DisposableVariableNotDisposedAnalyzer, DisposableVariableNotDisposedCodeFixProvider>
     {
+
+        [Fact]
+        public async Task FixAssignmentWithTernary()
+        {
+            const string source = @"
+public class CSharpClass
+{
+    struct ConsoleColorContext : System.IDisposable
+    {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    void Foo()
+    {
+        ConsoleColorContext? color = null;
+        var x = color.HasValue ? new ConsoleColorContext(color.Value) : null;
+    }
+}
+";
+            const string fixtest = @"
+public class CSharpClass
+{
+    struct ConsoleColorContext : System.IDisposable
+    {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    void Foo()
+    {
+        ConsoleColorContext? color = null;
+        using(var x = color.HasValue ? new ConsoleColorContext(color.Value) : null)
+        {
+        }
+    }
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentWithCast()
+        {
+            var source = @"var m = (System.IDisposable)new System.IO.MemoryStream();".WrapInCSharpMethod();
+            var fixtest = @"using (var m = (System.IDisposable)new System.IO.MemoryStream())
+{
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixADisposableDeclarationWithoutDisposeWithParenthese()
+        {
+            var source = @"var m = ((new System.IO.MemoryStream()));".WrapInCSharpMethod();
+            var fixtest = @"using (var m = ((new System.IO.MemoryStream())))
+{
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task IgnoresDisposableObjectsCreatedDirectParentIsNotAnUsingStatement()
+        {
+            var source = "using (((new System.IO.MemoryStream()))) { }".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoresDisposableObjectsBeingCreatedWithTernaryInUsingStatement()
+        {
+            var source = @"
+namespace CSharpNamespace
+{
+    public class DisposableClass : System.IDisposable  { }
+
+    public class ActualClass
+    {
+        public void Method()
+        {
+            using(true ? new DisposableClass() : null)
+            { }
+        }
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
         [Fact]
         public async Task VariableNotCreatedDoesNotCreateDiagnostic()
         {
@@ -45,7 +137,6 @@ namespace CodeCracker.Test.CSharp.Usage
         [Fact]
         public async Task DisposableVariableDeclaredWithAnotherVariableCreatesOnlyOneDiagnostic()
         {
-
             var source = "System.IO.MemoryStream a, b = new System.IO.MemoryStream();".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
