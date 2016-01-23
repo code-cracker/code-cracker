@@ -37,23 +37,30 @@ namespace CodeCracker.CSharp.Usage
             var objectCreation = context.Node as ObjectCreationExpressionSyntax;
             if (objectCreation == null) return;
             if (objectCreation.Parent == null) return;
-            if (IsAnyParentUsingStatementOrReturnStatement(objectCreation)) return;
 
-            if (objectCreation.Ancestors().Any(i => i.IsAnyKind(
+            var originalNode = objectCreation;
+            SyntaxNode topSyntaxNode = originalNode;
+            while (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ParenthesizedExpression, SyntaxKind.ConditionalExpression, SyntaxKind.CastExpression))
+                topSyntaxNode = topSyntaxNode.Parent;
+
+            if (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ReturnStatement, SyntaxKind.UsingStatement))
+                return;
+
+            if (topSyntaxNode.Ancestors().Any(i => i.IsAnyKind(
                 SyntaxKind.ThisConstructorInitializer,
                 SyntaxKind.BaseConstructorInitializer,
                 SyntaxKind.ObjectCreationExpression)))
                 return;
 
             var semanticModel = context.SemanticModel;
-            var type = semanticModel.GetSymbolInfo(objectCreation.Type).Symbol as INamedTypeSymbol;
+            var type = semanticModel.GetSymbolInfo(originalNode.Type).Symbol as INamedTypeSymbol;
             if (type == null) return;
             if (!type.AllInterfaces.Any(i => i.ToString() == "System.IDisposable")) return;
             ISymbol identitySymbol = null;
             StatementSyntax statement = null;
-            if (objectCreation.Parent.IsKind(SyntaxKind.SimpleAssignmentExpression))
+            if (topSyntaxNode.Parent.IsKind(SyntaxKind.SimpleAssignmentExpression))
             {
-                var assignmentExpression = (AssignmentExpressionSyntax)objectCreation.Parent;
+                var assignmentExpression = (AssignmentExpressionSyntax)topSyntaxNode.Parent;
                 identitySymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
                 if (identitySymbol?.Kind != SymbolKind.Local) return;
                 if (assignmentExpression.FirstAncestorOrSelf<MethodDeclarationSyntax>() == null) return;
@@ -61,9 +68,9 @@ namespace CodeCracker.CSharp.Usage
                 if (usingStatement != null) return;
                 statement = assignmentExpression.Parent as ExpressionStatementSyntax;
             }
-            else if (objectCreation.Parent.IsKind(SyntaxKind.EqualsValueClause) && objectCreation.Parent.Parent.IsKind(SyntaxKind.VariableDeclarator))
+            else if (topSyntaxNode.Parent.IsKind(SyntaxKind.EqualsValueClause) && topSyntaxNode.Parent.Parent.IsKind(SyntaxKind.VariableDeclarator))
             {
-                var variableDeclarator = (VariableDeclaratorSyntax)objectCreation.Parent.Parent;
+                var variableDeclarator = (VariableDeclaratorSyntax)topSyntaxNode.Parent.Parent;
                 var variableDeclaration = variableDeclarator?.Parent as VariableDeclarationSyntax;
                 identitySymbol = semanticModel.GetDeclaredSymbol(variableDeclarator);
                 if (identitySymbol == null) return;
@@ -72,18 +79,18 @@ namespace CodeCracker.CSharp.Usage
                 statement = variableDeclaration.Parent as LocalDeclarationStatementSyntax;
                 if ((statement?.FirstAncestorOrSelf<MethodDeclarationSyntax>()) == null) return;
             }
-            else if (objectCreation.Parent.IsAnyKind(SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression))
+            else if (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression))
             {
-                var anonymousFunction = objectCreation.Parent as AnonymousFunctionExpressionSyntax;
+                var anonymousFunction = topSyntaxNode.Parent as AnonymousFunctionExpressionSyntax;
                 var methodSymbol = semanticModel.GetSymbolInfo(anonymousFunction).Symbol as IMethodSymbol;
                 if (!methodSymbol.ReturnsVoid) return;
                 var props = new Dictionary<string, string> { { "typeName", type.Name }, { cantFix, "" } }.ToImmutableDictionary();
-                context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.GetLocation(), props, type.Name.ToString()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, originalNode.GetLocation(), props, type.Name.ToString()));
             }
             else
             {
                 var props = new Dictionary<string, string> { { "typeName", type.Name } }.ToImmutableDictionary();
-                context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.GetLocation(), props, type.Name.ToString()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, originalNode.GetLocation(), props, type.Name.ToString()));
                 return;
             }
             if (statement != null && identitySymbol != null)
@@ -91,21 +98,8 @@ namespace CodeCracker.CSharp.Usage
                 var isDisposeOrAssigned = IsDisposedOrAssigned(semanticModel, statement, (ILocalSymbol)identitySymbol);
                 if (isDisposeOrAssigned) return;
                 var props = new Dictionary<string, string> { { "typeName", type.Name } }.ToImmutableDictionary();
-                context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreation.GetLocation(), props, type.Name.ToString()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, originalNode.GetLocation(), props, type.Name.ToString()));
             }
-        }
-
-        private static bool IsAnyParentUsingStatementOrReturnStatement(SyntaxNode node)
-        {
-            var currentNode = node;
-            while (currentNode != null && currentNode.IsNotKind(SyntaxKind.MethodDeclaration))
-            {
-                if (currentNode.IsAnyKind(SyntaxKind.ReturnStatement, SyntaxKind.UsingStatement))
-                    return true;
-                currentNode = currentNode.Parent;
-            }
-
-            return false;
         }
 
         private static bool IsDisposedOrAssigned(SemanticModel semanticModel, StatementSyntax statement, ILocalSymbol identitySymbol)

@@ -48,32 +48,39 @@ namespace CodeCracker.CSharp.Usage
         public static SyntaxNode CreateUsing(SyntaxNode root, ObjectCreationExpressionSyntax objectCreation, SemanticModel semanticModel)
         {
             SyntaxNode newRoot;
-            if (objectCreation.Parent.IsKind(SyntaxKind.SimpleAssignmentExpression))
+            var originalNode = objectCreation;
+            var topSyntaxNode = (SyntaxNode)originalNode;
+
+            while (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ParenthesizedExpression, SyntaxKind.ConditionalExpression, SyntaxKind.CastExpression))
+                topSyntaxNode = topSyntaxNode.Parent;
+
+
+            if (topSyntaxNode.Parent.IsKind(SyntaxKind.SimpleAssignmentExpression))
             {
-                var assignmentExpression = (AssignmentExpressionSyntax)objectCreation.Parent;
+                var assignmentExpression = (AssignmentExpressionSyntax)topSyntaxNode.Parent;
                 newRoot = CreateRootWithUsingFromSimpleAssigmentExpression(root, semanticModel, assignmentExpression);
             }
-            else if (objectCreation.Parent.IsKind(SyntaxKind.EqualsValueClause) && objectCreation.Parent.Parent.IsKind(SyntaxKind.VariableDeclarator))
+            else if (topSyntaxNode.Parent.IsKind(SyntaxKind.EqualsValueClause) && topSyntaxNode.Parent.Parent.IsKind(SyntaxKind.VariableDeclarator))
             {
-                var variableDeclarator = (VariableDeclaratorSyntax)objectCreation.Parent.Parent;
+                var variableDeclarator = (VariableDeclaratorSyntax)topSyntaxNode.Parent.Parent;
                 newRoot = CreateRootWithUsingFromVaribleDeclaration(root, variableDeclarator);
             }
-            else if (objectCreation.Parent.IsKind(SyntaxKind.Argument))
+            else if (topSyntaxNode.Parent.IsKind(SyntaxKind.Argument))
             {
-                var identifierName = GetIdentifierName(objectCreation, semanticModel);
-                var childOfArgumentNode = objectCreation;
+                var identifierName = GetIdentifierName(originalNode, semanticModel);
+                var childOfArgumentNode = topSyntaxNode;
 
-                newRoot = CreateRootWithUsingFromArgument(root, childOfArgumentNode, identifierName);
+                newRoot = CreateRootWithUsingFromArgument(root, (ExpressionSyntax)childOfArgumentNode, identifierName);
             }
-            else if (objectCreation.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+            else if (topSyntaxNode.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
             {
-                var newVariableName = objectCreation.Type.ToString();
-                var accessedNode = objectCreation;
-                newRoot = CreatRootWithUsingFromMemberAccessedNode(root, semanticModel, ref newVariableName, accessedNode);
+                var newVariableName = originalNode.Type.ToString();
+                var accessedNode = topSyntaxNode;
+                newRoot = CreatRootWithUsingFromMemberAccessedNode(root, semanticModel, ref newVariableName, (ExpressionSyntax)accessedNode);
             }
             else
             {
-                newRoot = CreateRootWithUsing(root, (ExpressionStatementSyntax)objectCreation.Parent, u => u.WithExpression(objectCreation));
+                newRoot = CreateRootWithUsing(root, (ExpressionStatementSyntax)topSyntaxNode.Parent, u => u.WithExpression((ExpressionSyntax)topSyntaxNode));
             }
             return newRoot;
         }
