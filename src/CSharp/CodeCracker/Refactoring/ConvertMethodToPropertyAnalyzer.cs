@@ -62,7 +62,7 @@ namespace CodeCracker.CSharp.Refactoring
                 return;
             }
 
-            if (methodDeclaration.Body == null)
+            if ((methodDeclaration.Body ?? (object )methodDeclaration.ExpressionBody) == null)
             {
                 return;
             }
