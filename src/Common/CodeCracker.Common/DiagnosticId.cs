@@ -74,6 +74,7 @@
         TernaryOperator_Iif = 80,
         UseStaticRegexIsMatch = 81,
         ComputeExpression = 82,
+        AddPropertyToConstructor = 83,
         UseStringEmpty = 84,
         UseEmptyString = 88,
         RemoveRedundantElseClause = 89,
@@ -88,6 +89,6 @@
         AlwaysUseVarOnPrimitives = 105,
         NameOf_External = 108,
         InconsistentParameterDefaultValue = 110,
-        StringFormatArgs_ExtraArgs = 111,
-    }
+        StringFormatArgs_ExtraArgs = 111
+        }
 }

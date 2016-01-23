@@ -71,6 +71,8 @@
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchCodeFixProvider.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsAnalyzer.cs" />
+    <Compile Include="Refactoring\AddPropertyToConstructorAnalyzer.cs" />
+    <Compile Include="Refactoring\AddPropertyToConstructorCodeFixProvider.cs" />
     <Compile Include="Style\PreferAnyToCountGreaterThanZeroCodeFixProvider.cs" />
     <Compile Include="Style\PreferAnyToCountGreaterThanZeroAnalyzer.cs" />
     <Compile Include="Refactoring\ExtractClassToFileCodeFixProvider.cs" />
