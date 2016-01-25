@@ -443,5 +443,37 @@ namespace CodeCracker.Test.CSharp.Usage
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
 
+        [Fact]
+        public async void CallSupressWhenUsingExpressionBodiedMethod()
+        {
+            const string source = @"
+                   using System;
+                   using System.IO;
+
+                   public class MyType : System.IDisposable
+                   {
+                        MemoryStream memory;
+
+                        public virtual void Dispose() => memory.Dispose();
+                   }";
+
+            const string fixtest = @"
+                   using System;
+                   using System.IO;
+
+                   public class MyType : System.IDisposable
+                   {
+                        MemoryStream memory;
+
+                        public virtual void Dispose()
+                        {
+                           memory.Dispose();
+                           GC.SuppressFinalize(this);
+                        }
+                   }";
+
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
     }
 }
