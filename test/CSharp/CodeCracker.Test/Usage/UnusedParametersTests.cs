@@ -833,5 +833,32 @@ public class TypeName
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task ExpressionBodiedMethodCreatesDiagnostic()
+        {
+            const string source = @"
+public class TypeName
+{
+    static int Foo(int i) => 1;
+}";
+            await VerifyCSharpDiagnosticAsync(source, CreateDiagnosticResult("i", 4, 20));
+        }
+
+        [Fact]
+        public async Task FixExpressionBodiedMethod()
+        {
+            const string source = @"
+public class TypeName
+{
+    static int Foo(int i) => 1;
+}";
+            const string fixtest = @"
+public class TypeName
+{
+    static int Foo() => 1;
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }
