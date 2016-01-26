@@ -51,6 +51,7 @@ namespace CodeCracker.CSharp.Design
             if (!invokedMethodSymbol.ReturnsVoid && !invokedMethodSymbol.ReturnType.IsReferenceType) return;
 
             if (HasCheckForNull(invocation, context.SemanticModel, symbol)) return;
+            if (symbol.IsReadOnlyAndInitializedForCertain(context)) return;
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), identifier.Identifier.Text));
         }
 

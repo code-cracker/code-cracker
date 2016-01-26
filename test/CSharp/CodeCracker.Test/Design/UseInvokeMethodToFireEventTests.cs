@@ -32,6 +32,31 @@ namespace CodeCracker.Test.CSharp.Design
         }
 
         [Fact]
+        public async void WarningIfEventIsReadOnlyFiredDirectlyAndNotInitialized()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public readonly event System.EventHandler MyEvent;
+
+                    public void Execute()
+                    {
+                        MyEvent(this, System.EventArgs.Empty);
+                    }
+                }";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
         public async void AcceptExpressionBodiedMethods()
         {
             const string test = @"
@@ -144,6 +169,21 @@ namespace CodeCracker.Test.CSharp.Design
                     public void Execute()
                     {
                         MyEvent?.Invoke(this, System.EventArgs.Empty);
+                    }
+                }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void NotWarningIfEventIsReadOnlyWithInitializer()
+        {
+            const string test = @"
+                public class MyClass
+                {
+                    public readonly System.Action MyAction = () => { };
+                    public void Execute()
+                    {
+                        MyAction();
                     }
                 }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
