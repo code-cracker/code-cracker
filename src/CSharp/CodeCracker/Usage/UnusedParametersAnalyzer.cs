@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -72,8 +73,8 @@ namespace CodeCracker.CSharp.Usage
                         ReportDiagnostic(context, parameter.Key);
                     }
                 }
-                // 
-                // THIS IS THE RIGHT WAY TO DO THIS VERIFICATION. 
+                //
+                // THIS IS THE RIGHT WAY TO DO THIS VERIFICATION.
                 // BUT, WE HAVE TO WAIT FOR A "BUGFIX" FROM ROSLYN TEAM
                 // IN DataFlowAnalysis
                 //
@@ -129,6 +130,7 @@ namespace CodeCracker.CSharp.Usage
                     .Any(member => methodSymbol.Equals(typeSymbol.FindImplementationForInterfaceMember(member))))
                     return false;
                 if (IsEventHandlerLike(method, semanticModel)) return false;
+                if (IsPrivateAndUsedAsMethodGroup(method, methodSymbol, semanticModel)) return false;
             }
             else
             {
@@ -143,6 +145,23 @@ namespace CodeCracker.CSharp.Usage
                 }
             }
             return true;
+        }
+
+        private static bool IsPrivateAndUsedAsMethodGroup(MethodDeclarationSyntax method, IMethodSymbol methodSymbol, SemanticModel semanticModel)
+        {
+            if (methodSymbol.DeclaredAccessibility != Accessibility.Private) return false;
+            var parentType = method.Parent;
+            var allTokens = parentType.DescendantTokens();
+            var tokensThatMatch = from t in allTokens
+                                  let text = t.Text
+                                  where text == method.Identifier.Text
+                                  select t;
+            foreach (var token in tokensThatMatch)
+            {
+                var nodeSymbol = semanticModel.GetSymbolInfo(token.Parent).Symbol;
+                if (methodSymbol.Equals(nodeSymbol)) return true;
+            }
+            return false;
         }
 
         private static bool IsSerializationConstructor(ConstructorDeclarationSyntax constructor, SemanticModel semanticModel)

@@ -817,5 +817,21 @@ public static class C
 }";
             await VerifyCSharpFixAllAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task WhenUsedAsMethodGroupDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+public class TypeName
+{
+    static void FireHandler(System.Func<int, int> getInt) => getInt?.Invoke(1);
+    static void Init() => FireHandler(OnConfigFileChanged);
+    static int OnConfigFileChanged(int i)
+    {
+        return 1;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
