@@ -64,27 +64,22 @@ namespace CodeCracker.CSharp.Usage
                         ));
 
             var modifiedMethod = method;
-            if(method.ExpressionBody != null)
+            if (method.ExpressionBody != null)
             {
-                var bodiedExpression = (ArrowExpressionClauseSyntax)method.ExpressionBody;
+                var bodiedExpression = method.ExpressionBody;
                 var bodiedStatement = SyntaxFactory.ExpressionStatement(bodiedExpression.Expression);
-                modifiedMethod = method.AddBodyStatements(bodiedStatement);
-                modifiedMethod = modifiedMethod.WithExpressionBody(null);
+                modifiedMethod = method.RemoveNode(bodiedExpression, SyntaxRemoveOptions.KeepNoTrivia)
+                    .AddBodyStatements(bodiedStatement)
+                    .WithSemicolonToken(SyntaxFactory.MissingToken(SyntaxKind.SemicolonToken)
+                    .WithLeadingTrivia(modifiedMethod.SemicolonToken.LeadingTrivia)
+                    .WithTrailingTrivia(modifiedMethod.SemicolonToken.TrailingTrivia));
             }
-
-            modifiedMethod = modifiedMethod.AddBodyStatements(
-                suppressFinalizeCall
-                )
+            modifiedMethod = modifiedMethod.AddBodyStatements(suppressFinalizeCall)
                 .WithAdditionalAnnotations(Simplifier.Annotation)
-                .WithAdditionalAnnotations(Formatter.Annotation)
-                .WithSemicolonToken(SyntaxFactory.MissingToken(SyntaxKind.SemicolonToken)
-                .WithLeadingTrivia(modifiedMethod.SemicolonToken.LeadingTrivia)
-                .WithTrailingTrivia(modifiedMethod.SemicolonToken.TrailingTrivia));
-
+                .WithAdditionalAnnotations(Formatter.Annotation);
 
             return document
                 .WithSyntaxRoot(root.ReplaceNode(method, modifiedMethod));
-
         }
     }
 }
