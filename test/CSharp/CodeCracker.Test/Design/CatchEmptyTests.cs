@@ -35,6 +35,115 @@ namespace CodeCracker.Test.CSharp.Design
         }
 
         [Fact]
+        public async Task EmptyCatchEndsWithThrowNoDiagnostic()
+        {
+            const string source = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public async Task Foo()
+            {
+                try
+                {
+                    // do something
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task EmptyCatchWithNestedThrowNoDiagnostic()
+        {
+            const string source = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            int x;
+            public void Foo()
+            {
+                try
+                {
+                    // do something
+                }
+                catch
+                {
+                    if (x == 1)
+                        throw;
+                    else
+                        throw;
+                }
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+        [Fact]
+        public async Task NotAllowedToReturnOutOfEmtpyCatchBlock()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            int x;
+            public void Foo()
+            {
+                try
+                {
+                    // do something
+                }
+                catch
+                {
+                    if (x == 1)
+                        throw;
+                    else
+                        return;
+                }
+            }
+        }
+    }";
+
+            const string fixtest = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            int x;
+            public void Foo()
+            {
+                try
+                {
+                   // do something
+                }
+                catch (Exception ex)
+                {
+                    if (x == 1)
+                        throw;
+                    else
+                        return;
+                }
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, fixtest, 0, allowNewCompilerDiagnostics: true);
+        }
+        [Fact]
         public async Task WhenFindCatchEmptyThenPutExceptionClass()
         {
             const string test = @"
@@ -74,6 +183,54 @@ namespace CodeCracker.Test.CSharp.Design
                 catch (Exception ex)
                 {
                    int x = 0;
+                }
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, fixtest, 0, allowNewCompilerDiagnostics: true);
+        }
+        [Fact]
+        public async Task AddCatchEvenIfThereIsReturnInBlock()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                try
+                {
+                   // do something
+                }
+                catch
+                {
+                   int x = 0;
+                   return;
+                }
+            }
+        }
+    }";
+
+            const string fixtest = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo()
+            {
+                try
+                {
+                   // do something
+                }
+                catch (Exception ex)
+                {
+                   int x = 0;
+                   return;
                 }
             }
         }

@@ -146,6 +146,28 @@ namespace CodeCracker
             return false;
         }
 
+        public static MemberDeclarationSyntax FirstAncestorOrSelfThatIsAMember(this SyntaxNode node)
+        {
+            var currentNode = node;
+            while (true)
+            {
+                if (currentNode == null) break;
+                if (currentNode.IsAnyKind(
+                    SyntaxKind.EnumDeclaration, SyntaxKind.ClassDeclaration,
+                    SyntaxKind.InterfaceDeclaration, SyntaxKind.StructDeclaration,
+                    SyntaxKind.ConstructorDeclaration, SyntaxKind.DestructorDeclaration,
+                    SyntaxKind.MethodDeclaration, SyntaxKind.PropertyDeclaration,
+                    SyntaxKind.EventDeclaration, SyntaxKind.DelegateDeclaration,
+                    SyntaxKind.EventFieldDeclaration, SyntaxKind.FieldDeclaration,
+                    SyntaxKind.ConversionOperatorDeclaration, SyntaxKind.OperatorDeclaration,
+                    SyntaxKind.IndexerDeclaration, SyntaxKind.NamespaceDeclaration))
+                    return (MemberDeclarationSyntax)currentNode;
+                currentNode = currentNode.Parent;
+            }
+            return null;
+
+        }
+
         public static StatementSyntax FirstAncestorOrSelfThatIsAStatement(this SyntaxNode node)
         {
             var currentNode = node;
@@ -541,6 +563,13 @@ namespace CodeCracker
             return null;
         }
 
+        public static IEnumerable<TNode> OfKind<TNode>(this IEnumerable<SyntaxNode> nodes, SyntaxKind kind) where TNode : SyntaxNode
+        {
+            foreach (var node in nodes)
+                if (node.IsKind(kind))
+                    yield return (TNode)node;
+        }
+
         public static IEnumerable<TNode> OfKind<TNode>(this IEnumerable<TNode> nodes, SyntaxKind kind) where TNode : SyntaxNode
         {
             foreach (var node in nodes)
@@ -553,6 +582,31 @@ namespace CodeCracker
             foreach (var node in nodes)
                 if (node.IsAnyKind(kinds))
                     yield return node;
+        }
+
+        public static StatementSyntax GetPreviousStatement(this StatementSyntax statement)
+        {
+            var parent = statement.Parent;
+            SyntaxList<StatementSyntax> statements;
+            if (parent.IsKind(SyntaxKind.Block))
+            {
+                var block = (BlockSyntax)parent;
+                statements = block.Statements;
+            }
+            else if (parent.IsKind(SyntaxKind.SwitchSection))
+            {
+                var section = (SwitchSectionSyntax)parent;
+                statements = section.Statements;
+            }
+            else return null;
+            if (statement.Equals(statements[0])) return null;
+            for (int i = 1; i < statements.Count; i++)
+            {
+                var someStatement = statements[i];
+                if (statement.Equals(someStatement))
+                    return statements[i - 1];
+            }
+            return null;
         }
     }
 }

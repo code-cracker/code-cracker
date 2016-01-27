@@ -520,5 +520,53 @@ namespace ConsoleApplication1
         }";
             await VerifyCSharpFixAllAsync(source, expected);
         }
+
+        [Fact]
+        public async Task FixPropIntoAutoPropWithThisInSet()
+        {
+            var source = @"
+        private string text;
+        public string Text
+        {
+            get
+            {
+                return text;
+            }
+
+            set
+            {
+                this.text = value;
+            }
+        }"
+.WrapInCSharpClass();
+
+            var expected = @"public string Text{ get; set; }"
+.WrapInCSharpClass();
+            await VerifyCSharpFixAllAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixPropIntoAutoPropWithThisInGet()
+        {
+            var source = @"
+        private string text;
+        public string Text
+        {
+            get
+            {
+                return this.text;
+            }
+
+            set
+            {
+                text = value;
+            }
+        }
+".WrapInCSharpClass();
+
+            var expected = @"public string Text{ get; set; }
+".WrapInCSharpClass();
+            await VerifyCSharpFixAllAsync(source, expected);
+        }
     }
 }

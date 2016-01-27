@@ -58,7 +58,7 @@ namespace CodeCracker.CSharp.Style
         private static Document MakeObjectInitializer(Document document, SyntaxNode root, StatementSyntax statement, ISymbol variableSymbol, SemanticModel semanticModel)
         {
             var blockParent = statement.FirstAncestorOrSelf<BlockSyntax>();
-            var objectCreationExpression = statement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Single();
+            var objectCreationExpression = statement.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().First();
             var newBlockParent = CreateNewBlockParent(statement, semanticModel, objectCreationExpression, variableSymbol);
             var newRoot = root.ReplaceNode(blockParent, newBlockParent);
             var newDocument = document.WithSyntaxRoot(newRoot);

@@ -42,18 +42,23 @@ namespace CodeCracker.CSharp.Refactoring
 
         private static SyntaxNode ReplaceInvocation(InvocationExpressionSyntax invocation, ExpressionSyntax newInvocation, SyntaxNode root)
         {
-            if (invocation.Parent.IsKind(SyntaxKind.LogicalNotExpression))
-                return root.ReplaceNode(invocation.Parent, newInvocation);
-            var negatedInvocation = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, newInvocation);
-            var newRoot = root.ReplaceNode(invocation, negatedInvocation);
+            ExpressionSyntax lastExpression = invocation;
+            while (lastExpression.Parent.IsAnyKind(SyntaxKind.MemberBindingExpression, SyntaxKind.SimpleMemberAccessExpression,
+                SyntaxKind.ConditionalAccessExpression, SyntaxKind.LogicalNotExpression))
+                lastExpression = (ExpressionSyntax)lastExpression.Parent;
+            var lastExpressionWithNewInvocation = lastExpression.ReplaceNode(invocation, newInvocation);
+            if (lastExpression.IsKind(SyntaxKind.LogicalNotExpression))
+                return root.ReplaceNode(lastExpression, ((PrefixUnaryExpressionSyntax)lastExpressionWithNewInvocation).Operand);
+            var negatedLastExpression = SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, lastExpressionWithNewInvocation);
+            var newRoot = root.ReplaceNode(lastExpression, negatedLastExpression);
             return newRoot;
         }
 
         internal static ExpressionSyntax CreateNewInvocation(InvocationExpressionSyntax invocation)
         {
-            var methodName = ((MemberAccessExpressionSyntax)invocation.Expression).Name.ToString();
+            var methodName = ChangeAnyToAllAnalyzer.GetName(invocation).ToString();
             var nameToCheck = methodName == "Any" ? ChangeAnyToAllAnalyzer.allName : ChangeAnyToAllAnalyzer.anyName;
-            var newInvocation = invocation.WithExpression(((MemberAccessExpressionSyntax)invocation.Expression).WithName(nameToCheck));
+            var newInvocation = invocation.WithExpression(ChangeAnyToAllAnalyzer.CreateExpressionWithNewName(invocation, nameToCheck));
             var comparisonExpression = (ExpressionSyntax)((LambdaExpressionSyntax)newInvocation.ArgumentList.Arguments.First().Expression).Body;
             var newComparisonExpression = CreateNewComparison(comparisonExpression);
             newComparisonExpression = RemoveParenthesis(newComparisonExpression);

@@ -104,6 +104,48 @@ namespace CodeCracker.Test.CSharp.Refactoring
         }
 
         [Fact]
+        public async Task ConstructorParameterWithPrivateFieldTwoConstructors()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public TypeName()
+            {
+            }
+
+            public TypeName(int par)
+            {
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            private readonly int par;
+
+            public TypeName()
+            {
+            }
+
+            public TypeName(int par)
+            {
+               this.par = par;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
+
+        [Fact]
         public async Task FieldAlreadyExistsAndMatchesType()
         {
             const string test = @"
@@ -472,8 +514,6 @@ namespace CodeCracker.Test.CSharp.Refactoring
             await VerifyCSharpFixAsync(test, expected);
         }
 
-
-
         [Fact]
         public async Task IntroduceFieldConstructorFixAllInProject()
         {
@@ -518,7 +558,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 {
                     private readonly int a;
 
-                    public foo1(int a) 
+                    public foo1(int a)
                     {
                         this.a = a;
                     }
@@ -528,7 +568,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     private readonly int b;
                     private readonly int a;
 
-                    public foo2(int a, int b) 
+                    public foo2(int a, int b)
                     {
                         this.a = a;
                         this.b = b;

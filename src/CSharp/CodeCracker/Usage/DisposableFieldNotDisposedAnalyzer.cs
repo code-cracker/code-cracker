@@ -47,7 +47,7 @@ namespace CodeCracker.CSharp.Usage
             var fieldSyntaxRef = fieldSymbol.DeclaringSyntaxReferences.FirstOrDefault();
             var variableDeclarator = fieldSyntaxRef.GetSyntax() as VariableDeclaratorSyntax;
             if (variableDeclarator == null) return;
-            if (ContainingTypeImplementsIDisposableAndCallsItOnTheField(context, fieldSymbol, fieldSymbol.ContainingType)) return;
+            if (ContainingTypeImplementsIDisposableAndCallsItOnTheField(context, fieldSymbol)) return;
             var props = new Dictionary<string, string> { { "variableIdentifier", variableDeclarator.Identifier.ValueText } }.ToImmutableDictionary();
             if (variableDeclarator.Initializer?.Value is InvocationExpressionSyntax)
                 context.ReportDiagnostic(Diagnostic.Create(RuleForReturned, variableDeclarator.GetLocation(), props, fieldSymbol.Name));
@@ -55,39 +55,48 @@ namespace CodeCracker.CSharp.Usage
                 context.ReportDiagnostic(Diagnostic.Create(RuleForCreated, variableDeclarator.GetLocation(), props, fieldSymbol.Name));
         }
 
-        private static bool ContainingTypeImplementsIDisposableAndCallsItOnTheField(SymbolAnalysisContext context, IFieldSymbol fieldSymbol, INamedTypeSymbol typeSymbol)
+        private static bool ContainingTypeImplementsIDisposableAndCallsItOnTheField(SymbolAnalysisContext context, IFieldSymbol fieldSymbol)
         {
-            if (typeSymbol == null) return false;
-            var iDisposableInterface = typeSymbol.AllInterfaces.FirstOrDefault(i => i.ToString() == "System.IDisposable");
-            if (iDisposableInterface != null)
+            var containingType = fieldSymbol.ContainingType;
+            if (containingType == null) return false;
+            var iDisposableInterface = containingType.AllInterfaces.FirstOrDefault(i => i.ToString() == "System.IDisposable");
+            if (iDisposableInterface == null) return false;
+            var disposableMethod = iDisposableInterface.GetMembers("Dispose").OfType<IMethodSymbol>().First(d => d.Arity == 0);
+            var disposeMethodSymbol = containingType.FindImplementationForInterfaceMember(disposableMethod) as IMethodSymbol;
+            if (disposeMethodSymbol == null) return false;
+            if (disposeMethodSymbol.IsAbstract) return true;
+            foreach (MethodDeclarationSyntax disposeMethod in disposeMethodSymbol.DeclaringSyntaxReferences.Select(sr => sr.GetSyntax()))
             {
-                var disposableMethod = iDisposableInterface.GetMembers("Dispose").OfType<IMethodSymbol>().First(d => d.Arity == 0);
-                var disposeMethodSymbol = typeSymbol.FindImplementationForInterfaceMember(disposableMethod) as IMethodSymbol;
-                if (disposeMethodSymbol != null)
+                if (disposeMethod == null) return false;
+                var semanticModel = context.Compilation.GetSemanticModel(disposeMethod.SyntaxTree);
+                if (CallsDisposeOnField(fieldSymbol, disposeMethod, semanticModel)) return true;
+                var invocations = disposeMethod.DescendantNodes().OfKind<InvocationExpressionSyntax>(SyntaxKind.InvocationExpression);
+                foreach (var invocation in invocations)
                 {
-                    var disposeMethod = (MethodDeclarationSyntax)disposeMethodSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
-                    if (disposeMethod == null) return false;
-                    if (disposeMethod.Modifiers.Any(SyntaxKind.AbstractKeyword)) return true;
-                    var typeDeclaration = (TypeDeclarationSyntax)typeSymbol.DeclaringSyntaxReferences.FirstOrDefault().GetSyntax();
-                    var semanticModel = context.Compilation.GetSemanticModel(typeDeclaration.SyntaxTree);
-                    if (CallsDisposeOnField(fieldSymbol, disposeMethod, semanticModel)) return true;
+                    var invocationExpressionSymbol = semanticModel.GetSymbolInfo(invocation.Expression).Symbol;
+                    if (invocationExpressionSymbol == null
+                        || invocationExpressionSymbol.Kind != SymbolKind.Method
+                        || invocationExpressionSymbol.Locations.Any(l => l.Kind != LocationKind.SourceFile)
+                        || !invocationExpressionSymbol.ContainingType.Equals(containingType)) continue;
+                    foreach (MethodDeclarationSyntax method in invocationExpressionSymbol.DeclaringSyntaxReferences.Select(sr => sr.GetSyntax()))
+                        if (CallsDisposeOnField(fieldSymbol, method, semanticModel)) return true;
                 }
             }
             return false;
         }
 
-        private static bool CallsDisposeOnField(IFieldSymbol fieldSymbol, MethodDeclarationSyntax disposeMethod, SemanticModel semanticModel)
+        private static bool CallsDisposeOnField(IFieldSymbol fieldSymbol, MethodDeclarationSyntax method, SemanticModel semanticModel)
         {
-            var hasDisposeCall = disposeMethod.Body.Statements.OfType<ExpressionStatementSyntax>()
-                .Any(exp =>
+            var body = (SyntaxNode)method.Body ?? method.ExpressionBody;
+            var hasDisposeCall = body.DescendantNodes().OfKind<InvocationExpressionSyntax>(SyntaxKind.InvocationExpression)
+                .Any(invocation =>
                 {
-                    var invocation = exp.Expression as InvocationExpressionSyntax;
                     if (!invocation?.Expression?.IsKind(SyntaxKind.SimpleMemberAccessExpression) ?? true) return false;
                     var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
+                    if (memberAccess?.Name == null) return false;
                     if (memberAccess.Name.Identifier.ToString() != "Dispose" || memberAccess.Name.Arity != 0) return false;
-                    var memberAccessIdentificer = memberAccess.Expression as IdentifierNameSyntax;
-                    if (memberAccessIdentificer == null) return false;
-                    return fieldSymbol.Equals(semanticModel.GetSymbolInfo(memberAccessIdentificer).Symbol);
+                    if (!memberAccess.Expression.IsKind(SyntaxKind.IdentifierName)) return false;
+                    return fieldSymbol.Equals(semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol);
                 });
             return hasDisposeCall;
         }

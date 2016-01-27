@@ -20,6 +20,7 @@ namespace CodeCracker.CSharp.Usage
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId());
+
         public readonly static string MessageFormat = "Dispose object: '{0}'";
 
         public sealed override FixAllProvider GetFixAllProvider() => DisposableVariableNotDisposedFixAllProvider.Instance;
@@ -47,58 +48,122 @@ namespace CodeCracker.CSharp.Usage
         public static SyntaxNode CreateUsing(SyntaxNode root, ObjectCreationExpressionSyntax objectCreation, SemanticModel semanticModel)
         {
             SyntaxNode newRoot;
-            if (objectCreation.Parent.IsKind(SyntaxKind.SimpleAssignmentExpression))
+            var originalNode = objectCreation;
+            var topSyntaxNode = (SyntaxNode)originalNode;
+
+            while (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ParenthesizedExpression, SyntaxKind.ConditionalExpression, SyntaxKind.CastExpression))
+                topSyntaxNode = topSyntaxNode.Parent;
+
+
+            if (topSyntaxNode.Parent.IsKind(SyntaxKind.SimpleAssignmentExpression))
             {
-                var assignmentExpression = (AssignmentExpressionSyntax)objectCreation.Parent;
-                var statement = assignmentExpression.Parent as ExpressionStatementSyntax;
-                var identitySymbol = (ILocalSymbol)semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
-                newRoot = UsedOutsideParentBlock(semanticModel, statement, identitySymbol)
-                    ? CreateRootAddingDisposeToEndOfMethod(root, statement, identitySymbol)
-                    : CreateRootWithUsing(root, statement, u => u.WithExpression(assignmentExpression));
+                var assignmentExpression = (AssignmentExpressionSyntax)topSyntaxNode.Parent;
+                newRoot = CreateRootWithUsingFromSimpleAssigmentExpression(root, semanticModel, assignmentExpression);
             }
-            else if (objectCreation.Parent.IsKind(SyntaxKind.EqualsValueClause) && objectCreation.Parent.Parent.IsKind(SyntaxKind.VariableDeclarator))
+            else if (topSyntaxNode.Parent.IsKind(SyntaxKind.EqualsValueClause) && topSyntaxNode.Parent.Parent.IsKind(SyntaxKind.VariableDeclarator))
             {
-                var variableDeclarator = (VariableDeclaratorSyntax)objectCreation.Parent.Parent;
-                var variableDeclaration = (VariableDeclarationSyntax)variableDeclarator.Parent;
-                var statement = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
-                newRoot = CreateRootWithUsing(root, statement, u => u.WithDeclaration(variableDeclaration.WithoutLeadingTrivia()));
+                var variableDeclarator = (VariableDeclaratorSyntax)topSyntaxNode.Parent.Parent;
+                newRoot = CreateRootWithUsingFromVaribleDeclaration(root, variableDeclarator);
             }
-            else if (objectCreation.Parent.IsKind(SyntaxKind.Argument))
+            else if (topSyntaxNode.Parent.IsKind(SyntaxKind.Argument))
             {
-                var identifierName = GetIdentifierName(objectCreation, semanticModel);
+                var identifierName = GetIdentifierName(originalNode, semanticModel);
+                var childOfArgumentNode = topSyntaxNode;
 
-                var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(@"var"))
-                    .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(identifierName))
-                    .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.Token(SyntaxKind.EqualsToken), objectCreation))));
-
-                var arg = objectCreation.Parent as ArgumentSyntax;
-                var args = objectCreation.Parent.Parent as ArgumentListSyntax;
-                var newArgs = args.ReplaceNode(arg, arg.WithExpression(SyntaxFactory.IdentifierName(identifierName)));
-
-                StatementSyntax statement = objectCreation.FirstAncestorOfType<ExpressionStatementSyntax>();
-                if (statement != null)
-                {
-                    var exprStatement = statement.ReplaceNode(args, newArgs);
-                    var newUsingStatment = CreateUsingStatement(exprStatement, SyntaxFactory.Block(exprStatement))
-                        .WithDeclaration(variableDeclaration);
-                    return root.ReplaceNode(statement, newUsingStatment);
-                }
-
-                statement = (StatementSyntax)objectCreation.Ancestors().First(node => node is StatementSyntax);
-                var newStatement = statement.ReplaceNode(args, newArgs);
-                var statementsForUsing = new[] { newStatement }.Concat(GetChildStatementsAfter(statement));
-                var usingBlock = SyntaxFactory.Block(statementsForUsing);
-                var usingStatement = CreateUsingStatement(newStatement, usingBlock)
-                    .WithDeclaration(variableDeclaration);
-                var statementsToReplace = new List<StatementSyntax> { statement };
-                statementsToReplace.AddRange(statementsForUsing.Skip(1));
-                newRoot = root.ReplaceNodes(statementsToReplace, (node, _) => node.Equals(statement) ? usingStatement : null);
+                newRoot = CreateRootWithUsingFromArgument(root, (ExpressionSyntax)childOfArgumentNode, identifierName);
+            }
+            else if (topSyntaxNode.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+            {
+                var newVariableName = originalNode.Type.ToString();
+                var accessedNode = topSyntaxNode;
+                newRoot = CreatRootWithUsingFromMemberAccessedNode(root, semanticModel, ref newVariableName, (ExpressionSyntax)accessedNode);
             }
             else
             {
-                newRoot = CreateRootWithUsing(root, (ExpressionStatementSyntax)objectCreation.Parent, u => u.WithExpression(objectCreation));
+                newRoot = CreateRootWithUsing(root, (ExpressionStatementSyntax)topSyntaxNode.Parent, u => u.WithExpression((ExpressionSyntax)topSyntaxNode));
             }
             return newRoot;
+        }
+
+        private static SyntaxNode CreatRootWithUsingFromMemberAccessedNode(SyntaxNode root, SemanticModel semanticModel, ref string newVariableName, ExpressionSyntax accessedNode)
+        {
+            SyntaxNode newRoot;
+            var memberAccessStatement = accessedNode.Parent;
+            var newVariableNameParts = newVariableName.Split('.');
+            newVariableName = newVariableNameParts[newVariableNameParts.Length - 1].ToLowerCaseFirstLetter();
+            var parentStatement = memberAccessStatement.FirstAncestorOrSelfThatIsAStatement();
+            var originalName = newVariableName;
+            for (int nameIncrement = 1; ; nameIncrement++)
+            {
+                var speculativeSymbol = semanticModel.GetSpeculativeSymbolInfo(parentStatement.GetLocation().SourceSpan.Start, SyntaxFactory.IdentifierName(newVariableName), SpeculativeBindingOption.BindAsExpression);
+                if (speculativeSymbol.Symbol == null) break;
+                newVariableName = originalName + nameIncrement;
+            }
+            var newVariable = SyntaxFactory.LocalDeclarationStatement(SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("var"),
+                SyntaxFactory.SeparatedList(new[] {
+                        SyntaxFactory.VariableDeclarator(newVariableName).WithInitializer(SyntaxFactory.EqualsValueClause(accessedNode))
+                })));
+            newRoot = root.TrackNodes(parentStatement, accessedNode);
+            newRoot = newRoot.ReplaceNode(newRoot.GetCurrentNode(accessedNode), SyntaxFactory.IdentifierName(newVariableName));
+            var newTrackedParentStatement = newRoot.GetCurrentNode(parentStatement);
+            newRoot = newRoot.InsertNodesBefore(newTrackedParentStatement, new[] { newVariable });
+            var statement = (LocalDeclarationStatementSyntax)newRoot.GetCurrentNode(parentStatement).GetPreviousStatement();
+            var variableDeclaration = statement.Declaration;
+            var variableDeclarator = variableDeclaration.Variables.First();
+            newRoot = CreateRootWithUsing(newRoot, statement, u => u.WithDeclaration(variableDeclaration.WithoutLeadingTrivia()));
+            return newRoot;
+        }
+
+        private static SyntaxNode CreateRootWithUsingFromVaribleDeclaration(SyntaxNode root, VariableDeclaratorSyntax variableDeclarator)
+        {
+            SyntaxNode newRoot;
+            var variableDeclaration = (VariableDeclarationSyntax)variableDeclarator.Parent;
+            var statement = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
+            newRoot = CreateRootWithUsing(root, statement, u => u.WithDeclaration(variableDeclaration.WithoutLeadingTrivia()));
+            return newRoot;
+        }
+
+        private static SyntaxNode CreateRootWithUsingFromSimpleAssigmentExpression(SyntaxNode root, SemanticModel semanticModel, AssignmentExpressionSyntax assignmentExpression)
+        {
+            SyntaxNode newRoot;
+            var statement = assignmentExpression.Parent as ExpressionStatementSyntax;
+            var identitySymbol = (ILocalSymbol)semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol;
+            newRoot = UsedOutsideParentBlock(semanticModel, statement, identitySymbol)
+                ? CreateRootAddingDisposeToEndOfMethod(root, statement, identitySymbol)
+                : CreateRootWithUsing(root, statement, u => u.WithExpression(assignmentExpression));
+            return newRoot;
+        }
+
+        private static SyntaxNode CreateRootWithUsingFromArgument(SyntaxNode root, ExpressionSyntax childOfArgumentNode, string identifierName)
+        {
+            var arg = childOfArgumentNode.Parent as ArgumentSyntax;
+
+            var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName(@"var"))
+                .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(identifierName))
+                .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.Token(SyntaxKind.EqualsToken), childOfArgumentNode))));
+
+
+            var args = arg.Parent as ArgumentListSyntax;
+            var newArgs = args.ReplaceNode(arg, arg.WithExpression(SyntaxFactory.IdentifierName(identifierName)));
+
+            StatementSyntax statement = childOfArgumentNode.FirstAncestorOfType<ExpressionStatementSyntax>();
+            if (statement != null)
+            {
+                var exprStatement = statement.ReplaceNode(args, newArgs);
+                var newUsingStatment = CreateUsingStatement(exprStatement, SyntaxFactory.Block(exprStatement))
+                    .WithDeclaration(variableDeclaration);
+                return root.ReplaceNode(statement, newUsingStatment);
+            }
+
+            statement = (StatementSyntax)childOfArgumentNode.Ancestors().First(node => node is StatementSyntax);
+            var newStatement = statement.ReplaceNode(args, newArgs);
+            var statementsForUsing = new[] { newStatement }.Concat(GetChildStatementsAfter(statement));
+            var usingBlock = SyntaxFactory.Block(statementsForUsing);
+            var usingStatement = CreateUsingStatement(newStatement, usingBlock)
+                .WithDeclaration(variableDeclaration);
+            var statementsToReplace = new List<StatementSyntax> { statement };
+            statementsToReplace.AddRange(statementsForUsing.Skip(1));
+            return root.ReplaceNodes(statementsToReplace, (node, _) => node.Equals(statement) ? usingStatement : null);
         }
 
         private static string GetIdentifierName(ObjectCreationExpressionSyntax objectCreation, SemanticModel semanticModel)
@@ -109,12 +174,12 @@ namespace CodeCracker.CSharp.Usage
             if (type.IsKind(SyntaxKind.QualifiedName))
             {
                 var name = (QualifiedNameSyntax)type;
-                identifierName = LowerCaseFirstLetter(name.Right.Identifier.ValueText);
+                identifierName = name.Right.Identifier.ValueText.ToLowerCaseFirstLetter();
             }
             else if (type is SimpleNameSyntax)
             {
                 var name = (SimpleNameSyntax)type;
-                identifierName = LowerCaseFirstLetter(name.Identifier.ValueText);
+                identifierName = name.Identifier.ValueText.ToLowerCaseFirstLetter();
             }
 
             var confilctingNames = from symbol in semanticModel.LookupSymbols(objectCreation.SpanStart)
@@ -126,8 +191,6 @@ namespace CodeCracker.CSharp.Usage
             while (confilctingNames.Any(p => p == identifierName + ++identifierPostFix)) { }
             return identifierName + (identifierPostFix == 0 ? "" : identifierPostFix.ToString());
         }
-
-        private static string LowerCaseFirstLetter(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
 
         private static SyntaxNode CreateRootAddingDisposeToEndOfMethod(SyntaxNode root, ExpressionStatementSyntax statement, ILocalSymbol identitySymbol)
         {

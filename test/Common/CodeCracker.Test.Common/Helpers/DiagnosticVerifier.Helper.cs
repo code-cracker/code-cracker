@@ -102,7 +102,7 @@ namespace CodeCracker.Test
 
         #region Set up compilation and documents
         /// <summary>
-        /// Given an array of strings as soruces and a language, turn them into a project and return the documents and spans of it.
+        /// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
         /// </summary>
         /// <param name="sources">Classes in the form of strings</param>
         /// <param name="language">The language the source code is in</param>

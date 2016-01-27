@@ -7,6 +7,98 @@ namespace CodeCracker.Test.CSharp.Usage
 {
     public class DisposableVariableNotDisposedTests : CodeFixVerifier<DisposableVariableNotDisposedAnalyzer, DisposableVariableNotDisposedCodeFixProvider>
     {
+
+        [Fact]
+        public async Task FixAssignmentWithTernary()
+        {
+            const string source = @"
+public class CSharpClass
+{
+    struct ConsoleColorContext : System.IDisposable
+    {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    void Foo()
+    {
+        ConsoleColorContext? color = null;
+        var x = color.HasValue ? new ConsoleColorContext(color.Value) : null;
+    }
+}
+";
+            const string fixtest = @"
+public class CSharpClass
+{
+    struct ConsoleColorContext : System.IDisposable
+    {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    void Foo()
+    {
+        ConsoleColorContext? color = null;
+        using(var x = color.HasValue ? new ConsoleColorContext(color.Value) : null)
+        {
+        }
+    }
+}
+";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAssignmentWithCast()
+        {
+            var source = @"var m = (System.IDisposable)new System.IO.MemoryStream();".WrapInCSharpMethod();
+            var fixtest = @"using (var m = (System.IDisposable)new System.IO.MemoryStream())
+{
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixADisposableDeclarationWithoutDisposeWithParenthese()
+        {
+            var source = @"var m = ((new System.IO.MemoryStream()));".WrapInCSharpMethod();
+            var fixtest = @"using (var m = ((new System.IO.MemoryStream())))
+{
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task IgnoresDisposableObjectsCreatedDirectParentIsNotAnUsingStatement()
+        {
+            var source = "using (((new System.IO.MemoryStream()))) { }".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoresDisposableObjectsBeingCreatedWithTernaryInUsingStatement()
+        {
+            var source = @"
+namespace CSharpNamespace
+{
+    public class DisposableClass : System.IDisposable  { }
+
+    public class ActualClass
+    {
+        public void Method()
+        {
+            using(true ? new DisposableClass() : null)
+            { }
+        }
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
         [Fact]
         public async Task VariableNotCreatedDoesNotCreateDiagnostic()
         {
@@ -45,7 +137,6 @@ namespace CodeCracker.Test.CSharp.Usage
         [Fact]
         public async Task DisposableVariableDeclaredWithAnotherVariableCreatesOnlyOneDiagnostic()
         {
-
             var source = "System.IO.MemoryStream a, b = new System.IO.MemoryStream();".WrapInCSharpMethod();
             var expected = new DiagnosticResult
             {
@@ -1332,6 +1423,75 @@ using (var mem = new System.IO.MemoryStream())
 
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task ChainingFixesCorrectly()
+        {
+            var source = @"
+new System.IO.MemoryStream().Flush();
+".WrapInCSharpMethod();
+            var fixtest = @"using (var memoryStream = new System.IO.MemoryStream())
+{
+    memoryStream.Flush();
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task ChainingFixesCorrectlyWhenThereIsANameConflict()
+        {
+            var source = @"
+var memoryStream = 0;
+new System.IO.MemoryStream().Flush();
+".WrapInCSharpMethod();
+            var fixtest = @"
+var memoryStream = 0;
+using (var memoryStream1 = new System.IO.MemoryStream())
+{
+    memoryStream1.Flush();
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task ChainingFixesCorrectlyWhenThereIsAssignment()
+        {
+            var source = @"//comment
+var length = new System.IO.MemoryStream().Length;
+".WrapInCSharpMethod();
+            var fixtest = @"using (var memoryStream = new System.IO.MemoryStream())
+{
+    //comment
+    var length = memoryStream.Length;
+}".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task ChainingFixesCorrectlyWhenPassedAsArgument()
+        {
+            const string source = @"
+class Foo
+{
+    static void Bar(long i) { }
+    static void Baz()
+    {
+        Bar(new System.IO.MemoryStream().Length);
+    }
+}";
+            const string fixtest = @"
+class Foo
+{
+    static void Bar(long i) { }
+    static void Baz()
+    {
+        using (var memoryStream = new System.IO.MemoryStream())
+        {
+            Bar(memoryStream.Length);
+        }
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }
-

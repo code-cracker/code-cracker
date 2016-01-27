@@ -26,7 +26,7 @@ namespace ConsoleApplication1
         [Fact]
         public async Task XmlDocumentationInsideMethodWithAttributeDoesNotCreateDiagnostic()
         {
-var source = @"
+            var source = @"
 /// <summary>
 /// </summary>
 /// <param name=""value"" ></param>
@@ -41,9 +41,41 @@ public int Foo(int value)
         }
 
         [Fact]
+        public async Task XmlDocumentationWithInheritDocNotCreateDiagnostic()
+        {
+            var source = @"
+interface IBar
+{
+    /// <summary>
+    /// Lololol
+    /// </summary>
+    /// <param name=""a""></param>
+    /// <param name=""b""></param>
+    void foo(int a, int b);
+}
+
+class Bar : IBar
+{
+    /// <inheritdoc/>
+    public void foo(int a, int b) { }
+}
+
+class Bar2 : IBar
+{
+    /// <inheritdoc/>
+    /// <remarks>
+    /// You can still specify all the normal XML tags here, and they will
+    /// overwrite inherited ones accordingly.
+    /// </remarks>
+    public void foo(int a, int b) { }
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task XmlDocumentationInsideMethodDoesNotCreateDiagnostic()
         {
-var source = @"
+            var source = @"
 /// <summary>
 /// </summary>
 /// <param name=""value"" ></param>
@@ -328,7 +360,7 @@ public int Foo(int value)
 
             await VerifyCSharpFixAsync(source, expected);
         }
-        
+
         [Fact]
         public async Task FixCreateManyParameterDocWhenHaveFullDocSyntax()
         {
