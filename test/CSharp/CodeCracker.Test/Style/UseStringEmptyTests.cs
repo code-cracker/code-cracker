@@ -54,6 +54,25 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
+        public async Task WhenHasStringInParameterShouldNotRaiseDiagnostic()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public void Foo(string name = "")
+            {
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+
+        }
+
+        [Fact]
         public async Task MethodNotUsingStringEmpty()
         {
             const string test = @"
@@ -164,10 +183,10 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task FixAllInSolutionChangeMethodToStringEmpty()
         {
             var test1 = @"var s = """" + """";".WrapInCSharpMethod();
-            var test2 = @"var s = """" + """";".WrapInCSharpMethod(typeName:"AnotherType");
+            var test2 = @"var s = """" + """";".WrapInCSharpMethod(typeName: "AnotherType");
             var expected1 = @"var s = string.Empty + string.Empty;".WrapInCSharpMethod();
-            var expected2 = @"var s = string.Empty + string.Empty;".WrapInCSharpMethod(typeName:"AnotherType");
-            await VerifyCSharpFixAllAsync(new[] { test1, test2 },new[] { expected1, expected2 });
+            var expected2 = @"var s = string.Empty + string.Empty;".WrapInCSharpMethod(typeName: "AnotherType");
+            await VerifyCSharpFixAllAsync(new[] { test1, test2 }, new[] { expected1, expected2 });
         }
 
         [Fact]
