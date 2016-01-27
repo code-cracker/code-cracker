@@ -503,7 +503,7 @@ namespace CodeCracker
             }
             return null;
         }
-        
+
 
         /// <summary>
         /// Determines whether the specified symbol is a read only field and initialized in the specified context.
@@ -544,7 +544,7 @@ namespace CodeCracker
             return false;
         }
 
-        public static InitializerState DoesBlockContainCertainInitializer(this StatementSyntax statement, SyntaxNodeAnalysisContext context, ISymbol symbol)
+        private static InitializerState DoesBlockContainCertainInitializer(this StatementSyntax statement, SyntaxNodeAnalysisContext context, ISymbol symbol)
         {
             return new[] { statement }.DoesBlockContainCertainInitializer(context, symbol);
         }
@@ -571,7 +571,7 @@ namespace CodeCracker
         ///
         /// Please note that this is a recursive function so we can check a block of code in an if statement for example.
         /// </remarks>
-        public static InitializerState DoesBlockContainCertainInitializer(this IEnumerable<StatementSyntax> statements, SyntaxNodeAnalysisContext context, ISymbol symbol)
+        private static InitializerState DoesBlockContainCertainInitializer(this IEnumerable<StatementSyntax> statements, SyntaxNodeAnalysisContext context, ISymbol symbol)
         {
             // Keep track of the current initializer state. This can only be None
             // or Initializer, WayToSkipInitializer will always be returned immediately.

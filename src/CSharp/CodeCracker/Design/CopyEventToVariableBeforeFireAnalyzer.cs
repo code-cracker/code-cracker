@@ -3,9 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
-using System.Linq;
 using System.Collections.Immutable;
-using System.Collections.Generic;
 
 namespace CodeCracker.CSharp.Design
 {
