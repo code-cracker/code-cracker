@@ -8,6 +8,53 @@ namespace CodeCracker.Test.CSharp.Design
 {
     public class MakeMethodStaticTests : CodeFixVerifier<MakeMethodStaticAnalyzer, MakeMethodStaticCodeFixProvider>
     {
+        [Fact]
+        public async Task DontChangeOtherStaticMethods()
+        {
+            const string source = @"
+    class Bar
+    {
+        void ShouldBeStatic()
+        {
+        }
+        void Caller()
+        {
+            Foo.M(new Baz(ShouldBeStatic));
+        }
+    }
+    class Foo
+    {
+        public static void M(Baz b) { }
+    }
+    class Baz
+    {
+        public Baz(Action a)
+        {
+        }
+    }";
+            const string fixtest = @"
+    class Bar
+    {
+        static void ShouldBeStatic()
+        {
+        }
+        void Caller()
+        {
+            Foo.M(new Baz(ShouldBeStatic));
+        }
+    }
+    class Foo
+    {
+        public static void M(Baz b) { }
+    }
+    class Baz
+    {
+        public Baz(Action a)
+        {
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
 
         [Fact]
         public async Task MakeMethodStaticWithReferenceAsDelegateInDifferentDocs()
