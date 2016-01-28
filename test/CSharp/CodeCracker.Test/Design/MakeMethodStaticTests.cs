@@ -8,6 +8,309 @@ namespace CodeCracker.Test.CSharp.Design
 {
     public class MakeMethodStaticTests : CodeFixVerifier<MakeMethodStaticAnalyzer, MakeMethodStaticCodeFixProvider>
     {
+        [Fact]
+        public async Task DontChangeOtherStaticMethods()
+        {
+            const string source = @"
+    class Bar
+    {
+        void ShouldBeStatic()
+        {
+        }
+        void Caller()
+        {
+            Foo.M(new Baz(ShouldBeStatic));
+        }
+    }
+    class Foo
+    {
+        public static void M(Baz b) { }
+    }
+    class Baz
+    {
+        public Baz(Action a)
+        {
+        }
+    }";
+            const string fixtest = @"
+    class Bar
+    {
+        static void ShouldBeStatic()
+        {
+        }
+        void Caller()
+        {
+            Foo.M(new Baz(ShouldBeStatic));
+        }
+    }
+    class Foo
+    {
+        public static void M(Baz b) { }
+    }
+    class Baz
+    {
+        public Baz(Action a)
+        {
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task MakeMethodStaticWithReferenceAsDelegateInDifferentDocs()
+        {
+            var source1 = @"public void Foo() { }".WrapInCSharpClass("X");
+
+            var source2 = @"
+            public event Action Changed;
+
+            public void Goo()
+            {
+                Changed += ((this).Foo);
+            }".WrapInCSharpClass("Y : X");
+
+            var fixtest1 = @"public static void Foo() { }".WrapInCSharpClass("X");
+
+            var fixtest2 = @"
+            public event Action Changed;
+
+            public void Goo()
+            {
+                Changed += (Foo);
+            }".WrapInCSharpClass("Y : X");
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { fixtest1, fixtest2 });
+        }
+
+        [Fact]
+        public async Task MakeMethodStaticWhenReferencedAsNewInOtherClass()
+        {
+            const string source = @"
+using System;
+namespace ConsoleApplication1
+{
+    class Type1
+    {
+        public static bool Initialized = false;
+        public void Foo()
+        {
+            Initialized = true;
+        }
+    }
+    class Type2
+    {
+        private int i = 0;
+        public void Bar() {
+            var a = ((Type1)new Type1()).Foo();
+            var b = ((Type1)new Type1()).Foo();
+            i++;
+        }
+    }
+}";
+            const string fixtest = @"
+using System;
+namespace ConsoleApplication1
+{
+    class Type1
+    {
+        public static bool Initialized = false;
+        public static void Foo()
+        {
+            Initialized = true;
+        }
+    }
+    class Type2
+    {
+        private int i = 0;
+        public void Bar() {
+            new Type1();
+            var a = Type1.Foo();
+            new Type1();
+            var b = Type1.Foo();
+            i++;
+        }
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task MakeMethodStaticWhenReferencedInOtherClass()
+        {
+            const string source = @"
+using System;
+namespace ConsoleApplication1
+{
+    class Type1
+    {
+        public void Foo()
+        {
+        }
+    }
+    class Type2
+    {
+        private int i = 0;
+        private void Foo() { i++; }
+        public void Bar() {
+            var a = new Type1();
+            a.Foo()
+            Foo();
+            i++;
+        }
+    }
+}";
+            const string fixtest = @"
+using System;
+namespace ConsoleApplication1
+{
+    class Type1
+    {
+        public static void Foo()
+        {
+        }
+    }
+    class Type2
+    {
+        private int i = 0;
+        private void Foo() { i++; }
+        public void Bar() {
+            var a = new Type1();
+            Type1.Foo()
+            Foo();
+            i++;
+        }
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task MakeMethodStaticWithReferenceAsDelegateInDifferentClass()
+        {
+            const string source = @"
+        class X
+        {
+            public void Foo()
+            {
+            }
+        }
+
+        class Y
+        {
+            public event Action Changed;
+
+            public void Goo()
+            {
+                var f = new X();
+                Changed += f.Foo;
+            }
+        }";
+
+            const string fixtest = @"
+        class X
+        {
+            public static void Foo()
+            {
+            }
+        }
+
+        class Y
+        {
+            public event Action Changed;
+
+            public void Goo()
+            {
+                var f = new X();
+                Changed += X.Foo;
+            }
+        }";
+
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task MakeMethodStaticWithReferenceAsDelegateWithoutThis()
+        {
+            const string source = @"
+        class X
+        {
+            public void Foo()
+            {
+            }
+        }
+
+        class Y : X
+        {
+            public event Action Changed;
+
+            public void Goo()
+            {
+                Changed += Foo;
+            }
+        }";
+
+            const string fixtest = @"
+        class X
+        {
+            public static void Foo()
+            {
+            }
+        }
+
+        class Y : X
+        {
+            public event Action Changed;
+
+            public void Goo()
+            {
+                Changed += Foo;
+            }
+        }";
+
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task MakeMethodStaticWithReferenceAsDelegate()
+        {
+            const string source = @"
+        class X
+        {
+            public void Foo()
+            {
+            }
+        }
+
+        class Y : X
+        {
+            public event Action Changed;
+
+            public void Goo()
+            {
+                Changed += ((this).Foo);
+            }
+        }";
+
+            const string fixtest = @"
+        class X
+        {
+            public static void Foo()
+            {
+            }
+        }
+
+        class Y : X
+        {
+            public event Action Changed;
+
+            public void Goo()
+            {
+                Changed += (Foo);
+            }
+        }";
+
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
         [Theory]
         [InlineData(@"static void Foo() { }")]
         [InlineData(@"public virtual void Foo() { }")]
