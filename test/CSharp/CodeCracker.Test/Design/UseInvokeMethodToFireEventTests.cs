@@ -290,6 +290,66 @@ namespace CodeCracker.Test.CSharp.Design
         }
 
         [Fact]
+        public async void IgnoreIfAlreadyVerifiedForNotNullOnGrandparentIf()
+        {
+            var test = @"
+public static void Execute(System.Action action)
+{
+    if (action != null)
+    {
+        if (1 > 0)
+        {
+            action();
+        }
+    }
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void IgnoreIfAlreadyVerifiedForNotNullWithNullOnRight()
+        {
+            var test = @"
+public static void Execute(System.Action action)
+{
+    if (action != null)
+        action();
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void IgnoreIfAlreadyVerifiedForNotNullWithNullOnLeft()
+        {
+            var test = @"
+public static void Execute(System.Action action)
+{
+    if (null != action)
+        action();
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void IgnoreIfAlreadyVerifiedForNullCreatesDiagnostic()
+        {
+            var test = @"
+public static void Execute(System.Action action)
+{
+    if (null == action)
+        action();
+}".WrapInCSharpClass();
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
+                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "action"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 9) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
         public async void IgnoreIfAlreadyVerifiedForNullWithReturn()
         {
             const string test = @"
