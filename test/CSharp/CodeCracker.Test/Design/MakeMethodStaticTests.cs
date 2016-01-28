@@ -455,7 +455,6 @@ void Bar()
     t.Foo();
 }".WrapInCSharpClass("Type1");
             var source2 = @"public void Foo() { }".WrapInCSharpClass("Type2");
-
             var fixtest1 = @"private int i;
 void Bar()
 {

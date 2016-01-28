@@ -72,15 +72,15 @@ namespace CodeCracker.CSharp.Design
             var unchangedRoot = root;
             var memberAccess = root.GetCurrentNode(diagnosticNode).FirstAncestorOrSelfOfType<MemberAccessExpressionSyntax>();
             if (memberAccess == null) return unchangedRoot;
-            if (IsTypeOfExpresion<ThisExpressionSyntax>(memberAccess.Expression))
+            if (IsTypeOfExpression<ThisExpressionSyntax>(memberAccess.Expression))
             {
                 var newMemberAccessParent = memberAccess.Parent.ReplaceNode(memberAccess, memberAccess.Name)
                     .WithAdditionalAnnotations(Formatter.Annotation);
                 return root.ReplaceNode(memberAccess.Parent, newMemberAccessParent);
             }
-            else if (IsTypeOfExpresion<ObjectCreationExpressionSyntax>(memberAccess.Expression))
+            else if (IsTypeOfExpression<ObjectCreationExpressionSyntax>(memberAccess.Expression))
             {
-                var newObjectCreationExpression = SyntaxFactory.ExpressionStatement(GetObjectCreationExpresion(memberAccess.Expression));
+                var newObjectCreationExpression = SyntaxFactory.ExpressionStatement(GetObjectCreationExpression(memberAccess.Expression));
                 var nodeToInsertBefor = GetLastNodeBeforeBlockSyntax(root.GetCurrentNode(diagnosticNode));
                 var oldBlock = nodeToInsertBefor.Parent;
                 var newBlock = oldBlock.InsertNodesBefore(nodeToInsertBefor, new[] { newObjectCreationExpression });
@@ -96,7 +96,6 @@ namespace CodeCracker.CSharp.Design
                         .WithAdditionalAnnotations(Formatter.Annotation);
                 return root.ReplaceNode(memberAccess.Parent, newMemberAccessParent);
             }
-
         }
 
         private static SyntaxNode GetLastNodeBeforeBlockSyntax(SyntaxNode node)
@@ -109,28 +108,27 @@ namespace CodeCracker.CSharp.Design
             return null;
         }
 
-        private static bool IsTypeOfExpresion<T>(ExpressionSyntax expression) where T : SyntaxNode
+        private static bool IsTypeOfExpression<T>(ExpressionSyntax expression) where T : SyntaxNode
         {
             while (expression != null)
             {
                 if (expression.GetType() == typeof(T)) return true;
-                expression = GetNextExpresion(expression);
+                expression = GetNextExpression(expression);
             }
             return false;
         }
 
-        private static ObjectCreationExpressionSyntax GetObjectCreationExpresion(ExpressionSyntax expression)
+        private static ObjectCreationExpressionSyntax GetObjectCreationExpression(ExpressionSyntax expression)
         {
-
             while (expression != null)
             {
                 if (expression.IsKind(SyntaxKind.ObjectCreationExpression)) return expression as ObjectCreationExpressionSyntax;
-                expression = GetNextExpresion(expression);
+                expression = GetNextExpression(expression);
             }
             return null;
         }
 
-        private static ExpressionSyntax GetNextExpresion(ExpressionSyntax expression)
+        private static ExpressionSyntax GetNextExpression(ExpressionSyntax expression)
         {
             if (expression.IsKind(SyntaxKind.ParenthesizedExpression))
                 return (expression as ParenthesizedExpressionSyntax).Expression;
