@@ -51,7 +51,7 @@ int Increment(int b, string c){ reture a = a+b + c.Length;}
         public async Task IgnoresWhenMethodWithTypeParameterButNoArguments()
         {
             const string test = @"public class A{ 
-            public int LengthOfTypeName<T>{return typeof(T).FullName.Length;}
+            public int LengthOfTypeName<T>(){return typeof(T).FullName.Length;}
 
 
 }";
@@ -69,6 +69,17 @@ int Increment(int b, string c){ reture a = a+b + c.Length;}
             int Increment(int b) => b+ 2;
         
 
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task IgnoresWhenMethodOverloadedPart2()
+        {
+            const string test = @"class C
+{
+    public int I(string i) => 1;
+    public int I() => 1;
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
