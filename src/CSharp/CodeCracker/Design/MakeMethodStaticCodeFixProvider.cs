@@ -40,12 +40,12 @@ namespace CodeCracker.CSharp.Design
             var methodClassName = methodSymbol.ContainingType.Name;
             var references = await SymbolFinder.FindReferencesAsync(methodSymbol, document.Project.Solution, cancellationToken).ConfigureAwait(false);
             var documentGroups = references.SelectMany(r => r.Locations).GroupBy(loc => loc.Document);
-            var newSolution = UpdateMainDocument(document, root, method, documentGroups);
+            var newSolution = UpdateMainDocument(document, root, methodClassName, method, documentGroups);
             newSolution = await UpdateReferencingDocumentsAsync(document, methodClassName, documentGroups, newSolution, cancellationToken);
             return newSolution;
         }
 
-        private static Solution UpdateMainDocument(Document document, SyntaxNode root, MethodDeclarationSyntax method, IEnumerable<IGrouping<Document, ReferenceLocation>> documentGroups)
+        private static Solution UpdateMainDocument(Document document, SyntaxNode root, string methodClassName, MethodDeclarationSyntax method, IEnumerable<IGrouping<Document, ReferenceLocation>> documentGroups)
         {
             var mainDocGroup = documentGroups.FirstOrDefault(dg => dg.Key.Equals(document));
             SyntaxNode newRoot;
@@ -60,20 +60,85 @@ namespace CodeCracker.CSharp.Design
                 newRoot = newRoot.ReplaceNode(newRoot.GetCurrentNode(method), method.WithoutTrivia().AddModifiers(staticToken).WithTriviaFrom(method));
                 foreach (var diagnosticNode in diagnosticNodes)
                 {
-                    var token = newRoot.FindToken(diagnosticNode.GetLocation().SourceSpan.Start);
-                    var tokenParent = token.Parent;
-                    if (token.Parent.IsKind(SyntaxKind.IdentifierName)) continue;
-                    var invocationExpression = newRoot.GetCurrentNode(diagnosticNode).FirstAncestorOrSelfOfType<InvocationExpressionSyntax>()?.Expression;
-                    if (invocationExpression == null || invocationExpression.IsKind(SyntaxKind.IdentifierName)) continue;
-                    var memberAccess = invocationExpression as MemberAccessExpressionSyntax;
-                    if (memberAccess == null) continue;
-                    var newMemberAccessParent = memberAccess.Parent.ReplaceNode(memberAccess, memberAccess.Name)
-                        .WithAdditionalAnnotations(Formatter.Annotation);
-                    newRoot = newRoot.ReplaceNode(memberAccess.Parent, newMemberAccessParent);
+                    newRoot = CreateNewRoot(newRoot, methodClassName, diagnosticNode);
                 }
             }
             var newSolution = document.Project.Solution.WithDocumentSyntaxRoot(document.Id, newRoot);
             return newSolution;
+        }
+
+        private static SyntaxNode CreateNewRoot(SyntaxNode root, string methodClassName , SyntaxNode diagnosticNode)
+        {
+            var unchangedRoot = root;
+            var memberAccess = root.GetCurrentNode(diagnosticNode).FirstAncestorOrSelfOfType<MemberAccessExpressionSyntax>();
+            if (memberAccess == null) return unchangedRoot;
+            if (IsTypeOfExpresion<ThisExpressionSyntax>(memberAccess.Expression))
+            {
+                var newMemberAccessParent = memberAccess.Parent.ReplaceNode(memberAccess, memberAccess.Name)
+                    .WithAdditionalAnnotations(Formatter.Annotation);
+                return root.ReplaceNode(memberAccess.Parent, newMemberAccessParent);
+            }
+            else if (IsTypeOfExpresion<ObjectCreationExpressionSyntax>(memberAccess.Expression))
+            {
+                var newObjectCreationExpression = SyntaxFactory.ExpressionStatement(GetObjectCreationExpresion(memberAccess.Expression));
+                var nodeToInsertBefor = GetLastNodeBeforeBlockSyntax(root.GetCurrentNode(diagnosticNode));
+                var oldBlock = nodeToInsertBefor.Parent;
+                var newBlock = oldBlock.InsertNodesBefore(nodeToInsertBefor, new[] { newObjectCreationExpression });
+                memberAccess = newBlock.GetCurrentNode(diagnosticNode).FirstAncestorOrSelfOfType<MemberAccessExpressionSyntax>();
+
+                newBlock = newBlock.ReplaceNode(memberAccess.Expression, SyntaxFactory.IdentifierName(methodClassName))
+                    .WithAdditionalAnnotations(Formatter.Annotation);
+                return root.ReplaceNode(oldBlock, newBlock);
+            }
+            else
+            {
+                var newMemberAccessParent = memberAccess.Parent.ReplaceNode(memberAccess.Expression, SyntaxFactory.IdentifierName(methodClassName))
+                        .WithAdditionalAnnotations(Formatter.Annotation);
+                return root.ReplaceNode(memberAccess.Parent, newMemberAccessParent);
+            }
+
+        }
+
+        private static SyntaxNode GetLastNodeBeforeBlockSyntax(SyntaxNode node)
+        {
+            while(node != null && node.Parent != null)
+            {
+                if (node.Parent.IsKind(SyntaxKind.Block)) return node;
+                node = node.Parent;
+            }
+            return null;
+        }
+
+        private static bool IsTypeOfExpresion<T>(ExpressionSyntax expression) where T : SyntaxNode
+        {
+            while (expression != null)
+            {
+                if (expression.GetType() == typeof(T)) return true;
+                expression = GetNextExpresion(expression);
+            }
+            return false;
+        }
+
+        private static ObjectCreationExpressionSyntax GetObjectCreationExpresion(ExpressionSyntax expression)
+        {
+
+            while (expression != null)
+            {
+                if (expression.IsKind(SyntaxKind.ObjectCreationExpression)) return expression as ObjectCreationExpressionSyntax;
+                expression = GetNextExpresion(expression);
+            }
+            return null;
+        }
+
+        private static ExpressionSyntax GetNextExpresion(ExpressionSyntax expression)
+        {
+            if (expression.IsKind(SyntaxKind.ParenthesizedExpression))
+                return (expression as ParenthesizedExpressionSyntax).Expression;
+            else if (expression.IsKind(SyntaxKind.CastExpression))
+                return (expression as CastExpressionSyntax).Expression;
+            else
+                return null;
+
         }
 
         private static async Task<Solution> UpdateReferencingDocumentsAsync(Document document, string methodClassName, IEnumerable<IGrouping<Document, ReferenceLocation>> documentGroups, Solution newSolution, CancellationToken cancellationToken)
@@ -88,10 +153,7 @@ namespace CodeCracker.CSharp.Design
                 newReferencingRoot = newReferencingRoot.TrackNodes(diagnosticNodes);
                 foreach (var diagnosticNode in diagnosticNodes)
                 {
-                    var memberAccess = (MemberAccessExpressionSyntax)newReferencingRoot.GetCurrentNode(diagnosticNode).FirstAncestorOrSelfOfType<InvocationExpressionSyntax>().Expression;
-                    var newMemberAccess = memberAccess.ReplaceNode(memberAccess.Expression, methodIdentifier)
-                        .WithAdditionalAnnotations(Formatter.Annotation);
-                    newReferencingRoot = newReferencingRoot.ReplaceNode(memberAccess, newMemberAccess);
+                    newReferencingRoot = CreateNewRoot(newReferencingRoot, methodClassName, diagnosticNode);
                 }
                 newSolution = newSolution.WithDocumentSyntaxRoot(referencingDocument.Id, newReferencingRoot);
             }
