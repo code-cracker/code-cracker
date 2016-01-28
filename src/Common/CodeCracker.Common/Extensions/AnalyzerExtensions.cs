@@ -52,8 +52,19 @@ namespace CodeCracker
             return null;
         }
 
-        public static T FirstAncestorOfType<T>(this SyntaxNode node) where T : SyntaxNode =>
-            (T)node.FirstAncestorOfType(typeof(T));
+        public static T FirstAncestorOfType<T>(this SyntaxNode node) where T : SyntaxNode
+        {
+            var currentNode = node;
+            while (true)
+            {
+                var parent = currentNode.Parent;
+                if (parent == null) break;
+                var tParent = parent as T;
+                if (tParent != null) return tParent;
+                currentNode = parent;
+            }
+            return null;
+        }
 
         public static SyntaxNode FirstAncestorOfType(this SyntaxNode node, params Type[] types)
         {
