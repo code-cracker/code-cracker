@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeCracker.CSharp.Usage;
+using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -28,8 +29,10 @@ namespace CodeCracker.CSharp.Refactoring
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
+
+
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Add braces to each switch section", ct => MakeMethodPropertyAsync(context.Document, diagnostic, ct), nameof(ConvertMethodToPropertyCodeFixProvider)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(Resources.ConvertMethodToProperty_Title, ct => MakeMethodPropertyAsync(context.Document, diagnostic, ct), nameof(ConvertMethodToPropertyCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
 

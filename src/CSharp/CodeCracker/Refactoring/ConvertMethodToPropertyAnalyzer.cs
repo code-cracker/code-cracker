@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -14,8 +15,8 @@ namespace CodeCracker.CSharp.Refactoring
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ConvertMethodToPropertyAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Convert method to property.";
-        internal const string MessageFormat = "Convert this method to a property";
+        internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.ConvertMethodToProperty_Title), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.ConvertMethodToProperty_MessageFormat), Resources.ResourceManager, typeof(Resources));
         internal const string Category = SupportedCategories.Refactoring;
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
