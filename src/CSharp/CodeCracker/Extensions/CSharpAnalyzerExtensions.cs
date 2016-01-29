@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Formatting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -658,5 +659,25 @@ namespace CodeCracker
 
         private static bool CanSkipInitializer(InitializerState foundState, InitializerState currentState) =>
             foundState == InitializerState.WayToSkipInitializer && currentState == InitializerState.None;
+
+        public static TNode WithoutAllTrivia<TNode>(this TNode node) where TNode : SyntaxNode
+        {
+            var newNode = node.WithoutTrivia();
+            var tokens = newNode.ChildTokens().ToList();
+            var newTokens = tokens.ToDictionary(t => t, t => t.WithoutTrivia());
+            newNode = newNode.ReplaceTokens(tokens, (o, _) => newTokens[o]);
+            var nodes = newNode.ChildNodes().ToList();
+            var newNodes = nodes.ToDictionary(n => n, n => n.WithoutAllTrivia());
+            newNode = newNode.ReplaceNodes(nodes, (o, _) => newNodes[o]);
+            newNode = newNode.WithAdditionalAnnotations(Formatter.Annotation);
+            return newNode;
+        }
+
+        public static SyntaxToken WithoutTrivia(this SyntaxToken token)
+        {
+            var trivia = token.GetAllTrivia();
+            var newToken = token.ReplaceTrivia(trivia, (o, _) => default(SyntaxTrivia));
+            return newToken;
+        }
     }
 }
