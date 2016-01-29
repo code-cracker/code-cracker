@@ -122,5 +122,30 @@ namespace CodeCracker
             return result;
         }
         public static IEnumerable<SyntaxToken> EnsureProtectedBeforeInternal(this IEnumerable<SyntaxToken> modifiers) => modifiers.OrderByDescending(token => token.RawKind);
+
+        public static string GetFullName(this ISymbol symbol, bool addGlobal = true)
+        {
+            var fullName = symbol.Name;
+            var containingSymbol = symbol.ContainingSymbol;
+            while (!(containingSymbol is INamespaceSymbol))
+            {
+                fullName = $"{containingSymbol.Name}.{fullName}";
+                containingSymbol = containingSymbol.ContainingSymbol;
+            }
+            if (!((INamespaceSymbol)containingSymbol).IsGlobalNamespace)
+                fullName = $"{containingSymbol.ToString()}.{fullName}";
+            if (addGlobal)
+                fullName = $"global::{fullName}";
+            return fullName;
+        }
+
+        public static IEnumerable<INamedTypeSymbol> GetAllContainingTypes(this ISymbol symbol)
+        {
+            while (symbol.ContainingType != null)
+            {
+                yield return symbol.ContainingType;
+                symbol = symbol.ContainingType;
+            }
+        }
     }
 }
