@@ -60,6 +60,7 @@
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Extensions\CSharpGeneratedCodeAnalysisExtensions.cs" />
+    <Compile Include="Extensions\InitializerState.cs" />
     <Compile Include="Performance\ChangeCountMethodToPropertyAnalyzer.cs" />
     <Compile Include="Performance\ChangeCountMethodToPropertyCodeFixProvider.cs" />
     <Compile Include="Performance\SealMemberAnalyzer.cs" />
@@ -253,8 +254,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc4-0937\analyzers\dotnet\cs\CodeCracker.Common.dll" />
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc4-0937\analyzers\dotnet\cs\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc5-1047\analyzers\dotnet\cs\CodeCracker.Common.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc5-1047\analyzers\dotnet\cs\CodeCracker.CSharp.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>

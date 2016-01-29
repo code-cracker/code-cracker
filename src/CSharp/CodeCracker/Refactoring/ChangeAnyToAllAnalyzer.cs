@@ -107,11 +107,10 @@ namespace CodeCracker.CSharp.Refactoring
 
         public static ExpressionSyntax CreateExpressionWithNewName(InvocationExpressionSyntax invocation, SimpleNameSyntax nameToCheck)
         {
-            ExpressionSyntax otherExpression = null;
-            if (invocation.Expression.IsKind(SyntaxKind.MemberBindingExpression))
-                otherExpression = ((MemberBindingExpressionSyntax)invocation.Expression).WithName(nameToCheck).WithAdditionalAnnotations(speculativeAnnotation);
-            else //avoid this, already checked before: if (invocation.Expression.IsKind(SyntaxKind.SimpleMemberAccessExpression))
-                otherExpression = ((MemberAccessExpressionSyntax)invocation.Expression).WithName(nameToCheck).WithAdditionalAnnotations(speculativeAnnotation);
+            var otherExpression = invocation.Expression.IsKind(SyntaxKind.MemberBindingExpression)
+                ? (ExpressionSyntax)((MemberBindingExpressionSyntax)invocation.Expression).WithName(nameToCheck).WithAdditionalAnnotations(speculativeAnnotation)
+                //avoid this, already checked before: if (invocation.Expression.IsKind(SyntaxKind.SimpleMemberAccessExpression)):
+                : ((MemberAccessExpressionSyntax)invocation.Expression).WithName(nameToCheck).WithAdditionalAnnotations(speculativeAnnotation);
             return otherExpression;
         }
     }

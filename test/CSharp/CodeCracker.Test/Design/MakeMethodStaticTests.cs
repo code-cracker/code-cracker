@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
-using System;
 
 namespace CodeCracker.Test.CSharp.Design
 {
@@ -566,6 +565,425 @@ void Bar()
         }}
     }}";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task FixWhenUsedAsMethodGroup()
+        {
+            const string source = @"
+class Bar
+{
+    void ShouldBeStatic()
+    {
+    }
+    void Caller()
+    {
+        Foo.M(new Baz(ShouldBeStatic));
+    }
+}
+class Foo
+{
+    public static void M(Baz b) { }
+}
+class Baz
+{
+    public Baz(Action a)
+    {
+    }
+}";
+            const string fixtest = @"
+class Bar
+{
+    static void ShouldBeStatic()
+    {
+    }
+    void Caller()
+    {
+        Foo.M(new Baz(ShouldBeStatic));
+    }
+}
+class Foo
+{
+    public static void M(Baz b) { }
+}
+class Baz
+{
+    public Baz(Action a)
+    {
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+
+        [Fact]
+        public async Task FixWhenUsedAsMethodGroupInMultipleDocs()
+        {
+            const string source1 = @"
+namespace Ns
+{
+    class Bar
+    {
+        public void ShouldBeStatic()
+        {
+        }
+    }
+}";
+            const string source2 = @"
+namespace Ns
+{
+    class Foo
+    {
+        public static void M(Baz b) { }
+    }
+    class Baz
+    {
+        public Baz(Action a)
+        {
+        }
+        static void Caller()
+        {
+            Foo.M(new Baz(new Bar().ShouldBeStatic));
+        }
+    }
+}";
+            const string fixtest1 = @"
+namespace Ns
+{
+    class Bar
+    {
+        public static void ShouldBeStatic()
+        {
+        }
+    }
+}";
+            const string fixtest2 = @"
+namespace Ns
+{
+    class Foo
+    {
+        public static void M(Baz b) { }
+    }
+    class Baz
+    {
+        public Baz(Action a)
+        {
+        }
+        static void Caller()
+        {
+            Foo.M(new Baz(Bar.ShouldBeStatic));
+        }
+    }
+}";
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { fixtest1, fixtest2 });
+        }
+
+        [Fact]
+        public async Task FixWhenUsedAsMethodGroupWithThis()
+        {
+            const string source = @"
+class Bar
+{
+    void ShouldBeStatic()
+    {
+    }
+    void Caller()
+    {
+        Foo.M(new Baz(this.ShouldBeStatic));
+    }
+}
+class Foo
+{
+    public static void M(Baz b) { }
+}
+class Baz
+{
+    public Baz(Action a)
+    {
+    }
+}";
+            const string fixtest = @"
+class Bar
+{
+    static void ShouldBeStatic()
+    {
+    }
+    void Caller()
+    {
+        Foo.M(new Baz(ShouldBeStatic));
+    }
+}
+class Foo
+{
+    public static void M(Baz b) { }
+}
+class Baz
+{
+    public Baz(Action a)
+    {
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenUsedAsMethodGroupWithThisAndAnOverload()
+        {
+            const string source = @"
+class Bar
+{
+    private int j;
+    void ShouldBeStatic(int i)
+    {
+        j = i;
+    }
+    void ShouldBeStatic()
+    {
+    }
+    void Caller()
+    {
+        Foo.M(new Baz(this.ShouldBeStatic));
+    }
+}
+class Foo
+{
+    public static void M(Baz b) { }
+}
+class Baz
+{
+    public Baz(Action a)
+    {
+    }
+}";
+            const string fixtest = @"
+class Bar
+{
+    private int j;
+    void ShouldBeStatic(int i)
+    {
+        j = i;
+    }
+    static void ShouldBeStatic()
+    {
+    }
+    void Caller()
+    {
+        Foo.M(new Baz(ShouldBeStatic));
+    }
+}
+class Foo
+{
+    public static void M(Baz b) { }
+}
+class Baz
+{
+    public Baz(Action a)
+    {
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenUsedWithParenthesisOnMethodGroup()
+        {
+            const string source = @"
+class Bar
+{
+    void ShouldBeStatic()
+    {
+    }
+    void Caller()
+    {
+        (this.ShouldBeStatic)();
+    }
+}";
+            const string fixtest = @"
+class Bar
+{
+    static void ShouldBeStatic()
+    {
+    }
+    void Caller()
+    {
+        ShouldBeStatic();
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWithVariable()
+        {
+            const string source = @"
+class Foo
+{
+    static void M()
+    {
+        var b = new Bar();
+        b.M();
+    }
+}
+class Bar
+{
+    public void M()
+    {
+    }
+}";
+            const string fixtest = @"
+class Foo
+{
+    static void M()
+    {
+        var b = new Bar();
+        Bar.M();
+    }
+}
+class Bar
+{
+    public static void M()
+    {
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWithNew()
+        {
+            const string source = @"
+class Foo
+{
+    static void M()
+    {
+        new Bar().M();
+    }
+}
+class Bar
+{
+    public void M()
+    {
+    }
+}";
+            const string fixtest = @"
+class Foo
+{
+    static void M()
+    {
+        Bar.M();
+    }
+}
+class Bar
+{
+    public static void M()
+    {
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixInAHierarchy()
+        {
+            const string source = @"
+class Foo
+{
+    public void M()
+    {
+    }
+    class Bar
+    {
+        static void N()
+        {
+            new Foo().M();
+        }
+    }
+}";
+            const string fixtest = @"
+class Foo
+{
+    public static void M()
+    {
+    }
+    class Bar
+    {
+        static void N()
+        {
+            M();
+        }
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixInAHierarchyWithNameClash()
+        {
+            const string source = @"
+class Foo
+{
+    public void M()
+    {
+    }
+    class Bar
+    {
+        static void M()
+        {
+            new Foo().M();
+        }
+    }
+}";
+            const string fixtest = @"
+class Foo
+{
+    public static void M()
+    {
+    }
+    class Bar
+    {
+        static void M()
+        {
+            Foo.M();
+        }
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWithAGetterMethod()
+        {
+            const string source = @"
+class Foo
+{
+    public void M()
+    {
+    }
+}
+class Bar
+{
+    static void M()
+    {
+        GetFoo().M();
+    }
+    static Foo GetFoo() => new Foo();
+}";
+            const string fixtest = @"
+class Foo
+{
+    public static void M()
+    {
+    }
+}
+class Bar
+{
+    static void M()
+    {
+        Foo.M();
+    }
+    static Foo GetFoo() => new Foo();
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
         }
     }
 }

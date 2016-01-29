@@ -82,7 +82,7 @@ public class CSharpClass
         [Fact]
         public async Task IgnoresDisposableObjectsBeingCreatedWithTernaryInUsingStatement()
         {
-            var source = @"
+            const string source = @"
 namespace CSharpNamespace
 {
     public class DisposableClass : System.IDisposable  { }

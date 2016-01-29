@@ -261,7 +261,7 @@ class TypeName
         [InlineData("!xs.All(i => i != 1)", "xs.Any(i => i == 1)")]
         public async Task FixesExpressionBodiedMember(string code, string fixedCode)
         {
-            var source = @"
+            const string source = @"
 using System;
 using System.Linq;
 class TypeName
