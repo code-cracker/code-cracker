@@ -141,6 +141,7 @@
     <Compile Include="Performance\ReturnTaskInsteadOfAwaitTests.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
     <Compile Include="Performance\StringBuilderInLoopTests.cs" />
+    <Compile Include="Refactoring\AddPropertyToConstructorTest.cs" />
     <Compile Include="Style\PreferAnyToCountGreaterThanZeroTests.cs" />
     <Compile Include="Refactoring\ExtractClassToFileTests.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsTests.cs" />
