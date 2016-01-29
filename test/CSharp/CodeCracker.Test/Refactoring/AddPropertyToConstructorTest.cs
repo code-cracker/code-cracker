@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Xunit;
 using CodeCracker.CSharp.Refactoring;
+using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace CodeCracker.Test.CSharp.Refactoring
 {
@@ -388,6 +389,86 @@ namespace ClassLibrary
 }";
 
             return VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task ShouldAddAllOfThePropertiesInConstructorsOfTheCurrentDocument()
+        {
+
+            const string source = @"
+public class Foo1
+{
+    public string Name { get; private set; }
+
+    public string LastName { get; private set; }
+
+    public int Year { get; private set; }
+
+    public Foo1()
+    {
+    }
+}
+
+public class Foo2
+{
+    public System.DateTime DateUpdate { get; private set; }
+
+    public Foo2()
+    {
+    }
+}
+public class Foo3
+{
+    public string Name { get; private set; }
+}";
+            const string expected = @"
+public class Foo1
+{
+    public string Name { get; private set; }
+
+    public string LastName { get; private set; }
+
+    public int Year { get; private set; }
+
+    public Foo1()
+    {
+    }
+
+    public Foo1(string name, string lastName = """", int year = int.MinValue) : this()
+    {
+        Name = name;
+        LastName = lastName;
+        Year = year;
+    }
+}
+
+public class Foo2
+{
+    public System.DateTime DateUpdate { get; private set; }
+
+    public Foo2()
+    {
+    }
+
+    public Foo2(System.DateTime dateUpdate) : this()
+    {
+        DateUpdate = dateUpdate;
+    }
+}
+public class Foo3
+{
+    public string Name { get; private set; }
+
+    public Foo3()
+    {
+    }
+
+    public Foo3(string name)
+    {
+        Name = name;
+    }
+}";
+            await VerifyCSharpFixAllAsync(source, expected);
         }
     }
 }

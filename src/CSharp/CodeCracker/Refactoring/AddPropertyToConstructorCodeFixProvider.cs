@@ -20,15 +20,16 @@ namespace CodeCracker.CSharp.Refactoring
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.AddPropertyToConstructor.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public sealed override FixAllProvider GetFixAllProvider() => AddPropertyToConstructorCodeFixProviderAll.Instance;
 
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.FirstOrDefault();
-            context.RegisterCodeFix(CodeAction.Create("Create property to constructor:", c => AddPropertyToConstructoAsync(context.Document, diagnostic, c), nameof(AddPropertyToConstructorFixProvider)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Create property to constructor:", c => AddPropertyToConstructorDocumentAsync(context.Document, diagnostic, c), nameof(AddPropertyToConstructorFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
-        private async static Task<Document> AddPropertyToConstructoAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+
+        private async static Task<Document> AddPropertyToConstructorDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;
@@ -37,40 +38,45 @@ namespace CodeCracker.CSharp.Refactoring
                                                                  .OfType<PropertyDeclarationSyntax>();
 
             var currentClass = properties.FirstOrDefault()?.Parent as ClassDeclarationSyntax;
-            var newRoot = root.ReplaceNode(currentClass, CreateNewClass(currentClass, properties));
+            var newRoot = AddPropertyToConstructor(root, currentClass, properties.FirstOrDefault());
             return document.WithSyntaxRoot(newRoot);
         }
+        public static SyntaxNode AddPropertyToConstructor(SyntaxNode root, ClassDeclarationSyntax currentClass, PropertyDeclarationSyntax property)
+        {
+            return root.ReplaceNode(currentClass, CreateNewClass(currentClass, property));
+        }
 
-        private static ClassDeclarationSyntax CreateNewClass(ClassDeclarationSyntax currentClass, IEnumerable<PropertyDeclarationSyntax> properties)
+
+        private static ClassDeclarationSyntax CreateNewClass(ClassDeclarationSyntax currentClass, PropertyDeclarationSyntax property)
         {
             switch (DefinitionTypeCreationConstructor(currentClass))
             {
                 case TypeConstructor.CreateDefaultConstructor:
-                    return CreateNewClassWithDefaultConstructor(currentClass, properties);
+                    return CreateNewClassWithDefaultConstructor(currentClass, property);
                 case TypeConstructor.NewConstructor:
-                    return CreateNewClassWithDefaultConstructorInitializer(currentClass, properties);
+                    return CreateNewClassWithDefaultConstructorInitializer(currentClass, property);
                 case TypeConstructor.UpdateCurrentConstructor:
-                    return CreateNewClassUsingCurrentConstructor(currentClass, properties);
+                    return CreateNewClassUsingCurrentConstructor(currentClass, property);
             }
             return currentClass;
         }
 
-        private static ClassDeclarationSyntax CreateNewClassWithDefaultConstructor(ClassDeclarationSyntax currentClass, IEnumerable<PropertyDeclarationSyntax> properties)
+        private static ClassDeclarationSyntax CreateNewClassWithDefaultConstructor(ClassDeclarationSyntax currentClass, PropertyDeclarationSyntax property)
         {
             return currentClass
                     .AddMembers(CreateNewConstructor(currentClass))
-                    .AddMembers(CreateNewConstructor(currentClass, properties));
+                    .AddMembers(CreateNewConstructor(currentClass, property));
         }
 
-        private static ClassDeclarationSyntax CreateNewClassUsingCurrentConstructor(ClassDeclarationSyntax currentClass, IEnumerable<PropertyDeclarationSyntax> properties)
+        private static ClassDeclarationSyntax CreateNewClassUsingCurrentConstructor(ClassDeclarationSyntax currentClass, PropertyDeclarationSyntax property)
         {
             var oldConstructor = GetCurrentConstructor(GetAllConstructors(currentClass));
-            return currentClass.ReplaceNode(oldConstructor, CreateNewConstructor(currentClass, oldConstructor, properties));
+            return currentClass.ReplaceNode(oldConstructor, CreateNewConstructor(currentClass, oldConstructor, property));
         }
 
-        private static ClassDeclarationSyntax CreateNewClassWithDefaultConstructorInitializer(ClassDeclarationSyntax currentClass, IEnumerable<PropertyDeclarationSyntax> properties)
+        private static ClassDeclarationSyntax CreateNewClassWithDefaultConstructorInitializer(ClassDeclarationSyntax currentClass, PropertyDeclarationSyntax property)
         {
-            return currentClass.AddMembers(CreateNewConstructorWithInitializer(currentClass, properties));
+            return currentClass.AddMembers(CreateNewConstructorWithInitializer(currentClass, property));
         }
 
         private static TypeConstructor DefinitionTypeCreationConstructor(ClassDeclarationSyntax currentClass)
@@ -134,45 +140,44 @@ namespace CodeCracker.CSharp.Refactoring
                                                 .WithAdditionalAnnotations(Formatter.Annotation);
         }
 
-        private static ConstructorDeclarationSyntax CreateNewConstructor(ClassDeclarationSyntax currentClass, IEnumerable<PropertyDeclarationSyntax> properties)
+        private static ConstructorDeclarationSyntax CreateNewConstructor(ClassDeclarationSyntax currentClass, PropertyDeclarationSyntax property)
         {
             return SyntaxFactory.ConstructorDeclaration(currentClass.Identifier.ValueText)
                                                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
-                                                .WithParameterList(CreateNewParameter(properties))
-                                                .WithBody(CreateBodyConstructor(properties))
+                                                .WithParameterList(CreateNewParameter(property))
+                                                .WithBody(CreateBodyConstructor(property))
                                                 .WithAdditionalAnnotations(Formatter.Annotation);
         }
 
-        private static ConstructorDeclarationSyntax CreateNewConstructorWithInitializer(ClassDeclarationSyntax currentClass, IEnumerable<PropertyDeclarationSyntax> properties)
+        private static ConstructorDeclarationSyntax CreateNewConstructorWithInitializer(ClassDeclarationSyntax currentClass, PropertyDeclarationSyntax property)
         {
             return SyntaxFactory.ConstructorDeclaration(currentClass.Identifier.ValueText)
                                                 .WithInitializer(SyntaxFactory.ConstructorInitializer(SyntaxKind.ThisConstructorInitializer))
                                                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
-                                                .WithParameterList(CreateNewParameter(properties))
-                                                .WithBody(CreateBodyConstructor(properties))
+                                                .WithParameterList(CreateNewParameter(property))
+                                                .WithBody(CreateBodyConstructor(property))
                                                 .WithAdditionalAnnotations(Formatter.Annotation);
         }
 
-        private static ConstructorDeclarationSyntax CreateNewConstructor(ClassDeclarationSyntax currentClass, ConstructorDeclarationSyntax defaultConstructor, IEnumerable<PropertyDeclarationSyntax> properties)
+        private static ConstructorDeclarationSyntax CreateNewConstructor(ClassDeclarationSyntax currentClass, ConstructorDeclarationSyntax defaultConstructor, PropertyDeclarationSyntax property)
         {
             return SyntaxFactory.ConstructorDeclaration(currentClass.Identifier.ValueText)
                                                 .WithInitializer(defaultConstructor.Initializer)
                                                 .WithModifiers(defaultConstructor.Modifiers)
-                                                .WithParameterList(CreateNewParameter(properties, defaultConstructor.ParameterList))
-                                                .WithBody(defaultConstructor.Body.AddStatements(CreateBodyStatement(properties).ToArray()));
+                                                .WithParameterList(CreateNewParameter(property, defaultConstructor.ParameterList))
+                                                .WithBody(defaultConstructor.Body.AddStatements(CreateBodyStatement(property).ToArray()));
         }
 
-        private static BlockSyntax CreateBodyConstructor(IEnumerable<PropertyDeclarationSyntax> properties)
+        private static BlockSyntax CreateBodyConstructor(PropertyDeclarationSyntax property)
         {
-            return SyntaxFactory.Block(CreateBodyStatement(properties));
+            return SyntaxFactory.Block(CreateBodyStatement(property));
         }
 
-        private static List<StatementSyntax> CreateBodyStatement(IEnumerable<PropertyDeclarationSyntax> properties)
+        private static List<StatementSyntax> CreateBodyStatement(PropertyDeclarationSyntax properties)
         {
-            var newSyntaxList = new List<StatementSyntax>();
-            foreach (var property in properties)
-                newSyntaxList.Add(SyntaxFactory.ExpressionStatement(CreateAssignmentExpression(property)));
-            return newSyntaxList;
+            return new List<StatementSyntax> {
+                      (SyntaxFactory.ExpressionStatement(CreateAssignmentExpression(properties)))
+            };
         }
 
         private static AssignmentExpressionSyntax CreateAssignmentExpression(PropertyDeclarationSyntax property)
@@ -190,29 +195,21 @@ namespace CodeCracker.CSharp.Refactoring
                                            ).WithAdditionalAnnotations(Formatter.Annotation);
 
         }
-        private static ParameterListSyntax CreateNewParameter(IEnumerable<PropertyDeclarationSyntax> properties)
+        private static ParameterListSyntax CreateNewParameter(PropertyDeclarationSyntax property)
         {
             return SyntaxFactory.ParameterList(
                                 SyntaxFactory.SeparatedList<ParameterSyntax>()
-                                .AddRange(CreateNewParameterSyntax(properties)));
+                                .Add(CreateParameter(property)));
         }
 
-        private static ParameterListSyntax CreateNewParameter(IEnumerable<PropertyDeclarationSyntax> properties, ParameterListSyntax parameterList)
+        private static ParameterListSyntax CreateNewParameter(PropertyDeclarationSyntax property, ParameterListSyntax parameterList)
         {
             return SyntaxFactory.ParameterList(
                                 SyntaxFactory.SeparatedList<ParameterSyntax>()
                                 .AddRange(parameterList.Parameters)
-                                .AddRange(CreateNewParameterSyntax(properties, setDefaultType: true)));
+                                .Add(CreateParameter(property, setDefaultType: true)));
         }
 
-        private static IEnumerable<ParameterSyntax> CreateNewParameterSyntax(IEnumerable<PropertyDeclarationSyntax> properties, bool setDefaultType = false)
-        {
-            var parameterDefault = new List<ParameterSyntax>();
-
-            foreach (var property in properties)
-                parameterDefault.Add(CreateParameter(property, setDefaultType));
-            return parameterDefault;
-        }
 
         private static ParameterSyntax CreateParameter(PropertyDeclarationSyntax property, bool setDefaultType = false)
         {
