@@ -11,7 +11,7 @@ Properties {
     $nuspecPathCS = "$rootDir\src\CSharp\CodeCracker\CodeCracker.nuspec"
     $nuspecPathVB = "$rootDir\src\VisualBasic\CodeCracker\CodeCracker.nuspec"
     $nuspecPathJoint = "$rootDir\src\CodeCracker.nuspec"
-    $nugetExe = "$packagesDir\NuGet.CommandLine.2.8.5\tools\NuGet.exe"
+    $nugetExe = "$packagesDir\NuGet.CommandLine.3.3.0\tools\NuGet.exe"
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
     $nupkgPathJoint = "$rootDir\CodeCracker.{0}.nupkg"
@@ -120,6 +120,8 @@ Task Pack-Nuget-CSharp -precondition { return $isAppVeyor } {
 Task Pack-Nuget-VB -precondition { return $isAppVeyor } {
     PackNuget "VB" "$rootDir\src\VisualBasic" $nuspecPathVB $nupkgPathVB
 }
+
+Task Echo { echo echo }
 
 function PackNuget($language, $dir, $nuspecFile, $nupkgFile) {
     Write-Host "Packing nuget for $language..."
