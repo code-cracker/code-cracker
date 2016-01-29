@@ -58,13 +58,21 @@ namespace CodeCracker.CSharp.Usage
                     parameters.Remove(parameter.Key);
             }
 
-            if (methodOrConstructor.Body.Statements.Any())
+            var method = methodOrConstructor as MethodDeclarationSyntax;
+            IEnumerable<SyntaxNode> methodChildren = methodOrConstructor.Body?.Statements;
+            var expressionBody = (methodOrConstructor as MethodDeclarationSyntax)?.ExpressionBody;
+            if (methodChildren == null && expressionBody != null)
+                methodChildren = new[] { expressionBody };
+
+            if (methodChildren?.Any() ?? false)
             {
+                var identifiers = methodChildren
+                    .SelectMany(s => s.DescendantNodesAndSelf())
+                    .OfType<IdentifierNameSyntax>()
+                    .ToList();
                 foreach (var parameter in parameters)
                 {
-                    var used = methodOrConstructor.Body
-                        .DescendantNodesAndSelf()
-                        .OfType<IdentifierNameSyntax>()
+                    var used = identifiers
                         .Any(iName => IdentifierRefersToParam(iName, parameter.Key));
 
                     if (!used)
@@ -72,8 +80,8 @@ namespace CodeCracker.CSharp.Usage
                         ReportDiagnostic(context, parameter.Key);
                     }
                 }
-                // 
-                // THIS IS THE RIGHT WAY TO DO THIS VERIFICATION. 
+                //
+                // THIS IS THE RIGHT WAY TO DO THIS VERIFICATION.
                 // BUT, WE HAVE TO WAIT FOR A "BUGFIX" FROM ROSLYN TEAM
                 // IN DataFlowAnalysis
                 //
@@ -114,9 +122,8 @@ namespace CodeCracker.CSharp.Usage
 
         private static bool IsCandidateForRemoval(BaseMethodDeclarationSyntax methodOrConstructor, SemanticModel semanticModel)
         {
-            if (methodOrConstructor.Modifiers.Any(m => m.ValueText == "partial" || m.ValueText == "override")
-                || !methodOrConstructor.ParameterList.Parameters.Any()
-                || methodOrConstructor.Body == null)
+            if (methodOrConstructor.Modifiers.Any(m => m.ValueText == "partial" || m.ValueText == "override" || m.ValueText == "abstract")
+                || !methodOrConstructor.ParameterList.Parameters.Any())
                 return false;
             var method = methodOrConstructor as MethodDeclarationSyntax;
             if (method != null)
@@ -129,6 +136,8 @@ namespace CodeCracker.CSharp.Usage
                     .Any(member => methodSymbol.Equals(typeSymbol.FindImplementationForInterfaceMember(member))))
                     return false;
                 if (IsEventHandlerLike(method, semanticModel)) return false;
+                if (IsPrivateAndUsedAsMethodGroup(method, methodSymbol, semanticModel)) return false;
+                if (method.Parent is InterfaceDeclarationSyntax) return false;
             }
             else
             {
@@ -143,6 +152,23 @@ namespace CodeCracker.CSharp.Usage
                 }
             }
             return true;
+        }
+
+        private static bool IsPrivateAndUsedAsMethodGroup(MethodDeclarationSyntax method, IMethodSymbol methodSymbol, SemanticModel semanticModel)
+        {
+            if (methodSymbol.DeclaredAccessibility != Accessibility.Private) return false;
+            var parentType = method.Parent;
+            var allTokens = parentType.DescendantTokens();
+            var tokensThatMatch = from t in allTokens
+                                  let text = t.Text
+                                  where text == method.Identifier.Text
+                                  select t;
+            foreach (var token in tokensThatMatch)
+            {
+                var nodeSymbol = semanticModel.GetSymbolInfo(token.Parent).Symbol;
+                if (methodSymbol.Equals(nodeSymbol)) return true;
+            }
+            return false;
         }
 
         private static bool IsSerializationConstructor(ConstructorDeclarationSyntax constructor, SemanticModel semanticModel)
