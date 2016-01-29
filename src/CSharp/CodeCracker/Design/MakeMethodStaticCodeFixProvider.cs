@@ -77,23 +77,17 @@ namespace CodeCracker.CSharp.Design
                     var containingMember = memberAccess.FirstAncestorOrSelfThatIsAMember();
                     var memberSymbol = semanticModel.GetDeclaredSymbol(containingMember);
                     var allContainingTypes = memberSymbol.GetAllContainingTypes().ToList();
-                    SyntaxNode expressionToReplaceMemberAccess;
                     var methodTypeSymbol = GetMethodTypeSymbol(memberAccessExpressionSymbol);
-                    if (allContainingTypes.Any(t => t.Equals(methodTypeSymbol)))
-                    {
+                    var expressionToReplaceMemberAccess = allContainingTypes.Any(t => t.Equals(methodTypeSymbol))
                         // ideally we would check the symbols
                         // but there is a bug on Roslyn 1.0, fixed on 1.1:
                         // https://github.com/dotnet/roslyn/issues/3096
                         // so if we try to check the method symbol, it fails and always returns null
                         // so if we find a name clash, whatever one, we fall back to the full name
-                        expressionToReplaceMemberAccess = allContainingTypes.Count(t => t.MemberNames.Any(n => n == memberSymbol.Name)) > 1
-                            ? newMemberAccess
-                            : (SyntaxNode)memberAccess.Name;
-                    }
-                    else
-                    {
-                        expressionToReplaceMemberAccess = newMemberAccess;
-                    }
+                        ? allContainingTypes.Count(t => t.MemberNames.Any(n => n == memberSymbol.Name)) > 1
+                            ? (SyntaxNode)newMemberAccess
+                            : memberAccess.Name
+                        : newMemberAccess;
                     var newMemberAccessParent = memberAccess.Parent.ReplaceNode(memberAccess, expressionToReplaceMemberAccess)
                         .WithAdditionalAnnotations(Formatter.Annotation)
                         .WithAdditionalAnnotations(Simplifier.Annotation);

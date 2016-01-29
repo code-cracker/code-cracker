@@ -125,6 +125,6 @@ namespace CodeCracker.CSharp.Design
         private static ParameterSyntax GetParameterWithIdentifierEqualToStringLiteral(LiteralExpressionSyntax stringLiteral, SeparatedSyntaxList<ParameterSyntax> parameters) =>
             parameters.FirstOrDefault(m => string.Equals(m.Identifier.ValueText, stringLiteral.Token.ValueText, StringComparison.Ordinal));
 
-        private static SymbolDisplayFormat NameOfSymbolDisplayFormat = new SymbolDisplayFormat(memberOptions: SymbolDisplayMemberOptions.None, miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
+        private static readonly SymbolDisplayFormat NameOfSymbolDisplayFormat = new SymbolDisplayFormat(memberOptions: SymbolDisplayMemberOptions.None, miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
     }
 }

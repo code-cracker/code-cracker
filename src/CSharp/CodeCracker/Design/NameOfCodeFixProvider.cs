@@ -57,6 +57,6 @@ namespace CodeCracker.CSharp.Design
             var method = root.FindToken(diagnosticSpanStart).Parent.FirstAncestorOfType(typeof(ConstructorDeclarationSyntax), typeof(MethodDeclarationSyntax)) as BaseMethodDeclarationSyntax;
             return method?.ParameterList.Parameters.FirstOrDefault(m => m.Identifier.Value.ToString() == stringLiteral.Token.Value.ToString());
         }
-        private static SymbolDisplayFormat NameOfSymbolDisplayFormat = new SymbolDisplayFormat(memberOptions: SymbolDisplayMemberOptions.None, miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
+        private static readonly SymbolDisplayFormat NameOfSymbolDisplayFormat = new SymbolDisplayFormat(memberOptions: SymbolDisplayMemberOptions.None, miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
     }
 }

@@ -39,7 +39,7 @@ namespace CodeCracker.CSharp.Design
             {
                 // Allow empty catch when the block ends with a throw.
                 var controlFlow = context.SemanticModel.AnalyzeControlFlow(catchStatement.Block);
-                if (!controlFlow.EndPointIsReachable && 
+                if (!controlFlow.EndPointIsReachable &&
                     controlFlow.ExitPoints.All(i => i.IsKind(SyntaxKind.ThrowStatement))) return;
             }
             var diagnostic = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Consider put an Exception Class in catch.");
