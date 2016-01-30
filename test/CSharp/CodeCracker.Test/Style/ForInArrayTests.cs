@@ -594,5 +594,24 @@ for (var i = 0; i < array.Length; i++)
     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
+        [Fact]
+        public async Task WhenThereIsAnAssignmentDoesNotCreateDiagnostic()
+        {
+            var source = @"
+class Baz
+{
+    void Foo()
+    {
+        var buffer = new[] { 1 };
+        for (int i = 0; i < buffer.Length; i++)
+        {
+            var temp = buffer[i];
+            buffer[i] = 1;
+        }
+    }
+}".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }

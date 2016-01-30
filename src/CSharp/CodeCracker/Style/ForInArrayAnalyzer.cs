@@ -55,6 +55,8 @@ namespace CodeCracker.CSharp.Style
                     if (t.Text != forVariable.Identifier.Text) return false;
                     var elementAccess = t.GetAncestor<ElementAccessExpressionSyntax>();
                     if (elementAccess == null) return true;
+                    var assignment = elementAccess.Parent as AssignmentExpressionSyntax;
+                    if (assignment != null && assignment.Left == elementAccess) return true;
                     var accessIdentifier = elementAccess.Expression as IdentifierNameSyntax;
                     if (accessIdentifier == null) return true;
                     var identifierSymbol = semanticModel.GetSymbolInfo(accessIdentifier).Symbol;
