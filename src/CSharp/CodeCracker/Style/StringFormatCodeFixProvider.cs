@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Style
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.StringFormat.ToDiagnosticId());
 
-        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public sealed override FixAllProvider GetFixAllProvider() => StringFormatFixAllProvider.Instance;
 
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -32,16 +32,21 @@ namespace CodeCracker.CSharp.Style
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var invocationExpression = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-            var newStringInterpolation = await CreateNewStringInterpolationAsync(document, invocationExpression, cancellationToken);
-            var newRoot = root.ReplaceNode(invocationExpression, newStringInterpolation);
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            var newRoot = CreateNewStringInterpolation(root, invocationExpression);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
 
-        public static async Task<InterpolatedStringExpressionSyntax> CreateNewStringInterpolationAsync(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
+        public static SyntaxNode CreateNewStringInterpolation(SyntaxNode root, InvocationExpressionSyntax invocationExpression)
         {
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var memberSymbol = semanticModel.GetSymbolInfo(invocationExpression.Expression).Symbol;
+            var newStringInterpolation = CreateNewStringInterpolation(invocationExpression);
+            var newRoot = root.ReplaceNode(invocationExpression, newStringInterpolation);
+            return newRoot;
+        }
+
+        public static InterpolatedStringExpressionSyntax CreateNewStringInterpolation(InvocationExpressionSyntax invocationExpression)
+        {
             var argumentList = invocationExpression.ArgumentList;
             var arguments = argumentList.Arguments;
             var formatLiteral = (LiteralExpressionSyntax)arguments[0].Expression;

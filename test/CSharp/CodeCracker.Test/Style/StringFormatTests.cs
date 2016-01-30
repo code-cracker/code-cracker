@@ -636,5 +636,35 @@ var foo = 1;
 var baz = $""{foo + ""baz"" + ""boo""}"";".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, expected);
         }
+
+        [Fact]
+        public async Task NestedStringFormatCreatesDiagnostic()
+        {
+            var source = @"var foo = string.Format(""{0}"", string.Format(""{0}"", 1 ) );".WrapInCSharpMethod();
+            var expected1 = new DiagnosticResult
+            {
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
+                Message = StringFormatAnalyzer.MessageFormat.ToString(),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 27) }
+            };
+            var expected2 = new DiagnosticResult
+            {
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
+                Message = StringFormatAnalyzer.MessageFormat.ToString(),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 48) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected1, expected2);
+        }
+
+        [Fact]
+        public async Task FixAllStringInterpolations()
+        {
+var foo = $"{$"{1}"}";
+            var source = @"var foo = string.Format(""{0}"", string.Format(""{0}"", 1 ) );".WrapInCSharpMethod();
+            var expected = @"var foo = $""{$""{1}""}"";".WrapInCSharpMethod();
+            await VerifyCSharpFixAllAsync(source, expected);
+        }
     }
 }
