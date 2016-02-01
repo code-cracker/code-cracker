@@ -14,5 +14,5 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguage("en")]
 [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.0.12")]
+[assembly: AssemblyFileVersion("1.0.0.13")]
 [assembly: InternalsVisibleTo("CodeCracker.Test.CSharp")]
