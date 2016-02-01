@@ -609,5 +609,32 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(source, expected);
         }
+
+        [Fact]
+        public async Task FixWithLineBreaksAndConditionalExpression()
+        {
+            var source = @"
+var foo = 1;
+var goo = string.Format(""{0}"", foo == 2 ?
+10 : 15);".WrapInCSharpMethod();
+            var expected = @"
+var foo = 1;
+var goo = $""{(foo == 2 ? 10 : 15)}"";".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixWithLineBreaksAndStringConcat()
+        {
+            var source = @"
+var foo = 1;
+var baz = string.Format(""{0}"", foo +
+    ""baz"" +
+    ""boo"");".WrapInCSharpMethod();
+            var expected = @"
+var foo = 1;
+var baz = $""{foo + ""baz"" + ""boo""}"";".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, expected);
+        }
     }
 }
