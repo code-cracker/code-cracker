@@ -3,7 +3,7 @@
     <metadata>
         <id>codecracker.CSharp</id>
         <version>1.0.0-rc6</version>
-        <title>CodeCracker</title>
+        <title>CodeCracker for C#</title>
         <authors>giggio,elemarjr,carloscds</authors>
         <owners>giggio,elemarjr,carloscds</owners>
         <licenseUrl>https://github.com/code-cracker/code-cracker/blob/master/LICENSE.txt</licenseUrl>
