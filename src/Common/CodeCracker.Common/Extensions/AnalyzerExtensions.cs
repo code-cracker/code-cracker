@@ -147,5 +147,24 @@ namespace CodeCracker
                 symbol = symbol.ContainingType;
             }
         }
+
+        public static Accessibility GetMinimumCommonAccessibility(this Accessibility accessibility, Accessibility otherAccessibility)
+        {
+            if (accessibility == otherAccessibility || otherAccessibility == Accessibility.Private) return accessibility;
+            if (otherAccessibility == Accessibility.Public) return Accessibility.Public;
+            switch (accessibility)
+            {
+                case Accessibility.Private:
+                    return otherAccessibility;
+                case Accessibility.ProtectedAndInternal:
+                case Accessibility.Protected:
+                case Accessibility.Internal:
+                    return Accessibility.ProtectedAndInternal;
+                case Accessibility.Public:
+                    return Accessibility.Public;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
 }
