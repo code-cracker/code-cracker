@@ -568,5 +568,310 @@ namespace ConsoleApplication1
 ".WrapInCSharpClass();
             await VerifyCSharpFixAllAsync(source, expected);
         }
+
+        [Fact]
+        public async Task FixExplicitPropertyWithReferenceOnSameTime()
+        {
+            const string source = @"
+interface IFoo
+{
+    int P { get; set; }
+}
+class Foo : IFoo
+{
+    public Foo()
+    {
+        p = 1;
+    }
+    private int p;
+    int IFoo.P
+    {
+        get
+        {
+            return p;
+        }
+        set
+        {
+            p = value;
+        }
+    }
+}";
+            const string expected = @"
+interface IFoo
+{
+    int P { get; set; }
+}
+class Foo : IFoo
+{
+    public Foo()
+    {
+        ((IFoo)this).P = 1;
+    }
+    int IFoo.P { get; set; }
+}";
+            await VerifyCSharpFixAllAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixExplicitPropertyWithReferenceOnDifferentType()
+        {
+            const string source = @"
+interface IFoo
+{
+    int P { get; set; }
+}
+class Foo : IFoo
+{
+    public int p;
+    int IFoo.P
+    {
+        get
+        {
+            return p;
+        }
+        set
+        {
+            p = value;
+        }
+    }
+}
+class Bar
+{
+    static void Baz()
+    {
+        var foo = new Foo();
+        foo.p = 1;
+    }
+}";
+            const string expected = @"
+interface IFoo
+{
+    int P { get; set; }
+}
+class Foo : IFoo
+{
+    int IFoo.P { get; set; }
+}
+class Bar
+{
+    static void Baz()
+    {
+        var foo = new Foo();
+        ((IFoo)foo).P = 1;
+    }
+}";
+            await VerifyCSharpFixAllAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixAllExplicitPropertyWithReferenceOnDifferentNamespace()
+        {
+            const string source1 = @"
+using Ns1;
+namespace Ns1
+{
+    interface IFoo
+    {
+        int P { get; set; }
+    }
+}
+namespace Ns2
+{
+    class Foo : IFoo
+    {
+        public int p;
+        int IFoo.P
+        {
+            get
+            {
+                return p;
+            }
+            set
+            {
+                p = value;
+            }
+        }
+    }
+}";
+            const string source2 = @"
+using Ns2;
+namespace Ns3
+{
+    class Bar
+    {
+        static void Baz()
+        {
+            var foo = new Foo();
+            foo.p = 1;
+        }
+    }
+}";
+            const string expected1 = @"
+using Ns1;
+namespace Ns1
+{
+    interface IFoo
+    {
+        int P { get; set; }
+    }
+}
+namespace Ns2
+{
+    class Foo : IFoo
+    {
+        int IFoo.P { get; set; }
+    }
+}";
+            const string expected2 = @"
+using Ns2;
+namespace Ns3
+{
+    class Bar
+    {
+        static void Baz()
+        {
+            var foo = new Foo();
+            ((Ns1.IFoo)foo).P = 1;
+        }
+    }
+}";
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { expected1, expected2 });
+        }
+
+        [Fact]
+        public async Task FixAllExplicitPropertyWithReferenceOnDifferentNamespaceWithImportedNs()
+        {
+            const string source1 = @"
+using Ns1;
+namespace Ns1
+{
+    interface IFoo
+    {
+        int P { get; set; }
+    }
+}
+namespace Ns2
+{
+    class Foo : IFoo
+    {
+        public int p;
+        int IFoo.P
+        {
+            get
+            {
+                return p;
+            }
+            set
+            {
+                p = value;
+            }
+        }
+    }
+}";
+            const string source2 = @"
+using Ns1;
+using Ns2;
+namespace Ns3
+{
+    class Bar
+    {
+        static void Baz()
+        {
+            var foo = new Foo();
+            foo.p = 1;
+        }
+    }
+}";
+            const string expected1 = @"
+using Ns1;
+namespace Ns1
+{
+    interface IFoo
+    {
+        int P { get; set; }
+    }
+}
+namespace Ns2
+{
+    class Foo : IFoo
+    {
+        int IFoo.P { get; set; }
+    }
+}";
+            const string expected2 = @"
+using Ns1;
+using Ns2;
+namespace Ns3
+{
+    class Bar
+    {
+        static void Baz()
+        {
+            var foo = new Foo();
+            ((IFoo)foo).P = 1;
+        }
+    }
+}";
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { expected1, expected2 });
+        }
+
+        [Fact]
+        public async Task FixAllWithNonPublicProperty()
+        {
+            const string source1 = @"
+namespace Ns1
+{
+    class Foo
+    {
+        public int p;
+        private int P
+        {
+            get
+            {
+                return p;
+            }
+            set
+            {
+                p = value;
+            }
+        }
+    }
+}";
+            const string source2 = @"
+using Ns1;
+namespace Ns2
+{
+    class Bar
+    {
+        static void Baz()
+        {
+            var foo = new Foo();
+            foo.p = 1;
+        }
+    }
+}";
+            const string expected1 = @"
+namespace Ns1
+{
+    class Foo
+    {
+        public int P { get; set; }
+    }
+}";
+            const string expected2 = @"
+using Ns1;
+namespace Ns2
+{
+    class Bar
+    {
+        static void Baz()
+        {
+            var foo = new Foo();
+            foo.P = 1;
+        }
+    }
+}";
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { expected1, expected2 });
+        }
     }
 }

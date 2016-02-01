@@ -459,6 +459,9 @@ namespace CodeCracker
             return null;
         }
 
+        public static TNode FirstAncestorOfKind<TNode>(this SyntaxNode node, params SyntaxKind[] kinds) where TNode : SyntaxNode =>
+            (TNode)FirstAncestorOfKind(node, kinds);
+
         public static IEnumerable<TNode> OfKind<TNode>(this IEnumerable<SyntaxNode> nodes, SyntaxKind kind) where TNode : SyntaxNode
         {
             foreach (var node in nodes)
@@ -678,6 +681,31 @@ namespace CodeCracker
             var trivia = token.GetAllTrivia();
             var newToken = token.ReplaceTrivia(trivia, (o, _) => default(SyntaxTrivia));
             return newToken;
+        }
+
+        private static readonly SyntaxTokenList publicToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+        private static readonly SyntaxTokenList privateToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+        private static readonly SyntaxTokenList protectedToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+        private static readonly SyntaxTokenList protectedInternalToken = SyntaxFactory.TokenList(
+            SyntaxFactory.Token(SyntaxKind.ProtectedKeyword), SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+        private static readonly SyntaxTokenList internalToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+        public static SyntaxTokenList GetTokens(this Accessibility accessibility)
+        {
+            switch (accessibility)
+            {
+                case Accessibility.Public:
+                    return publicToken;
+                case Accessibility.Private:
+                    return privateToken;
+                case Accessibility.Protected:
+                    return protectedToken;
+                case Accessibility.Internal:
+                    return internalToken;
+                case Accessibility.ProtectedAndInternal:
+                    return protectedInternalToken;
+                default:
+                    throw new NotSupportedException();
+            }
         }
     }
 }
