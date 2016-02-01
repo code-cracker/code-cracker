@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
+using System;
 
 namespace CodeCracker.Test.CSharp.Style
 {
@@ -569,7 +570,6 @@ for (var i = 0; i < array.Length; i++)
             }
         }
     }";
-
             const string fixtest = @"
     namespace ConsoleApplication1
     {
@@ -593,6 +593,169 @@ for (var i = 0; i < array.Length; i++)
         }
     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
+        public async Task WhenThereIsAnAssignmentDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+class Baz
+{
+    void Foo()
+    {
+        var buffer = new[] { 1 };
+        for (int i = 0; i < buffer.Length; i++)
+        {
+            var temp = buffer[i];
+            buffer[i] = 1;
+        }
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoreIfNotEnumerable()
+        {
+            const string source = @"
+class Foo
+{
+    void Bar()
+    {
+        var list = new MyList();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var item = list[i];
+        }
+    }
+}
+class MyList
+{
+    public int Count => 1;
+    public int this[int index] => 1;
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IfHasMethodGetEnumeratorReturningIEnumeratorCreatesDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    void Bar()
+    {
+        var list = new MyList();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var item = list[i];
+        }
+    }
+}
+class MyList
+{
+    public int Count => 1;
+    public int this[int index] => 1;
+    public System.Collections.IEnumerator GetEnumerator()
+    {
+        yield return 1;
+    }
+}";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
+                Message = ForInArrayAnalyzer.MessageFormat,
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 9) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task IfHasMethodGetEnumeratorReturningClassThatImplementsIEnumeratorCreatesDiagnostic()
+        {
+            const string source = @"
+class Foo
+{
+    void Bar()
+    {
+        var list = new MyList();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var item = list[i];
+        }
+    }
+}
+public class MyEnumerator : System.Collections.IEnumerator
+{
+    public object Current => 1;
+    public bool MoveNext() { }
+    public void Reset() { }
+}
+class MyList
+{
+    public int Count => 1;
+    public int this[int index] => 1;
+    public MyEnumerator GetEnumerator()
+    {
+        yield return 1;
+    }
+}";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
+                Message = ForInArrayAnalyzer.MessageFormat,
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 9) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WithFieldCreatesDiagnostic()
+        {
+            var source = @"
+private int[] array = new [] {1};
+public int Foo()
+{
+    for (var i = 0; i < array.Length; i++)
+    {
+        var item = array[i];
+    }
+}".WrapInCSharpClass();
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
+                Message = "You can use foreach instead of for.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 5) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WithPropertyCreatesDiagnostic()
+        {
+            var source = @"
+public int[] Foo
+{
+    set
+    {
+        for (var i = 0; i < value.Length; i++)
+        {
+            var item = value[i];
+        }
+    }
+}
+}".WrapInCSharpClass();
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
+                Message = "You can use foreach instead of for.",
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 9) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
         }
     }
 }
