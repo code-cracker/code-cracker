@@ -61,19 +61,25 @@ namespace CodeCracker.CSharp.Usage
                             suppressFinalize
                             ),
                         arguments
-                        ))
-                    .WithAdditionalAnnotations(Simplifier.Annotation)
-                    .WithAdditionalAnnotations(Formatter.Annotation);
+                        ));
 
-
-            var modifiedMethod = method.AddBodyStatements(
-                suppressFinalizeCall
-                );
-
+            var modifiedMethod = method;
+            if (method.ExpressionBody != null)
+            {
+                var bodiedExpression = method.ExpressionBody;
+                var bodiedStatement = SyntaxFactory.ExpressionStatement(bodiedExpression.Expression);
+                modifiedMethod = method.RemoveNode(bodiedExpression, SyntaxRemoveOptions.KeepNoTrivia)
+                    .AddBodyStatements(bodiedStatement)
+                    .WithSemicolonToken(SyntaxFactory.MissingToken(SyntaxKind.SemicolonToken)
+                    .WithLeadingTrivia(modifiedMethod.SemicolonToken.LeadingTrivia)
+                    .WithTrailingTrivia(modifiedMethod.SemicolonToken.TrailingTrivia));
+            }
+            modifiedMethod = modifiedMethod.AddBodyStatements(suppressFinalizeCall)
+                .WithAdditionalAnnotations(Simplifier.Annotation)
+                .WithAdditionalAnnotations(Formatter.Annotation);
 
             return document
                 .WithSyntaxRoot(root.ReplaceNode(method, modifiedMethod));
-
         }
     }
 }

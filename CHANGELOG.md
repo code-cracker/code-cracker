@@ -1,7 +1,57 @@
 # Change Log
 
+## [v1.0.0-rc6](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc6) (2016-02-01)
+[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc5...v1.0.0-rc6)
+
+**Implemented enhancements:**
+
+- CC0031 must not fire when Null-check is outside of a try block [\#672](https://github.com/code-cracker/code-cracker/issues/672)
+- Add exceptions to CC0068 depending on the method attribute [\#526](https://github.com/code-cracker/code-cracker/issues/526)
+
+**Fixed bugs:**
+
+- BUG: CC0048 \(string interpolation\) when string is split into multiple lines [\#689](https://github.com/code-cracker/code-cracker/issues/689)
+- CC0017 wrong change with explicitly implemented properties, but can be fixed [\#687](https://github.com/code-cracker/code-cracker/issues/687)
+- CC0006 should be checking if for-looped array is enumerable by foreach [\#684](https://github.com/code-cracker/code-cracker/issues/684)
+- BUG: CC0006 wrongly tries to convert for into foreach when there would be an assignment to the iteration variable [\#683](https://github.com/code-cracker/code-cracker/issues/683)
+- CC0091 MakeMethodStaticCodeFixProvider crashing [\#682](https://github.com/code-cracker/code-cracker/issues/682)
+- CC0091 wrongly tries to make static methods in structs [\#681](https://github.com/code-cracker/code-cracker/issues/681)
+- BUG: CC0091 \(make static\) changes references incorrectly when used as a method group and in conjunction with another method invocation [\#680](https://github.com/code-cracker/code-cracker/issues/680)
+- CC0091 on method Foo does not replace occurences like this.Foo used in delegates [\#677](https://github.com/code-cracker/code-cracker/issues/677)
+- ObjectInitializerCodeFixProvider crashes [\#676](https://github.com/code-cracker/code-cracker/issues/676)
+- Bug CC0084 should not generate string empty in parameter list in constructor or method [\#669](https://github.com/code-cracker/code-cracker/issues/669)
+- CC0022 when theer is ternary operator in using [\#665](https://github.com/code-cracker/code-cracker/issues/665)
+- CC0031 should not copy the variable with readonly members [\#663](https://github.com/code-cracker/code-cracker/issues/663)
+- BUG on CC0047 \(PropertyPrivateSet\) suggests to make a property set private when the property is already private [\#658](https://github.com/code-cracker/code-cracker/issues/658)
+- With more than one constructor, IntroduceFieldFromConstructorCodeFixProvider can replace wrong constructor [\#650](https://github.com/code-cracker/code-cracker/issues/650)
+- BUG on CC0057 \(unused parameter\) with named parameters [\#649](https://github.com/code-cracker/code-cracker/issues/649)
+- CC0057: Should not try to remove parameters meant to fulfill a delegate contract [\#646](https://github.com/code-cracker/code-cracker/issues/646)
+- CC0016 should not copy the variable with readonly members [\#645](https://github.com/code-cracker/code-cracker/issues/645)
+- BUG on CC0091 \(MakeMethodStatic\) when a reference to method is used as a method group [\#644](https://github.com/code-cracker/code-cracker/issues/644)
+- BUG on CC0043 and CC0092 \(ChangeAnyToAll\) when invocation is negated [\#642](https://github.com/code-cracker/code-cracker/issues/642)
+- BUG on CC0043 and CC0092 \(ChangeAnyToAll\) when invocation is in an expression bodied member [\#641](https://github.com/code-cracker/code-cracker/issues/641)
+- AD0001 Crash [\#638](https://github.com/code-cracker/code-cracker/issues/638)
+- BUG on CC0022 \(disposable not disposed\) fix when there is method chaining [\#630](https://github.com/code-cracker/code-cracker/issues/630)
+- New word 'Foramt' in NameOfSymbolDisplayForamt [\#627](https://github.com/code-cracker/code-cracker/issues/627)
+- CC0003 is shown even for catches which end with throw [\#626](https://github.com/code-cracker/code-cracker/issues/626)
+- CC0001 is shown for variables with type dynamic and object [\#625](https://github.com/code-cracker/code-cracker/issues/625)
+- CC0090 when using /// \<inheritdoc/\> [\#624](https://github.com/code-cracker/code-cracker/issues/624)
+- Bug: CC0017 not raised when using this [\#623](https://github.com/code-cracker/code-cracker/issues/623)
+- CC0052 false positives [\#621](https://github.com/code-cracker/code-cracker/issues/621)
+- Bug on CC0029 \(Call GC.SuppressFinalize on dispose\) with expression based methods [\#618](https://github.com/code-cracker/code-cracker/issues/618)
+- Removing Option Parameter causes crash [\#617](https://github.com/code-cracker/code-cracker/issues/617)
+- BUG on CC0043 and CC0092 \(ChangeAnyToAll\) when invocation has elvis operator [\#613](https://github.com/code-cracker/code-cracker/issues/613)
+- When the dispose pattern is used do not raise CC0033 [\#603](https://github.com/code-cracker/code-cracker/issues/603)
+- Suggested Nameof fix incorrectly suggests wrong type [\#594](https://github.com/code-cracker/code-cracker/issues/594)
+
 ## [v1.0.0-rc5](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc5) (2015-12-03)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc4...v1.0.0-rc5)
+
+**Implemented enhancements:**
+
+- CC0091 Know APIs [\#451](https://github.com/code-cracker/code-cracker/issues/451)
+- Change CC0001 so that it does not apply to primitives [\#407](https://github.com/code-cracker/code-cracker/issues/407)
+- Update all existing code fixes that are doing too much work on RegisterCodeFixesAsync \(VB\) [\#348](https://github.com/code-cracker/code-cracker/issues/348)
 
 **Fixed bugs:**
 
@@ -21,11 +71,6 @@
 - Code fix error in CC0014 TernaryOperatorAnalyzer \(assignment\)  [\#550](https://github.com/code-cracker/code-cracker/issues/550)
 - Bug with CC0009 when using the created object in the initialization [\#525](https://github.com/code-cracker/code-cracker/issues/525)
 - CC0013 Should check for a common type and cast is necessary. [\#521](https://github.com/code-cracker/code-cracker/issues/521)
-
-**Implemented enhancements:**
-
-- Change CC0001 so that it does not apply to primitives [\#407](https://github.com/code-cracker/code-cracker/issues/407)
-- Update all existing code fixes that are doing too much work on RegisterCodeFixesAsync \(VB\) [\#348](https://github.com/code-cracker/code-cracker/issues/348)
 
 ## [v1.0.0-rc4](https://github.com/code-cracker/code-cracker/tree/v1.0.0-rc4) (2015-11-02)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc3...v1.0.0-rc4)

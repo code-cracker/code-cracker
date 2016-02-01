@@ -191,3 +191,4 @@ ModelManifest.xml
 
 log/
 .vs
+nuget.exe

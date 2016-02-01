@@ -385,6 +385,26 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(source, fixtest, 0);
         }
+
+        [Fact]
+        public async Task FixNestedConstructors()
+        {
+            var source = @"
+public void Foo()
+{
+    var p = new Person(new Name());
+    p.Age = 25;
+}".WrapInCSharpClass();
+            var fixtest = @"
+public void Foo()
+{
+    var p = new Person(new Name())
+    {
+        Age = 25
+    };
+}".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 
     public class ObjectInitializerWithAssignmentTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>

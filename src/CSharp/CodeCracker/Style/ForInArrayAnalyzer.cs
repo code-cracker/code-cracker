@@ -11,7 +11,7 @@ namespace CodeCracker.CSharp.Style
     public class ForInArrayAnalyzer : DiagnosticAnalyzer
     {
         internal const string Title = "Use foreach";
-        internal const string MessageFormat = "{0}";
+        internal const string MessageFormat = "You can use foreach instead of for.";
         internal const string Category = SupportedCategories.Style;
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -45,6 +45,7 @@ namespace CodeCracker.CSharp.Style
             var semanticModel = context.SemanticModel;
             var arrayId = semanticModel.GetSymbolInfo(arrayAccessor.Expression).Symbol;
             if (arrayId == null) return;
+            if (!IsEnumerable(arrayId)) return;
             var forVariable = forStatement.Declaration.Variables.First();
             var literalExpression = forVariable.Initializer.Value as LiteralExpressionSyntax;
             if (literalExpression == null || !literalExpression.IsKind(SyntaxKind.NumericLiteralExpression)) return;
@@ -55,6 +56,8 @@ namespace CodeCracker.CSharp.Style
                     if (t.Text != forVariable.Identifier.Text) return false;
                     var elementAccess = t.GetAncestor<ElementAccessExpressionSyntax>();
                     if (elementAccess == null) return true;
+                    var assignment = elementAccess.Parent as AssignmentExpressionSyntax;
+                    if (assignment != null && assignment.Left == elementAccess) return true;
                     var accessIdentifier = elementAccess.Expression as IdentifierNameSyntax;
                     if (accessIdentifier == null) return true;
                     var identifierSymbol = semanticModel.GetSymbolInfo(accessIdentifier).Symbol;
@@ -74,8 +77,27 @@ namespace CodeCracker.CSharp.Style
                                         where arrayId.Equals(someArrayInit)
                                         select arrayId).ToList();
             if (!arrayAccessorSymbols.Any()) return;
-            var diagnostic = Diagnostic.Create(Rule, forStatement.ForKeyword.GetLocation(), "You can use foreach instead of for.");
+            var diagnostic = Diagnostic.Create(Rule, forStatement.ForKeyword.GetLocation());
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static bool IsEnumerable(ISymbol arrayId)
+        {
+            var type = (arrayId as ILocalSymbol)?.Type
+                ?? (arrayId as IParameterSymbol)?.Type
+                ?? (arrayId as IPropertySymbol)?.Type
+                ?? (arrayId as IFieldSymbol)?.Type;
+            if (type == null) return false;
+            if (type.AllInterfaces.Any(i => i.ToString() == "System.Collections.IEnumerable")) return true;
+            var allReturnTypes = type.GetMembers("GetEnumerator")
+                .Select(m => m as IMethodSymbol)
+                .Where(m => m != null)
+                .Select(m => m.ReturnType).ToList();
+            if (allReturnTypes.Any(t => t.ToString() == "System.Collections.IEnumerator")) return true;
+            var hasGetEnumerator = allReturnTypes.SelectMany(t => t.AllInterfaces)
+                .Distinct()
+                .Any(i => i.ToString() == "System.Collections.IEnumerator");
+            return hasGetEnumerator;
         }
     }
 }

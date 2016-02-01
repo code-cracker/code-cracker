@@ -97,8 +97,8 @@ namespace CodeCracker.Test
         /// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
         /// <param name="languageVersion">The VB language version, defaults to the latest stable version.</param>
-        protected async Task VerifyBasicDiagnosticAsync(string[] sources, DiagnosticResult[] expected, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersion) =>
-            await VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected, LanguageVersion.CSharp6, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
+        protected async Task VerifyBasicDiagnosticAsync(string[] sources, DiagnosticResult[] expected, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14) =>
+            await VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetDiagnosticAnalyzer(), expected, LanguageVersion.CSharp6, languageVersion).ConfigureAwait(true);
 
         /// <summary>
         /// General method that gets a collection of actual diagnostics found in the source after the analyzer is run,

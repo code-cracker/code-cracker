@@ -52,11 +52,12 @@ namespace CodeCracker.CSharp.Style
             {
                 var index = (int)((LiteralExpressionSyntax)interpolation.Expression).Token.Value;
                 var expression = interpolationArgs[index].Expression;
+                expression = expression.WithoutAllTrivia();
                 var conditional = expression as ConditionalExpressionSyntax;
                 if (conditional != null) expression = SyntaxFactory.ParenthesizedExpression(expression);
                 expressionsToReplace.Add(interpolation.Expression, expression);
             }
-            var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o].WithoutTrivia());
+            var newStringInterpolation = analyzingInterpolation.ReplaceNodes(expressionsToReplace.Keys, (o, _) => expressionsToReplace[o]);
             return newStringInterpolation;
         }
     }

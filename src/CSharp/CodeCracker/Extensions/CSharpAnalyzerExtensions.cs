@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Formatting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -458,6 +459,9 @@ namespace CodeCracker
             return null;
         }
 
+        public static TNode FirstAncestorOfKind<TNode>(this SyntaxNode node, params SyntaxKind[] kinds) where TNode : SyntaxNode =>
+            (TNode)FirstAncestorOfKind(node, kinds);
+
         public static IEnumerable<TNode> OfKind<TNode>(this IEnumerable<SyntaxNode> nodes, SyntaxKind kind) where TNode : SyntaxNode
         {
             foreach (var node in nodes)
@@ -503,7 +507,7 @@ namespace CodeCracker
             }
             return null;
         }
-        
+
 
         /// <summary>
         /// Determines whether the specified symbol is a read only field and initialized in the specified context.
@@ -544,7 +548,7 @@ namespace CodeCracker
             return false;
         }
 
-        public static InitializerState DoesBlockContainCertainInitializer(this StatementSyntax statement, SyntaxNodeAnalysisContext context, ISymbol symbol)
+        private static InitializerState DoesBlockContainCertainInitializer(this StatementSyntax statement, SyntaxNodeAnalysisContext context, ISymbol symbol)
         {
             return new[] { statement }.DoesBlockContainCertainInitializer(context, symbol);
         }
@@ -571,7 +575,7 @@ namespace CodeCracker
         ///
         /// Please note that this is a recursive function so we can check a block of code in an if statement for example.
         /// </remarks>
-        public static InitializerState DoesBlockContainCertainInitializer(this IEnumerable<StatementSyntax> statements, SyntaxNodeAnalysisContext context, ISymbol symbol)
+        private static InitializerState DoesBlockContainCertainInitializer(this IEnumerable<StatementSyntax> statements, SyntaxNodeAnalysisContext context, ISymbol symbol)
         {
             // Keep track of the current initializer state. This can only be None
             // or Initializer, WayToSkipInitializer will always be returned immediately.
@@ -658,5 +662,50 @@ namespace CodeCracker
 
         private static bool CanSkipInitializer(InitializerState foundState, InitializerState currentState) =>
             foundState == InitializerState.WayToSkipInitializer && currentState == InitializerState.None;
+
+        public static TNode WithoutAllTrivia<TNode>(this TNode node) where TNode : SyntaxNode
+        {
+            var newNode = node.WithoutTrivia();
+            var tokens = newNode.ChildTokens().ToList();
+            var newTokens = tokens.ToDictionary(t => t, t => t.WithoutTrivia());
+            newNode = newNode.ReplaceTokens(tokens, (o, _) => newTokens[o]);
+            var nodes = newNode.ChildNodes().ToList();
+            var newNodes = nodes.ToDictionary(n => n, n => n.WithoutAllTrivia());
+            newNode = newNode.ReplaceNodes(nodes, (o, _) => newNodes[o]);
+            newNode = newNode.WithAdditionalAnnotations(Formatter.Annotation);
+            return newNode;
+        }
+
+        public static SyntaxToken WithoutTrivia(this SyntaxToken token)
+        {
+            var trivia = token.GetAllTrivia();
+            var newToken = token.ReplaceTrivia(trivia, (o, _) => default(SyntaxTrivia));
+            return newToken;
+        }
+
+        private static readonly SyntaxTokenList publicToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+        private static readonly SyntaxTokenList privateToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+        private static readonly SyntaxTokenList protectedToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+        private static readonly SyntaxTokenList protectedInternalToken = SyntaxFactory.TokenList(
+            SyntaxFactory.Token(SyntaxKind.ProtectedKeyword), SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+        private static readonly SyntaxTokenList internalToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+        public static SyntaxTokenList GetTokens(this Accessibility accessibility)
+        {
+            switch (accessibility)
+            {
+                case Accessibility.Public:
+                    return publicToken;
+                case Accessibility.Private:
+                    return privateToken;
+                case Accessibility.Protected:
+                    return protectedToken;
+                case Accessibility.Internal:
+                    return internalToken;
+                case Accessibility.ProtectedAndInternal:
+                    return protectedInternalToken;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
 }

@@ -817,5 +817,48 @@ public static class C
 }";
             await VerifyCSharpFixAllAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task WhenUsedAsMethodGroupDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+public class TypeName
+{
+    static void FireHandler(System.Func<int, int> getInt) => getInt?.Invoke(1);
+    static void Init() => FireHandler(OnConfigFileChanged);
+    static int OnConfigFileChanged(int i)
+    {
+        return 1;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task ExpressionBodiedMethodCreatesDiagnostic()
+        {
+            const string source = @"
+public class TypeName
+{
+    static int Foo(int i) => 1;
+}";
+            await VerifyCSharpDiagnosticAsync(source, CreateDiagnosticResult("i", 4, 20));
+        }
+
+        [Fact]
+        public async Task FixExpressionBodiedMethod()
+        {
+            const string source = @"
+public class TypeName
+{
+    static int Foo(int i) => 1;
+}";
+            const string fixtest = @"
+public class TypeName
+{
+    static int Foo() => 1;
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }

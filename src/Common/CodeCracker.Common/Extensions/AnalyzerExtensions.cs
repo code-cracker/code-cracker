@@ -52,8 +52,19 @@ namespace CodeCracker
             return null;
         }
 
-        public static T FirstAncestorOfType<T>(this SyntaxNode node) where T : SyntaxNode =>
-            (T)node.FirstAncestorOfType(typeof(T));
+        public static T FirstAncestorOfType<T>(this SyntaxNode node) where T : SyntaxNode
+        {
+            var currentNode = node;
+            while (true)
+            {
+                var parent = currentNode.Parent;
+                if (parent == null) break;
+                var tParent = parent as T;
+                if (tParent != null) return tParent;
+                currentNode = parent;
+            }
+            return null;
+        }
 
         public static SyntaxNode FirstAncestorOfType(this SyntaxNode node, params Type[] types)
         {
@@ -111,5 +122,49 @@ namespace CodeCracker
             return result;
         }
         public static IEnumerable<SyntaxToken> EnsureProtectedBeforeInternal(this IEnumerable<SyntaxToken> modifiers) => modifiers.OrderByDescending(token => token.RawKind);
+
+        public static string GetFullName(this ISymbol symbol, bool addGlobal = true)
+        {
+            var fullName = symbol.Name;
+            var containingSymbol = symbol.ContainingSymbol;
+            while (!(containingSymbol is INamespaceSymbol))
+            {
+                fullName = $"{containingSymbol.Name}.{fullName}";
+                containingSymbol = containingSymbol.ContainingSymbol;
+            }
+            if (!((INamespaceSymbol)containingSymbol).IsGlobalNamespace)
+                fullName = $"{containingSymbol.ToString()}.{fullName}";
+            if (addGlobal)
+                fullName = $"global::{fullName}";
+            return fullName;
+        }
+
+        public static IEnumerable<INamedTypeSymbol> GetAllContainingTypes(this ISymbol symbol)
+        {
+            while (symbol.ContainingType != null)
+            {
+                yield return symbol.ContainingType;
+                symbol = symbol.ContainingType;
+            }
+        }
+
+        public static Accessibility GetMinimumCommonAccessibility(this Accessibility accessibility, Accessibility otherAccessibility)
+        {
+            if (accessibility == otherAccessibility || otherAccessibility == Accessibility.Private) return accessibility;
+            if (otherAccessibility == Accessibility.Public) return Accessibility.Public;
+            switch (accessibility)
+            {
+                case Accessibility.Private:
+                    return otherAccessibility;
+                case Accessibility.ProtectedAndInternal:
+                case Accessibility.Protected:
+                case Accessibility.Internal:
+                    return Accessibility.ProtectedAndInternal;
+                case Accessibility.Public:
+                    return Accessibility.Public;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
 }

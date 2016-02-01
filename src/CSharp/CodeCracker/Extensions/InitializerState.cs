@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CodeCracker
+﻿namespace CodeCracker
 {
     /// <summary>
     /// Used to indicate what can be said about the initialization
     /// of a symbol in a given block of statements.
     /// </summary>
-    public enum InitializerState
+    internal enum InitializerState
     {
         /// <summary>
         /// Indicates that the block of statements does NOT initialize the symbol for certain.
