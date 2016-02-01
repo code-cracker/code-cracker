@@ -122,7 +122,7 @@ namespace CodeCracker.CSharp.Usage
 
         private static bool IsCandidateForRemoval(BaseMethodDeclarationSyntax methodOrConstructor, SemanticModel semanticModel)
         {
-            if (methodOrConstructor.Modifiers.Any(m => m.ValueText == "partial" || m.ValueText == "override" || m.ValueText == "abstract")
+            if (methodOrConstructor.Modifiers.Any(m => m.ValueText == "partial" || m.ValueText == "override" || m.ValueText == "abstract" || m.ValueText == "extern")
                 || !methodOrConstructor.ParameterList.Parameters.Any())
                 return false;
             var method = methodOrConstructor as MethodDeclarationSyntax;
