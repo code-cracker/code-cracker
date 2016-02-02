@@ -1023,5 +1023,44 @@ struct Foo
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+        [Fact]
+        public async Task IgnoreForGetEnumerator()
+        {
+            const string source = @"
+class Foo
+{
+    public System.Collections.IEnumerator GetEnumerator()
+    {
+        yield return 1;
+        yield return 2;
+    }
+}";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task ReportForGetEnumeratorNotReturningIEnumerator()
+        {
+            const string source = @"
+class Foo
+{
+    public void GetEnumerator()
+    {
+        N();
+    }
+
+    public static void N() { }
+}";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.MakeMethodStatic.ToDiagnosticId(),
+                Message = string.Format(MakeMethodStaticAnalyzer.MessageFormat, "GetEnumerator"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
     }
 }
