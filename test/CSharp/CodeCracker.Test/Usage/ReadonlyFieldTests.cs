@@ -804,10 +804,10 @@ class TypeName
             await VerifyCSharpHasNoDiagnosticsAsync(source1, source2);
         }
 
-    [Fact]
-    public async Task FieldsAssignedOnLambdaDoesNotCreateDiagnostic()
-    {
-        const string source = @"
+        [Fact]
+        public async Task FieldsAssignedOnLambdaDoesNotCreateDiagnostic()
+        {
+            const string source = @"
     namespace ConsoleApplication1
     {
         internal class Test
@@ -820,7 +820,31 @@ class TypeName
             }
         }
     }";
-        await VerifyCSharpHasNoDiagnosticsAsync(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task VariableInitializerDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        class A
+        {
+            public int X;
+
+            public A()
+            {
+                X = 5;
+            }
+        }
+
+        static void B()
+        {
+            var c = new A { X = 7 };
+        }
+   }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }

@@ -96,6 +96,7 @@ namespace CodeCracker.CSharp.Usage
             SemanticModel syntaxRefSemanticModel, SyntaxNode node, IFieldSymbol fieldSymbol)
         {
             if (fieldSymbol == null) return;
+            if (!CanBeMadeReadonly(fieldSymbol)) return;
             if ((method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
             || (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic))
                 AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, node, syntaxRefSemanticModel);
@@ -164,6 +165,14 @@ namespace CodeCracker.CSharp.Usage
                     || m.IsKind(SyntaxKind.InternalKeyword)
                     || m.IsKind(SyntaxKind.ReadOnlyKeyword)
                     || m.IsKind(SyntaxKind.ConstKeyword));
+        }
+
+        private static bool CanBeMadeReadonly(IFieldSymbol fieldSymbol)
+        {
+            return (fieldSymbol.DeclaredAccessibility == Accessibility.NotApplicable
+                || fieldSymbol.DeclaredAccessibility == Accessibility.Private)
+                && !fieldSymbol.IsReadOnly
+                && !fieldSymbol.IsConst;
         }
 
         private static List<TypeDeclarationSyntax> GetTypesInRoot(SyntaxNode root)
