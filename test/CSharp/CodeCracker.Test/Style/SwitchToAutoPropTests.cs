@@ -901,5 +901,40 @@ namespace Ns2
             const string expected = @"public static int Y { get; set; }";
             await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
         }
+
+        [Fact]
+        public async Task FixUpdatesDerivedClassesCorrectly()
+        {
+            const string source = @"
+class Point
+{
+    protected int x;
+    public virtual int X
+    {
+        get
+        {
+            return x;
+        }
+        set
+        {
+            x = value;
+        }
+    }
+}
+class NewPoint : Point
+{
+    public override int X => (x - 15);
+}";
+            const string expected = @"
+class Point
+{
+    public virtual int X { get; set; }
+}
+class NewPoint : Point
+{
+    public override int X => (base.X - 15);
+}";
+            await VerifyCSharpFixAsync(source, expected);
+        }
     }
 }
