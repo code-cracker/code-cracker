@@ -42,47 +42,41 @@ namespace CodeCracker.CSharp.Style
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var getterReturn = (ReturnStatementSyntax)property.AccessorList.Accessors.First(a => a.Keyword.ValueText == "get").Body.Statements.First();
-            var returnIdentifier = (IdentifierNameSyntax)(getterReturn.Expression is MemberAccessExpressionSyntax ? ((MemberAccessExpressionSyntax)getterReturn.Expression).Name : getterReturn.Expression);
-            var returnIdentifierSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
-            var variableDeclarator = (VariableDeclaratorSyntax)returnIdentifierSymbol.DeclaringSyntaxReferences.First().GetSyntax();
+            var returnIdentifier = (IdentifierNameSyntax)(getterReturn.Expression is MemberAccessExpressionSyntax
+                ? ((MemberAccessExpressionSyntax)getterReturn.Expression).Name
+                : getterReturn.Expression);
+            var fieldSymbol = (IFieldSymbol)semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
+            var variableDeclarator = (VariableDeclaratorSyntax)fieldSymbol.DeclaringSyntaxReferences.First().GetSyntax();
             var fieldDeclaration = variableDeclarator.FirstAncestorOfType<FieldDeclarationSyntax>();
-            var fieldSymbol = (IFieldSymbol)semanticModel.GetDeclaredSymbol(variableDeclarator);
             var propertySymbol = semanticModel.GetDeclaredSymbol(property);
             root = root.TrackNodes(returnIdentifier, fieldDeclaration, property);
             document = document.WithSyntaxRoot(root);
             root = await document.GetSyntaxRootAsync(cancellationToken);
             semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             returnIdentifier = root.GetCurrentNode(returnIdentifier);
-            returnIdentifierSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
-            var newProperty = GetSimpleProperty(property, variableDeclarator);
+            fieldSymbol = (IFieldSymbol)semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
+            var newProperty = CreateAutoProperty(property, variableDeclarator, fieldSymbol, propertySymbol);
             Solution newSolution;
-            if (!propertySymbol.ExplicitInterfaceImplementations.Any())
+            if (IsExplicityImplementation(propertySymbol))
             {
-                newProperty = newProperty.WithModifiers(propertySymbol.DeclaredAccessibility
-                    .GetMinimumCommonAccessibility(fieldSymbol.DeclaredAccessibility)
-                    .GetTokens());
-                newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, returnIdentifierSymbol, property.Identifier.ValueText, document.Project.Solution.Workspace.Options, cancellationToken).ConfigureAwait(false);
+                newSolution = await RenameSymbolAndKeepExplicitPropertiesBoundAsync(document.Project.Solution, property.Identifier.ValueText, fieldSymbol, propertySymbol, cancellationToken);
             }
             else
             {
-                newSolution = await RenameSymbolAndKeepExplicitPropertiesBoundAsync(document.Project.Solution, property.Identifier.ValueText, returnIdentifierSymbol, propertySymbol, cancellationToken);
+                newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, fieldSymbol, property.Identifier.ValueText, document.Project.Solution.Workspace.Options, cancellationToken).ConfigureAwait(false);
             }
-            newProperty = newProperty
-                .WithTriviaFrom(property)
-                .WithAdditionalAnnotations(Formatter.Annotation);
             document = newSolution.GetDocument(document.Id);
             root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            root = root.InsertNodesAfter(root.GetCurrentNode(property), new[] { newProperty });
+            root = root.ReplaceNode(root.GetCurrentNode(property), newProperty);
             var multipleVariableDeclaration = fieldDeclaration.Declaration.Variables.Count > 1;
             if (multipleVariableDeclaration)
             {
                 var newfieldDeclaration = fieldDeclaration.WithDeclaration(fieldDeclaration.Declaration.RemoveNode(variableDeclarator, SyntaxRemoveOptions.KeepNoTrivia));
-                root = root.RemoveNode(root.GetCurrentNode<SyntaxNode>(property), SyntaxRemoveOptions.KeepNoTrivia);
                 root = root.ReplaceNode(root.GetCurrentNode(fieldDeclaration), newfieldDeclaration);
             }
             else
             {
-                root = root.RemoveNodes(root.GetCurrentNodes<SyntaxNode>(new SyntaxNode[] { fieldDeclaration, property }), SyntaxRemoveOptions.KeepNoTrivia);
+                root = root.RemoveNode(root.GetCurrentNode(fieldDeclaration), SyntaxRemoveOptions.KeepNoTrivia);
             }
             document = document.WithSyntaxRoot(root);
             return document.Project.Solution;
@@ -132,16 +126,46 @@ namespace CodeCracker.CSharp.Style
             return newSolution;
         }
 
-        private static PropertyDeclarationSyntax GetSimpleProperty(PropertyDeclarationSyntax property, VariableDeclaratorSyntax variableDeclarator)
+        private static PropertyDeclarationSyntax CreateAutoProperty(PropertyDeclarationSyntax property, VariableDeclaratorSyntax variableDeclarator,
+            IFieldSymbol fieldSymbol, IPropertySymbol propertySymbol)
         {
-            var simpleGetSetPropetie = property.WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List(new[] {
+            var newProperty = property.WithAccessorList(SyntaxFactory.AccessorList(SyntaxFactory.List(new[] {
                     SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
                     SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                 })));
-            return variableDeclarator.Initializer == null ?
-                simpleGetSetPropetie :
-                simpleGetSetPropetie.WithInitializer(variableDeclarator.Initializer)
+            newProperty = variableDeclarator.Initializer == null ?
+                newProperty :
+                newProperty.WithInitializer(variableDeclarator.Initializer)
                     .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+            newProperty = CreatePropertyWithCorrectAccessibility(newProperty, fieldSymbol, propertySymbol);
+            newProperty = newProperty
+                .WithTriviaFrom(property)
+                .WithAdditionalAnnotations(Formatter.Annotation);
+            return newProperty;
         }
+
+        private static PropertyDeclarationSyntax CreatePropertyWithCorrectAccessibility(PropertyDeclarationSyntax property, IFieldSymbol fieldSymbol, IPropertySymbol propertySymbol)
+        {
+            if (IsExplicityImplementation(propertySymbol))
+                return property;
+            var existingModifiers = property.Modifiers.Where(m =>
+            {
+                var modifierText = m.ValueText;
+                return modifierText != "private"
+                    && modifierText != "protected"
+                    && modifierText != "public"
+                    && modifierText != "internal";
+            });
+            var newAccessibilityModifiers = propertySymbol.DeclaredAccessibility
+                .GetMinimumCommonAccessibility(fieldSymbol.DeclaredAccessibility)
+                .GetTokens()
+                .Aggregate(existingModifiers, (ts, t) =>
+                    ts.Any(tt => tt.ValueText == t.ValueText) ? ts : ts.Union(new[] { t }).ToArray())
+                .OrderBy(t => t.ValueText);
+            var newProperty = property.WithModifiers(SyntaxFactory.TokenList(newAccessibilityModifiers));
+            return newProperty;
+        }
+
+        private static bool IsExplicityImplementation(IPropertySymbol propertySymbol) => propertySymbol.ExplicitInterfaceImplementations.Any();
     }
 }
