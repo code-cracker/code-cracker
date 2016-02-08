@@ -79,12 +79,13 @@ namespace CodeCracker.CSharp.Design
 
             if (IsTestMethod(method, methodSymbol)) return;
             if (IsWebFormsMethod(methodSymbol)) return;
+            if (IsGetEnumerator(methodSymbol)) return;
 
             var diagnostic = Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier.ValueText);
             context.ReportDiagnostic(diagnostic);
         }
 
-        private static readonly string[] webFormsMethods = new string[] {
+        private static readonly string[] webFormsMethods = {
             "Application_AuthenticateRequest", "Application_BeginRequest",
             "Application_End", "Application_EndRequest",
             "Application_Error", "Application_Start",
@@ -93,6 +94,11 @@ namespace CodeCracker.CSharp.Design
         {
             if (!webFormsMethods.Contains(methodSymbol.Name)) return false;
             return (methodSymbol.ContainingType.AllBaseTypes().Any(t => t.ToString() == "System.Web.HttpApplication"));
+        }
+
+        private static bool IsGetEnumerator(IMethodSymbol methodSymbol)
+        {
+            return methodSymbol.Name == "GetEnumerator" && methodSymbol.ReturnType.Name == "IEnumerator";
         }
 
         private static bool IsTestMethod(MethodDeclarationSyntax method, IMethodSymbol methodSymbol)
