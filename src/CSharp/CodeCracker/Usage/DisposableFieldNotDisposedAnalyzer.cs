@@ -43,6 +43,7 @@ namespace CodeCracker.CSharp.Usage
         {
             if (context.IsGenerated()) return;
             var fieldSymbol = (IFieldSymbol)context.Symbol;
+            if (fieldSymbol.IsStatic) return;
             if (!fieldSymbol.Type.AllInterfaces.Any(i => i.ToString() == "System.IDisposable") && fieldSymbol.Type.ToString() != "System.IDisposable") return;
             var fieldSyntaxRef = fieldSymbol.DeclaringSyntaxReferences.FirstOrDefault();
             var variableDeclarator = fieldSyntaxRef.GetSyntax() as VariableDeclaratorSyntax;
