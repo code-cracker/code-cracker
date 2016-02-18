@@ -131,7 +131,7 @@ namespace CodeCracker.CSharp.Style
                         .WithTrailingTrivia(statement.GetTrailingTrivia())
                         .WithAdditionalAnnotations(Formatter.Annotation);
                     newBlockParent = newBlockParent.AddStatements(newLocalDeclarationStatement);
-                    i += initializationExpressions.Count;
+                    i += assignmentExpressions.Count;
                 }
                 else
                 {
