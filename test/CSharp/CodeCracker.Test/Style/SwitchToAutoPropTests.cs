@@ -873,5 +873,68 @@ namespace Ns2
 }";
             await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { expected1, expected2 });
         }
+
+        [Fact]
+        public async Task FixKeepsStaticModifier()
+        {
+            const string source = @"
+                private int y;
+                public virtual int Y
+                {
+                    get { return y; }
+                    set { y = value; }
+                }";
+            const string expected = @"public virtual int Y { get; set; }";
+            await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
+        }
+
+        [Fact]
+        public async Task FixKeepsVirtualModifier()
+        {
+            const string source = @"
+                private static int y;
+                public static int Y
+                {
+                    get { return y; }
+                    set { y = value; }
+                }";
+            const string expected = @"public static int Y { get; set; }";
+            await VerifyCSharpFixAsync(source.WrapInCSharpClass(), expected.WrapInCSharpClass());
+        }
+
+        [Fact]
+        public async Task FixUpdatesDerivedClassesCorrectly()
+        {
+            const string source = @"
+class Point
+{
+    protected int x;
+    public virtual int X
+    {
+        get
+        {
+            return x;
+        }
+        set
+        {
+            x = value;
+        }
+    }
+}
+class NewPoint : Point
+{
+    public override int X => (x - 15);
+}";
+            const string expected = @"
+class Point
+{
+    public virtual int X { get; set; }
+}
+class NewPoint : Point
+{
+    public override int X => (base.X - 15);
+}";
+            await VerifyCSharpFixAsync(source, expected);
+        }
     }
 }
