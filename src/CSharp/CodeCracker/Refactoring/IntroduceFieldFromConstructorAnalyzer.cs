@@ -34,6 +34,10 @@ namespace CodeCracker.CSharp.Refactoring
         {
             if (context.IsGenerated()) return;
             var constructorMethod = (ConstructorDeclarationSyntax)context.Node;
+
+            var type = constructorMethod.FirstAncestorOrSelf<TypeDeclarationSyntax>();
+            if (type == null || !(type is ClassDeclarationSyntax || type is StructDeclarationSyntax)) return;
+
             var parameters = constructorMethod.ParameterList.Parameters;
 
             if (constructorMethod.Body == null) return;

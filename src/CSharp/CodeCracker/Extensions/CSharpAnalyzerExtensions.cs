@@ -707,5 +707,20 @@ namespace CodeCracker
                     throw new NotSupportedException();
             }
         }
+        public static TypeDeclarationSyntax WithMembers(this TypeDeclarationSyntax typeDeclarationSyntax, SyntaxList<MemberDeclarationSyntax> members)
+        {
+            if (typeDeclarationSyntax is ClassDeclarationSyntax)
+            {
+                return (typeDeclarationSyntax as ClassDeclarationSyntax).WithMembers(members);
+            }
+            else if (typeDeclarationSyntax is StructDeclarationSyntax)
+            {
+                return (typeDeclarationSyntax as StructDeclarationSyntax).WithMembers(members);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
     }
 }

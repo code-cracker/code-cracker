@@ -42,11 +42,12 @@ namespace CodeCracker.CSharp.Refactoring
 
         public static SyntaxNode IntroduceFieldFromConstructor(SyntaxNode root, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter)
         {
-            var oldClass = constructorStatement.FirstAncestorOrSelf<ClassDeclarationSyntax>();
-            var newClass = oldClass;
+            // There are no constructors in interfaces, therefore all types remaining type (class and struct) are fine.
+            var oldType = constructorStatement.FirstAncestorOrSelf<TypeDeclarationSyntax>();
+            var newType = oldType;
             var fieldName = parameter.Identifier.ValueText;
             var fieldType = parameter.Type;
-            var members = ExtractMembersFromClass(oldClass.Members);
+            var members = ExtractMembersFromClass(oldType.Members);
 
             var addMember = false;
             if (!members.Any(p => p.Key == fieldName && p.Value == fieldType.ToString()))
@@ -62,7 +63,7 @@ namespace CodeCracker.CSharp.Refactoring
                                                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ThisExpression(),
                                                SyntaxFactory.IdentifierName(fieldName)), SyntaxFactory.IdentifierName(parameter.Identifier.ValueText)));
             var newConstructor = constructorStatement.WithBody(constructorStatement.Body.AddStatements(assignmentField));
-            newClass = newClass.ReplaceNode(constructorStatement, newConstructor);
+            newType = newType.ReplaceNode(constructorStatement, newConstructor);
 
             if (addMember)
             {
@@ -70,16 +71,16 @@ namespace CodeCracker.CSharp.Refactoring
                                     .WithVariables(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(fieldName)))))
                                     .WithModifiers(SyntaxFactory.TokenList(new[] { SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword) }))
                                     .WithAdditionalAnnotations(Formatter.Annotation);
-                newClass = newClass.WithMembers(newClass.Members.Insert(0, newField)).WithoutAnnotations(Formatter.Annotation);
+                newType = newType.WithMembers(newType.Members.Insert(0, newField)).WithoutAnnotations(Formatter.Annotation);
             }
-            var newRoot = root.ReplaceNode(oldClass, newClass);
+            var newRoot = root.ReplaceNode(oldType, newType);
             return newRoot;
         }
 
-        private static Dictionary<string, string> ExtractMembersFromClass(SyntaxList<MemberDeclarationSyntax> classMembers)
+        private static Dictionary<string, string> ExtractMembersFromClass(SyntaxList<MemberDeclarationSyntax> typeMembers)
         {
             var members = new Dictionary<string, string>();
-            foreach (var m in classMembers)
+            foreach (var m in typeMembers)
             {
                 var name = "";
                 if (m.IsKind(SyntaxKind.MethodDeclaration))
