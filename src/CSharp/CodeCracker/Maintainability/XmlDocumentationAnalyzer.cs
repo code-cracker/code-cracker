@@ -29,6 +29,7 @@ namespace CodeCracker.CSharp.Maintainability
 
         private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
+            if (context.IsGenerated()) return;
             var documentationNode = (DocumentationCommentTriviaSyntax)context.Node;
             var method = GetMethodFromXmlDocumentation(documentationNode);
             if (method == null) return;
