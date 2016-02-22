@@ -65,11 +65,13 @@ namespace CodeCracker.CSharp.Style
                     return !identifierSymbol.Equals(arrayId);
                 });
             if (otherUsesOfIndexToken != 0) return;
-
             var arrayAccessorSymbols = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
                                         where s.Declaration.Variables.Count == 1
                                         let declaration = s.Declaration.Variables.First()
                                         where declaration?.Initializer?.Value is ElementAccessExpressionSyntax
+                                        let iterableSymbol = semanticModel.GetDeclaredSymbol(declaration)
+                                        let iterableType = ((ILocalSymbol)iterableSymbol).Type
+                                        where !(iterableType.IsPrimitive() ^ iterableType.IsValueType)
                                         let init = (ElementAccessExpressionSyntax)declaration.Initializer.Value
                                         let initSymbol = semanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
                                         where controlVarId.Equals(initSymbol)

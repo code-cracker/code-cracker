@@ -757,5 +757,97 @@ public int[] Foo
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+        [Fact]
+        public async Task WithValueTypeNoDiagnostic()
+        {
+            var source = @"
+            using System;
+            using System.Collections.Generic;
+
+            namespace Test
+            {
+                struct Foo
+                {
+                    public int X;
+                }
+
+                public class bar
+                {
+                    static void Goo()
+                    {
+                        var array = new Foo[1];
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var actual = array[i];
+                            array[i].X = 5;
+                        }
+                    }
+                }
+            }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WithValueTypeAndIEnumeratorDoesNotCreateDiagnostic()
+        {
+            var source = @"
+class Foo
+{
+    void Bar()
+    {
+        var list = new MyList();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var actual = list[i];
+            actual.X = 5;
+        }
+    }
+}
+struct Struct
+{
+    public int X { get; set; }
+}
+class MyList
+{
+    public int Count => 1;
+    public Struct this[int index] => new Struct();
+    public System.Collections.Generic.IEnumerator<Struct> GetEnumerator()
+    {
+        yield return new Struct();
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WithValueTypeListNoDiagnostic()
+        {
+            var source = @"
+            using System;
+            using System.Collections.Generic;
+
+            namespace Test
+            {
+                struct Foo
+                {
+                    public int X;
+                }
+
+                public class bar
+                {
+                    static void Goo()
+                    {
+                        var array = new List<Foo>();
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var actual = array[i];
+                            array[i].X = 5;
+                        }
+                    }
+                }
+            }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
