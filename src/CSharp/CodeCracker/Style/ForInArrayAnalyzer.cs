@@ -65,7 +65,6 @@ namespace CodeCracker.CSharp.Style
                     return !identifierSymbol.Equals(arrayId);
                 });
             if (otherUsesOfIndexToken != 0) return;
-
             var arrayAccessorSymbols = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
                                         where s.Declaration.Variables.Count == 1
                                         let declaration = s.Declaration.Variables.First()
@@ -77,6 +76,28 @@ namespace CodeCracker.CSharp.Style
                                         where arrayId.Equals(someArrayInit)
                                         select arrayId).ToList();
             if (!arrayAccessorSymbols.Any()) return;
+            var valueTypeVariable = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
+                                     where s.Declaration.Variables.Count == 1
+                                     let symbol = semanticModel.GetDeclaredSymbol(s.Declaration.Variables.First()) as ISymbol
+                                     where ((ILocalSymbol)symbol).Type.IsValueType
+                                     select s).ToList();
+            
+            foreach (var statement in forBlock.Statements.OfType<ExpressionStatementSyntax>())
+            {
+                var left = (statement.Expression as AssignmentExpressionSyntax)?.Left;
+                var memberAccess = (left as MemberAccessExpressionSyntax)?.Expression;
+                var identifier = "";
+                if (memberAccess?.GetType()?.Name == "IdentifierNameSyntax")
+                {
+                    identifier = (memberAccess as IdentifierNameSyntax)?.Identifier.Text ?? "";
+                }
+                else
+                {
+                    var element = (memberAccess as ElementAccessExpressionSyntax)?.Expression;
+                    identifier = (element as IdentifierNameSyntax)?.Identifier.Text ?? "";
+                }
+                if (identifier == arrayId.Name && valueTypeVariable.Any()) return;
+            }
             var diagnostic = Diagnostic.Create(Rule, forStatement.ForKeyword.GetLocation());
             context.ReportDiagnostic(diagnostic);
         }

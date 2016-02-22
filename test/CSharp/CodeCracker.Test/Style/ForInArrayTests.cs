@@ -757,5 +757,65 @@ public int[] Foo
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+        [Fact]
+        public async Task WithValueTypeNoDiagnostic()
+        {
+            var source = @"
+            using System;
+            using System.Collections.Generic;
+
+            namespace Test
+            {
+                struct Foo
+                {
+                    public int X;
+                }
+
+                public class bar
+                {
+                    static void Goo()
+                    {
+                        var array = new Foo[1];
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var actual = array[i];
+                            array[i].X = 5;
+                        }
+                    }
+                }
+            }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WithValueTypeListNoDiagnostic()
+        {
+            var source = @"
+            using System;
+            using System.Collections.Generic;
+
+            namespace Test
+            {
+                struct Foo
+                {
+                    public int X;
+                }
+
+                public class bar
+                {
+                    static void Goo()
+                    {
+                        var array = new List<Foo>();
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var actual = array[i];
+                            array[i].X = 5;
+                        }
+                    }
+                }
+            }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
