@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Linq;
 using System.Collections.Immutable;
+using System;
 
 namespace CodeCracker.CSharp.Design
 {
@@ -80,9 +81,16 @@ namespace CodeCracker.CSharp.Design
             if (IsTestMethod(method, methodSymbol)) return;
             if (IsWebFormsMethod(methodSymbol)) return;
             if (IsGetEnumerator(methodSymbol)) return;
+            if (HasRoutedEventArgs(methodSymbol)) return;
 
             var diagnostic = Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier.ValueText);
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static bool HasRoutedEventArgs(IMethodSymbol methodSymbol)
+        {
+            var routedEventArgsParameters = methodSymbol.Parameters.Where(p => p.Type.ToString() == "System.Windows.RoutedEventArgs");
+            return routedEventArgsParameters.Any();
         }
 
         private static readonly string[] webFormsMethods = {

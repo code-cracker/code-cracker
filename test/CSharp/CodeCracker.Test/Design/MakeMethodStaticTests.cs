@@ -1062,5 +1062,22 @@ class Foo
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+        [Fact]
+        public async Task IgnoreMethodsWithRoutedEventArgs()
+        {
+            const string source = @"
+public class MainWindow
+{
+    void Window_Loaded(object sender, System.Windows.RoutedEventArgs e)
+    {
+    }
+}
+namespace System.Windows
+{
+    public class RoutedEventArgs : System.EventArgs { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
