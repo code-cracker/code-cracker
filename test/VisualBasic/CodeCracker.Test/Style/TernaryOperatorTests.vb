@@ -432,6 +432,34 @@ End Class"
         Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
     End Function
 
+    <Fact>
+    Public Async Function WhenUsingAssignmentOperatorReturnSameAssignment() As Task
+        Const source = "
+Class MyType
+    Public Sub x2()
+            Dim output As String = String.Empty
+            Dim test As Boolean
+            test = True
+            If test Then
+                output += ""True""
+            Else
+                output += ""False""
+            End If
+        End Sub
+End Class"
+
+        Const fix = "
+Class MyType
+    Public Sub x2()
+            Dim output As String = String.Empty
+            Dim test As Boolean
+            test = True
+        output += If(test, ""True"", ""False"")
+        End Sub
+End Class"
+
+        Await VerifyBasicFixAsync(source, fix, formatBeforeCompare:=True)
+    End Function
 
 
 End Class
@@ -671,6 +699,7 @@ End Namespace"
         Await VerifyBasicFixAllAsync(New String() {sourceReturn, sourceReturn.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
     End Function
 
+
 End Class
 
 Public Class TernaryOperatorFromIifTests
@@ -803,8 +832,6 @@ End Class"
 
         Await VerifyBasicHasNoDiagnosticsAsync(source)
     End Function
-
-
 
 End Class
 
