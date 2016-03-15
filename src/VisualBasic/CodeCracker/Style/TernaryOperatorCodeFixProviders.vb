@@ -49,8 +49,8 @@ Namespace Style
                 EnsureNothingAsType(semanticModel, type, typeSyntax)
 
             Dim leadingTrivia = ifBlock.GetLeadingTrivia()
-            leadingTrivia = leadingTrivia.InsertRange(leadingTrivia.Count - 1, ifReturn.GetLeadingTrivia().Where(Function(trivia) trivia.IsKind(SyntaxKind.CommentTrivia)))
-            leadingTrivia = leadingTrivia.InsertRange(leadingTrivia.Count - 1, elseReturn.GetLeadingTrivia().Where(Function(trivia) trivia.IsKind(SyntaxKind.CommentTrivia)))
+            leadingTrivia = leadingTrivia.InsertRange(leadingTrivia.Count - 1, ifReturn.GetLeadingTrivia())
+            leadingTrivia = leadingTrivia.InsertRange(leadingTrivia.Count - 1, elseReturn.GetLeadingTrivia())
 
             Dim trailingTrivia = ifBlock.GetTrailingTrivia.
                 InsertRange(0, elseReturn.GetTrailingTrivia().Where(Function(trivia) Not trivia.IsKind(SyntaxKind.EndOfLineTrivia))).
