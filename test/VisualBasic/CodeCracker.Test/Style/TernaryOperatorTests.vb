@@ -319,8 +319,10 @@ Public Class MyType
     Public Sub Foo()
         Dim a As Integer
         If True Then
+            ' a
             a = 1 ' One Thing
         Else
+            ' b
             a = 2 ' Another
         End If
     End Sub
@@ -330,6 +332,8 @@ End Class"
 Public Class MyType
     Public Sub Foo()
         Dim a As Integer
+        ' a
+        ' b
         a = If(True, 1, 2) ' One Thing ' Another
     End Sub
 End Class"

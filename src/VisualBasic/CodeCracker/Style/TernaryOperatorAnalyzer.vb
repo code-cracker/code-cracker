@@ -67,7 +67,6 @@ Namespace Style
 
             If TypeOf (ifClauseStatement) Is ReturnStatementSyntax AndAlso
             TypeOf (elseStatement) Is ReturnStatementSyntax Then
-
                 Dim diag = Diagnostic.Create(RuleForIfWithReturn, ifStatement.IfKeyword.GetLocation, "You can use a ternary operator.")
                 context.ReportDiagnostic(diag)
                 Exit Sub
@@ -76,7 +75,10 @@ Namespace Style
             Dim ifAssignment = TryCast(ifClauseStatement, AssignmentStatementSyntax)
             Dim elseAssignment = TryCast(elseStatement, AssignmentStatementSyntax)
             If ifAssignment Is Nothing OrElse elseAssignment Is Nothing Then Exit Sub
-            If Not ifAssignment?.Left.IsEquivalentTo(elseAssignment?.Left) Then Exit Sub
+            Dim semanticModel = context.SemanticModel
+            Dim ifSymbol = semanticModel.GetSymbolInfo(ifAssignment.Left).Symbol
+            Dim elseSymbol = semanticModel.GetSymbolInfo(elseAssignment.Left).Symbol
+            If ifSymbol Is Nothing OrElse elseSymbol Is Nothing OrElse ifSymbol.Equals(elseSymbol) = False Then Exit Sub
             Dim assignDiag = Diagnostic.Create(RuleForIfWithAssignment, ifStatement.IfKeyword.GetLocation(), "You can use a ternary operator.")
             context.ReportDiagnostic(assignDiag)
         End Sub
