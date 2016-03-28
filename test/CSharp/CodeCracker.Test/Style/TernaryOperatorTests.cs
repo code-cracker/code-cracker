@@ -407,6 +407,129 @@ class Test2
         }
 
         [Fact]
+        public async Task FixWhenThereIsNumericImplicitConversion()
+        {
+            var source = @"
+static double OnReturn()
+{
+    var condition = true;
+    double aDouble = 2;
+    var bInteger = 3;
+    if (condition)
+        return aDouble;
+    else
+        return bInteger;
+}".WrapInCSharpClass();
+            var fixtest = @"
+static double OnReturn()
+{
+    var condition = true;
+    double aDouble = 2;
+    var bInteger = 3;
+    return condition ? aDouble : bInteger;
+}".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenThereIsImplicitConversionWithZeroAndEnum()
+        {
+            var source = @"
+enum FooBar
+{
+    one, two
+}
+static FooBar OnReturn()
+{
+    var condition = true;
+    var fooBar = FooBar.one;
+    if (condition)
+        return 0;
+    else
+        return fooBar;
+}".WrapInCSharpClass();
+            var fixtest = @"
+enum FooBar
+{
+    one, two
+}
+static FooBar OnReturn()
+{
+    var condition = true;
+    var fooBar = FooBar.one;
+    return condition ? 0 : fooBar;
+}".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenThereIsImplicitConversionWithEnumAndZero()
+        {
+            var source = @"
+enum FooBar
+{
+    one, two
+}
+static FooBar OnReturn()
+{
+    var condition = true;
+    var fooBar = FooBar.one;
+    if (condition)
+        return fooBar;
+    else
+        return 0;
+}".WrapInCSharpClass();
+            var fixtest = @"
+enum FooBar
+{
+    one, two
+}
+static FooBar OnReturn()
+{
+    var condition = true;
+    var fooBar = FooBar.one;
+    return condition ? fooBar : 0;
+}".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningAnObject()
+        {
+            var source = @"
+static object OnReturn()
+{
+    var condition = true;
+    var aInt = 2;
+    var anObj = new object();
+    if (condition)
+        return anObj;
+    else
+        return aInt;
+}".WrapInCSharpClass();
+            var fixtest = @"
+static object OnReturn()
+{
+    var condition = true;
+    var aInt = 2;
+    var anObj = new object();
+    return condition ? anObj : aInt;
+}".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        static object OnReturn()
+        {
+            var condition = true;
+            var aInt = 2;
+            var anObj = new object();
+            if (condition)
+                return anObj;
+            else
+                return aInt;
+        }
+
+        [Fact]
         public async Task WhenUsingIfAndElseWithDirectReturnChangeToTernaryFixAll()
         {
             const string source = @"
