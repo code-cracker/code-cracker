@@ -24,7 +24,7 @@ If ($testClass) {
 }
 
 If ($testClass) {
-    nodemon --watch $testDllFullFileName --exec "`"$xunitConsole`" `"$testDllFullFileName`" -class $testClass"
+    nodemon --watch $testDllFullFileName --exec "`"$xunitConsole`" `"$testDllFullFileName`" -class $testClass || exit 1"
 } Else {
-    nodemon --watch $testDllFullFileName --exec "`"$xunitConsole`" `"$testDllFullFileName`""
+    nodemon --watch $testDllFullFileName --exec "`"$xunitConsole`" `"$testDllFullFileName`" || exit 1"
 }
