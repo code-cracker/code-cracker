@@ -69,11 +69,19 @@ namespace Sample
         }
     }
 }";
-
             await VerifyCSharpHasNoDiagnosticsAsync(test);
-
         }
 
+        [Fact]
+        public async Task DoNotCreateDiagnosticWhenWhereUsesIndexer()
+        {
+            var test = @"
+var first = Enumerable.Range(1, 10).ToList();
+var second = Enumerable.Range(1, 10);
+var isNotMatch = second.Where((t, i) => first[i] != t).Any();
+".WrapInCSharpMethod(usings: "using System.Linq;");
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
 
         [Theory]
         [InlineData("First")]
@@ -96,11 +104,10 @@ namespace Sample
         public async Task DoSomething()
         {
             var a = new int[10];
-            var f = a.Where(item => item > 10)." + method + @"();
+            var f = a.Where((item) => item > 10)." + method + @"();
         }
     }
 }";
-
             var expected = @"
 using System.Linq;
 
@@ -111,13 +118,11 @@ namespace Sample
         public async Task DoSomething()
         {
             var a = new int[10];
-            var f = a." + method + @"(item => item > 10);
+            var f = a." + method + @"((item) => item > 10);
         }
     }
 }";
-
             await VerifyCSharpFixAsync(test, expected);
-
         }
 
         [Theory]
