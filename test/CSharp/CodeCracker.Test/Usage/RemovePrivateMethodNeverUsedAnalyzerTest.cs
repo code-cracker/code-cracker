@@ -9,6 +9,7 @@ namespace CodeCracker.Test.CSharp.Usage
         [Theory]
         [InlineData("Fact")]
         [InlineData("ContractInvariantMethod")]
+        [InlineData("System.Diagnostics.Contracts.ContractInvariantMethod")]
         [InlineData("DataMember")]
         public async void DoesNotGenerateDiagnosticsWhenMethodAttributeIsAnException(string value)
         {
