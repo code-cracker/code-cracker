@@ -154,6 +154,8 @@
     <Compile Include="Refactoring\IntroduceFieldFromConstructorTest.cs" />
     <Compile Include="Refactoring\ComputeExpressionTests.cs" />
     <Compile Include="Refactoring\LoopToLinqTests.cs" />
+    <Compile Include="Refactoring\PropertyChangedEventArgsUnnecessaryAllocationAnalyzerTests.cs" />
+    <Compile Include="Refactoring\PropertyChangedEventArgsUnnecessaryAllocationCodeFixProviderTests.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfTests.cs" />
     <Compile Include="Refactoring\ParameterRefectoryTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
