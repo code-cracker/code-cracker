@@ -243,4 +243,16 @@
   <data name="IntroduceFieldFromConstructorCodeFixProvider_Title" xml:space="preserve">
     <value>Introduce fields for constructor parameters.</value>
   </data>
+  <data name="PropertyChangedEventArgsUnnecessaryAllocation_Description" xml:space="preserve">
+    <value>Creating every time an instance of PropertyChangedEventArgs class causes unnecessary memory allocation. Instance can be created once and reused.</value>
+  </data>
+  <data name="PropertyChangedEventArgsUnnecessaryAllocation_MessageFormat" xml:space="preserve">
+    <value>Create PropertyChangedEventArgs static instance and reuse it to avoid unecessary memory allocation.</value>
+  </data>
+  <data name="PropertyChangedEventArgsUnnecessaryAllocation_Title" xml:space="preserve">
+    <value>PropertyChangedEventArgs unnecessary allocation</value>
+  </data>
+  <data name="PropertyChangedEventArgsUnnecessaryAllocation_CodeActionTitle" xml:space="preserve">
+    <value>Create static PropertyChangedEventArgs instance and reuse</value>
+  </data>
 </root>

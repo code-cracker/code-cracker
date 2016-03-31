@@ -69,6 +69,8 @@
     <Compile Include="Refactoring\ChangeAnyToAllCodeFixProvider.cs" />
     <Compile Include="Refactoring\ReplaceWithGetterOnlyAutoPropertyAnalyzer.cs" />
     <Compile Include="Refactoring\ReplaceWithGetterOnlyAutoPropertyCodeFixProvider.cs" />
+    <Compile Include="Refactoring\PropertyChangedEventArgsUnnecessaryAllocationAnalyzer.cs" />
+    <Compile Include="Refactoring\PropertyChangedEventArgsUnnecessaryAllocationCodeFixProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfFixAllProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfCodeFixProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfAnalyzer.cs" />

@@ -80,6 +80,7 @@
         NameOf_External = 108,
         StringFormatArgs_ExtraArgs = 111,
         AlwaysUseVarOnPrimitives = 105,
+        PropertyChangedEventArgsUnnecessaryAllocation = 106,
         UnnecessaryToStringInStringConcatenation = 118,
         SwitchCaseWithoutDefault = 120,
         ReadOnlyComplexTypes = 121,
