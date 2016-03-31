@@ -765,5 +765,63 @@ tuple.Item2();".WrapInCSharpMethod();
                 }";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
+
+        [Fact]
+        public async void FixWhenInsideExpression()
+        {
+            var code = @"
+public System.Func<string, bool> AllowInteraction { get; protected set; }
+protected bool AllowedInteraction()
+{
+    if (!AllowInteraction("""") || 1 == System.DateTime.Now.Second)
+    {
+        return false;
+    }
+    return true;
+}".WrapInCSharpClass();
+            var fix = @"
+public System.Func<string, bool> AllowInteraction { get; protected set; }
+protected bool AllowedInteraction()
+{
+    var handler = AllowInteraction;
+    if (handler != null)
+        if (!handler("""") || 1 == System.DateTime.Now.Second)
+        {
+            return false;
+        }
+    return true;
+}".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(code, fix);
+        }
+
+        [Fact]
+        public async void FixWhenInsideExpressionAndNameAlreadyExists()
+        {
+            var code = @"
+public System.Func<string, bool> AllowInteraction { get; protected set; }
+protected bool AllowedInteraction()
+{
+    var handler = 1;
+    if (!AllowInteraction("""") || 1 == System.DateTime.Now.Second)
+    {
+        return false;
+    }
+    return true;
+}".WrapInCSharpClass();
+            var fix = @"
+public System.Func<string, bool> AllowInteraction { get; protected set; }
+protected bool AllowedInteraction()
+{
+    var handler = 1;
+    var handler1 = AllowInteraction;
+    if (handler1 != null)
+        if (!handler1("""") || 1 == System.DateTime.Now.Second)
+        {
+            return false;
+        }
+    return true;
+}".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(code, fix);
+        }
     }
 }

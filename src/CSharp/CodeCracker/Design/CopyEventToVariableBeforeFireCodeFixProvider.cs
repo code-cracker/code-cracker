@@ -30,12 +30,13 @@ namespace CodeCracker.CSharp.Design
             return Task.FromResult(0);
         }
 
-        private async static Task<Document> CreateVariableAsync(Document document, Diagnostic diagnostic, CancellationToken ct)
+        private async static Task<Document> CreateVariableAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync(ct).ConfigureAwait(false);
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var sourceSpan = diagnostic.Location.SourceSpan;
             var invocation = root.FindToken(sourceSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-            const string handlerName = "handler";
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            var handlerName = semanticModel.FindAvailableIdentifierName(sourceSpan.Start, "handler");
             var variable =
                     SyntaxFactory.LocalDeclarationStatement(
                         SyntaxFactory.VariableDeclaration(
@@ -49,18 +50,17 @@ namespace CodeCracker.CSharp.Design
                                         SyntaxFactory.EqualsValueClause(invocation.Expression.WithoutLeadingTrivia().WithoutTrailingTrivia()))
                                 })))
                     .WithLeadingTrivia(invocation.Parent.GetLeadingTrivia());
+            var statement = invocation.Expression.FirstAncestorOrSelfThatIsAStatement();
+            var newStatement = statement.ReplaceNode(invocation.Expression, SyntaxFactory.IdentifierName(handlerName));
             var newInvocation =
                     SyntaxFactory.IfStatement(
                         SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression,
                             SyntaxFactory.IdentifierName(handlerName),
                             SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
-                        SyntaxFactory.ExpressionStatement(
-                            SyntaxFactory.InvocationExpression(
-                                SyntaxFactory.IdentifierName(handlerName),
-                                invocation.ArgumentList)))
+                        newStatement)
                     .WithTrailingTrivia(invocation.Parent.GetTrailingTrivia());
-            var oldNode = invocation.Parent;
-            var newNode = invocation.Parent.WithAdditionalAnnotations(new SyntaxAnnotation(SyntaxAnnotatinKind));
+            var oldNode = statement;
+            var newNode = newStatement.WithAdditionalAnnotations(new SyntaxAnnotation(SyntaxAnnotatinKind));
             if (oldNode.Parent.IsEmbeddedStatementOwner())
                 newNode = SyntaxFactory.Block((StatementSyntax)newNode);
             var newRoot = root.ReplaceNode(oldNode, newNode);
