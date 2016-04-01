@@ -5,6 +5,53 @@ Namespace Usage
     Public Class RemovePrivateMethodNeverUsedAnalyzerTest
         Inherits CodeFixVerifier(Of RemovePrivateMethodNeverUsedAnalyzer, RemovePrivateMethodNeverUsedCodeFixProvider)
 
+        <Theory>
+        <InlineData("Fact")>
+        <InlineData("ContractInvariantMethod")>
+        <InlineData("System.Diagnostics.Contracts.ContractInvariantMethod")>
+        <InlineData("DataMember")>
+        Public Async Function DoesNotGenerateDiagnosticsWhenMethodAttributeIsAnException(value As String) As Task
+            Dim source = "
+Class Foo
+    <" + value + ">
+    Private Sub PrivateFoo()
+    End Sub
+End Class"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
+        Public Async Function MainMethodEntryPointReturningVoidDoesNotCreateDiagnostic() As Task
+            Const test = "
+Module Foo
+    Sub Main(args as String())
+    End Sub
+End Module"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
+
+        <Fact>
+        Public Async Function MainMethodEntryPointReturningIntegerDoesNotCreateDiagnostic() As Task
+            Const test = "
+Module Foo
+    Function Main(args as String()) as Integer
+        Return 0
+    End Function
+End Module"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
+
+        <Fact>
+        Public Async Function MainMethodEntryPointWithoutParameterDoesNotCreateDiagnostic() As Task
+            Const test = "
+Module Foo
+    Function Main() as Integer
+        Return 0
+    End Function
+End Module"
+            Await VerifyBasicHasNoDiagnosticsAsync(test)
+        End Function
+
         <Fact>
         Public Async Function DoesNotGenerateDiagnostics() As Task
             Const test = "

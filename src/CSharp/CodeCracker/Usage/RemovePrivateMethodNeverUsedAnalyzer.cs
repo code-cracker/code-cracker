@@ -58,7 +58,17 @@ namespace CodeCracker.CSharp.Usage
                 foreach (var attribute in attributeList.Attributes)
                 {
                     var identifierName = attribute.Name as IdentifierNameSyntax;
-                    var nameText = identifierName?.Identifier.Text;
+                    string nameText = null;
+                    if (identifierName != null)
+                    {
+                        nameText = identifierName?.Identifier.Text;
+                    }
+                    else
+                    {
+                        var qualifiedName = attribute.Name as QualifiedNameSyntax;
+                        if (qualifiedName != null)
+                            nameText = qualifiedName.Right?.Identifier.Text;
+                    }
                     if (nameText == null) continue;
                     if (IsExcludedAttributeName(nameText)) return true;
                 }
