@@ -62,7 +62,8 @@ Namespace Style
 
             Dim returnStatement = SyntaxFactory.ReturnStatement(ternary).
                 WithLeadingTrivia(leadingTrivia).
-                WithTrailingTrivia(trailingTrivia)
+                WithTrailingTrivia(trailingTrivia).
+                WithAdditionalAnnotations(Formatter.Annotation)
 
             Dim newRoot = root.ReplaceNode(ifBlock, returnStatement)
             Dim newDocument = document.WithSyntaxRoot(newRoot)

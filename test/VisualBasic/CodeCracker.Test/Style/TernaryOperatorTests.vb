@@ -5,6 +5,7 @@ Namespace Style
     Public Class TernaryOperatorWithAssignmentTests
         Inherits CodeFixVerifier(Of TernaryOperatorAnalyzer, TernaryOperatorWithAssignmentCodeFixProvider)
 
+        <Fact>
         Public Async Function WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic() As Task
             Const sourceWithoutElse = "
 Namespace ConsoleApplication1
@@ -709,6 +710,58 @@ Namespace ConsoleApplication1
 End Namespace"
 
             Await VerifyBasicFixAllAsync(New String() {sourceReturn, sourceReturn.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+        End Function
+
+        <Fact>
+        Public Async Function FixWhenThereIsNumericImplicitConversion() As Task
+            Dim source = "
+Function OnReturn() As Double
+    Dim condition = True
+    Dim aDouble As Double = 2
+    Dim bInteger = 3
+    If condition Then
+        Return aDouble
+    Else
+        Return bInteger
+    End If
+End Function".WrapInVBClass()
+            Dim fix = "
+Function OnReturn() As Double
+    Dim condition = True
+    Dim aDouble As Double = 2
+    Dim bInteger = 3
+    Return If(condition, aDouble, bInteger)
+End Function".WrapInVBClass()
+            Await VerifyBasicFixAsync(source, fix, formatBeforeCompare:=True)
+        End Function
+
+        <Fact>
+        Public Async Function FixWhenThereIsEnumImplicitConversionToNumeric() As Task
+            Dim source = "
+Enum Values
+    Value
+End Enum
+Function OnReturn() As Double
+    Dim condition = True
+    Dim anEnum As Values = Values.Value
+    Dim bInteger = 3
+    If condition Then
+        Return anEnum
+    Else
+        Return bInteger
+    End If
+End Function".WrapInVBClass()
+            Dim fix = "
+Enum Values
+    Value
+End Enum
+Function OnReturn() As Double
+    Dim condition = True
+    Dim anEnum As Values = Values.Value
+    Dim bInteger = 3
+    Return If(condition, anEnum, bInteger)
+End Function".WrapInVBClass()
+            Await VerifyBasicFixAsync(source, fix, formatBeforeCompare:=True)
         End Function
 
         <Fact>

@@ -42,8 +42,26 @@ Public Module VBAnalyzerExtensions
 
     <Extension>
     Public Function ConvertToBaseType(source As ExpressionSyntax, sourceType As ITypeSymbol, targetType As ITypeSymbol) As ExpressionSyntax
-        If targetType?.OriginalDefinition.SpecialType = SpecialType.System_Nullable_T Then Return source
+        If (sourceType?.IsNumeric() AndAlso targetType?.IsNumeric()) OrElse
+            (sourceType?.BaseType?.SpecialType = SpecialType.System_Enum AndAlso targetType?.IsNumeric()) OrElse
+            (targetType?.OriginalDefinition.SpecialType = SpecialType.System_Nullable_T) Then Return source
         Return If(sourceType IsNot Nothing AndAlso sourceType.Name = targetType.Name, source, SyntaxFactory.DirectCastExpression(source.WithoutTrailingTrivia, SyntaxFactory.ParseTypeName(targetType.Name))).WithTrailingTrivia(source.GetTrailingTrivia())
+    End Function
+
+    <Extension>
+    Public Function IsNumeric(typeSymbol As ITypeSymbol) As Boolean
+        Return typeSymbol.SpecialType = SpecialType.System_Byte OrElse
+            typeSymbol.SpecialType = SpecialType.System_SByte OrElse
+            typeSymbol.SpecialType = SpecialType.System_Int16 OrElse
+            typeSymbol.SpecialType = SpecialType.System_UInt16 OrElse
+            typeSymbol.SpecialType = SpecialType.System_Int16 OrElse
+            typeSymbol.SpecialType = SpecialType.System_UInt32 OrElse
+            typeSymbol.SpecialType = SpecialType.System_Int32 OrElse
+            typeSymbol.SpecialType = SpecialType.System_UInt64 OrElse
+            typeSymbol.SpecialType = SpecialType.System_Int64 OrElse
+            typeSymbol.SpecialType = SpecialType.System_Decimal OrElse
+            typeSymbol.SpecialType = SpecialType.System_Single OrElse
+            typeSymbol.SpecialType = SpecialType.System_Double
     End Function
 
     <Extension>
