@@ -110,13 +110,15 @@ namespace CodeCracker.CSharp.Usage
 
         private static bool IdentifierRefersToParam(IdentifierNameSyntax iName, ParameterSyntax param)
         {
-            if (iName.Identifier.ToString() != param.Identifier.ToString())
+            var identifierName = iName.Identifier.ToString();
+            if (!identifierName.StartsWith("@")) identifierName = $"@{identifierName}";
+            var parameterName = param.Identifier.ToString();
+            if (!parameterName.StartsWith("@")) parameterName = $"@{parameterName}";
+            if (identifierName != parameterName)
                 return false;
-
             var mae = iName.Parent as MemberAccessExpressionSyntax;
             if (mae == null)
                 return true;
-
             return mae.DescendantNodes().FirstOrDefault() == iName;
         }
 

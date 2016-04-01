@@ -59,6 +59,39 @@ namespace ClassLibrary1
         }
 
         [Fact]
+        public async Task UsedParameterWithVerbatimIdentifierDoesNotCreateDiagnostic()
+        {
+            var source = @"
+public int Foo(int @a)
+{
+    return a;
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task UsedParameterUsedWithVerbatimIdentifierDoesNotCreateDiagnostic()
+        {
+            var source = @"
+public int Foo(int a)
+{
+    return @a;
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task UsedParameterWithVerbatimIdentifierUsedWithVerbatimIdentifierDoesNotCreateDiagnostic()
+        {
+            var source = @"
+public int Foo(int @a)
+{
+    return @a;
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task MethodWithoutStatementsCreatesDiagnostic()
         {
             const string source = @"
