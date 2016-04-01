@@ -644,7 +644,7 @@ namespace CodeCracker
                     var ifResult = ifStatement.Statement.DoesBlockContainCertainInitializer(context, symbol);
                     if (ifStatement.Else != null)
                     {
-                        var elseResult = ifStatement.Else.Statement .DoesBlockContainCertainInitializer(context, symbol);
+                        var elseResult = ifStatement.Else.Statement.DoesBlockContainCertainInitializer(context, symbol);
 
                         if (ifResult == InitializerState.Initializer && elseResult == InitializerState.Initializer)
                             currentState = InitializerState.Initializer;
@@ -720,6 +720,152 @@ namespace CodeCracker
             else
             {
                 throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// According to the C# Language Spec, item 6.4
+        /// See <a href="https://github.com/ljw1004/csharpspec/blob/master/csharp/conversions.md#implicit-numeric-conversions">online</a>.
+        /// </summary>
+        /// <param name="from">The type to convert from</param>
+        /// <param name="to">The type to convert to</param>
+        public static bool HasImplicitNumericConversion(this ITypeSymbol from, ITypeSymbol to)
+        {
+            if (from == null || to == null) return false;
+            switch (from.SpecialType)
+            {
+                case SpecialType.System_SByte:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_SByte:
+                        case SpecialType.System_Int16:
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Byte:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Byte:
+                        case SpecialType.System_Int16:
+                        case SpecialType.System_UInt16:
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_UInt32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Int16:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Int16:
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_UInt16:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_UInt32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Int32:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_UInt32:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_UInt32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Int64:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_UInt64:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Char:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_UInt16:
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_UInt32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Char:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Single:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                            return true;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
             }
         }
     }
