@@ -868,5 +868,14 @@ namespace CodeCracker
                     return false;
             }
         }
+
+        public static string FindAvailableIdentifierName(this SemanticModel semanticModel, int position, string baseName)
+        {
+            var name = baseName;
+            var inscrementer = 1;
+            while (semanticModel.LookupSymbols(position, name: name).Any())
+                name = baseName + inscrementer++;
+            return name;
+        }
     }
 }
