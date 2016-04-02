@@ -65,6 +65,7 @@ You should delete the parameter in such cases."
         Private Shared Function IsCandidateForRemoval(methodOrConstructor As MethodBlockBaseSyntax, semanticModel As SemanticModel) As Boolean
             If methodOrConstructor.BlockStatement.Modifiers.Any(Function(m) m.ValueText = "Partial" OrElse m.ValueText = "Overrides") OrElse
             Not methodOrConstructor.BlockStatement.ParameterList?.Parameters.Any() Then Return False
+            If methodOrConstructor.HasAttributeOnAncestorOrSelf("DllImport") Then Return False
 
             Dim method = TryCast(methodOrConstructor, MethodBlockSyntax)
             If method IsNot Nothing Then
