@@ -73,6 +73,16 @@ public class CSharpClass
         }
 
         [Fact]
+        public async Task IgnoreWhenDisposedWithElvisOperator()
+        {
+            var source = @"
+var m = new System.IO.MemoryStream();
+m?.Dispose();
+".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task IgnoresDisposableObjectsCreatedDirectParentIsNotAnUsingStatement()
         {
             var source = "using (((new System.IO.MemoryStream()))) { }".WrapInCSharpMethod();

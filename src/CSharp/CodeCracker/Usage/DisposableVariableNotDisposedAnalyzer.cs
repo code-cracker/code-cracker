@@ -176,17 +176,35 @@ namespace CodeCracker.CSharp.Usage
         {
             if (expressionStatement == null) return false;
             var invocation = expressionStatement.Expression as InvocationExpressionSyntax;
-            if (invocation?.ArgumentList.Arguments.Any() ?? true) return false;
-            var memberAccess = invocation.Expression as MemberAccessExpressionSyntax;
-            if (memberAccess == null) return false;
-            ISymbol memberSymbol;
-            if (memberAccess.Expression.IsKind(SyntaxKind.IdentifierName))
+            ExpressionSyntax expressionAccessed;
+            IdentifierNameSyntax memberAccessed;
+            if (invocation == null)
             {
-                memberSymbol = semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
+                var conditionalAccessExpression = expressionStatement.Expression as ConditionalAccessExpressionSyntax;
+                if (conditionalAccessExpression == null) return false;
+                invocation = conditionalAccessExpression.WhenNotNull as InvocationExpressionSyntax;
+                var memberBinding = invocation?.Expression as MemberBindingExpressionSyntax;
+                if (memberBinding == null) return false;
+                expressionAccessed = conditionalAccessExpression.Expression;
+                memberAccessed = memberBinding.Name as IdentifierNameSyntax;
             }
-            else if (memberAccess.Expression.IsKind(SyntaxKind.ParenthesizedExpression))
+            else
             {
-                var parenthesizedExpression = (ParenthesizedExpressionSyntax)memberAccess.Expression;
+                var memberAccess = invocation.Expression as MemberAccessExpressionSyntax;
+                if (memberAccess == null) return false;
+                expressionAccessed = memberAccess.Expression;
+                memberAccessed = memberAccess.Name as IdentifierNameSyntax;
+            }
+            if (memberAccessed == null) return false;
+            if (invocation.ArgumentList.Arguments.Any()) return false;
+            ISymbol memberSymbol;
+            if (expressionAccessed.IsKind(SyntaxKind.IdentifierName))
+            {
+                memberSymbol = semanticModel.GetSymbolInfo(expressionAccessed).Symbol;
+            }
+            else if (expressionAccessed is ParenthesizedExpressionSyntax)
+            {
+                var parenthesizedExpression = (ParenthesizedExpressionSyntax)expressionAccessed;
                 var cast = parenthesizedExpression.Expression as CastExpressionSyntax;
                 if (cast == null) return false;
                 var catTypeSymbol = semanticModel.GetTypeInfo(cast.Type).Type;
@@ -195,8 +213,6 @@ namespace CodeCracker.CSharp.Usage
             }
             else return false;
             if (memberSymbol == null || !memberSymbol.Equals(identitySymbol)) return false;
-            var memberAccessed = memberAccess.Name as IdentifierNameSyntax;
-            if (memberAccessed == null) return false;
             if (memberAccessed.Identifier.Text != "Dispose" || memberAccessed.Arity != 0) return false;
             var methodSymbol = semanticModel.GetSymbolInfo(memberAccessed).Symbol as IMethodSymbol;
             if (methodSymbol == null) return false;
