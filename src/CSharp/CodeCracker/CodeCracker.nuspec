@@ -13,15 +13,15 @@
         <description>A analyzer library for C# that uses Roslyn to produce refactorings, code analysis, and other niceties.
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this software, nor it will be. Ever.</description>
-        <releaseNotes>Third alpha release</releaseNotes>
-        <copyright>Copyright CodeCracker 2014-2015</copyright>
+        <releaseNotes>See https://github.com/code-cracker/code-cracker/blob/master/CHANGELOG.md</releaseNotes>
+        <copyright>Copyright CodeCracker 2014-2016</copyright>
         <tags>roslyn, analyzers</tags>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System" targetFramework="" />
         </frameworkAssemblies>
     </metadata>
     <files>
-        <file src="bin\debug\*.dll" target="analyzers\dotnet\cs" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*;**\System.Composition.*" />
+        <file src="bin\release\*.dll" target="analyzers\dotnet\cs" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*;**\System.Composition.*" />
         <file src="tools\*.ps1" target="tools\" />
     </files>
 </package>

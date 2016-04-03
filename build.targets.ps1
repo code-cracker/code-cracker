@@ -19,13 +19,13 @@ Properties {
     $openCoverExe = "$packagesDir\OpenCover.4.6.166\tools\OpenCover.Console.exe"
     $testDllCS = "CodeCracker.Test.CSharp.dll"
     $testDllVB = "CodeCracker.Test.VisualBasic.dll"
-    $testDirCS = "$testDir\CSharp\CodeCracker.Test\bin\Debug"
-    $testDirVB = "$testDir\VisualBasic\CodeCracker.Test\bin\Debug"
+    $testDirCS = "$testDir\CSharp\CodeCracker.Test\bin\Release"
+    $testDirVB = "$testDir\VisualBasic\CodeCracker.Test\bin\Release"
     $logDir = "$rootDir\log"
     $outputXml = "$logDir\CodeCoverageResults.xml"
     $reportGeneratorExe = "$packagesDir\ReportGenerator.2.3.5.0\tools\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
-    $converallsNetExe = "$packagesDir\coveralls.io.1.3.4\tools\coveralls.net.exe"
+    $coverallsNetExe = "$packagesDir\coveralls.io.1.3.4\tools\coveralls.net.exe"
     $isRelease = $isAppVeyor -and ($env:APPVEYOR_REPO_BRANCH -eq "release")
     $isPullRequest = $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null
 }
@@ -51,16 +51,16 @@ Task Build-VB -depends Prepare-Build, Build-Only-VB
 Task Build-Only -depends Build-Only-CS, Build-Only-VB
 Task Build-Only-CS {
     if ($isAppVeyor) {
-        Exec { msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=DebugNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
+        Exec { msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=ReleaseNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
     } else {
-        Exec { msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=DebugNoVsix }
+        Exec { msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=ReleaseNoVsix }
     }
 }
 Task Build-Only-VB {
     if ($isAppVeyor) {
-        Exec { msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=DebugNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
+        Exec { msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=ReleaseNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
     } else {
-        Exec { msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=DebugNoVsix }
+        Exec { msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=ReleaseNoVsix }
     }
 }
 
@@ -128,7 +128,7 @@ function PackNuget($language, $dir, $nuspecFile, $nupkgFile) {
     [xml]$xml = cat $nuspecFile
     $nupkgFile = $nupkgFile -f $xml.package.metadata.version
     Write-Host "Nupkg path is $nupkgFile"
-    . $nugetExe pack $nuspecFile -Properties "Configuration=Debug;Platform=AnyCPU" -OutputDirectory $dir
+    . $nugetExe pack $nuspecFile -OutputDirectory $dir
     ls $nupkgFile
     Write-Host "Nuget packed for $language!"
     Write-Host "Pushing nuget artifact for $language..."
@@ -220,6 +220,6 @@ function RunTestWithCoverage($fullTestDllPaths) {
     Exec { . $reportGeneratorExe -verbosity:Info -reports:$outputXml -targetdir:$coverageReportDir }
     if ($env:COVERALLS_REPO_TOKEN -ne $null) {
         Write-Host -ForegroundColor DarkBlue "Uploading coverage report to Coveralls.io"
-        Exec { . $converallsNetExe --opencover $outputXml --full-sources }
+        Exec { . $coverallsNetExe --opencover $outputXml --full-sources }
     }
 }
