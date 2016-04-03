@@ -115,8 +115,6 @@
     <Compile Include="Style\ConvertToExpressionBodiedMemberAnalyzer.cs" />
     <Compile Include="Style\ConvertToSwitchAnalyzer.cs" />
     <Compile Include="Style\ConvertToSwitchCodeFixProvider.cs" />
-    <Compile Include="Design\CopyEventToVariableBeforeFireAnalyzer.cs" />
-    <Compile Include="Design\CopyEventToVariableBeforeFireCodeFixProvider.cs" />
     <Compile Include="Usage\CallExtensionMethodAsExtensionAnalyzer.cs" />
     <Compile Include="Usage\CallExtensionMethodAsExtensionCodeFixProvider.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedAnalyzer.cs" />

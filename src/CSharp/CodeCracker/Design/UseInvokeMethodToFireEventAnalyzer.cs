@@ -11,11 +11,12 @@ namespace CodeCracker.CSharp.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UseInvokeMethodToFireEventAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Use Invoke Method To call on delegate";
-        internal const string MessageFormat = "Use ?.Invoke operator and method to call on '{0}' delegate.";
+        internal const string Title = "Check for null before calling a delegate";
+        internal const string MessageFormat = "Verify if delegate '{0}' is null before invoking it.";
         internal const string Category = SupportedCategories.Design;
         const string Description = "In C#6 a delegate can be invoked using the null-propagating operator (?.) and it's"
-            + " invoke method to avoid throwing a NullReference exception when there is no method attached to the delegate.";
+            + " invoke method to avoid throwing a NullReference exception when there is no method attached to the delegate. "
+            + "Or you can check for null before calling the delegate.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
@@ -30,7 +31,7 @@ namespace CodeCracker.CSharp.Design
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context) =>
-            context.RegisterSyntaxNodeAction(LanguageVersion.CSharp6, Analyzer, SyntaxKind.InvocationExpression);
+            context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.InvocationExpression);
 
         private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
@@ -48,11 +49,15 @@ namespace CodeCracker.CSharp.Design
 
             var invokedMethodSymbol = (typeInfo.ConvertedType as INamedTypeSymbol)?.DelegateInvokeMethod;
             if (invokedMethodSymbol == null) return;
-            if (!invokedMethodSymbol.ReturnsVoid && !invokedMethodSymbol.ReturnType.IsReferenceType) return;
+            //var cantFixWithElvis = false;
+            //if (!invokedMethodSymbol.ReturnsVoid && !invokedMethodSymbol.ReturnType.IsReferenceType)
+            //    cantFixWithElvis = true;
 
             if (HasCheckForNullThatReturns(invocation, context.SemanticModel, symbol)) return;
             if (IsInsideANullCheck(invocation, context.SemanticModel, symbol)) return;
             if (symbol.IsReadOnlyAndInitializedForCertain(context)) return;
+
+            //var properties = new Dictionary<string, string> { { nameof(cantFixWithElvis), cantFixWithElvis.ToString() } }.ToImmutableDictionary();
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), identifier.Identifier.Text));
         }
 
