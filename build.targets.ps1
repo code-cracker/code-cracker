@@ -112,7 +112,8 @@ Task Update-Nuspec-VB -precondition { return $isAppVeyor -and ($isRelease -ne $t
 
 Task Pack-Nuget -precondition { return $isAppVeyor } -depends Pack-Nuget-Joint
 Task Pack-Nuget-Joint -precondition { return $isAppVeyor } -depends Pack-Nuget-Csharp, Pack-Nuget-VB {
-    PackNuget "Joint package" "$rootDir" $nuspecPathJoint $nupkgPathJoint
+    #we won't be publishing the common package anymore
+    #PackNuget "Joint package" "$rootDir" $nuspecPathJoint $nupkgPathJoint
 }
 Task Pack-Nuget-CSharp -precondition { return $isAppVeyor } {
     PackNuget "C#" "$rootDir\src\CSharp" $nuspecPathCS $nupkgPathCS
