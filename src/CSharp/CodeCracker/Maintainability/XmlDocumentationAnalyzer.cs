@@ -14,16 +14,25 @@ namespace CodeCracker.CSharp.Maintainability
     {
         internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.XmlDocumentationAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
 
-        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId.XmlDocumentation.ToDiagnosticId(),
+        internal static readonly DiagnosticDescriptor RuleMissingInCSharp = new DiagnosticDescriptor(
+            DiagnosticId.XmlDocumentation_MissingInCSharp.ToDiagnosticId(),
+            Title,
+            Title,
+            SupportedCategories.Maintainability,
+            DiagnosticSeverity.Info,
+            isEnabledByDefault: true,
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.XmlDocumentation_MissingInCSharp));
+
+        internal static readonly DiagnosticDescriptor RuleMissingInXml = new DiagnosticDescriptor(
+            DiagnosticId.XmlDocumentation_MissingInXml.ToDiagnosticId(),
             Title,
             Title,
             SupportedCategories.Maintainability,
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.XmlDocumentation));
+            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.XmlDocumentation_MissingInXml));
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(RuleMissingInCSharp, RuleMissingInXml);
 
         public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction(Analyzer, SyntaxKind.SingleLineDocumentationCommentTrivia);
 
@@ -55,15 +64,13 @@ namespace CodeCracker.CSharp.Maintainability
 
             if (parameterWithDocParameter.Any(p => p.Parameter == null))
             {
-                var properties = new Dictionary<string, string> { ["kind"] = "nonexistentParam" }.ToImmutableDictionary();
-                var diagnostic = Diagnostic.Create(Rule, documentationNode.GetLocation(), properties);
+                var diagnostic = Diagnostic.Create(RuleMissingInCSharp, documentationNode.GetLocation());
                 context.ReportDiagnostic(diagnostic);
             }
 
             if (parameterWithDocParameter.Any(p => p.DocParameter == null))
             {
-                var properties = new Dictionary<string, string> { ["kind"] = "missingDoc" }.ToImmutableDictionary();
-                var diagnostic = Diagnostic.Create(Rule, documentationNode.GetLocation(), properties);
+                var diagnostic = Diagnostic.Create(RuleMissingInXml, documentationNode.GetLocation());
                 context.ReportDiagnostic(diagnostic);
             }
         }

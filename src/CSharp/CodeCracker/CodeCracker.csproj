@@ -75,8 +75,8 @@
     <Compile Include="Refactoring\ParameterRefactoryAnalyzer.cs" />
     <Compile Include="Refactoring\ParameterRefactoryCodeFixProvider.cs" />
     <Compile Include="Maintainability\XmlDocumentationAnalyzer.cs" />
-    <Compile Include="Maintainability\XmlDocumentationCreateMissingParametersCodeFixProvider.cs" />
-    <Compile Include="Maintainability\XmlDocumentationRemoveNonExistentParametersCodeFixProvider.cs" />
+    <Compile Include="Maintainability\XmlDocumentationMissingInXmlCodeFixProvider.cs" />
+    <Compile Include="Maintainability\XmlDocumentationMissingInCSharpCodeFixProvider.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseAnalyzer.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseCodeFixProvider.cs" />
     <Compile Include="Style\ConsoleWriteLineAnalyzer.cs" />
