@@ -140,7 +140,7 @@ function PackNuget($language, $dir, $nuspecFile, $nupkgFile) {
 function UpdateNuspec($nuspecPath, $language) {
       write-host "Updating version in nuspec file for $language to $buildNumber"
       [xml]$xml = cat $nuspecPath
-      $xml.package.metadata.version+="-$buildNumber"
+      $xml.package.metadata.version+="-z$buildNumber"
       write-host "Nuspec version will be $($xml.package.metadata.version)"
       $xml.Save($nuspecPath)
       write-host "Nuspec saved for $language!"
