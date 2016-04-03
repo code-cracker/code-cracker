@@ -3,7 +3,7 @@ $baseDir =  "$([System.IO.Path]::GetTempPath())$([System.Guid]::NewGuid().ToStri
 $projectDir =  "$baseDir\corefx"
 $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\corefx.log"
-$analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
+$analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Release\CodeCracker.CSharp.dll")
 $gitPath = "https://github.com/dotnet/corefx.git"
 if (Test-Path "C:\proj\corefx") {
     $gitPath = "C:\proj\corefx"
@@ -69,7 +69,7 @@ if ($ccBuildErrors -ne $null)
     Write-Host "Errors found (see $logFile):"
     foreach($ccBuildError in $ccBuildErrors)
     {
-        Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)" 
+        Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)"
     }
     throw "Errors found on the corefx analysis"
 }

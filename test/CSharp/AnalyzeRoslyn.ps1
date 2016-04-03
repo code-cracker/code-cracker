@@ -3,8 +3,8 @@ $baseDir =  "$([System.IO.Path]::GetTempPath())$([System.Guid]::NewGuid().ToStri
 $projectDir =  "$baseDir\roslyn"
 $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\roslyn.log"
-$analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
-$analyzerDllVB = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\VisualBasic\CodeCracker\bin\Debug\CodeCracker.VisualBasic.dll")
+$analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Release\CodeCracker.CSharp.dll")
+$analyzerDllVB = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\VisualBasic\CodeCracker\bin\Release\CodeCracker.VisualBasic.dll")
 $gitPath = "https://github.com/dotnet/roslyn.git"
 if (Test-Path "c:\proj\roslyn") {
     $gitPath = "c:\proj\roslyn"
@@ -101,7 +101,7 @@ if ($ccBuildErrors -ne $null)
     Write-Host "Errors found (see $logFile):"
     foreach($ccBuildError in $ccBuildErrors)
     {
-        Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)" 
+        Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)"
     }
     throw "Errors found on the roslyn analysis"
 }
