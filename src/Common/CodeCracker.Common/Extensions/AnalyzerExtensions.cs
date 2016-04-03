@@ -125,6 +125,8 @@ namespace CodeCracker
 
         public static string GetFullName(this ISymbol symbol, bool addGlobal = true)
         {
+            if (symbol.Kind == SymbolKind.TypeParameter)
+                return symbol.ToString();
             var fullName = symbol.Name;
             var containingSymbol = symbol.ContainingSymbol;
             while (!(containingSymbol is INamespaceSymbol))

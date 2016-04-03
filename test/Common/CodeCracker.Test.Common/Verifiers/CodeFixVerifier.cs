@@ -324,6 +324,45 @@ namespace CodeCracker.Test
         }
 
         /// <summary>
+        /// Called to verify how many code actions a code fix registered
+        /// Creates a Document from the source string, then gets diagnostics on it and verify if it has x number of code actions registred.
+        /// It will fail the test if it has a different number of code actions registred to it.
+        /// </summary>
+        /// <param name="source">A class in the form of a string before the CodeFix was applied to it</param>
+        /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
+        /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
+        /// <param name="numberOfCodeActions">The expected number of code actions provided by the code fix.</param>
+        protected async Task VerifyCSharpHasNumberOfCodeActions(string source, int numberOfCodeActions, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6) =>
+            await VerifyNumberOfCodeActions(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), source, numberOfCodeActions, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
+
+        /// <summary>
+        /// General verifier for a diagnostics that verifies how many code actions a code fix registered.
+        /// Creates a Document from the source string, then gets diagnostics on it and verify if it has x number of code actions registred.
+        /// It will fail the test if it has a different number of code actions registred to it.
+        /// </summary>
+        /// <param name="language">The language the source code is in</param>
+        /// <param name="analyzer">The analyzer to be applied to the source code</param>
+        /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
+        /// <param name="source">A class in the form of a string before the CodeFix was applied to it</param>
+        /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
+        /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
+        /// <param name="numberOfCodeActions">The expected number of code actions provided by the code fix.</param>
+        private async static Task VerifyNumberOfCodeActions(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string source, int numberOfCodeActions, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
+        {
+            var document = CreateDocument(source, language, languageVersionCSharp, languageVersionVB);
+            var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }).ConfigureAwait(true);
+
+            foreach (var analyzerDiagnostic in analyzerDiagnostics)
+            {
+                var actions = new List<CodeAction>();
+                var context = new CodeFixContext(document, analyzerDiagnostic, (a, d) => actions.Add(a), CancellationToken.None);
+                await codeFixProvider.RegisterCodeFixesAsync(context).ConfigureAwait(true);
+                var numberOfCodeActionsFound = actions.Count();
+                Assert.True(numberOfCodeActions == numberOfCodeActionsFound, $"Should have {numberOfCodeActions} code actions registered for diagnostic '{analyzerDiagnostic.Id}' but got {numberOfCodeActionsFound}.");
+            }
+        }
+
+        /// <summary>
         /// Called to test a C# codefix when it should not had been registered
         /// </summary>
         /// <param name="source">A class in the form of a string before the CodeFix was applied to it</param>
