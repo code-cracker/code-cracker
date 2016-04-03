@@ -6,8 +6,8 @@ Check the official project site on [code-cracker.github.io](http://code-cracker.
 our task board, definition of done, definition of ready, etc.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/h21sli3jkumuswyi?svg=true)](https://ci.appveyor.com/project/code-cracker/code-cracker)
-[![Nuget count](https://img.shields.io/nuget/v/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
-[![Nuget downloads](https://img.shields.io/nuget/dt/codecracker.svg)](https://www.nuget.org/packages/codecracker/)
+[![Nuget count](https://img.shields.io/nuget/v/codecracker.CSharp.svg)](https://www.nuget.org/packages/codecracker.CSharp/)
+[![License](https://img.shields.io/github/license/code-cracker/code-cracker.svg)](https://github.com/code-cracker/code-cracker/blob/master/LICENSE.txt)
 [![Issues open](https://img.shields.io/github/issues-raw/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker/)
 [![Coverage Status](https://img.shields.io/coveralls/code-cracker/code-cracker/master.svg)](https://coveralls.io/r/code-cracker/code-cracker?branch=master)
 [![Source Browser](https://img.shields.io/badge/Browse-Source-green.svg)](http://ccref.azurewebsites.net)
