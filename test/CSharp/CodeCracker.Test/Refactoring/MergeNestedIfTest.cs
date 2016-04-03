@@ -185,5 +185,70 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     var a = 1;//comment2".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(test, fixtest);
         }
+
+        [Fact]
+        public async Task FixAddsParenthesisWhenSecondConditionHasLogicalORExpression()
+        {
+            var test = @"
+var conditionA = false;
+var conditionB = false;
+var conditionC = false;
+if (conditionA)
+    if (conditionB || conditionC)
+        System.Console.WriteLine();
+".WrapInCSharpMethod();
+            var fixtest = @"
+var conditionA = false;
+var conditionB = false;
+var conditionC = false;
+if (conditionA && (conditionB || conditionC))
+    System.Console.WriteLine();
+".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAddsParenthesisWhenSecondConditionHasConditionalExpression()
+        {
+            var test = @"
+var conditionA = false;
+var conditionB = false;
+var conditionC = false;
+var conditionD = false;
+if (conditionA)
+    if (conditionB ? conditionC : conditionD)
+        System.Console.WriteLine();
+".WrapInCSharpMethod();
+            var fixtest = @"
+var conditionA = false;
+var conditionB = false;
+var conditionC = false;
+var conditionD = false;
+if (conditionA && (conditionB ? conditionC : conditionD))
+    System.Console.WriteLine();
+".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task FixAddsParenthesisWhenSecondConditionHasCoalescingExpression()
+        {
+            var test = @"
+var conditionA = false;
+bool? conditionB = false;
+var conditionC = false;
+if (conditionA)
+    if (conditionB ?? conditionC)
+        System.Console.WriteLine();
+".WrapInCSharpMethod();
+            var fixtest = @"
+var conditionA = false;
+bool? conditionB = false;
+var conditionC = false;
+if (conditionA && (conditionB ?? conditionC))
+    System.Console.WriteLine();
+".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
     }
 }

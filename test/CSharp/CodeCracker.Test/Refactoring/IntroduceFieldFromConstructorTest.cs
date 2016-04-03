@@ -28,6 +28,76 @@ namespace CodeCracker.Test.CSharp.Refactoring
         }
 
         [Fact]
+        public async Task WhenConstructorInMidlleOfNoWhere()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+            public TypeName(int par)
+            {
+               this.par = par;
+            }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+
+        [Fact]
+        public async Task WhenConstructorOfStruct()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        struct TypeName
+        {
+            public TypeName(int par)
+            {
+            }
+        }
+    }";
+
+            const string expected = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        struct TypeName
+        {
+            private readonly int par;
+
+            public TypeName(int par)
+            {
+               this.par = par;
+            }
+        }
+    }";
+            await VerifyCSharpFixAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task WhenConstructorOfInterface()
+        {
+            const string test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        interface TypeName
+        {
+            public TypeName(int par)
+            {
+               this.par = par;
+            }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async Task WhenConstructorParameterHasPrivateReadOnlyField()
         {
             const string test = @"

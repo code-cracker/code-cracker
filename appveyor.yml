@@ -2,7 +2,7 @@ version: 1.0.0.{build}
 
 skip_tags: true
 
-configuration: DebugNoVsix
+configuration: ReleaseNoVsix
 
 init:
   - git config --global core.autocrlf true

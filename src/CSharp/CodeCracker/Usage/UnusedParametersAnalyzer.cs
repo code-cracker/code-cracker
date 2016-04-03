@@ -110,19 +110,21 @@ namespace CodeCracker.CSharp.Usage
 
         private static bool IdentifierRefersToParam(IdentifierNameSyntax iName, ParameterSyntax param)
         {
-            if (iName.Identifier.ToString() != param.Identifier.ToString())
+            var identifierName = iName.Identifier.ToString();
+            if (!identifierName.StartsWith("@")) identifierName = $"@{identifierName}";
+            var parameterName = param.Identifier.ToString();
+            if (!parameterName.StartsWith("@")) parameterName = $"@{parameterName}";
+            if (identifierName != parameterName)
                 return false;
-
             var mae = iName.Parent as MemberAccessExpressionSyntax;
             if (mae == null)
                 return true;
-
             return mae.DescendantNodes().FirstOrDefault() == iName;
         }
 
         private static bool IsCandidateForRemoval(BaseMethodDeclarationSyntax methodOrConstructor, SemanticModel semanticModel)
         {
-            if (methodOrConstructor.Modifiers.Any(m => m.ValueText == "partial" || m.ValueText == "override" || m.ValueText == "abstract")
+            if (methodOrConstructor.Modifiers.Any(m => m.ValueText == "partial" || m.ValueText == "override" || m.ValueText == "abstract" || m.ValueText == "extern")
                 || !methodOrConstructor.ParameterList.Parameters.Any())
                 return false;
             var method = methodOrConstructor as MethodDeclarationSyntax;

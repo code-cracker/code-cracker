@@ -184,6 +184,50 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
+        public async Task FixDoesNotRemoveNextStatement()
+        {
+            const string source = @"
+class DataObject
+{
+    public int MyInt { get; set; }
+    public double MyDouble { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        var data = new DataObject
+        {
+            MyInt = 5
+        };
+        data.MyDouble = 5.6;
+        var a = 1;
+    }
+}";
+            const string fixtest = @"
+class DataObject
+{
+    public int MyInt { get; set; }
+    public double MyDouble { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        var data = new DataObject
+        {
+            MyInt = 5,
+            MyDouble = 5.6
+        };
+        var a = 1;
+    }
+}";
+            await VerifyCSharpFixAsync(source, fixtest, 0);
+        }
+
+        [Fact]
         public async Task ObjectCreationWithoutConstructorDoesNotCreateDiagnostic()
         {
             const string source = @"

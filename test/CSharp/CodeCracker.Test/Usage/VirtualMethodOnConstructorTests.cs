@@ -11,16 +11,16 @@ namespace CodeCracker.Test.CSharp.Usage {
         public async Task IfVirtualMethodFoundInConstructorCreatesDiagnostic() {
             const string test = @"
 public class Person
-{{
+{
 	public Person(string foo)
-	{{
+	{
 		DoFoo(foo);
-	}}
+	}
 
 	public virtual void DoFoo(string foo)
-	{{
-	}}
-}}";
+	{
+	}
+}";
             var expected = new DiagnosticResult {
                 Id = DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
                 Message = VirtualMethodOnConstructorAnalyzer.Message,
@@ -35,16 +35,16 @@ public class Person
         public async Task IfVirtualMethodWithThisFoundInConstructorCreatesDiagnostic() {
             const string test = @"
 public class Person
-{{
+{
 	public Person(string foo)
-	{{
+	{
 		this.DoFoo(foo);
-	}}
+	}
 
 	public virtual void DoFoo(string foo)
-	{{
-	}}
-}}";
+	{
+	}
+}";
             var expected = new DiagnosticResult {
                 Id = DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
                 Message = VirtualMethodOnConstructorAnalyzer.Message,
@@ -60,20 +60,19 @@ public class Person
         public async Task IfVirtualMethodFoundFromOtherClassInConstructorDoNotCreateDiagnostic() {
             const string test = @"
 public class Book
-{{
+{
 	public virtual void DoFoo(string foo)
-	{{
-	}}
-}}
+	{
+	}
+}
 public class Person
-{{
+{
 	public Person(string foo)
-	{{
+	{
 		var b = new Book();
         b.DoFoo(foo);
-	}}
-}}
-";
+	}
+}";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -81,16 +80,15 @@ public class Person
         public async Task IfVirtualMethodNotFoundInConstructorDoNotCreateDiagnostic() {
             const string test = @"
 public class Person
-{{
+{
 	public Person(string foo)
-	{{
+	{
 		DoFoo(foo);
-	}}
-
+	}
 	public void DoFoo(string foo)
-	{{
-	}}
-}}";
+	{
+	}
+}";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
@@ -98,20 +96,20 @@ public class Person
         public async Task IfManyVirtualMethodFoundInConstructorCreatesDiagnostics() {
             const string test = @"
 public class Person
-{{
+{
 	public Person(string foo)
-	{{
+	{
 		DoFoo(foo);
 		DoFoo2(foo);
-	}}
+	}
 
 	public virtual void DoFoo(string foo)
-	{{
-	}}
+	{
+	}
     public virtual void DoFoo2(string foo)
-	{{
-	}}
-}}";
+	{
+	}
+}";
             var expected = new DiagnosticResult {
                 Id = DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
                 Message = VirtualMethodOnConstructorAnalyzer.Message,
@@ -124,8 +122,6 @@ public class Person
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 3) }
             };
-
-
             await VerifyCSharpDiagnosticAsync(test, expected, expected2);
         }
 
@@ -137,12 +133,26 @@ public class Person
         public async Task IfNameOfFoundInConstructorDoesNotCreateDiagnostic() {
             const string test = @"
 public class Person
-{{
+{
 	public Person(string name)
-	{{
+	{
         throw new System.ArgumentOutOfRangeException(nameof(name), """");
-	}}
-}}";
+	}
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task IgnoreParameters() {
+            var test = @"
+using System;
+class Foo
+{
+    public Foo(Func<string> bar)
+    {
+        bar();
+    }
+}";
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
     }

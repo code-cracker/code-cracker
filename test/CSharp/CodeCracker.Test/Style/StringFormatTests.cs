@@ -609,5 +609,62 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(source, expected);
         }
+
+        [Fact]
+        public async Task FixWithLineBreaksAndConditionalExpression()
+        {
+            var source = @"
+var foo = 1;
+var goo = string.Format(""{0}"", foo == 2 ?
+10 : 15);".WrapInCSharpMethod();
+            var expected = @"
+var foo = 1;
+var goo = $""{(foo == 2 ? 10 : 15)}"";".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixWithLineBreaksAndStringConcat()
+        {
+            var source = @"
+var foo = 1;
+var baz = string.Format(""{0}"", foo +
+    ""baz"" +
+    ""boo"");".WrapInCSharpMethod();
+            var expected = @"
+var foo = 1;
+var baz = $""{foo + ""baz"" + ""boo""}"";".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task NestedStringFormatCreatesDiagnostic()
+        {
+            var source = @"var foo = string.Format(""{0}"", string.Format(""{0}"", 1 ) );".WrapInCSharpMethod();
+            var expected1 = new DiagnosticResult
+            {
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
+                Message = StringFormatAnalyzer.MessageFormat.ToString(),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 27) }
+            };
+            var expected2 = new DiagnosticResult
+            {
+                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
+                Message = StringFormatAnalyzer.MessageFormat.ToString(),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 48) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected1, expected2);
+        }
+
+        [Fact]
+        public async Task FixAllStringInterpolations()
+        {
+var foo = $"{$"{1}"}";
+            var source = @"var foo = string.Format(""{0}"", string.Format(""{0}"", 1 ) );".WrapInCSharpMethod();
+            var expected = @"var foo = $""{$""{1}""}"";".WrapInCSharpMethod();
+            await VerifyCSharpFixAllAsync(source, expected);
+        }
     }
 }

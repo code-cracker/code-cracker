@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Formatting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -563,6 +564,9 @@ namespace CodeCracker
             return null;
         }
 
+        public static TNode FirstAncestorOfKind<TNode>(this SyntaxNode node, params SyntaxKind[] kinds) where TNode : SyntaxNode =>
+            (TNode)FirstAncestorOfKind(node, kinds);
+
         public static IEnumerable<TNode> OfKind<TNode>(this IEnumerable<SyntaxNode> nodes, SyntaxKind kind) where TNode : SyntaxNode
         {
             foreach (var node in nodes)
@@ -745,7 +749,7 @@ namespace CodeCracker
                     var ifResult = ifStatement.Statement.DoesBlockContainCertainInitializer(context, symbol);
                     if (ifStatement.Else != null)
                     {
-                        var elseResult = ifStatement.Else.Statement .DoesBlockContainCertainInitializer(context, symbol);
+                        var elseResult = ifStatement.Else.Statement.DoesBlockContainCertainInitializer(context, symbol);
 
                         if (ifResult == InitializerState.Initializer && elseResult == InitializerState.Initializer)
                             currentState = InitializerState.Initializer;
@@ -763,5 +767,220 @@ namespace CodeCracker
 
         private static bool CanSkipInitializer(InitializerState foundState, InitializerState currentState) =>
             foundState == InitializerState.WayToSkipInitializer && currentState == InitializerState.None;
+
+        public static TNode WithoutAllTrivia<TNode>(this TNode node) where TNode : SyntaxNode
+        {
+            var newNode = node.WithoutTrivia();
+            var tokens = newNode.ChildTokens().ToList();
+            var newTokens = tokens.ToDictionary(t => t, t => t.WithoutTrivia());
+            newNode = newNode.ReplaceTokens(tokens, (o, _) => newTokens[o]);
+            var nodes = newNode.ChildNodes().ToList();
+            var newNodes = nodes.ToDictionary(n => n, n => n.WithoutAllTrivia());
+            newNode = newNode.ReplaceNodes(nodes, (o, _) => newNodes[o]);
+            newNode = newNode.WithAdditionalAnnotations(Formatter.Annotation);
+            return newNode;
+        }
+
+        public static SyntaxToken WithoutTrivia(this SyntaxToken token)
+        {
+            var trivia = token.GetAllTrivia();
+            var newToken = token.ReplaceTrivia(trivia, (o, _) => default(SyntaxTrivia));
+            return newToken;
+        }
+
+        private static readonly SyntaxTokenList publicToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+        private static readonly SyntaxTokenList privateToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+        private static readonly SyntaxTokenList protectedToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+        private static readonly SyntaxTokenList protectedInternalToken = SyntaxFactory.TokenList(
+            SyntaxFactory.Token(SyntaxKind.ProtectedKeyword), SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+        private static readonly SyntaxTokenList internalToken = SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+        public static SyntaxTokenList GetTokens(this Accessibility accessibility)
+        {
+            switch (accessibility)
+            {
+                case Accessibility.Public:
+                    return publicToken;
+                case Accessibility.Private:
+                    return privateToken;
+                case Accessibility.Protected:
+                    return protectedToken;
+                case Accessibility.Internal:
+                    return internalToken;
+                case Accessibility.ProtectedAndInternal:
+                    return protectedInternalToken;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+        public static TypeDeclarationSyntax WithMembers(this TypeDeclarationSyntax typeDeclarationSyntax, SyntaxList<MemberDeclarationSyntax> members)
+        {
+            if (typeDeclarationSyntax is ClassDeclarationSyntax)
+            {
+                return (typeDeclarationSyntax as ClassDeclarationSyntax).WithMembers(members);
+            }
+            else if (typeDeclarationSyntax is StructDeclarationSyntax)
+            {
+                return (typeDeclarationSyntax as StructDeclarationSyntax).WithMembers(members);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// According to the C# Language Spec, item 6.4
+        /// See <a href="https://github.com/ljw1004/csharpspec/blob/master/csharp/conversions.md#implicit-numeric-conversions">online</a>.
+        /// </summary>
+        /// <param name="from">The type to convert from</param>
+        /// <param name="to">The type to convert to</param>
+        public static bool HasImplicitNumericConversion(this ITypeSymbol from, ITypeSymbol to)
+        {
+            if (from == null || to == null) return false;
+            switch (from.SpecialType)
+            {
+                case SpecialType.System_SByte:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_SByte:
+                        case SpecialType.System_Int16:
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Byte:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Byte:
+                        case SpecialType.System_Int16:
+                        case SpecialType.System_UInt16:
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_UInt32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Int16:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Int16:
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_UInt16:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_UInt32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Int32:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_UInt32:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_UInt32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Int64:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_UInt64:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Char:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_UInt16:
+                        case SpecialType.System_Int32:
+                        case SpecialType.System_UInt32:
+                        case SpecialType.System_Int64:
+                        case SpecialType.System_UInt64:
+                        case SpecialType.System_Char:
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                        case SpecialType.System_Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case SpecialType.System_Single:
+                    switch (to.SpecialType)
+                    {
+                        case SpecialType.System_Single:
+                        case SpecialType.System_Double:
+                            return true;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+
+        public static string FindAvailableIdentifierName(this SemanticModel semanticModel, int position, string baseName)
+        {
+            var name = baseName;
+            var inscrementer = 1;
+            while (semanticModel.LookupSymbols(position, name: name).Any())
+                name = baseName + inscrementer++;
+            return name;
+        }
     }
 }

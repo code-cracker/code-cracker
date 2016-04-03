@@ -985,5 +985,99 @@ class Bar
 }";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task IgnoreInStructs()
+        {
+            const string source = @"
+struct Foo
+{
+    private int x;
+
+    public void M(int x)
+    {
+        this.x = x;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task ReportInStructs()
+        {
+            const string source = @"
+struct Foo
+{
+    public void M()
+    {
+        N();
+    }
+    public static void N() { }
+}";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.MakeMethodStatic.ToDiagnosticId(),
+                Message = string.Format(MakeMethodStaticAnalyzer.MessageFormat, "M"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task IgnoreForGetEnumerator()
+        {
+            const string source = @"
+class Foo
+{
+    public System.Collections.IEnumerator GetEnumerator()
+    {
+        yield return 1;
+        yield return 2;
+    }
+}";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task ReportForGetEnumeratorNotReturningIEnumerator()
+        {
+            const string source = @"
+class Foo
+{
+    public void GetEnumerator()
+    {
+        N();
+    }
+
+    public static void N() { }
+}";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.MakeMethodStatic.ToDiagnosticId(),
+                Message = string.Format(MakeMethodStaticAnalyzer.MessageFormat, "GetEnumerator"),
+                Severity = DiagnosticSeverity.Warning,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task IgnoreMethodsWithRoutedEventArgs()
+        {
+            const string source = @"
+public class MainWindow
+{
+    void Window_Loaded(object sender, System.Windows.RoutedEventArgs e)
+    {
+    }
+}
+namespace System.Windows
+{
+    public class RoutedEventArgs : System.EventArgs { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }

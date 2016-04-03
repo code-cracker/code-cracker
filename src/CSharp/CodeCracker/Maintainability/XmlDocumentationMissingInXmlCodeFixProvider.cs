@@ -1,19 +1,22 @@
-﻿using System.Composition;
-using System.Linq;
-using System.Threading.Tasks;
-using CodeCracker.Properties;
+﻿using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Immutable;
+using System.Composition;
+using System.Linq;
+using System.Threading.Tasks;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxKind;
 
 namespace CodeCracker.CSharp.Maintainability
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, nameof(XmlDocumentationCodeFixProvider)), Shared]
-    public sealed class XmlDocumentationCreateMissingParametersCodeFixProvider : XmlDocumentationCodeFixProvider
+    public sealed class XmlDocumentationMissingInXmlCodeFixProvider : XmlDocumentationCodeFixProvider
     {
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.XmlDocumentation_MissingInXml.ToDiagnosticId());
+
         private const string WHITESPACE = @" ";
 
         public override SyntaxNode FixParameters(MethodDeclarationSyntax method, SyntaxNode root)
@@ -23,7 +26,7 @@ namespace CodeCracker.CSharp.Maintainability
             var methodParameterWithDocParameter = GetMethodParametersWithDocParameters(method, documentationNode);
 
             var newFormation = newDocumentationNode.Content.OfType<XmlElementSyntax>();
-            
+
             var nodesToAdd = methodParameterWithDocParameter.Where(p => p.Item2 == null)
                                 .Select(x => CreateParamenterXmlDocumentation(x.Item1.Identifier.ValueText, method.Identifier.ValueText))
                                 .Union(newFormation)
@@ -83,11 +86,8 @@ namespace CodeCracker.CSharp.Maintainability
         public override sealed Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            if (diagnostic.Properties["kind"] == "missingDoc")
-                context.RegisterCodeFix(CodeAction.Create(Resources.XmlDocumentationCreateMissingParametersCodeFixProvider_Title, c => FixParametersAsync(context.Document, diagnostic, c)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create(Resources.XmlDocumentationCreateMissingParametersCodeFixProvider_Title, c => FixParametersAsync(context.Document, diagnostic, c)), diagnostic);
             return Task.FromResult(0);
         }
     }
-
-
 }

@@ -49,8 +49,8 @@ Namespace Style
                 EnsureNothingAsType(semanticModel, type, typeSyntax)
 
             Dim leadingTrivia = ifBlock.GetLeadingTrivia()
-            leadingTrivia = leadingTrivia.InsertRange(leadingTrivia.Count - 1, ifReturn.GetLeadingTrivia().Where(Function(trivia) trivia.IsKind(SyntaxKind.CommentTrivia)))
-            leadingTrivia = leadingTrivia.InsertRange(leadingTrivia.Count - 1, elseReturn.GetLeadingTrivia().Where(Function(trivia) trivia.IsKind(SyntaxKind.CommentTrivia)))
+            leadingTrivia = leadingTrivia.InsertRange(leadingTrivia.Count - 1, ifReturn.GetLeadingTrivia())
+            leadingTrivia = leadingTrivia.InsertRange(leadingTrivia.Count - 1, elseReturn.GetLeadingTrivia())
 
             Dim trailingTrivia = ifBlock.GetTrailingTrivia.
                 InsertRange(0, elseReturn.GetTrailingTrivia().Where(Function(trivia) Not trivia.IsKind(SyntaxKind.EndOfLineTrivia))).
@@ -62,7 +62,8 @@ Namespace Style
 
             Dim returnStatement = SyntaxFactory.ReturnStatement(ternary).
                 WithLeadingTrivia(leadingTrivia).
-                WithTrailingTrivia(trailingTrivia)
+                WithTrailingTrivia(trailingTrivia).
+                WithAdditionalAnnotations(Formatter.Annotation)
 
             Dim newRoot = root.ReplaceNode(ifBlock, returnStatement)
             Dim newDocument = document.WithSyntaxRoot(newRoot)
@@ -111,6 +112,15 @@ Namespace Style
                 EnsureNothingAsType(semanticModel, type, typeSyntax).
                 ConvertToBaseType(elseType, type)
 
+            If ifAssign.OperatorToken.Text <> "=" Then
+                trueExpression = ifAssign.Right.
+                EnsureNothingAsType(semanticModel, type, typeSyntax).
+                ConvertToBaseType(ifType, type)
+
+                falseExpression = elseAssign.Right.
+                EnsureNothingAsType(semanticModel, type, typeSyntax).
+                ConvertToBaseType(elseType, type)
+            End If
 
             Dim leadingTrivia = ifBlock.GetLeadingTrivia.
                 AddRange(ifAssign.GetLeadingTrivia()).
@@ -122,13 +132,11 @@ Namespace Style
                 InsertRange(0, elseAssign.GetTrailingTrivia().Where(Function(trivia) Not trivia.IsKind(SyntaxKind.EndOfLineTrivia))).
                 InsertRange(0, ifAssign.GetTrailingTrivia().Where(Function(trivia) Not trivia.IsKind(SyntaxKind.EndOfLineTrivia)))
 
-
             Dim ternary = SyntaxFactory.TernaryConditionalExpression(ifBlock.IfStatement.Condition.WithoutTrailingTrivia(),
                                                                      trueExpression.WithoutTrailingTrivia(),
-                                                                     falseExpression.WithoutTrailingTrivia()).
-                                                                     WithAdditionalAnnotations(Formatter.Annotation)
+                                                                     falseExpression.WithoutTrailingTrivia())
 
-            Dim assignment = SyntaxFactory.SimpleAssignmentStatement(ifAssign.Left.WithLeadingTrivia(leadingTrivia), ternary).
+            Dim assignment = SyntaxFactory.SimpleAssignmentStatement(ifAssign.Left.WithLeadingTrivia(leadingTrivia), ifAssign.OperatorToken, ternary).
                 WithTrailingTrivia(trailingTrivia).
                 WithAdditionalAnnotations(Formatter.Annotation)
 

@@ -32,6 +32,20 @@
         }}
     }}";
         }
+
+        public static string WrapInVBClass(this string code,
+            string typeName = "TypeName",
+            string imports = "")
+        {
+            return $@"
+Imports System{imports}
+Namespace ConsoleApplication1
+    Class {typeName}
+        {code}
+    End Class
+End Namespace";
+        }
+
         public static string WrapInVBMethod(this string code,
             bool isAsync = false,
             string typeName = "TypeName",

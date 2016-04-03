@@ -18,7 +18,6 @@
         TernaryOperator_Return = 13,
         TernaryOperator_Assignment = 14,
         UnnecessaryParenthesis = 15,
-        CopyEventToVariableBeforeFire = 16,
         SwitchToAutoProp = 17,
         ExistenceOperator = 18,
         ConvertToSwitch = 19,
@@ -78,17 +77,18 @@
         UseStringEmpty = 84,
         UseEmptyString = 88,
         RemoveRedundantElseClause = 89,
-        XmlDocumentation = 90,
+        XmlDocumentation_MissingInCSharp = 90,
         MakeMethodStatic = 91,
         ChangeAllToAny = 92,
         SealMember = 94,
         ConsoleWriteLine = 95,
         ExtractClassToFile = 96,
+        XmlDocumentation_MissingInXml = 97,
         ChangeCountMethodToProperty = 98,
         PreferAnyToCountGreaterThanZero = 99,
         AlwaysUseVarOnPrimitives = 105,
         NameOf_External = 108,
         InconsistentParameterDefaultValue = 110,
         StringFormatArgs_ExtraArgs = 111
-        }
+    }
 }

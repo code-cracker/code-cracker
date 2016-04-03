@@ -40,13 +40,21 @@ namespace CodeCracker.CSharp.Usage
             var ctor = (ConstructorDeclarationSyntax)context.Node;
             if (ctor.Body == null) return;
             var methodInvocations = ctor.Body.DescendantNodes().OfType<InvocationExpressionSyntax>();
-            foreach (var method in methodInvocations)
+            var semanticModel = context.SemanticModel;
+            foreach (var invocation in methodInvocations)
             {
-                var identifier = method.Expression as IdentifierNameSyntax;
-                if (identifier == null && !method.ToString().StartsWith("this")) return;
-                var methodDeclaration = context.SemanticModel.GetSymbolInfo(method).Symbol;
-                if (methodDeclaration == null || !methodDeclaration.IsVirtual) return;
-                var diagnostic = Diagnostic.Create(Rule, method.GetLocation());
+                var identifier = invocation.Expression as IdentifierNameSyntax;
+                if (identifier == null)
+                {
+                    if (!invocation.ToString().StartsWith("this.")) return;
+                }
+                else
+                {
+                    if (semanticModel.GetSymbolInfo(identifier).Symbol is IParameterSymbol) return;
+                }
+                var methodSymbol = semanticModel.GetSymbolInfo(invocation).Symbol;
+                if (methodSymbol == null || !methodSymbol.IsVirtual) return;
+                var diagnostic = Diagnostic.Create(Rule, invocation.GetLocation());
                 context.ReportDiagnostic(diagnostic);
             }
         }

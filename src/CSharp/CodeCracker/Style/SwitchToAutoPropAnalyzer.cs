@@ -56,13 +56,13 @@ namespace CodeCracker.CSharp.Style
                 ((MemberAccessExpressionSyntax)getterReturn.Expression).Expression is ThisExpressionSyntax ? ((MemberAccessExpressionSyntax)getterReturn.Expression).Name : getterReturn.Expression) as IdentifierNameSyntax;
             if (returnIdentifier == null) return;
             var semanticModel = context.SemanticModel;
-            var returnIdentifierSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
-            if (returnIdentifierSymbol == null) return;
+            var fieldSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
+            if (fieldSymbol == null) return;
             var assignmentLeftIdentifier = (setterAssignmentExpression.Left is MemberAccessExpressionSyntax &&
                 ((MemberAccessExpressionSyntax)setterAssignmentExpression.Left).Expression is ThisExpressionSyntax ? ((MemberAccessExpressionSyntax)setterAssignmentExpression.Left).Name : setterAssignmentExpression.Left) as IdentifierNameSyntax;
             if (assignmentLeftIdentifier == null) return;
             var assignmentLeftIdentifierSymbol = semanticModel.GetSymbolInfo(assignmentLeftIdentifier).Symbol;
-            if (!assignmentLeftIdentifierSymbol.Equals(returnIdentifierSymbol)) return;
+            if (!assignmentLeftIdentifierSymbol.Equals(fieldSymbol)) return;
             var assignmentRightIdentifier = setterAssignmentExpression.Right as IdentifierNameSyntax;
             if (assignmentRightIdentifier == null) return;
             if (assignmentRightIdentifier.Identifier.Text != "value") return;

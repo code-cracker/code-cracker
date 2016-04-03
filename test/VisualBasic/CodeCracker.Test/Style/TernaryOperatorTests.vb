@@ -1,11 +1,13 @@
 ﻿Imports CodeCracker.VisualBasic.Style
 Imports Xunit
 
-Public Class TernaryOperatorWithAssignmentTests
-    Inherits CodeFixVerifier(Of TernaryOperatorAnalyzer, TernaryOperatorWithAssignmentCodeFixProvider)
+Namespace Style
+    Public Class TernaryOperatorWithAssignmentTests
+        Inherits CodeFixVerifier(Of TernaryOperatorAnalyzer, TernaryOperatorWithAssignmentCodeFixProvider)
 
-    Public Async Function WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic() As Task
-        Const sourceWithoutElse = "
+        <Fact>
+        Public Async Function WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic() As Task
+            Const sourceWithoutElse = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Sub Foo()
@@ -17,12 +19,12 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithoutElse)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithoutElse)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Sub Foo()
@@ -37,12 +39,12 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Sub Foo()
@@ -57,12 +59,12 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfWithElseButWithoutReturnOnElseDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfWithElseButWithoutReturnOnElseDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Sub Foo()
@@ -77,12 +79,12 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfWithElseButIfBlockWithoutReturnDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfWithElseButIfBlockWithoutReturnDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Sub Foo()
@@ -97,12 +99,12 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIElseIfDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIElseIfDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Sub Foo()
@@ -117,12 +119,12 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfElseIfElseDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfElseIfElseDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Sub Foo()
@@ -137,21 +139,21 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic() As Task
-        Dim expected As New DiagnosticResult With {
-            .Id = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
-            .Message = "You can use a ternary operator.",
-            .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-            .Locations = {New DiagnosticResultLocation("Test0.vb", 8, 13)}
-            }
-        Await VerifyBasicDiagnosticAsync(sourceAssign, expected)
-    End Function
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic() As Task
+            Dim expected As New DiagnosticResult With {
+                .Id = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
+                .Message = "You can use a ternary operator.",
+                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
+                .Locations = {New DiagnosticResultLocation("Test0.vb", 8, 13)}
+                }
+            Await VerifyBasicDiagnosticAsync(sourceAssign, expected)
+        End Function
 
-    Private Const sourceAssign = "
+        Private Const sourceAssign = "
 Imports System
 Namespace ConsoleApplication1
     Class MyType
@@ -167,9 +169,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithAssignmentChangeToTernaryFix() As Task
-        Const fix = "
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithAssignmentChangeToTernaryFix() As Task
+            Const fix = "
 Imports System
 Namespace ConsoleApplication1
     Class MyType
@@ -180,12 +182,21 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicFixAsync(sourceAssign, fix)
-    End Function
+            Await VerifyBasicFixAsync(sourceAssign, fix)
+        End Function
+        Sub Foo()
+            Dim v As Boolean
+            If True Then
+                ' a comment
+                v = False
+            Else
+                v = True
+            End If
+        End Sub
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithAssignmentChangeToTernaryFixAll() As Task
-        Const fix = "
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithAssignmentChangeToTernaryFixAll() As Task
+            Const fix = "
 Imports System
 Namespace ConsoleApplication1
     Class MyType
@@ -196,12 +207,12 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicFixAllAsync(New String() {sourceAssign, sourceAssign.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
-    End Function
+            Await VerifyBasicFixAllAsync(New String() {sourceAssign, sourceAssign.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+        End Function
 
-    <Fact>
-    Public Async Function WhenTernaryWithObjectDoesApplyFix() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenTernaryWithObjectDoesApplyFix() As Task
+            Const source = "
 Class MyCustomer
     Public Property Value As String
 End Class
@@ -221,7 +232,7 @@ Class Tester
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Class MyCustomer
     Public Property Value As String
 End Class
@@ -237,13 +248,13 @@ Class Tester
     End Sub
 End Class"
 
-        Await VerifyBasicFixAsync(source, fix)
+            Await VerifyBasicFixAsync(source, fix)
 
-    End Function
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFix() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFix() As Task
+            Const source = "
 Public Class MyType
     Public Sub Foo()
         Dim a As Integer?
@@ -255,7 +266,7 @@ Public Class MyType
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Public Class MyType
     Public Sub Foo()
         Dim a As Integer?
@@ -263,13 +274,13 @@ Public Class MyType
     End Sub
 End Class"
 
-        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
-        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
-    End Function
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
 
-    <Fact>
-    Public Async Function FixConsidersBaseTypeAssignent() As Task
-        Const source = "
+        <Fact>
+        Public Async Function FixConsidersBaseTypeAssignent() As Task
+            Const source = "
 Public Class Base
 End Class
 Public Class B
@@ -286,7 +297,7 @@ Public Class MyType
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Public Class Base
 End Class
 Public Class B
@@ -299,38 +310,42 @@ Public Class MyType
     End Sub
 End Class"
 
-        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
-        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
-    End Function
-    <Fact>
-    Public Async Function WhenUsingCommentsConcatenateAtEndOfTernary() As Task
-        Const source = "
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
+        <Fact>
+        Public Async Function WhenUsingCommentsConcatenateAtEndOfTernary() As Task
+            Const source = "
 Public Class MyType
     Public Sub Foo()
         Dim a As Integer
         If True Then
+            ' a
             a = 1 ' One Thing
         Else
+            ' b
             a = 2 ' Another
         End If
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Public Class MyType
     Public Sub Foo()
         Dim a As Integer
+        ' a
+        ' b
         a = If(True, 1, 2) ' One Thing ' Another
     End Sub
 End Class"
 
-        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
-        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
-    End Function
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFixAll() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithNullableValueTypeAssignmentChangeToTernaryFixAll() As Task
+            Const source = "
 Public Class MyType
     Public Sub Foo()
         Dim a As Integer?
@@ -342,7 +357,7 @@ Public Class MyType
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Public Class MyType
     Public Sub Foo()
         Dim a As Integer?
@@ -350,24 +365,24 @@ Public Class MyType
     End Sub
 End Class"
 
-        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
-    End Function
+            Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingConcatenationAssignmentExpandsToConcatenateAtEndOfTernary() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingConcatenationAssignmentExpandsToConcatenateAtEndOfTernary() As Task
+            Const source = "
 Public Class MyType
     Public Sub Foo()
         Dim x = ""test""
         If True Then
-            x = ""1"" 
+            x = ""1""
         Else
             x &= ""2""
         End If
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Public Class MyType
     Public Sub Foo()
         Dim x = ""test""
@@ -375,14 +390,14 @@ Public Class MyType
     End Sub
 End Class"
 
-        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
-        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
-    End Function
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
 
 
-    <Fact>
-    Public Async Function WhenUsingAddAssiginmentExpandsOperationProperly() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingAddAssiginmentExpandsOperationProperly() As Task
+            Const source = "
 Public Class MyType
     Public Sub Foo()
         Dim x = 0
@@ -394,7 +409,7 @@ Public Class MyType
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Public Class MyType
     Public Sub Foo()
         Dim x = 0
@@ -402,13 +417,13 @@ Public Class MyType
     End Sub
 End Class"
 
-        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
-        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
-    End Function
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingSubtractAssiginmentExpandsOperationProperly() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingSubtractAssiginmentExpandsOperationProperly() As Task
+            Const source = "
 Public Class MyType
     Public Sub Foo()
         Dim x = 0
@@ -420,7 +435,7 @@ Public Class MyType
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Public Class MyType
     Public Sub Foo()
         Dim x = 0
@@ -428,20 +443,46 @@ Public Class MyType
     End Sub
 End Class"
 
-        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
-        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
-    End Function
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
 
+        <Fact>
+        Public Async Function WhenUsingAssignmentOperatorReturnSameAssignment() As Task
+            Const source = "
+Class MyType
+    Public Sub x2()
+            Dim output As String = String.Empty
+            Dim test As Boolean
+            test = True
+            If test Then
+                output += ""True""
+            Else
+                output += ""False""
+            End If
+        End Sub
+End Class"
 
+            Const fix = "
+Class MyType
+    Public Sub x2()
+            Dim output As String = String.Empty
+            Dim test As Boolean
+            test = True
+        output += If(test, ""True"", ""False"")
+        End Sub
+End Class"
 
-End Class
+            Await VerifyBasicFixAsync(source, fix, formatBeforeCompare:=True)
+        End Function
+    End Class
 
-Public Class TernaryOperatorWithReturnTests
-    Inherits CodeFixVerifier(Of TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider)
+    Public Class TernaryOperatorWithReturnTests
+        Inherits CodeFixVerifier(Of TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider)
 
-    <Fact>
-    Public Async Function WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic() As Task
-        Const sourceWithoutElse = "
+        <Fact>
+        Public Async Function WhenUsingIfWithoutElseAnalyzerDoesNotCreateDiagnostic() As Task
+            Const sourceWithoutElse = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Function Foo() As Integer
@@ -452,12 +493,12 @@ Namespace ConsoleApplication1
         End Function
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithoutElse)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithoutElse)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfWithElseButWithBlockWith2StatementsOnIfAnalyzerDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Function Foo() As Integer
@@ -471,12 +512,12 @@ Namespace ConsoleApplication1
         End Function
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfWithElseButWithBlockWith2StatementsOnElseAnalyzerDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Function Foo() As Integer
@@ -490,12 +531,12 @@ Namespace ConsoleApplication1
         End Function
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfWithElseButWithoutReturnOnElseDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfWithElseButWithoutReturnOnElseDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Function Foo() As Integer
@@ -508,12 +549,12 @@ Namespace ConsoleApplication1
         End Function
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfWithElseButIfBlockWithoutReturnDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfWithElseButIfBlockWithoutReturnDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Function Foo() As Integer
@@ -526,12 +567,12 @@ Namespace ConsoleApplication1
         End Function
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIElseIfDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIElseIfDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Function Foo() As Integer
@@ -545,13 +586,13 @@ Namespace ConsoleApplication1
         End Function
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFix() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFix() As Task
+            Const source = "
 Public Class MyType
     Public Function Foo() As Integer?
         If True Then
@@ -562,20 +603,20 @@ Public Class MyType
     End Function
 End Class"
 
-        Const fix = "
+            Const fix = "
 Public Class MyType
     Public Function Foo() As Integer?
         Return If(True, 1, DirectCast(Nothing, Integer?))
     End Function
 End Class"
 
-        ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
-        Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
-    End Function
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfElseIfElseDoesNotCreate() As Task
-        Const sourceWithMultipleStatements = "
+        <Fact>
+        Public Async Function WhenUsingIfElseIfElseDoesNotCreate() As Task
+            Const sourceWithMultipleStatements = "
 Namespace ConsoleApplication1
     Class TypeName
         Public Sub Foo()
@@ -589,13 +630,13 @@ Namespace ConsoleApplication1
         End Sub
     End Class
 End Namespace"
-        Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(sourceWithMultipleStatements)
+        End Function
 
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFixAll() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithNullableValueTypeDirectReturnChangeToTernaryFixAll() As Task
+            Const source = "
 Public Class MyType
     Public Function Foo() As Integer?
         If True Then
@@ -606,17 +647,17 @@ Public Class MyType
     End Function
 End Class"
 
-        Const fix = "
+            Const fix = "
 Public Class MyType
     Public Function Foo() As Integer?
         Return If(True, 1, DirectCast(Nothing, Integer?))
     End Function
 End Class"
 
-        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
-    End Function
+            Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+        End Function
 
-    Private Const sourceReturn = "
+        Private Const sourceReturn = "
 Namespace ConsoleApplication1
     Class MyType
         Public Function Foo() As Integer
@@ -630,20 +671,20 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic() As Task
-        Dim expected As New DiagnosticResult With {
-            .Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
-            .Message = "You can use a ternary operator.",
-            .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-            .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 13)}
-            }
-        Await VerifyBasicDiagnosticAsync(sourceReturn, expected)
-    End Function
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic() As Task
+            Dim expected As New DiagnosticResult With {
+                .Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
+                .Message = "You can use a ternary operator.",
+                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
+                .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 13)}
+                }
+            Await VerifyBasicDiagnosticAsync(sourceReturn, expected)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithDirectReturnCreatesFix() As Task
-        Const fix = "
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithDirectReturnCreatesFix() As Task
+            Const fix = "
 Namespace ConsoleApplication1
     Class MyType
         Public Function Foo() As Integer
@@ -653,12 +694,12 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-        Await VerifyBasicFixAsync(sourceReturn, fix)
-    End Function
+            Await VerifyBasicFixAsync(sourceReturn, fix)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIfAndElseWithDirectReturnCreatesFixAll() As Task
-        Const fix = "
+        <Fact>
+        Public Async Function WhenUsingIfAndElseWithDirectReturnCreatesFixAll() As Task
+            Const fix = "
 Namespace ConsoleApplication1
     Class MyType
         Public Function Foo() As Integer
@@ -668,17 +709,125 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-        Await VerifyBasicFixAllAsync(New String() {sourceReturn, sourceReturn.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
-    End Function
+            Await VerifyBasicFixAllAsync(New String() {sourceReturn, sourceReturn.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+        End Function
 
-End Class
+        <Fact>
+        Public Async Function FixWhenThereIsNumericImplicitConversion() As Task
+            Dim source = "
+Function OnReturn() As Double
+    Dim condition = True
+    Dim aDouble As Double = 2
+    Dim bInteger = 3
+    If condition Then
+        Return aDouble
+    Else
+        Return bInteger
+    End If
+End Function".WrapInVBClass()
+            Dim fix = "
+Function OnReturn() As Double
+    Dim condition = True
+    Dim aDouble As Double = 2
+    Dim bInteger = 3
+    Return If(condition, aDouble, bInteger)
+End Function".WrapInVBClass()
+            Await VerifyBasicFixAsync(source, fix, formatBeforeCompare:=True)
+        End Function
 
-Public Class TernaryOperatorFromIifTests
-    Inherits CodeFixVerifier(Of TernaryOperatorAnalyzer, TernaryOperatorFromIifCodeFixProvider)
+        <Fact>
+        Public Async Function FixWhenThereIsEnumImplicitConversionToNumeric() As Task
+            Dim source = "
+Enum Values
+    Value
+End Enum
+Function OnReturn() As Double
+    Dim condition = True
+    Dim anEnum As Values = Values.Value
+    Dim bInteger = 3
+    If condition Then
+        Return anEnum
+    Else
+        Return bInteger
+    End If
+End Function".WrapInVBClass()
+            Dim fix = "
+Enum Values
+    Value
+End Enum
+Function OnReturn() As Double
+    Dim condition = True
+    Dim anEnum As Values = Values.Value
+    Dim bInteger = 3
+    Return If(condition, anEnum, bInteger)
+End Function".WrapInVBClass()
+            Await VerifyBasicFixAsync(source, fix, formatBeforeCompare:=True)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIifAndSimpleAssignmentCreatesFix() As Task
-        Const source = "
+        <Fact>
+        Public Async Function FixCanWorkWithCommentsOnIf() As Task
+            Const source = "
+Function s() As Boolean
+    If True Then
+        ' a comment
+        Return False 'b comment
+    Else
+        Return True
+    End If
+End Function"
+            Const fix = "
+Function s() As Boolean
+    ' a comment
+    Return If(True, False, True) 'b comment
+End Function"
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        Public Async Function FixCanWorkWithCommentsOnElse() As Task
+            Const source = "
+Function s() As Boolean
+    If True Then
+        Return False
+    Else
+        ' a comment
+        Return True 'b comment
+    End If
+End Function"
+            Const fix = "
+Function s() As Boolean
+    ' a comment
+    Return If(True, False, True) 'b comment
+End Function"
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+
+        Public Async Function FixCanWorkWithCommentsOnIfAndElse() As Task
+            Const source = "
+Function s() As Boolean
+    If True Then
+        ' a comment
+        Return False 'b comment
+    Else
+        ' c comment
+        Return True 'd comment
+    End If
+End Function"
+            Const fix = "
+Function s() As Boolean
+    ' a comment
+    ' c comment
+    Return If(True, False, True) 'b comment 'd comment
+End Function"
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
+    End Class
+
+    Public Class TernaryOperatorFromIifTests
+        Inherits CodeFixVerifier(Of TernaryOperatorAnalyzer, TernaryOperatorFromIifCodeFixProvider)
+
+        <Fact>
+        Public Async Function WhenUsingIifAndSimpleAssignmentCreatesFix() As Task
+            Const source = "
 Class TypeName
     Public Sub Foo()
         Dim x = 1
@@ -686,7 +835,7 @@ Class TypeName
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Class TypeName
     Public Sub Foo()
         Dim x = 1
@@ -694,12 +843,12 @@ Class TypeName
     End Sub
 End Class"
 
-        Await VerifyBasicFixAsync(source, fix)
-    End Function
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIifAndSimpleAssignmentCreatesFixAll() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingIifAndSimpleAssignmentCreatesFixAll() As Task
+            Const source = "
 Class MyType
     Public Sub Foo()
         Dim x = 1
@@ -707,7 +856,7 @@ Class MyType
     End Sub
 End Class"
 
-        Const fix = "
+            Const fix = "
 Class MyType
     Public Sub Foo()
         Dim x = 1
@@ -715,12 +864,12 @@ Class MyType
     End Sub
 End Class"
 
-        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
-    End Function
+            Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIifAndReturnCreatesFix() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingIifAndReturnCreatesFix() As Task
+            Const source = "
 Class MyType
     Public Function Foo() As Integer
         Dim x = 1
@@ -728,7 +877,7 @@ Class MyType
     End Function
 End Class"
 
-        Const fix = "
+            Const fix = "
 Class MyType
     Public Function Foo() As Integer
         Dim x = 1
@@ -736,20 +885,20 @@ Class MyType
     End Function
 End Class"
 
-        Dim expected As New DiagnosticResult With {
-            .Id = DiagnosticId.TernaryOperator_Iif.ToDiagnosticId(),
-            .Message = "You can use a ternary operator.",
-            .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-            .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 16)}
-            }
+            Dim expected As New DiagnosticResult With {
+                .Id = DiagnosticId.TernaryOperator_Iif.ToDiagnosticId(),
+                .Message = "You can use a ternary operator.",
+                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
+                .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 16)}
+                }
 
-        Await VerifyBasicDiagnosticAsync(source, expected)
-        Await VerifyBasicFixAsync(source, fix)
-    End Function
+            Await VerifyBasicDiagnosticAsync(source, expected)
+            Await VerifyBasicFixAsync(source, fix)
+        End Function
 
-    <Fact>
-    Public Async Function WhenUsingIifAndReturnCreatesFixAll() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenUsingIifAndReturnCreatesFixAll() As Task
+            Const source = "
 Class MyType
     Public Function Foo() As Integer
         Dim x = 1
@@ -757,7 +906,7 @@ Class MyType
     End Function
 End Class"
 
-        Const fix = "
+            Const fix = "
 Class MyType
     Public Function Foo() As Integer
         Dim x = 1
@@ -765,46 +914,44 @@ Class MyType
     End Function
 End Class"
 
-        Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
-    End Function
+            Await VerifyBasicFixAllAsync(New String() {source, source.Replace("MyType", "MyType1")}, New String() {fix, fix.Replace("MyType", "MyType1")})
+        End Function
 
-    <Fact>
-    Public Async Function WhenNotUsingIifDoesNotCreateAnalyzer() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenNotUsingIifDoesNotCreateAnalyzer() As Task
+            Const source = "
 Class TypeName
     Public Sub Foo()
         Dim x = 1
     End Sub
 End Class"
 
-        Await VerifyBasicHasNoDiagnosticsAsync(source)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
 
-    <Fact>
-    Public Async Function WhenIifWithTooManyParametersDoesNotCreateAnalyzer() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenIifWithTooManyParametersDoesNotCreateAnalyzer() As Task
+            Const source = "
 Class TypeName
     Public Sub Foo()
         Dim x = Iif(true, 1, 2, 3)
     End Sub
 End Class"
 
-        Await VerifyBasicHasNoDiagnosticsAsync(source)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
 
-    <Fact>
-    Public Async Function WhenIifWithTooFewParametersDoesNotCreateAnalyzer() As Task
-        Const source = "
+        <Fact>
+        Public Async Function WhenIifWithTooFewParametersDoesNotCreateAnalyzer() As Task
+            Const source = "
 Class TypeName
     Public Sub Foo()
         Dim x = Iif(true, 1)
     End Sub
 End Class"
 
-        Await VerifyBasicHasNoDiagnosticsAsync(source)
-    End Function
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
 
-
-
-End Class
-
+    End Class
+End Namespace
