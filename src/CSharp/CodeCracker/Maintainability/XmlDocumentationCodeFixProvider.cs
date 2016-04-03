@@ -12,8 +12,6 @@ namespace CodeCracker.CSharp.Maintainability
 {
     public abstract class XmlDocumentationCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.XmlDocumentation.ToDiagnosticId());
-
         public abstract SyntaxNode FixParameters(MethodDeclarationSyntax method, SyntaxNode root);
 
         protected async Task<Document> FixParametersAsync(Document document, Diagnostic diagnostic, CancellationToken c)
