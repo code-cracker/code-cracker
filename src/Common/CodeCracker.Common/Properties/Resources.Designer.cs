@@ -454,6 +454,15 @@ namespace CodeCracker.Properties {
         public static string PreferAnyToCountGreaterThanZeroAnalyzer_MessageFormat {
             get {
                 return ResourceManager.GetString("PreferAnyToCountGreaterThanZeroAnalyzer_MessageFormat", resourceCulture);
+			}
+        }
+		
+		/// <summary>
+        ///   Looks up a localized string similar to Create static PropertyChangedEventArgs instance and reuse.
+        /// </summary>
+        public static string PropertyChangedEventArgsUnnecessaryAllocation_CodeActionTitle {
+            get {
+                return ResourceManager.GetString("PropertyChangedEventArgsUnnecessaryAllocation_CodeActionTitle", resourceCulture);
             }
         }
         
@@ -465,6 +474,15 @@ namespace CodeCracker.Properties {
                 return ResourceManager.GetString("PreferAnyToCountGreaterThanZeroAnalyzer_Title", resourceCulture);
             }
         }
+		
+		/// <summary>
+        ///   Looks up a localized string similar to Creating every time an instance of PropertyChangedEventArgs class causes unnecessary memory allocation. Instance can be created once and reused..
+        /// </summary>
+        public static string PropertyChangedEventArgsUnnecessaryAllocation_Description {
+            get {
+                return ResourceManager.GetString("PropertyChangedEventArgsUnnecessaryAllocation_Description", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Remove async and return task directly..
@@ -472,6 +490,14 @@ namespace CodeCracker.Properties {
         public static string ReturnTaskInsteadOfAwait_Description {
             get {
                 return ResourceManager.GetString("ReturnTaskInsteadOfAwait_Description", resourceCulture);
+            }
+        }				
+		/// <summary>		
+        ///   Looks up a localized string similar to Create PropertyChangedEventArgs static instance and reuse it to avoid unecessary memory allocation..
+        /// </summary>
+        public static string PropertyChangedEventArgsUnnecessaryAllocation_MessageFormat {
+            get {
+                return ResourceManager.GetString("PropertyChangedEventArgsUnnecessaryAllocation_MessageFormat", resourceCulture);
             }
         }
         
@@ -553,6 +579,15 @@ namespace CodeCracker.Properties {
         public static string SealMemberCodeFixProvider_MemberTitle {
             get {
                 return ResourceManager.GetString("SealMemberCodeFixProvider_MemberTitle", resourceCulture);
+			}
+        }
+		
+		/// <summary>
+        ///   Looks up a localized string similar to PropertyChangedEventArgs unnecessary allocation.
+        /// </summary>
+        public static string PropertyChangedEventArgsUnnecessaryAllocation_Title {
+            get {
+                return ResourceManager.GetString("PropertyChangedEventArgsUnnecessaryAllocation_Title", resourceCulture);
             }
         }
         

@@ -89,6 +89,7 @@
         AlwaysUseVarOnPrimitives = 105,
         NameOf_External = 108,
         InconsistentParameterDefaultValue = 110,
-        StringFormatArgs_ExtraArgs = 111
+        StringFormatArgs_ExtraArgs = 111,
+        PropertyChangedEventArgsUnnecessaryAllocation = 106
     }
 }
