@@ -777,5 +777,20 @@ class D : System.IDisposable
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task StaticFieldDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+static class TypeName
+{
+    private static D d = new D();
+}
+class D : System.IDisposable
+{
+    public void Dispose() { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }

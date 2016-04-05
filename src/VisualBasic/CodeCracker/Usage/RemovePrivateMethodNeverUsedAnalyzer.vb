@@ -38,11 +38,38 @@ Namespace Usage
             Dim methodStatement = DirectCast(context.Node, MethodStatementSyntax)
             If methodStatement.HandlesClause IsNot Nothing Then Exit Sub
             If Not methodStatement.Modifiers.Any(Function(a) a.ValueText = SyntaxFactory.Token(SyntaxKind.PrivateKeyword).ValueText) Then Exit Sub
+            If (IsMethodAttributeAnException(methodStatement)) Then Return
             If IsMethodUsed(methodStatement, context.SemanticModel) Then Exit Sub
             Dim props = New Dictionary(Of String, String) From {{"identifier", methodStatement.Identifier.Text}}.ToImmutableDictionary()
             Dim diag = Diagnostic.Create(Rule, methodStatement.GetLocation(), props)
             context.ReportDiagnostic(diag)
         End Sub
+
+        Private Function IsMethodAttributeAnException(methodStatement As MethodStatementSyntax) As Boolean
+            For Each attributeList In methodStatement.AttributeLists
+                For Each attribute In attributeList.Attributes
+                    Dim identifierName = TryCast(attribute.Name, IdentifierNameSyntax)
+                    Dim nameText As String = Nothing
+                    If (identifierName IsNot Nothing) Then
+                        nameText = identifierName?.Identifier.Text
+                    Else
+                        Dim qualifiedName = TryCast(attribute.Name, QualifiedNameSyntax)
+                        If (qualifiedName IsNot Nothing) Then
+                            nameText = qualifiedName.Right?.Identifier.Text
+                        End If
+                    End If
+                    If (nameText Is Nothing) Then Continue For
+                    If (IsExcludedAttributeName(nameText)) Then Return True
+                Next
+            Next
+            Return False
+        End Function
+
+        Private Shared ReadOnly excludedAttributeNames As String() = {"Fact", "ContractInvariantMethod", "DataMember"}
+
+        Private Shared Function IsExcludedAttributeName(attributeName As String) As Boolean
+            Return excludedAttributeNames.Contains(attributeName)
+        End Function
 
         Private Function IsMethodUsed(methodTarget As MethodStatementSyntax, semanticModel As SemanticModel) As Boolean
             Dim typeDeclaration = TryCast(methodTarget.Parent.Parent, ClassBlockSyntax)

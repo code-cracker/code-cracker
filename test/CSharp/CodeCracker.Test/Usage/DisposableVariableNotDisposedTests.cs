@@ -73,6 +73,16 @@ public class CSharpClass
         }
 
         [Fact]
+        public async Task IgnoreWhenDisposedWithElvisOperator()
+        {
+            var source = @"
+var m = new System.IO.MemoryStream();
+m?.Dispose();
+".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task IgnoresDisposableObjectsCreatedDirectParentIsNotAnUsingStatement()
         {
             var source = "using (((new System.IO.MemoryStream()))) { }".WrapInCSharpMethod();
@@ -595,10 +605,10 @@ using (m = new System.IO.MemoryStream()) { }".WrapInCSharpMethod();
         public async Task FixADisposableDeclarationWithoutDisposeWithStatementsAfter()
         {
             var source = @"var m = new System.IO.MemoryStream();
-Console.WriteLine(m);".WrapInCSharpMethod();
+m.Flush();".WrapInCSharpMethod();
             var fixtest = @"using (var m = new System.IO.MemoryStream())
 {
-    Console.WriteLine(m);
+    m.Flush();
 }".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
@@ -609,14 +619,14 @@ Console.WriteLine(m);".WrapInCSharpMethod();
             var source = @"if (DateTime.Now.Second % 2 == 0)
 {
     var m = new System.IO.MemoryStream();
-    Console.WriteLine(m);
+    m.Flush();
 }
 Console.WriteLine(1);".WrapInCSharpMethod();
             var fixtest = @"if (DateTime.Now.Second % 2 == 0)
 {
     using (var m = new System.IO.MemoryStream())
     {
-        Console.WriteLine(m);
+        m.Flush();
     }
 }
 Console.WriteLine(1);".WrapInCSharpMethod();
@@ -682,11 +692,11 @@ using (m = new System.IO.MemoryStream())
         {
             var source = @"System.IO.MemoryStream m;
 m = new System.IO.MemoryStream();
-Console.WriteLine(m);".WrapInCSharpMethod();
+m.Flush();".WrapInCSharpMethod();
             var fixtest = @"System.IO.MemoryStream m;
 using (m = new System.IO.MemoryStream())
 {
-    Console.WriteLine(m);
+    m.Flush();
 }".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
         }
@@ -932,7 +942,7 @@ using (m = new System.IO.MemoryStream())
 {
     System.IO.MemoryStream m;
     m = new System.IO.MemoryStream();
-    Console.WriteLine(m);
+    m.Flush();
 }
 Console.WriteLine(1);".WrapInCSharpMethod();
             var fixtest = @"if (DateTime.Now.Second % 2 == 0)
@@ -940,7 +950,7 @@ Console.WriteLine(1);".WrapInCSharpMethod();
     System.IO.MemoryStream m;
     using (m = new System.IO.MemoryStream())
     {
-        Console.WriteLine(m);
+        m.Flush();
     }
 }
 Console.WriteLine(1);".WrapInCSharpMethod();
@@ -954,7 +964,7 @@ Console.WriteLine(1);".WrapInCSharpMethod();
 if (DateTime.Now.Second % 2 == 0)
 {
     m = new System.IO.MemoryStream();
-    Console.WriteLine(m);
+    m.Flush();
 }
 Console.WriteLine(1);".WrapInCSharpMethod();
             var fixtest = @"System.IO.MemoryStream m;
@@ -962,7 +972,7 @@ if (DateTime.Now.Second % 2 == 0)
 {
     using (m = new System.IO.MemoryStream())
     {
-        Console.WriteLine(m);
+        m.Flush();
     }
 }
 Console.WriteLine(1);".WrapInCSharpMethod();
@@ -976,7 +986,7 @@ Console.WriteLine(1);".WrapInCSharpMethod();
 if (DateTime.Now.Second % 2 == 0)
 {
     m = new System.IO.MemoryStream();
-    Console.WriteLine(m);
+    m.Flush();
 }
 m.Flush();
 Console.WriteLine(1);".WrapInCSharpMethod();
@@ -984,7 +994,7 @@ Console.WriteLine(1);".WrapInCSharpMethod();
 if (DateTime.Now.Second % 2 == 0)
 {
     m = new System.IO.MemoryStream();
-    Console.WriteLine(m);
+    m.Flush();
 }
 m.Flush();
 Console.WriteLine(1);
@@ -1005,7 +1015,7 @@ m.Dispose();".WrapInCSharpMethod();
                         if (DateTime.Now.Second % 2 == 0)
                         {
                             m = new Disposable();
-                            Console.WriteLine(m);
+                            m.Push();
                         }
                         m.Flush();
                         Console.WriteLine(1);
@@ -1015,6 +1025,7 @@ m.Dispose();".WrapInCSharpMethod();
                 {
                     void IDisposable.Dispose() { }
                     public void Flush() { }
+                    public void Push() { }
                 }
 ";
             const string fixtest = @"
@@ -1027,7 +1038,7 @@ m.Dispose();".WrapInCSharpMethod();
                         if (DateTime.Now.Second % 2 == 0)
                         {
                             m = new Disposable();
-                            Console.WriteLine(m);
+                            m.Push();
                         }
                         m.Flush();
                         Console.WriteLine(1);
@@ -1038,6 +1049,7 @@ m.Dispose();".WrapInCSharpMethod();
                 {
                     void IDisposable.Dispose() { }
                     public void Flush() { }
+                    public void Push() { }
                 }
 ";
             await VerifyCSharpFixAsync(source, fixtest);
@@ -1147,7 +1159,7 @@ using (var mem = new System.IO.MemoryStream())
                         if (DateTime.Now.Second % 2 == 0)
                         {
                             m = new Disposable();
-                            Console.WriteLine(m);
+                            m.Push();
                         }
                         m.Flush();
                         if (DateTime.Now.Second % 3 == 0)
@@ -1160,6 +1172,7 @@ using (var mem = new System.IO.MemoryStream())
                 {
                     void IDisposable.Dispose() { }
                     public void Flush() { }
+                    public void Push() { }
                 }
 ";
             const string fixtest = @"
@@ -1172,7 +1185,7 @@ using (var mem = new System.IO.MemoryStream())
                         if (DateTime.Now.Second % 2 == 0)
                         {
                             m = new Disposable();
-                            Console.WriteLine(m);
+                            m.Push();
                         }
                         m.Flush();
                         if (DateTime.Now.Second % 3 == 0)
@@ -1185,6 +1198,7 @@ using (var mem = new System.IO.MemoryStream())
                 {
                     void IDisposable.Dispose() { }
                     public void Flush() { }
+                    public void Push() { }
                 }
 ";
             await VerifyCSharpFixAsync(source, fixtest);
@@ -1205,7 +1219,7 @@ using (var mem = new System.IO.MemoryStream())
                             if (DateTime.Now.Second % 4 == 0)
                             {
                                 m = new Disposable();
-                                Console.WriteLine(m);
+                                m.Push();
                             }
                             m.Flush();
                         }
@@ -1219,6 +1233,7 @@ using (var mem = new System.IO.MemoryStream())
                 {
                     void IDisposable.Dispose() { }
                     public void Flush() { }
+                    public void Push() { }
                 }
 ";
             const string fixtest = @"
@@ -1233,7 +1248,7 @@ using (var mem = new System.IO.MemoryStream())
                             if (DateTime.Now.Second % 4 == 0)
                             {
                                 m = new Disposable();
-                                Console.WriteLine(m);
+                                m.Push();
                             }
                             m.Flush();
                         }
@@ -1247,6 +1262,7 @@ using (var mem = new System.IO.MemoryStream())
                 {
                     void IDisposable.Dispose() { }
                     public void Flush() { }
+                    public void Push() { }
                 }
 ";
             await VerifyCSharpFixAsync(source, fixtest);
@@ -1492,6 +1508,44 @@ class Foo
     }
 }";
             await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task IgnoreWhenPassedIntoMethod()
+        {
+            const string source = @"
+using System.IO;
+class Foo
+{
+    void Bar()
+    {
+        var m = new MemoryStream();
+        Baz(m);
+    }
+    void Baz(MemoryStream m) { }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoreWhenAssignedToField()
+        {
+            const string source = @"
+using System.IO;
+class HoldsDisposable
+{
+    public MemoryStream Ms { get; set; }
+}
+class Foo
+{
+    void Bar()
+    {
+        var m = new MemoryStream();
+        var h = new HoldsDisposable();
+        h.Ms = m;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }

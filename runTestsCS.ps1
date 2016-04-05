@@ -1,32 +1,19 @@
 param([String]$testClass)
-$Global:lastRun = $lastRun = [System.DateTime]::Now
 $testDllDirPath = "$PSScriptRoot\test\CSharp\CodeCracker.Test\bin\Debug\"
 $testDllFileName = "CodeCracker.Test.CSharp.dll"
-$Global:testDllFullFileName = "$testDllDirPath$testDllFileName"
-$Global:xunitConsole = "$PSScriptRoot\packages\xunit.runner.console.2.1.0\tools\xunit.console.x86.exe"
+$testDllFullFileName = "$testDllDirPath$testDllFileName"
+$xunitConsole = "$PSScriptRoot\packages\xunit.runner.console.2.1.0\tools\xunit.console.x86.exe"
 
-if ($testClass -eq "now"){
-    . $Global:xunitConsole "$Global:testDllFullFileName"
+if (!(gcm nodemon -ErrorAction Ignore)) {
+    Write-Host -ForegroundColor DarkRed 'Nodemon not found, install it with npm: `npm i -g nodemon`'
     return
 }
 
-function global:DebounceXunit {
-    try {
-        if (([System.DateTime]::Now - $script:lastRun).TotalMilliseconds -lt 2000) {
-            return
-        }
-        $Global:lastRun = [System.DateTime]::Now
-        If ($Global:testClass) {
-            Start-Process $Global:xunitConsole -ArgumentList "`"$Global:testDllFullFileName`" -class $Global:testClass" -NoNewWindow
-        } Else {
-            Start-Process $Global:xunitConsole -ArgumentList "`"$Global:testDllFullFileName`"" -NoNewWindow
-        }
-    }
-    catch
-    {
-        Write-Host $_.Exception.Message
-    }
+if ($testClass -eq "now"){
+    . $xunitConsole "$testDllFullFileName"
+    return
 }
+
 
 Write-Host "Watching $testDllDirPath"
 If ($testClass) {
@@ -35,21 +22,9 @@ If ($testClass) {
     }
     Write-Host "Only for $testClass"
 }
-$Global:testClass = $testClass
 
-try {
-    $watcher = New-Object System.IO.FileSystemWatcher
-    $watcher.Path = $testDllDirPath
-    $watcher.Filter = $testDllFileName
-    $watcher.IncludeSubdirectories = $false
-    $watcher.EnableRaisingEvents = $true
-    $watcher.NotifyFilter = [System.IO.NotifyFilters]::LastWrite
-    $changed = Register-ObjectEvent $watcher "Changed" -Action { DebounceXunit }
+If ($testClass) {
+    nodemon --watch $testDllFullFileName --exec "`"$xunitConsole`" `"$testDllFullFileName`" -class $testClass || exit 1"
+} Else {
+    nodemon --watch $testDllFullFileName --exec "`"$xunitConsole`" `"$testDllFullFileName`" || exit 1"
 }
-catch {
-  Write-Host $_.Exception.Message
-}
-#if we do that, then we don't get any console output:
-#Write-Host "Press any key to continue ..."
-#[System.Console]::ReadKey()
-#Unregister-Event $changed.Id

@@ -3,8 +3,8 @@ $baseDir =  "$([System.IO.Path]::GetTempPath())$([System.Guid]::NewGuid().ToStri
 $projectDir =  "$baseDir\cecil"
 $logDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\log")
 $logFile = "$logDir\cecil.log"
-$analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.CSharp.dll")
-$analyzerCommonDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Debug\CodeCracker.Common.dll")
+$analyzerDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Release\CodeCracker.CSharp.dll")
+$analyzerCommonDll = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\src\CSharp\CodeCracker\bin\Release\CodeCracker.Common.dll")
 $gitPath = "https://github.com/jbevain/cecil.git"
 if (Test-Path "C:\p\cecil") {
     $gitPath = "c:\p\cecil"
@@ -78,7 +78,7 @@ if ($ccBuildErrors -ne $null)
     write-host "Errors found (see $logFile):"
     foreach($ccBuildError in $ccBuildErrors)
     {
-        Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)" 
+        Write-Host -ForegroundColor DarkRed "$($ccBuildError.LineNumber) $($ccBuildError.Line)"
     }
     throw "Errors found on the cecil analysis"
 }

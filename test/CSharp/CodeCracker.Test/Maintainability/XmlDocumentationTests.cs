@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CodeCracker.Test.CSharp.Maintainability
 {
-    public class XmlDocumentationAnalyzerTests : CodeFixVerifier<XmlDocumentationAnalyzer, XmlDocumentationRemoveNonExistentParametersCodeFixProvider>
+    public class XmlDocumentationAnalyzerTests : CodeFixVerifier<XmlDocumentationAnalyzer, XmlDocumentationMissingInCSharpCodeFixProvider>
     {
         [Fact]
         public async Task IgnoresClassDocs()
@@ -112,9 +112,9 @@ public int Foo(int value)
 
             var expected = new DiagnosticResult
             {
-                Id = DiagnosticId.XmlDocumentation.ToDiagnosticId(),
+                Id = DiagnosticId.XmlDocumentation_MissingInCSharp.ToDiagnosticId(),
                 Message = "You have missing/unexistent parameters in Xml Docs",
-                Severity = DiagnosticSeverity.Warning,
+                Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 16) }
             };
 
@@ -143,7 +143,7 @@ public int Foo(int value)
 
             var expected = new DiagnosticResult
             {
-                Id = DiagnosticId.XmlDocumentation.ToDiagnosticId(),
+                Id = DiagnosticId.XmlDocumentation_MissingInXml.ToDiagnosticId(),
                 Message = "You have missing/unexistent parameters in Xml Docs",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 16) }
@@ -192,7 +192,7 @@ public int Foo(int value)
         }
     }
 
-    public class XmlDocumentationRemoveUnexistentParametersCodeFixTests : CodeFixVerifier<XmlDocumentationAnalyzer, XmlDocumentationRemoveNonExistentParametersCodeFixProvider>
+    public class XmlDocumentationRemoveUnexistentParametersCodeFixTests : CodeFixVerifier<XmlDocumentationAnalyzer, XmlDocumentationMissingInCSharpCodeFixProvider>
     {
         [Fact]
         public async Task FixRemoveParameterDoc()
@@ -278,7 +278,7 @@ public int Foo(int value)
 
     }
 
-    public class XmlDocumentationCreateMissingParametersCodeFixTests : CodeFixVerifier<XmlDocumentationAnalyzer, XmlDocumentationCreateMissingParametersCodeFixProvider>
+    public class XmlDocumentationCreateMissingParametersCodeFixTests : CodeFixVerifier<XmlDocumentationAnalyzer, XmlDocumentationMissingInXmlCodeFixProvider>
     {
         [Fact]
         public async Task FixCreateOneParameterDoc()

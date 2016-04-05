@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Linq;
 using System.Collections.Immutable;
+using System;
 
 namespace CodeCracker.CSharp.Design
 {
@@ -73,17 +74,26 @@ namespace CodeCracker.CSharp.Design
             {
                 var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(method.Body);
                 if (!dataFlowAnalysis.Succeeded) return;
-                if (dataFlowAnalysis.DataFlowsIn.Any(inSymbol => inSymbol.Name == "this")) return;
+                if (dataFlowAnalysis.DataFlowsIn.Any(inSymbol => inSymbol.Name == "this")
+                    || dataFlowAnalysis.WrittenInside.Any(inSymbol => inSymbol.Name == "this")) return;
             }
 
             if (IsTestMethod(method, methodSymbol)) return;
             if (IsWebFormsMethod(methodSymbol)) return;
+            if (IsGetEnumerator(methodSymbol)) return;
+            if (HasRoutedEventArgs(methodSymbol)) return;
 
             var diagnostic = Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier.ValueText);
             context.ReportDiagnostic(diagnostic);
         }
 
-        private static readonly string[] webFormsMethods = new string[] {
+        private static bool HasRoutedEventArgs(IMethodSymbol methodSymbol)
+        {
+            var routedEventArgsParameters = methodSymbol.Parameters.Where(p => p.Type.ToString() == "System.Windows.RoutedEventArgs");
+            return routedEventArgsParameters.Any();
+        }
+
+        private static readonly string[] webFormsMethods = {
             "Application_AuthenticateRequest", "Application_BeginRequest",
             "Application_End", "Application_EndRequest",
             "Application_Error", "Application_Start",
@@ -92,6 +102,11 @@ namespace CodeCracker.CSharp.Design
         {
             if (!webFormsMethods.Contains(methodSymbol.Name)) return false;
             return (methodSymbol.ContainingType.AllBaseTypes().Any(t => t.ToString() == "System.Web.HttpApplication"));
+        }
+
+        private static bool IsGetEnumerator(IMethodSymbol methodSymbol)
+        {
+            return methodSymbol.Name == "GetEnumerator" && methodSymbol.ReturnType.Name == "IEnumerator";
         }
 
         private static bool IsTestMethod(MethodDeclarationSyntax method, IMethodSymbol methodSymbol)

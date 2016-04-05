@@ -3,7 +3,7 @@
     <metadata>
         <id>codecracker</id>
         <version>1.1.0-beta1</version>
-        <title>CodeCracker</title>
+        <title>CodeCracker for C# and VB</title>
         <authors>giggio,elemarjr,carloscds</authors>
         <owners>giggio,elemarjr,carloscds</owners>
         <licenseUrl>https://github.com/code-cracker/code-cracker/blob/master/LICENSE.txt</licenseUrl>
@@ -15,8 +15,8 @@
 You probably don't want this package directly, search for the C# or Visual Basic specific packages (codecracker.CSharp and codecracker.VisualBasic). This will install both.
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this software, nor it will be. Ever.</description>
-        <releaseNotes>First alpha release</releaseNotes>
-        <copyright>Copyright CodeCracker 2014</copyright>
+        <releaseNotes>See https://github.com/code-cracker/code-cracker/blob/master/CHANGELOG.md</releaseNotes>
+        <copyright>Copyright CodeCracker 2014-2016</copyright>
         <tags>roslyn, analyzers</tags>
         <dependencies>
             <dependency id="codecracker.CSharp" version="1.1.0-beta1" />

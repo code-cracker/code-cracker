@@ -135,13 +135,20 @@ namespace CodeCracker.CSharp.Style
             {
                 falseExpression = elseExpression;
             }
-            if (!isNullable && !ifType.CanBeAssignedTo(elseType) || !elseType.CanBeAssignedTo(ifType))
+            if (!elseType.HasImplicitNumericConversion(ifType)
+                && !IsEnumAndZero(ifType, elseExpression)
+                && !IsEnumAndZero(elseType, ifExpression)
+                && (!isNullable && !ifType.CanBeAssignedTo(elseType) || !elseType.CanBeAssignedTo(ifType)))
                 trueExpression = CastToBaseType(ifExpression, ifType, elseType, trueExpression);
         }
+
+        private static bool IsEnumAndZero(ITypeSymbol type, ExpressionSyntax expression) =>
+            type?.BaseType?.SpecialType == SpecialType.System_Enum && expression?.ToString() == "0";
 
         private static ExpressionSyntax CastToBaseType(ExpressionSyntax ifExpression, ITypeSymbol ifType, ITypeSymbol elseType, ExpressionSyntax trueExpression)
         {
             var commonBaseType = ifType.GetCommonBaseType(elseType);
+            if (commonBaseType.Equals(ifType)) return trueExpression;
             if (commonBaseType != null)
                 trueExpression = SyntaxFactory.CastExpression(SyntaxFactory.ParseTypeName(commonBaseType.Name).WithAdditionalAnnotations(Simplifier.Annotation), ifExpression);
             return trueExpression;
@@ -152,6 +159,7 @@ namespace CodeCracker.CSharp.Style
             if (type == null || possibleBaseType == null) return true;
             if (type.Kind == SymbolKind.ErrorType || possibleBaseType.Kind == SymbolKind.ErrorType) return true;
             if (type == null || possibleBaseType == null) return true;
+            if (type.SpecialType == SpecialType.System_Object) return true;
             var baseType = type;
             while (baseType != null && baseType.SpecialType != SpecialType.System_Object)
             {

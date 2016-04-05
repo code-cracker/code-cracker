@@ -46,40 +46,36 @@ namespace CodeCracker.CSharp.Performance
         {
             if (context.IsGenerated()) return;
             var whereInvoke = (InvocationExpressionSyntax)context.Node;
-            if (GetNameOfTheInvokedMethod(whereInvoke) != "Where") return;
+            var nameOfWhereInvoke = GetNameOfTheInvokedMethod(whereInvoke);
+            if (nameOfWhereInvoke?.ToString() != "Where") return;
+            if (ArgumentsDoNotMatch(whereInvoke)) return;
 
             var nextMethodInvoke = whereInvoke.Parent.
                 FirstAncestorOrSelf<InvocationExpressionSyntax>();
+            if (nextMethodInvoke == null) return;
 
-            var candidate = GetNameOfTheInvokedMethod(nextMethodInvoke);
+            var candidate = GetNameOfTheInvokedMethod(nextMethodInvoke)?.ToString();
             if (!supportedMethods.Contains(candidate)) return;
 
             if (nextMethodInvoke.ArgumentList.Arguments.Any()) return;
             var properties = new Dictionary<string, string> { { "methodName", candidate } }.ToImmutableDictionary();
-            var diagnostic = Diagnostic.Create(Rule, GetNameExpressionOfTheInvokedMethod(whereInvoke).GetLocation(), properties, candidate);
+            var diagnostic = Diagnostic.Create(Rule, nameOfWhereInvoke.GetLocation(), properties, candidate);
             context.ReportDiagnostic(diagnostic);
         }
 
-        internal static string GetNameOfTheInvokedMethod(InvocationExpressionSyntax invoke)
+        private static bool ArgumentsDoNotMatch(InvocationExpressionSyntax whereInvoke)
         {
-            if (invoke == null) return null;
-
-            var memberAccess = invoke.ChildNodes()
-                .OfType<MemberAccessExpressionSyntax>()
-                .FirstOrDefault();
-
-            return GetNameExpressionOfTheInvokedMethod(invoke)?.ToString();
+            var arguments = whereInvoke.ArgumentList.Arguments;
+            if (arguments.Count != 1) return true;
+            var expression = arguments.First()?.Expression;
+            if (expression == null) return true;
+            if (expression is SimpleLambdaExpressionSyntax) return false;
+            var parenthesizedLambda = expression as ParenthesizedLambdaExpressionSyntax;
+            if (parenthesizedLambda == null) return true;
+            return parenthesizedLambda.ParameterList.Parameters.Count != 1;
         }
 
-        internal static SimpleNameSyntax GetNameExpressionOfTheInvokedMethod(InvocationExpressionSyntax invoke)
-        {
-            if (invoke == null) return null;
-
-            var memberAccess = invoke.ChildNodes()
-                .OfType<MemberAccessExpressionSyntax>()
-                .FirstOrDefault();
-
-            return memberAccess?.Name;
-        }
+        private static SimpleNameSyntax GetNameOfTheInvokedMethod(InvocationExpressionSyntax invoke) =>
+            invoke.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault()?.Name;
     }
 }

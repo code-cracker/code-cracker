@@ -465,6 +465,19 @@ End Class
         End Function
 
         <Fact>
+        Public Async Function CallWithDllImport() As Task
+            Const source = "
+Imports System.Runtime.InteropServices
+Class Base
+    <DllImport(""x.dll"", CallingConvention:=CallingConvention.Cdecl)> 
+    Private Shared Function y(ByRef message As IntPtr) As Integer
+    End Function
+End Class
+"
+            Await VerifyBasicHasNoDiagnosticsAsync(source)
+        End Function
+
+        <Fact>
         Public Async Function CallWithRefAndEnumerableDoesNotCreateDiagnostic() As Task
             Const source = "
 Imports Microsoft.CodeAnalysis

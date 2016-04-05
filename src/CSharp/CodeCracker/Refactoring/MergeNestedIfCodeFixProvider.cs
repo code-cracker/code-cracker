@@ -40,8 +40,11 @@ namespace CodeCracker.CSharp.Refactoring
         private static SyntaxNode MergeIfs(IfStatementSyntax ifStatement, SyntaxNode root)
         {
             var nestedIf = (IfStatementSyntax)ifStatement.Statement.GetSingleStatementFromPossibleBlock();
+            var nestedCondition = nestedIf.Condition;
+            if (nestedCondition.IsAnyKind(SyntaxKind.LogicalOrExpression, SyntaxKind.ConditionalExpression, SyntaxKind.CoalesceExpression))
+                nestedCondition = SyntaxFactory.ParenthesizedExpression(nestedCondition);
             var newIf = ifStatement
-                .WithCondition(SyntaxFactory.BinaryExpression(SyntaxKind.LogicalAndExpression, ifStatement.Condition, nestedIf.Condition))
+                .WithCondition(SyntaxFactory.BinaryExpression(SyntaxKind.LogicalAndExpression, ifStatement.Condition, nestedCondition))
                 .WithStatement(nestedIf.Statement)
                 .WithLeadingTrivia(ifStatement.GetLeadingTrivia().AddRange(nestedIf.GetLeadingTrivia()))
                 .WithAdditionalAnnotations(Formatter.Annotation);
