@@ -29,13 +29,13 @@ changes to source control and share with your team, then you also want the Nuget
 To install from Nuget, for the C# version:
 
 ```powershell
-Install-Package CodeCracker.CSharp -Pre
+Install-Package CodeCracker.CSharp
 ```
 
 Or for the Visual Basic version:
 
 ```powershell
-Install-Package CodeCracker.VisualBasic -Pre
+Install-Package CodeCracker.VisualBasic
 ```
 
 Or use the Package Manager in Visual Studio.
