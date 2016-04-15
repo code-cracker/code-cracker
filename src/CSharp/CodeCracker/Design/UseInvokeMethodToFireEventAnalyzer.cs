@@ -49,15 +49,11 @@ namespace CodeCracker.CSharp.Design
 
             var invokedMethodSymbol = (typeInfo.ConvertedType as INamedTypeSymbol)?.DelegateInvokeMethod;
             if (invokedMethodSymbol == null) return;
-            //var cantFixWithElvis = false;
-            //if (!invokedMethodSymbol.ReturnsVoid && !invokedMethodSymbol.ReturnType.IsReferenceType)
-            //    cantFixWithElvis = true;
 
             if (HasCheckForNullThatReturns(invocation, context.SemanticModel, symbol)) return;
             if (IsInsideANullCheck(invocation, context.SemanticModel, symbol)) return;
             if (symbol.IsReadOnlyAndInitializedForCertain(context)) return;
 
-            //var properties = new Dictionary<string, string> { { nameof(cantFixWithElvis), cantFixWithElvis.ToString() } }.ToImmutableDictionary();
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), identifier.Identifier.Text));
         }
 

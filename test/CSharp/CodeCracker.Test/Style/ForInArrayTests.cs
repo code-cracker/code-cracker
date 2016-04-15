@@ -761,7 +761,7 @@ public int[] Foo
         [Fact]
         public async Task WithValueTypeNoDiagnostic()
         {
-            var source = @"
+            const string source = @"
             using System;
             using System.Collections.Generic;
 
@@ -791,7 +791,7 @@ public int[] Foo
         [Fact]
         public async Task WithValueTypeAndIEnumeratorDoesNotCreateDiagnostic()
         {
-            var source = @"
+            const string source = @"
 class Foo
 {
     void Bar()
@@ -823,7 +823,7 @@ class MyList
         [Fact]
         public async Task WithValueTypeListNoDiagnostic()
         {
-            var source = @"
+            const string source = @"
             using System;
             using System.Collections.Generic;
 

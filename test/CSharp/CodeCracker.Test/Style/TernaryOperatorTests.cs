@@ -518,17 +518,6 @@ static object OnReturn()
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
-        static object OnReturn()
-        {
-            var condition = true;
-            var aInt = 2;
-            var anObj = new object();
-            if (condition)
-                return anObj;
-            else
-                return aInt;
-        }
-
         [Fact]
         public async Task WhenUsingIfAndElseWithDirectReturnChangeToTernaryFixAll()
         {

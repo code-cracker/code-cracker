@@ -184,15 +184,6 @@ Namespace ConsoleApplication1
 End Namespace"
             Await VerifyBasicFixAsync(sourceAssign, fix)
         End Function
-        Sub Foo()
-            Dim v As Boolean
-            If True Then
-                ' a comment
-                v = False
-            Else
-                v = True
-            End If
-        End Sub
 
         <Fact>
         Public Async Function WhenUsingIfAndElseWithAssignmentChangeToTernaryFixAll() As Task

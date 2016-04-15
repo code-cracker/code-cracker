@@ -3,7 +3,7 @@ Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Xunit
 
 Namespace Usage
-    Public Class JsonNetTests
+    Public Class JsonNetAnalyzerTests
         Inherits CodeFixVerifier
 
         Private Const TestCode = "
@@ -21,7 +21,7 @@ End Namespace"
         Private Shared Function CreateDiagnosticResult(line As Integer, column As Integer) As DiagnosticResult
             Return New DiagnosticResult With {
                 .Id = DiagnosticId.JsonNet.ToDiagnosticId(),
-                .Message = "Error parsing boolean value. Path '', line 0, position 0.",
+                .Message = "Unexpected end when reading JSON. Path '', line 1, position 3.",
                 .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
                 .Locations = {New DiagnosticResultLocation("Test0.vb", line, column)}
             }

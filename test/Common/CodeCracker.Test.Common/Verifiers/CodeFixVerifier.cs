@@ -332,8 +332,8 @@ namespace CodeCracker.Test
         /// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
         /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
         /// <param name="numberOfCodeActions">The expected number of code actions provided by the code fix.</param>
-        protected async Task VerifyCSharpHasNumberOfCodeActions(string source, int numberOfCodeActions, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6) =>
-            await VerifyNumberOfCodeActions(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), source, numberOfCodeActions, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
+        protected async Task VerifyCSharpHasNumberOfCodeActionsAsync(string source, int numberOfCodeActions, CodeFixProvider codeFixProvider = null, LanguageVersion languageVersionCSharp = LanguageVersion.CSharp6) =>
+            await VerifyNumberOfCodeActionsAsync(LanguageNames.CSharp, GetDiagnosticAnalyzer(), codeFixProvider ?? GetCodeFixProvider(), source, numberOfCodeActions, languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).ConfigureAwait(true);
 
         /// <summary>
         /// General verifier for a diagnostics that verifies how many code actions a code fix registered.
@@ -347,7 +347,7 @@ namespace CodeCracker.Test
         /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
         /// <param name="languageVersionVB">VB language version used for compiling the test project, required unless you inform the C# language version.</param>
         /// <param name="numberOfCodeActions">The expected number of code actions provided by the code fix.</param>
-        private async static Task VerifyNumberOfCodeActions(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string source, int numberOfCodeActions, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
+        private async static Task VerifyNumberOfCodeActionsAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string source, int numberOfCodeActions, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
         {
             var document = CreateDocument(source, language, languageVersionCSharp, languageVersionVB);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }).ConfigureAwait(true);
