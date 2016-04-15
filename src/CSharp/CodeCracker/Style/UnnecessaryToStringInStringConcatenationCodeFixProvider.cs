@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Composition;
@@ -15,24 +14,41 @@ namespace CodeCracker.CSharp.Style
     public class UnnecessaryToStringInStringConcatenationCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
-            ImmutableArray.Create(DiagnosticId.UnnecessaryParenthesis.ToDiagnosticId());
+            ImmutableArray.Create(DiagnosticId.UnnecessaryToStringInStringConcatenation.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            context.RegisterCodeFix(CodeAction.Create("Remove unnecessary parenthesis", ct => RemoveParenthesisAsync(context.Document, diagnostic, ct), nameof(UnnecessaryParenthesisCodeFixProvider)), diagnostic);
+            context.RegisterCodeFix(CodeAction.Create("Remove unnecessary ToString", ct => RemoveUnnecessaryToStringAsync(context.Document, diagnostic, ct), nameof(UnnecessaryToStringInStringConcatenationCodeFixProvider)), diagnostic);
             return Task.FromResult(0);
         }
-        private static async Task<Document> RemoveParenthesisAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        private static async Task<Document> RemoveUnnecessaryToStringAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var argumentList = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ArgumentListSyntax>().First();
-            var newRoot = root.RemoveNode(argumentList, SyntaxRemoveOptions.KeepTrailingTrivia);
+
+            var invocationExpression = 
+                root
+                .FindToken(diagnostic.Location.SourceSpan.Start)
+                .Parent
+                .AncestorsAndSelf()
+                .OfType<InvocationExpressionSyntax>()
+                .First();
+
+            var onlyMemberAccessNode = 
+                invocationExpression
+                .ChildNodes()
+                .First()
+                .ChildNodes()
+                .First();
+
+            var newRoot = root.ReplaceNode(invocationExpression, onlyMemberAccessNode);
+
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
+
     }
+
 }
