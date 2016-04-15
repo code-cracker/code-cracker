@@ -12,7 +12,7 @@ namespace CodeCracker.CSharp.Style
     public class UnnecessaryToStringInStringConcatenationAnalyzer : DiagnosticAnalyzer
     {
         internal const string Title = "Unnecessary ToString in string concatenation";
-        internal const string MessageFormat = "{0}";
+        internal const string MessageFormat = "Unnecessary ToString code should be removed.";
         internal const string Category = SupportedCategories.Style;
         const string Description = "The runtime automatically calls ToString method for string concatenation operations.";
 

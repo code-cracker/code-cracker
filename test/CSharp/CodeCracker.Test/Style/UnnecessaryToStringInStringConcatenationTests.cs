@@ -14,9 +14,9 @@ namespace CodeCracker.Test.CSharp.Style
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.UnnecessaryToStringInStringConcatenation.ToDiagnosticId(),
-                Message = "Unnecessary ToString in string concatenation.",
+                Message = "Unnecessary ToString code should be removed.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 30) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 29) }
             };
 
             await VerifyCSharpDiagnosticAsync(source, expected);
