@@ -67,11 +67,5 @@ namespace CodeCracker.CSharp.Style
             }
         }
 
-        private static void teste()
-        {
-            var foo = "a" + new object().ToString();
-            var bar = "a" + new object();
-        }
-
     }
 }
