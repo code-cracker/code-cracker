@@ -84,8 +84,10 @@
     <Compile Include="Style\StringFormatFixAllProvider.cs" />
     <Compile Include="Style\SwitchToAutoPropCodeFixAllProvider.cs" />
     <Compile Include="Style\UseEmptyStringAnalyzer.cs" />
+    <Compile Include="Style\UnnecessaryToStringInStringConcatenationCodeFixProvider.cs" />
     <Compile Include="Style\UseEmptyStringCodeFixProvider.cs" />
     <Compile Include="Style\UseEmptyStringCodeFixProviderAll.cs" />
+    <Compile Include="Style\UnnecessaryToStringInStringConcatenationAnalyzer.cs" />
     <Compile Include="Style\UseStringEmptyCodeFixProviderAll.cs" />
     <Compile Include="Style\UseStringEmptyCodeFixProvider.cs" />
     <Compile Include="Style\UseStringEmptyAnalyzer.cs" />
