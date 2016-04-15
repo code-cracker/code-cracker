@@ -21,5 +21,20 @@ namespace CodeCracker.Test.CSharp.Style
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+        [Fact]
+        public async Task InstantiatingAnStringBuilderAndCallToStringInsideAStringConcatenationShouldGenerateDiagnosticResult()
+        {
+            const string source = @"var foo = ""a"" + new System.Text.StringBuilder().ToString();";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UnnecessaryToStringInStringConcatenation.ToDiagnosticId(),
+                Message = "Unnecessary ToString code should be removed.",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 48) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
     }
 }
