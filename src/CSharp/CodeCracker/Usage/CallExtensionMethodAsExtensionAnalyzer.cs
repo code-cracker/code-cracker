@@ -66,12 +66,15 @@ namespace CodeCracker.CSharp.Usage
             var speculativeRootWithExtensionMethod = tree.GetCompilationUnitRoot()
                 .ReplaceNode(invocationExpression, newInvocationStatement)
                 .AddUsings(extensionMethodNamespaceUsingDirective);
-            var speculativeModel = compilation.ReplaceSyntaxTree(tree, speculativeRootWithExtensionMethod.SyntaxTree)
-                .GetSemanticModel(speculativeRootWithExtensionMethod.SyntaxTree);
-            var speculativeInvocationStatement = speculativeRootWithExtensionMethod.SyntaxTree.GetCompilationUnitRoot().GetAnnotatedNodes(introduceExtensionMethodAnnotation).Single() as InvocationExpressionSyntax;
+            var speculativeTree = speculativeRootWithExtensionMethod.SyntaxTree;
+            var speculativeTreeOptions = (CSharpParseOptions)speculativeTree.Options;
+            var speculativeTreeWithCorrectLanguageVersion = speculativeTree.WithRootAndOptions(speculativeRootWithExtensionMethod, speculativeTreeOptions.WithLanguageVersion(((CSharpParseOptions)tree.Options).LanguageVersion));
+            var speculativeModel = compilation.ReplaceSyntaxTree(tree, speculativeTreeWithCorrectLanguageVersion)
+                .GetSemanticModel(speculativeTreeWithCorrectLanguageVersion);
+            var speculativeInvocationStatement = speculativeTreeWithCorrectLanguageVersion.GetCompilationUnitRoot().GetAnnotatedNodes(introduceExtensionMethodAnnotation).Single() as InvocationExpressionSyntax;
             var speculativeExtensionMethodSymbol = speculativeModel.GetSymbolInfo(speculativeInvocationStatement.Expression).Symbol as IMethodSymbol;
             var speculativeNonExtensionFormOfTheMethodSymbol = speculativeExtensionMethodSymbol?.GetConstructedReducedFrom();
-            return speculativeNonExtensionFormOfTheMethodSymbol == null || !speculativeNonExtensionFormOfTheMethodSymbol.Equals(methodSymbol);
+            return speculativeNonExtensionFormOfTheMethodSymbol == null || speculativeNonExtensionFormOfTheMethodSymbol.ToString() != methodSymbol.ToString();//can't compare equality, as speculative symbol might be different
         }
 
         private static int CountArguments(IEnumerable<SyntaxNode> childNodes) =>
