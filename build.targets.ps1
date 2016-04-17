@@ -26,7 +26,7 @@ Properties {
     $reportGeneratorExe = "$packagesDir\ReportGenerator.2.4.4.0\tools\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
     $coverallsNetExe = "$packagesDir\coveralls.io.1.3.4\tools\coveralls.net.exe"
-    $isRelease = $isAppVeyor -and ($env:APPVEYOR_REPO_BRANCH -eq "release")
+    $isRelease = $isAppVeyor -and (($env:APPVEYOR_REPO_BRANCH -eq "release") -or ($env:APPVEYOR_REPO_TAG -eq "true"))
     $isPullRequest = $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null
 }
 
