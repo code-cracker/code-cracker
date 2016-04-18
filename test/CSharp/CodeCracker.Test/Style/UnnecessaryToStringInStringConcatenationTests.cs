@@ -75,6 +75,15 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
 
+        [Fact]
+        public async Task CallToStringOutsideAStringConcatenationWithoutParameterShouldNotGenerateDiagnosticResult()
+        {
+            const string source = @"var value = 1000.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+
         private static DiagnosticResult CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(int expectedRow, int expectedColumn)
         {
             var expected = new DiagnosticResult
