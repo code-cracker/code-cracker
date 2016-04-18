@@ -11,10 +11,11 @@ namespace CodeCracker.CSharp.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UnnecessaryToStringInStringConcatenationAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Unnecessary ToString in string concatenation";
-        internal const string MessageFormat = "Unnecessary ToString code should be removed.";
+        internal const string Title = "Unnecessary '.ToString()' call in string concatenation.";
+        internal const string MessageFormat = Title;
         internal const string Category = SupportedCategories.Style;
-        const string Description = "The runtime automatically calls ToString method for string concatenation operations.";
+        const string Description = "The runtime automatically calls '.ToString()' method for" +
+            " string concatenation operations when there is no parameters. Remove them.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.UnnecessaryToStringInStringConcatenation.ToDiagnosticId(),
