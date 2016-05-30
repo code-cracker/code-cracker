@@ -80,5 +80,6 @@
         NameOf_External = 108,
         StringFormatArgs_ExtraArgs = 111,
         AlwaysUseVarOnPrimitives = 105,
+        SwitchCaseWithoutDefault = 120
     }
 }
