@@ -846,5 +846,100 @@ class TypeName
    }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task UserDefinedStructFieldDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        public class MyClass
+        {
+            private MyStruct myStruct = default(MyStruct);
+            
+            private struct MyStruct
+            {
+                public int Value;
+            }
+        }
+    }
+    ";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task DateTimeFieldInitializedOnDeclarationDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        public class MyClass
+        {
+            private DateTime date = new DateTime(2008, 5, 1, 8, 30, 52);
+        }
+    }
+    ";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task EnumerationFieldInitializedOnDeclarationCreatesADiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        public class MyClass
+        {
+            private VehicleType car = VehicleType.Car;
+
+            private enum VehicleType
+            {
+                None = 0,
+                Car = 1,
+                Truck = 2
+            }
+        }
+    }
+    ";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
+                Message = string.Format(ReadonlyFieldAnalyzer.Message, "car"),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 33) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task ReferenceTypeFieldInitializedInConstructorCreatesADiagnostic()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        public class Person
+        {
+            private string name;
+
+            public Person(string name)
+            {
+                this.name = name;
+            }
+        }
+    }
+    ";
+
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
+                Message = string.Format(ReadonlyFieldAnalyzer.Message, "name"),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 28) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
     }
 }

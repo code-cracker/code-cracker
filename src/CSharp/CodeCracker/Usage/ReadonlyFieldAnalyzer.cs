@@ -145,8 +145,12 @@ namespace CodeCracker.CSharp.Usage
         private static Dictionary<IFieldSymbol, VariableDeclaratorSyntax> GetCandidateVariables(SemanticModel semanticModel, FieldDeclarationSyntax fieldDeclaration)
         {
             var variablesToMakeReadonly = new Dictionary<IFieldSymbol, VariableDeclaratorSyntax>();
-            if (fieldDeclaration == null) return variablesToMakeReadonly;
-            if (!CanBeMadeReadonly(fieldDeclaration)) return variablesToMakeReadonly;
+            if (fieldDeclaration == null ||
+                IsComplexValueType(semanticModel, fieldDeclaration) ||
+                !CanBeMadeReadonly(fieldDeclaration))
+            {
+                return variablesToMakeReadonly;
+            }
             foreach (var variable in fieldDeclaration.Declaration.Variables)
             {
                 if (variable.Initializer == null) continue;
@@ -165,6 +169,13 @@ namespace CodeCracker.CSharp.Usage
                     || m.IsKind(SyntaxKind.InternalKeyword)
                     || m.IsKind(SyntaxKind.ReadOnlyKeyword)
                     || m.IsKind(SyntaxKind.ConstKeyword));
+        }
+
+        private static bool IsComplexValueType(SemanticModel semanticModel, FieldDeclarationSyntax fieldDeclaration)
+        {
+            var fieldTypeName = fieldDeclaration.Declaration.Type;
+            var fieldType = semanticModel.GetTypeInfo(fieldTypeName).ConvertedType;
+            return fieldType.IsValueType && !(fieldType.TypeKind == TypeKind.Enum || fieldType.IsPrimitive());
         }
 
         private static bool CanBeMadeReadonly(IFieldSymbol fieldSymbol)
