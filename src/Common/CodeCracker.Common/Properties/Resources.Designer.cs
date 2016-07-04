@@ -260,6 +260,42 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Calling Task.Result in an awaited method may lead to a deadlock. Obtain the result of the task with the await keyword to avoid deadlocks..
+        /// </summary>
+        public static string ResultInAsync_Description {
+            get {
+                return ResourceManager.GetString("ResultInAsync_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to await &apos;{0}&apos; rather than calling its Result..
+        /// </summary>
+        public static string ResultInAsync_MessageFormat {
+            get {
+                return ResourceManager.GetString("ResultInAsync_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Replace Task.Result with await Task.
+        /// </summary>
+        public static string ResultInAsyncAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("ResultInAsyncAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Await the asynchronous call.
+        /// </summary>
+        public static string ResultInAsyncCodeFixProvider_Title {
+            get {
+                return ResourceManager.GetString("ResultInAsyncCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to String interpolation allows for better reading of the resulting string when compared to String.Format. You should use String.Format only when another method is supplying the format string..
         /// </summary>
         public static string StringFormatAnalyzer_Description {

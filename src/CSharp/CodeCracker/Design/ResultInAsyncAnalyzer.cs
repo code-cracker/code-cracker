@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeCracker.Properties;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -11,11 +12,10 @@ namespace CodeCracker.CSharp.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ResultInAsyncAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Replace Task.Result with await Task";
-        internal const string MessageFormat = "await '{0}' rather than calling its Result.";
+        internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.ResultInAsyncAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.ResultInAsync_MessageFormat), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.ResultInAsync_Description), Resources.ResourceManager, typeof(Resources));
         internal const string Category = SupportedCategories.Design;
-        const string Description = "Calling Task.Result in an awaited method may lead to a deadlock. "
-            + "Obtain the result of the task with the await keyword to avoid deadlocks. ";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ResultInAsync.ToDiagnosticId(),

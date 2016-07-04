@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeCracker.Properties;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
@@ -27,7 +28,7 @@ namespace CodeCracker.CSharp.Design
             var diagnostic = context.Diagnostics.First();
             var compilation = (CSharpCompilation)await context.Document.Project.GetCompilationAsync();
             context.RegisterCodeFix(CodeAction.Create(
-                "Await the asynchronous call",
+                Resources.ResultInAsyncCodeFixProvider_Title,
                 ct => ReplaceResultWithAwaitAsync(context.Document, diagnostic, ct),
                 nameof(ResultInAsyncCodeFixProvider)
                ), diagnostic);
