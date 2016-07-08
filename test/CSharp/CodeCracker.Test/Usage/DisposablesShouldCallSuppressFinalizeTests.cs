@@ -1,4 +1,5 @@
-﻿using CodeCracker.CSharp.Usage;
+﻿using System;
+using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
@@ -56,6 +57,27 @@ namespace CodeCracker.Test.CSharp.Usage
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void DoNotWarnIfClassImplementsIDisposableWithSuppressFinalizeCallInFinally()
+        {
+            const string test = @"
+                public class MyType : System.IDisposable
+                {
+                    public void Dispose()
+                    {
+                        try
+                        {
+                        }
+                        finally
+                        {
+                            System.GC.SuppressFinalize(this);
+                        }
+                    }
+                }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
