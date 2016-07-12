@@ -35,14 +35,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Design\InconsistentAccessibility\AccessibilityDomainChecker.cs" />
+    <Compile Include="Design\InconsistentAccessibility\AccessibilityModifiersEvaluator.cs" />
+    <Compile Include="Design\InconsistentAccessibility\IInconsistentAccessibilityFixInfoProvider.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFix.cs" />
+    <Compile Include="Design\InconsistentAccessibility\IInconsistentAccessibilityCodeFix.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityCodeFixProvider.cs" />
-    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfo.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityFixInfo.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInBaseClass.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInBaseInterface.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInDelegateParameterType.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInDelegateReturnType.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilitySource.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerParameter.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInIndexerReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodParameter.cs" />
-    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInfoProvider.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilitySourceProvider.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInMethodReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInFieldType.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInOperatorParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInOperatorReturnType.cs" />
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInPropertyType.cs" />
     <Compile Include="Design\MakeMethodStaticAnalyzer.cs" />
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
@@ -51,15 +63,30 @@
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Extensions\CSharpGeneratedCodeAnalysisExtensions.cs" />
     <Compile Include="Extensions\InitializerState.cs" />
+    <Compile Include="Performance\ChangeCountMethodToPropertyAnalyzer.cs" />
+    <Compile Include="Performance\ChangeCountMethodToPropertyCodeFixProvider.cs" />
+    <Compile Include="Performance\SealMemberAnalyzer.cs" />
+    <Compile Include="Performance\ReturnTaskInsteadOfAwaitCodeFixProvider.cs" />
+    <Compile Include="Performance\ReturnTaskInsteadOfAwaitAnalyzer.cs" />
+    <Compile Include="Performance\SealMemberCodeFixProvider.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchAnalyzer.cs" />
     <Compile Include="Performance\StringBuilderInLoopCodeFixProvider.cs" />
     <Compile Include="Performance\StringBuilderInLoopAnalyzer.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchCodeFixProvider.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsAnalyzer.cs" />
+    <Compile Include="Refactoring\AddPropertyToConstructorAnalyzer.cs" />
+    <Compile Include="Refactoring\AddPropertyToConstructorCodeFixProviderAll .cs" />
+    <Compile Include="Refactoring\AddPropertyToConstructorCodeFixProvider.cs" />
+    <Compile Include="Style\PreferAnyToCountGreaterThanZeroCodeFixProvider.cs" />
+    <Compile Include="Style\PreferAnyToCountGreaterThanZeroAnalyzer.cs" />
+    <Compile Include="Refactoring\ExtractClassToFileCodeFixProvider.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsCodeFixProvider.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzer.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.StyleCop.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProvider.Base.cs" />
+    <Compile Include="Refactoring\ChangeAsToCastAnalyzer.cs" />
+    <Compile Include="Refactoring\ChangeAsToCastCodeFixProvider.cs" />
+    <Compile Include="Refactoring\ExtractClassToFileAnalyzer.cs" />
     <Compile Include="Refactoring\MakeMethodNonAsyncCodeFixProvider.cs" />
     <Compile Include="Refactoring\MergeNestedIfAnalyzer.cs" />
     <Compile Include="Refactoring\MergeNestedIfCodeFixProvider.cs" />
@@ -67,6 +94,8 @@
     <Compile Include="Refactoring\ComputeExpressionCodeFixProvider.cs" />
     <Compile Include="Refactoring\ChangeAnyToAllAnalyzer.cs" />
     <Compile Include="Refactoring\ChangeAnyToAllCodeFixProvider.cs" />
+    <Compile Include="Refactoring\LoopToLinqAnalyzer.cs" />
+    <Compile Include="Refactoring\LoopToLinqCodeFixProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfFixAllProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfCodeFixProvider.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfAnalyzer.cs" />
@@ -137,6 +166,8 @@
     <Compile Include="Style\StringFormatAnalyzer.cs" />
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedCodeFixProvider.cs" />
+    <Compile Include="Usage\InconsistentParameterDefaultValueAnalyzer.cs" />
+    <Compile Include="Usage\InconsistentParameterDefaultValueCodeFixProvider.cs" />
     <Compile Include="Usage\RedundantFieldAssignmentCodeFixProvider.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseAnalyzer.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseCodeFixProvider.cs" />
@@ -193,6 +224,7 @@
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsAnalyzer.cs" />
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsCodeFixProvider.cs" />
     <Compile Include="Usage\UriAnalyzer.cs" />
+    <Compile Include="Usage\ValidateColorAnalyzer.cs" />
     <Compile Include="Usage\VirtualMethodOnConstructorAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>

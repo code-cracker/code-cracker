@@ -126,22 +126,35 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeCultureTests.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
-    <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.Class.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.Common.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.Delegate.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.Interface.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
     <Compile Include="Design\MakeMethodStaticTests.cs" />
     <Compile Include="Design\ResultInAsyncTest.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Maintainability\InconsistentParameterDefaultValueTests.cs" />
+    <Compile Include="Performance\ChangeCountMethodToPropertyTests.cs" />
+    <Compile Include="Performance\SealMemberTests.cs" />
+    <Compile Include="Performance\ReturnTaskInsteadOfAwaitTests.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
     <Compile Include="Performance\StringBuilderInLoopTests.cs" />
+    <Compile Include="Refactoring\AddPropertyToConstructorTest.cs" />
+    <Compile Include="Style\PreferAnyToCountGreaterThanZeroTests.cs" />
+    <Compile Include="Refactoring\ExtractClassToFileTests.cs" />
     <Compile Include="Refactoring\AddBracesToSwitchSectionsTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingAnalyzerTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.cs" />
     <Compile Include="Refactoring\ChangeAnyToAllTests.cs" />
+    <Compile Include="Refactoring\ChangeAsToCastTests.cs" />
     <Compile Include="Refactoring\MakeMethodNonAsyncTests.cs" />
     <Compile Include="Refactoring\MergeNestedIfTest.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorTest.cs" />
     <Compile Include="Refactoring\ComputeExpressionTests.cs" />
+    <Compile Include="Refactoring\LoopToLinqTests.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfTests.cs" />
     <Compile Include="Refactoring\ParameterRefectoryTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
@@ -203,10 +216,15 @@
     <Compile Include="Usage\UriAnalyzerTests.cs" />
     <Compile Include="Usage\RethrowExceptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Usage\ValidateColorTests.cs" />
     <Compile Include="Usage\VirtualMethodOnConstructorTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Design\InconsistentAccessibilityTests.FieldPropertyType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.FieldPropertyType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.OperatorReturnType.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.OperatorParameter.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.AccessibilityDomainChecker.cs" />
+    <Compile Include="Design\InconsistentAccessibilityTests\InconsistentAccessibilityTests.AccessibilityModifiers.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

@@ -144,6 +144,19 @@ namespace CodeCracker.Test
             CreateProject(new[] { source }, language, languageVersionCSharp, languageVersionVB).Documents.First();
 
         /// <summary>
+        /// Create a Document from a string through creating a project that contains it.
+        /// </summary>
+        /// <param name="source">Classes in the form of a string</param>
+        /// <param name="language">The language the source code is in</param>
+        /// <param name="languageVersionCSharp">C# language version used for compiling the test project, required unless you inform the VB language version.</param>
+        /// <returns>A Document created from the source string</returns>
+        public static Document CreateDocument(string source,
+            string language,
+            LanguageVersion languageVersionCSharp) =>
+                CreateProject(new[] {source}, language, languageVersionCSharp,
+                    Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.VisualBasic14).Documents.First();
+
+        /// <summary>
         /// Create a project using the inputted strings as sources.
         /// </summary>
         /// <param name="sources">Classes in the form of strings</param>
