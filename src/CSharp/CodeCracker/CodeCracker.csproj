@@ -58,6 +58,8 @@
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInPropertyType.cs" />
     <Compile Include="Design\MakeMethodStaticAnalyzer.cs" />
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
+    <Compile Include="Design\ResultInAsyncAnalyzer.cs" />
+    <Compile Include="Design\ResultInAsyncCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Extensions\CSharpGeneratedCodeAnalysisExtensions.cs" />
     <Compile Include="Extensions\InitializerState.cs" />
@@ -253,10 +255,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc5-1047\analyzers\dotnet\cs\CodeCracker.Common.dll" />
-    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0-rc5-1047\analyzers\dotnet\cs\CodeCracker.CSharp.dll" />
-    <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0\analyzers\dotnet\cs\CodeCracker.Common.dll" />
+    <Analyzer Include="..\..\..\packages\codecracker.CSharp.1.0.0\analyzers\dotnet\cs\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

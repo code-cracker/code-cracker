@@ -817,7 +817,7 @@ public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T
                 {
                     return getter?.Invoke(default(T)) ?? default(TReturn);
                 }".WrapInCSharpClass();
-            await VerifyCSharpHasNumberOfCodeActions(test, 1);
+            await VerifyCSharpHasNumberOfCodeActionsAsync(test, 1);
         }
 
         public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where TReturn : struct
@@ -939,7 +939,7 @@ public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T
                          return p1*p2;
                     }
                 }";
-            await VerifyCSharpHasNumberOfCodeActions(test, 1);
+            await VerifyCSharpHasNumberOfCodeActionsAsync(test, 1);
         }
 
         [Fact]

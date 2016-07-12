@@ -144,7 +144,7 @@ public class Person
 
         [Fact]
         public async Task IgnoreParameters() {
-            var test = @"
+            const string test = @"
 using System;
 class Foo
 {
