@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -59,23 +59,45 @@ namespace CodeCracker.CSharp.Usage
             var statements = method.Body?.Statements.OfType<ExpressionStatementSyntax>();
             if (statements != null)
             {
-                foreach (var statement in statements)
+                if (StatementsContainSuppressFinalize(statements, semanticModel)) return;
+            }
+
+            var tryStatements = method.Body?.Statements.OfType<TryStatementSyntax>();
+            if (tryStatements != null)
+            {
+                foreach (var tryStatement in tryStatements)
                 {
-                    var invocation = statement.Expression as InvocationExpressionSyntax;
-                    var suppress = invocation?.Expression as MemberAccessExpressionSyntax;
+                    var finallySyntax = tryStatement.Finally;
+                    var finallyExpressionsStatements = finallySyntax.Block.Statements.OfType<ExpressionStatementSyntax>();
 
-                    if (suppress?.Name.ToString() != "SuppressFinalize")
-                        continue;
-
-                    var containingType = semanticModel.GetSymbolInfo(suppress.Expression).Symbol as INamedTypeSymbol;
-                    if (containingType?.ContainingNamespace.Name != "System")
-                        continue;
-
-                    if (containingType.Name == "GC")
-                        return;
+                    if (finallyExpressionsStatements != null)
+                    {
+                        if (StatementsContainSuppressFinalize(finallyExpressionsStatements, semanticModel)) return;
+                    }
                 }
             }
+
             context.ReportDiagnostic(Diagnostic.Create(Rule, methodSymbol.Locations[0], symbol.Name));
+        }
+
+        private static bool StatementsContainSuppressFinalize(IEnumerable<ExpressionStatementSyntax> statements, SemanticModel semanticModel)
+        {
+            foreach (var statement in statements)
+            {
+                var invocation = statement.Expression as InvocationExpressionSyntax;
+                var suppress = invocation?.Expression as MemberAccessExpressionSyntax;
+
+                if (suppress?.Name.ToString() != "SuppressFinalize")
+                    continue;
+
+                var containingType = semanticModel.GetSymbolInfo(suppress.Expression).Symbol as INamedTypeSymbol;
+                if (containingType?.ContainingNamespace.Name != "System")
+                    continue;
+
+                if (containingType.Name == "GC")
+                    return true;
+            }
+            return false;
         }
 
         public static bool ContainsUserDefinedFinalizer(INamedTypeSymbol symbol)
