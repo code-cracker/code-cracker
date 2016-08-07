@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,7 +29,7 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
-        public async Task WhenCallExtensionMethodAsStaticMenthodTriggerAFix()
+        public async Task WhenCallExtensionMethodAsStaticMethodTriggerAFix()
         {
             const string source = @"
                     using System.Linq;
@@ -53,6 +54,57 @@ namespace CodeCracker.Test.CSharp.Usage
             };
 
             await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task WhenCallExtensionMethodAsStaticMethodTriggerAFixWithCSharp5()
+        {
+            const string source = @"
+                    using System.Linq;
+                    namespace ConsoleApplication1
+                    {
+                        public class Foo
+                        {
+                            public void Bar()
+                            {
+                                var source = new int[] { 1, 2, 3 };
+                                Enumerable.Any(source, x => x > 1);
+                            }
+                        }
+                    }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
+                Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 33) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected, LanguageVersion.CSharp5);
+        }
+
+        [Fact]
+        public async Task CreatesDiagnosticWhenExtensionClassInSameTree()
+        {
+            const string source = @"
+class Foo
+{
+    public static void Bar()
+    {
+        C.M("""");
+    }
+}
+public static class C
+{
+    public static string M(this string s) => s;
+}";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
+                Message = "Do not call 'M' method of class 'C' as a static method",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 9) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected, LanguageVersion.CSharp5);
         }
 
         [Fact]
