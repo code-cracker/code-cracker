@@ -147,6 +147,7 @@
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.cs" />
     <Compile Include="Style\ConsoleWriteLineTests.cs" />
     <Compile Include="Style\UseEmptyStringTest.cs" />
+    <Compile Include="Style\UnnecessaryToStringInStringConcatenationTests.cs" />
     <Compile Include="Style\UseStringEmptyTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
     <Compile Include="Style\RemoveTrailingWhitespaceTests.cs" />
