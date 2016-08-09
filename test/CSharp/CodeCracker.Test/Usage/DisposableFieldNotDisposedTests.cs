@@ -211,6 +211,30 @@ public class A : IDisposable
         }
 
         [Fact]
+        public async Task WhenAFieldThatImplementsIDisposableIsDisposedWithThisDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName : IDisposable
+        {
+            private D field = D.Create();
+            public void Dispose()
+            {
+                this.field.Dispose();
+            }
+        }
+        class D : IDisposable
+        {
+            public static D Create() => new D();
+            public void Dispose() { }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task WhenAFieldThatImplementsIDisposableIsDisposedThroughImplicitImplementationDoesNotCreateDiagnostic()
         {
             const string source = @"
