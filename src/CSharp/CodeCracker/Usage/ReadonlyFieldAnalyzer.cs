@@ -59,6 +59,13 @@ namespace CodeCracker.CSharp.Usage
                                 ? semanticModel
                                 : compilation.GetSemanticModel(syntaxReference.SyntaxTree);
                         var descendants = syntaxReference.GetSyntax().DescendantNodes().ToList();
+                        var argsWithRefOrOut = descendants.OfType<ArgumentSyntax>().Where(a => a.RefOrOutKeyword != null);
+                        foreach (var argWithRefOrOut in argsWithRefOrOut)
+                        {
+                            var fieldSymbol = syntaxRefSemanticModel.GetSymbolInfo(argWithRefOrOut.Expression).Symbol as IFieldSymbol;
+                            if (fieldSymbol == null) continue;
+                            variablesToMakeReadonly.Remove(fieldSymbol);
+                        }
                         var assignments = descendants.OfKind(SyntaxKind.SimpleAssignmentExpression,
                             SyntaxKind.AddAssignmentExpression, SyntaxKind.AndAssignmentExpression, SyntaxKind.DivideAssignmentExpression,
                             SyntaxKind.ExclusiveOrAssignmentExpression, SyntaxKind.LeftShiftAssignmentExpression, SyntaxKind.ModuloAssignmentExpression,

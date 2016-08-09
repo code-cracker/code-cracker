@@ -20,6 +20,32 @@ class TypeName
         }
 
         [Fact]
+        public async Task IgnoreOut()
+        {
+            const string source = @"
+public class C
+{
+    private string field = "";
+    private static void Foo(out string bar) => bar = "";
+    public void Baz() => Foo(out field);
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
+        }
+
+        [Fact]
+        public async Task IgnoreRef()
+        {
+            const string source = @"
+public class C
+{
+    private string field = "";
+    private static void Foo(ref string bar) => bar = "";
+    public void Baz() => Foo(ref field);
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
+        }
+
+        [Fact]
         public async Task IgnorePostIncrement()
         {
             const string source = @"
@@ -856,7 +882,7 @@ class TypeName
         public class MyClass
         {
             private MyStruct myStruct = default(MyStruct);
-            
+
             private struct MyStruct
             {
                 public int Value;
