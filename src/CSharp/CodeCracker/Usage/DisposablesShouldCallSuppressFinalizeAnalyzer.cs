@@ -56,7 +56,7 @@ namespace CodeCracker.CSharp.Usage
             if (symbol.IsSealed && !ContainsUserDefinedFinalizer(symbol)) return;
             if (!ContainsNonPrivateConstructors(symbol)) return;
 
-            var statements = method.Body?.Statements.OfType<ExpressionStatementSyntax>();
+            var statements = method.Body?.DescendantNodes().OfType<ExpressionStatementSyntax>();
             if (statements != null)
             {
                 foreach (var statement in statements)

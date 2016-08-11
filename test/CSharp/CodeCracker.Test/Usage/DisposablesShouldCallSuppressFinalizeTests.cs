@@ -59,6 +59,66 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
+        public async void DoNotWarnIfClassImplementsIDisposableWithSuppressFinalizeCallInFinally()
+        {
+            const string test = @"
+                 public class MyType : System.IDisposable
+                 {
+                     public void Dispose()
+                     {
+                         try
+                         {
+                         }
+                         finally
+                         {
+                             System.GC.SuppressFinalize(this);
+                         }
+                     }
+                 }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void DoNotWarnIfClassImplementsIDisposableWithSuppressFinalizeCallInIf()
+        {
+            const string test = @"
+                 public class MyType : System.IDisposable
+                 {
+                     public void Dispose()
+                     {
+                         if (true)
+                         {
+                             System.GC.SuppressFinalize(this);
+                         }
+                     }
+                 }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void DoNotWarnIfClassImplementsIDisposableWithSuppressFinalizeCallInElse()
+        {
+            const string test = @"
+                 public class MyType : System.IDisposable
+                 {
+                     public void Dispose()
+                     {
+                         if (true)
+                         {
+                         }
+                         else
+                         {
+                             System.GC.SuppressFinalize(this);
+                         }
+                     }
+                 }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
         public async Task NoWarningIfClassImplementsDisposableCallsSuppressFinalizeAndCallsDisposeWithThis()
         {
             const string source = @"
