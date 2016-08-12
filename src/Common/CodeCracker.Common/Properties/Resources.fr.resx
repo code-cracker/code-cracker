@@ -214,4 +214,16 @@ Si l'erreur est attendu considérer ajouter du logging ou modifier le flow de co
   <data name="EmptyCatchBlockCodeFixProvider_RemoveAndDocumentation" xml:space="preserve">
     <value>Enlever le block Catch vide et ajouter un lien vers la documentation des bonnes pratiques de Try...Catch</value>
   </data>
+  <data name="ResultInAsyncAnalyzer_Title" xml:space="preserve">
+    <value>Replace Task.Result with await Task</value>
+  </data>
+  <data name="ResultInAsyncCodeFixProvider_Title" xml:space="preserve">
+    <value>Await the asynchronous call</value>
+  </data>
+  <data name="ResultInAsync_Description" xml:space="preserve">
+    <value>Calling Task.Result in an awaited method may lead to a deadlock. Obtain the result of the task with the await keyword to avoid deadlocks.</value>
+  </data>
+  <data name="ResultInAsync_MessageFormat" xml:space="preserve">
+    <value>await '{0}' rather than calling its Result.</value>
+  </data>
 </root>
