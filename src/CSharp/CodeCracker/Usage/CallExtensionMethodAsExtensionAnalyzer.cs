@@ -46,6 +46,7 @@ namespace CodeCracker.CSharp.Usage
             var methodCaller = childNodes.OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
             if (methodCaller == null) return;
             var argumentsCount = CountArguments(childNodes);
+            if (argumentsCount == 0) return;
             var classSymbol = GetCallerClassSymbol(context.SemanticModel, methodCaller.Expression);
             if (classSymbol == null || !classSymbol.MightContainExtensionMethods) return;
             var methodSymbol = GetCallerMethodSymbol(context.SemanticModel, methodCaller.Name, argumentsCount);
