@@ -96,7 +96,6 @@ namespace CodeCracker.CSharp.Usage
                     var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
                     if (memberAccess?.Name == null) return false;
                     if (memberAccess.Name.Identifier.ToString() != "Dispose" || memberAccess.Name.Arity != 0) return false;
-                    if (!memberAccess.Expression.IsKind(SyntaxKind.IdentifierName)) return false;
                     return fieldSymbol.Equals(semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol);
                 });
             return hasDisposeCall;
