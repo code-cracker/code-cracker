@@ -967,5 +967,29 @@ class TypeName
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+        [Fact]
+        public async Task IgnoreWhenConstructorIsTheLastMember()
+        {
+            const string source = @"
+class Test
+{
+    private int value;
+    public int Value
+    {
+        get { return value; }
+        set { this.value = value; }
+    }
+    public void Foo()
+    {
+        value = 1;
+    }
+    public Test()
+    {
+        value = 8;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
