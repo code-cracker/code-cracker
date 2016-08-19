@@ -36,6 +36,19 @@ namespace CodeCracker.CSharp.Usage
             compilationStartAnalysisContext.RegisterSyntaxTreeAction(context => AnalyzeTree(context, compilation));
         }
 
+        private struct MethodKindComparer : IComparer<MethodKind>
+        {
+            public int Compare(MethodKind x, MethodKind y) =>
+                x - y == 0
+                ? 0
+                : (x == MethodKind.Constructor
+                    ? 1
+                    : (y == MethodKind.Constructor
+                        ? -1
+                        : x - y));
+        }
+        private static readonly MethodKindComparer methodKindComparer = new MethodKindComparer();
+
         private static void AnalyzeTree(SyntaxTreeAnalysisContext context, Compilation compilation)
         {
             if (context.IsGenerated()) return;
@@ -51,6 +64,7 @@ namespace CodeCracker.CSharp.Usage
                 var typeSymbol = semanticModel.GetDeclaredSymbol(type);
                 if (typeSymbol == null) continue;
                 var methods = typeSymbol.GetAllMethodsIncludingFromInnerTypes();
+                methods = methods.OrderByDescending(m => m.MethodKind, methodKindComparer).ToList();
                 foreach (var method in methods)
                 {
                     foreach (var syntaxReference in method.DeclaringSyntaxReferences)
