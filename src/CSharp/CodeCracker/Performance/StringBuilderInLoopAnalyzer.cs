@@ -36,11 +36,11 @@ namespace CodeCracker.CSharp.Usage
         {
             if (context.IsGenerated()) return;
             var assignmentExpression = (AssignmentExpressionSyntax)context.Node;
-            var whileStatement = assignmentExpression.FirstAncestorOfType(typeof(WhileStatementSyntax),
+            var loopStatement = assignmentExpression.FirstAncestorOfType(typeof(WhileStatementSyntax),
                 typeof(ForStatementSyntax),
                 typeof(ForEachStatementSyntax),
                 typeof(DoStatementSyntax));
-            if (whileStatement == null) return;
+            if (loopStatement == null) return;
             var semanticModel = context.SemanticModel;
             var arrayAccess = assignmentExpression.Left as ElementAccessExpressionSyntax;
             var symbolForAssignment = arrayAccess != null
@@ -58,7 +58,17 @@ namespace CodeCracker.CSharp.Usage
             }
             else if (type.Name != "String") return;
             // Do not analyze a string declared within the loop.
-            if (symbolForAssignment is ILocalSymbol && whileStatement.DescendantTokens(((ILocalSymbol)symbolForAssignment).DeclaringSyntaxReferences[0].Span).Any()) return;
+            if (symbolForAssignment is ILocalSymbol && loopStatement.DescendantTokens(((ILocalSymbol)symbolForAssignment).DeclaringSyntaxReferences[0].Span).Any()) return;
+            var memberAccess = assignmentExpression.Left as MemberAccessExpressionSyntax;
+            if (memberAccess != null)
+            {
+                var memberAccessExpressionSymbol = semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol as ILocalSymbol;
+                if (memberAccessExpressionSymbol != null)
+                {
+                    if (loopStatement.DescendantTokens(memberAccessExpressionSymbol.DeclaringSyntaxReferences[0].Span).Any())
+                        return;
+                }
+            }
             if (assignmentExpression.IsKind(SyntaxKind.SimpleAssignmentExpression))
             {
                 if (!(assignmentExpression.Right?.IsKind(SyntaxKind.AddExpression) ?? false)) return;
