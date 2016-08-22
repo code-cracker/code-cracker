@@ -61,7 +61,7 @@ Then add a reference to CodeCracker.dll from within the Analyzers node inside Re
 
 ## SonarQube Plugin
 
-CodeCracker has a SonarQube Plugin that was downloaded at ([Plugins HomePage](http://docs.sonarqube.org/display/PLUG/Other+Plugins). 
+CodeCracker has a SonarQube Plugin that can downloaded at [Plugins HomePage](http://docs.sonarqube.org/display/PLUG/Other+Plugins). 
 
 ## Contributing
 
