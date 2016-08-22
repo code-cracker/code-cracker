@@ -41,7 +41,16 @@ namespace CodeCracker.CSharp.Performance
             var methodSymbol = context.SemanticModel.GetSymbolInfo(memberExpression).Symbol;
             if (methodSymbol?.ContainingType.ToString() != "System.Text.RegularExpressions.Regex" || methodSymbol.IsStatic) return;
 
-            var variableSymbol = context.SemanticModel.GetSymbolInfo(((IdentifierNameSyntax)memberExpression.Expression).Identifier.Parent).Symbol;
+            SyntaxNode syntaxNode;
+            if (memberExpression.Expression is MemberAccessExpressionSyntax)
+            {
+                syntaxNode = ((MemberAccessExpressionSyntax)memberExpression.Expression).Expression;
+            }
+            else
+            {
+                syntaxNode = memberExpression.Expression;
+            }
+            var variableSymbol = context.SemanticModel.GetSymbolInfo(((IdentifierNameSyntax)syntaxNode).Identifier.Parent).Symbol;
             if (variableSymbol?.Kind != SymbolKind.Local) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocationExpression.GetLocation()));
