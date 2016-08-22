@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace CodeCracker.CSharp.Style
 {
@@ -43,15 +44,15 @@ namespace CodeCracker.CSharp.Style
                 context.ReportDiagnostic(diag);
                 return;
             }
-            var returnType = context.SemanticModel.GetSymbolInfo(method.ReturnType).Symbol as INamedTypeSymbol;
+            var semanticModel = context.SemanticModel;
+            var returnType = semanticModel.GetSymbolInfo(method.ReturnType).Symbol as INamedTypeSymbol;
             if (returnType == null) return;
 
-            if (returnType.ToString() == "System.Threading.Tasks.Task" ||
-                (returnType.IsGenericType && returnType.ConstructedFrom.ToString() == "System.Threading.Tasks.Task<TResult>"))
-            {
-                context.ReportDiagnostic(diag);
-            }
-
+            if (returnType.ToString() != "System.Threading.Tasks.Task" &&
+                (!returnType.IsGenericType || returnType.ConstructedFrom.ToString() != "System.Threading.Tasks.Task<TResult>"))
+                return;
+            if (method.IsImplementingInterface(semanticModel)) return;
+            context.ReportDiagnostic(diag);
         }
     }
 }
