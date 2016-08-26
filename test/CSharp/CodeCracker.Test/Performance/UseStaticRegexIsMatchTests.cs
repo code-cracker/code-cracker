@@ -143,5 +143,32 @@ namespace CodeCracker.Test.CSharp.Performance
             }";
             await VerifyCSharpHasNoDiagnosticsAsync(testStatic);
         }
+
+        [Fact]
+        public async Task IgnoresIsMatchCallClassMemberInsideClass()
+        {
+            const string testStatic = @"
+           public class RegexTestClass
+            {
+                private C c;
+
+                private void Test(string text)
+                {
+                    if (c.TestModel.Regex.IsMatch(text))
+                    {
+                        return;
+                    }
+                }
+            }
+            public class C
+            {
+                public TestModel TestModel { get; set; }
+            }
+            public class TestModel
+            {
+                public System.Text.RegularExpressions.Regex Regex { get; set; }
+            }";
+            await VerifyCSharpHasNoDiagnosticsAsync(testStatic);
+        }
     }
 }
