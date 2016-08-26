@@ -40,7 +40,7 @@ namespace CodeCracker.CSharp.Performance
 
             var methodSymbol = context.SemanticModel.GetSymbolInfo(memberExpression).Symbol;
             if (methodSymbol?.ContainingType.ToString() != "System.Text.RegularExpressions.Regex" || methodSymbol.IsStatic) return;
-
+            if (!(memberExpression.Expression is IdentifierNameSyntax)) return;
             var variableSymbol = context.SemanticModel.GetSymbolInfo(((IdentifierNameSyntax)memberExpression.Expression).Identifier.Parent).Symbol;
             if (variableSymbol?.Kind != SymbolKind.Local) return;
 
