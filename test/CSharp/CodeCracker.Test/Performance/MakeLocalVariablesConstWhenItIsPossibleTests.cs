@@ -52,6 +52,13 @@ namespace CodeCracker.Test.CSharp.Performance
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        public async Task IgnoresPointerDeclarations()
+        {
+            var test = @"void* value = null;".WrapInCSharpMethod();
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
         [Fact]
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstant()
         {
