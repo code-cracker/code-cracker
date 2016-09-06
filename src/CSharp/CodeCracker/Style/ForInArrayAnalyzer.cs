@@ -4,6 +4,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace CodeCracker.CSharp.Style
 {
@@ -65,22 +67,50 @@ namespace CodeCracker.CSharp.Style
                     return !identifierSymbol.Equals(arrayId);
                 });
             if (otherUsesOfIndexToken != 0) return;
-            var arrayAccessorSymbols = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
-                                        where s.Declaration.Variables.Count == 1
-                                        let declaration = s.Declaration.Variables.First()
-                                        where declaration?.Initializer?.Value is ElementAccessExpressionSyntax
-                                        let iterableSymbol = semanticModel.GetDeclaredSymbol(declaration)
-                                        let iterableType = ((ILocalSymbol)iterableSymbol).Type
-                                        where !(iterableType.IsPrimitive() ^ iterableType.IsValueType)
-                                        let init = (ElementAccessExpressionSyntax)declaration.Initializer.Value
-                                        let initSymbol = semanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
-                                        where controlVarId.Equals(initSymbol)
-                                        let someArrayInit = semanticModel.GetSymbolInfo(init.Expression).Symbol
-                                        where arrayId.Equals(someArrayInit)
-                                        select arrayId).ToList();
-            if (!arrayAccessorSymbols.Any()) return;
+            var iterableSymbols = (from s in forBlock.Statements.OfType<LocalDeclarationStatementSyntax>()
+                                   where s.Declaration.Variables.Count == 1
+                                   let declaration = s.Declaration.Variables.First()
+                                   where declaration?.Initializer?.Value is ElementAccessExpressionSyntax
+                                   let iterableSymbol = (ILocalSymbol)semanticModel.GetDeclaredSymbol(declaration)
+                                   let iterableType = iterableSymbol.Type
+                                   where !(iterableType.IsPrimitive() ^ iterableType.IsValueType)
+                                   let init = (ElementAccessExpressionSyntax)declaration.Initializer.Value
+                                   let initSymbol = semanticModel.GetSymbolInfo(init.ArgumentList.Arguments.First().Expression).Symbol
+                                   where controlVarId.Equals(initSymbol)
+                                   let someArrayInit = semanticModel.GetSymbolInfo(init.Expression).Symbol
+                                   where arrayId.Equals(someArrayInit)
+                                   select iterableSymbol).ToList();
+            if (!iterableSymbols.Any()) return;
+            if (IsIterationVariableWritten(semanticModel, forBlock, iterableSymbols)) return;
             var diagnostic = Diagnostic.Create(Rule, forStatement.ForKeyword.GetLocation());
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static bool IsIterationVariableWritten(SemanticModel semanticModel, BlockSyntax forBlock, List<ILocalSymbol> iterableSymbols)
+        {
+            var forDescendants = forBlock.DescendantNodes();
+            var assignments = (from assignmentExpression in forDescendants.OfType<AssignmentExpressionSyntax>()
+                               let assignmentLeftSymbol = semanticModel.GetSymbolInfo(assignmentExpression.Left).Symbol
+                               where iterableSymbols.Any(i => i.Equals(assignmentLeftSymbol))
+                               select assignmentExpression).ToList();
+            if (assignments.Any()) return true;
+            var refs = (from argument in forDescendants.OfType<ArgumentSyntax>()
+                        where argument.RefOrOutKeyword != null
+                        let argumentExpressionSymbol = semanticModel.GetSymbolInfo(argument.Expression).Symbol
+                        where iterableSymbols.Any(i => i.Equals(argumentExpressionSymbol))
+                        select argument).ToList();
+            if (refs.Any()) return true;
+            var postfixUnaries = (from postfixUnaryExpression in forDescendants.OfType<PostfixUnaryExpressionSyntax>()
+                                  let operandSymbol = semanticModel.GetSymbolInfo(postfixUnaryExpression.Operand).Symbol
+                                  where iterableSymbols.Any(i => i.Equals(operandSymbol))
+                                  select postfixUnaryExpression).ToList();
+            if (postfixUnaries.Any()) return true;
+            var prefixUnaries = (from postfixUnaryExpression in forDescendants.OfType<PrefixUnaryExpressionSyntax>()
+                                  let operandSymbol = semanticModel.GetSymbolInfo(postfixUnaryExpression.Operand).Symbol
+                                  where iterableSymbols.Any(i => i.Equals(operandSymbol))
+                                  select postfixUnaryExpression).ToList();
+            if (prefixUnaries.Any()) return true;
+            return false;
         }
 
         private static bool IsEnumerable(ISymbol arrayId)

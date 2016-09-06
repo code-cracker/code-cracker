@@ -178,5 +178,59 @@ namespace CodeCracker.Test.CSharp.Style
     }";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task IgnoreMethodFromImplicitlyImplementedInterface()
+        {
+            const string source = @"
+using System.Threading.Tasks;
+public interface IBar
+{
+    Task Foo();
+}
+public class Bar : IBar
+{
+    public Task Foo()
+    {
+        throw new System.NotImplementedException();
+    }
+}";
+            //we still get the diagnostic for the interface itself
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
+                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat, "FooAsync"),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 5, 10) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task IgnoreMethodFromExplicitlyImplementedInterface()
+        {
+            const string source = @"
+using System.Threading.Tasks;
+public interface IBar
+{
+    Task Foo();
+}
+public class Bar : IBar
+{
+    Task IBar.Foo()
+    {
+        throw new System.NotImplementedException();
+    }
+}";
+            //we still get the diagnostic for the interface itself
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
+                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat, "FooAsync"),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 5, 10) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
     }
 }

@@ -38,6 +38,7 @@ namespace CodeCracker.CSharp.Usage
 
             var semanticModel = context.SemanticModel;
             var method = (MethodDeclarationSyntax)context.Node;
+            if (method.Body == null && method.ExpressionBody == null) return;
 
             var methodSymbol = semanticModel.GetDeclaredSymbol(method);
             var isImplicitDispose = methodSymbol.ToString().Contains($"{methodSymbol.ContainingType.Name}.Dispose(");
@@ -56,24 +57,22 @@ namespace CodeCracker.CSharp.Usage
             if (symbol.IsSealed && !ContainsUserDefinedFinalizer(symbol)) return;
             if (!ContainsNonPrivateConstructors(symbol)) return;
 
-            var statements = method.Body?.Statements.OfType<ExpressionStatementSyntax>();
-            if (statements != null)
+            var expressions = method.Body != null
+                ? method.Body?.DescendantNodes().OfType<ExpressionStatementSyntax>().Select(e => e.Expression)
+                : new[] { method.ExpressionBody.Expression };
+            foreach (var expression in expressions)
             {
-                foreach (var statement in statements)
-                {
-                    var invocation = statement.Expression as InvocationExpressionSyntax;
-                    var suppress = invocation?.Expression as MemberAccessExpressionSyntax;
+                var suppress = (expression as InvocationExpressionSyntax)?.Expression as MemberAccessExpressionSyntax;
 
-                    if (suppress?.Name.ToString() != "SuppressFinalize")
-                        continue;
+                if (suppress?.Name.ToString() != "SuppressFinalize")
+                    continue;
 
-                    var containingType = semanticModel.GetSymbolInfo(suppress.Expression).Symbol as INamedTypeSymbol;
-                    if (containingType?.ContainingNamespace.Name != "System")
-                        continue;
+                var containingType = semanticModel.GetSymbolInfo(suppress.Expression).Symbol as INamedTypeSymbol;
+                if (containingType?.ContainingNamespace.Name != "System")
+                    continue;
 
-                    if (containingType.Name == "GC")
-                        return;
-                }
+                if (containingType.Name == "GC")
+                    return;
             }
             context.ReportDiagnostic(Diagnostic.Create(Rule, methodSymbol.Locations[0], symbol.Name));
         }

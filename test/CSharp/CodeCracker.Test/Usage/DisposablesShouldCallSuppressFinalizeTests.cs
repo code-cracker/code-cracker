@@ -7,6 +7,16 @@ namespace CodeCracker.Test.CSharp.Usage
 {
     public class DisposablesShouldCallSuppressFinalizeTests : CodeFixVerifier<DisposablesShouldCallSuppressFinalizeAnalyzer, DisposablesShouldCallSuppressFinalizeCodeFixProvider>
     {
+        [Fact]
+        public async void AlreadyCallsSuppressFinalizeWithArrowMethod()
+        {
+            const string source = @"
+                public class MyType : System.IDisposable
+                {
+                    public void Dispose() => System.GC.SuppressFinalize(this);
+                }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
 
         [Fact]
         public async void AlreadyCallsSuppressFinalize()
@@ -56,6 +66,66 @@ namespace CodeCracker.Test.CSharp.Usage
             };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async void DoNotWarnIfClassImplementsIDisposableWithSuppressFinalizeCallInFinally()
+        {
+            const string test = @"
+                 public class MyType : System.IDisposable
+                 {
+                     public void Dispose()
+                     {
+                         try
+                         {
+                         }
+                         finally
+                         {
+                             System.GC.SuppressFinalize(this);
+                         }
+                     }
+                 }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void DoNotWarnIfClassImplementsIDisposableWithSuppressFinalizeCallInIf()
+        {
+            const string test = @"
+                 public class MyType : System.IDisposable
+                 {
+                     public void Dispose()
+                     {
+                         if (true)
+                         {
+                             System.GC.SuppressFinalize(this);
+                         }
+                     }
+                 }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async void DoNotWarnIfClassImplementsIDisposableWithSuppressFinalizeCallInElse()
+        {
+            const string test = @"
+                 public class MyType : System.IDisposable
+                 {
+                     public void Dispose()
+                     {
+                         if (true)
+                         {
+                         }
+                         else
+                         {
+                             System.GC.SuppressFinalize(this);
+                         }
+                     }
+                 }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]
