@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>codecracker</id>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
         <title>CodeCracker for C# and VB</title>
         <authors>giggio,elemarjr,carloscds</authors>
         <owners>giggio,elemarjr,carloscds</owners>
@@ -19,8 +19,8 @@ This is a community project, free and open source. Everyone is invited to contri
         <copyright>Copyright CodeCracker 2014-2016</copyright>
         <tags>roslyn, analyzers</tags>
         <dependencies>
-            <dependency id="codecracker.CSharp" version="1.0.1" />
-            <dependency id="codecracker.VisualBasic" version="1.0.1" />
+            <dependency id="codecracker.CSharp" version="1.0.2" />
+            <dependency id="codecracker.VisualBasic" version="1.0.2" />
         </dependencies>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System" targetFramework="" />

@@ -14,4 +14,4 @@ Imports System.Runtime.InteropServices
 <Assembly: ComVisible(False)>
 <Assembly: NeutralResourcesLanguage("en")>
 <Assembly: AssemblyVersion("1.0.*")>
-<Assembly: AssemblyFileVersion("1.0.1.0")>
+<Assembly: AssemblyFileVersion("1.0.2.0")>

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="CodeCracker.Vsix..5b99e64c-1418-4a06-990c-fd4cf01f1234" Version="1.0.1" Language="en-US" Publisher="Code Cracker"/>
+    <Identity Id="CodeCracker.Vsix..5b99e64c-1418-4a06-990c-fd4cf01f1234" Version="1.0.2" Language="en-US" Publisher="Code Cracker"/>
     <DisplayName>Code Cracker for Visual Basic</DisplayName>
     <Description xml:space="preserve">An analyzer library for VB that uses Roslyn to produce refactorings, code analysis, and other niceties.
 Check the official project site on code-cracker.github.io.
