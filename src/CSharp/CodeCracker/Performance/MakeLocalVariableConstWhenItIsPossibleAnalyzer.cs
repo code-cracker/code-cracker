@@ -36,8 +36,6 @@ namespace CodeCracker.CSharp.Performance
             var localDeclaration = (LocalDeclarationStatementSyntax)context.Node;
             var semanticModel = context.SemanticModel;
 
-            if (localDeclaration.GetType().IsPointer) return;
-
             if (!localDeclaration.IsConst
                 && IsDeclarationConstFriendly(localDeclaration, semanticModel)
                 && AreVariablesOnlyWrittenInsideDeclaration(localDeclaration, semanticModel) )
