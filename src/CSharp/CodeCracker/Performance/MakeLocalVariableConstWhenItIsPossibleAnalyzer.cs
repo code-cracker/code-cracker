@@ -61,6 +61,7 @@ namespace CodeCracker.CSharp.Performance
                 // if reference type, value is null?
                 var variableTypeName = declaration.Declaration.Type;
                 var variableType = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
+                if (variableType.TypeKind == TypeKind.Pointer) return false;
                 if (variableType.IsReferenceType && variableType.SpecialType != SpecialType.System_String && constantValue.Value != null) return false;
 
                 // nullable?

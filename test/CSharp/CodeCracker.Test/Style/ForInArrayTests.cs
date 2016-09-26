@@ -849,5 +849,70 @@ class MyList
             }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task IgnoreWhenWouldChangeTheIterationVariableWithAssignment()
+        {
+            var source = @"
+var a = new[] { 1 };
+for (var i = 0; i < a.Length; i++)
+{
+    var item = a[i];
+    item = 0;
+}".WrapInCSharpMethod();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoreWhenWouldChangeTheIterationVariableWithRef()
+        {
+            var source = @"
+void Foo()
+{
+    var a = new[] { 1 };
+    for (var i = 0; i < a.Length; i++)
+    {
+        var item = a[i];
+        Bar(ref item);
+    }
+}
+void Bar(ref int i)
+{
+    i = 1;
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoreWhenWouldChangeTheIterationVariableWithPostfixUnary()
+        {
+            var source = @"
+void Foo()
+{
+    var a = new[] { 1 };
+    for (var i = 0; i < a.Length; i++)
+    {
+        var item = a[i];
+        item++;
+    }
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoreWhenWouldChangeTheIterationVariableWithPrefixUnary()
+        {
+            var source = @"
+void Foo()
+{
+    var a = new[] { 1 };
+    for (var i = 0; i < a.Length; i++)
+    {
+        var item = a[i];
+        ++item;
+    }
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }

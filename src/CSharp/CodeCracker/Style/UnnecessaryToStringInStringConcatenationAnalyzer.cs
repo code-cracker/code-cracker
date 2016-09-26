@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -36,39 +37,28 @@ namespace CodeCracker.CSharp.Style
         private static void Analyzer(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
-            var addExpression = context.Node as BinaryExpressionSyntax;
+            var addExpression = (BinaryExpressionSyntax)context.Node;
 
-            if (!addExpression.IsKind(SyntaxKind.AddExpression)) return;
-
-            var hasPlusToken = addExpression.ChildNodesAndTokens().Any(x => x.IsKind(SyntaxKind.PlusToken));
             var hasInvocationExpression = addExpression.ChildNodesAndTokens().Any(x => x.IsKind(SyntaxKind.InvocationExpression));
 
-            //string concatenation must have PlusToken and an InvocationExpression
-            if (!hasPlusToken || !hasInvocationExpression) return;
+            //string concatenation must have an InvocationExpression
+            if (!hasInvocationExpression) return;
             var invocationExpressionsThatHaveToStringCall = GetInvocationExpressionsThatHaveToStringCall(addExpression);
 
             foreach (var expression in invocationExpressionsThatHaveToStringCall)
-            { 
+            {
                 var lastDot = expression.Expression.ChildNodesAndTokens().Last(x => x.IsKind(SyntaxKind.DotToken));
-                var argumentList = expression.ChildNodes().Last(x => x.IsKind(SyntaxKind.ArgumentList));
-
-                //Only default call to ToString method must be accepted
-                if (expression.ArgumentList.Arguments.Count > 0)
-                    break;
-
-                var tree = expression.SyntaxTree;
-                var textspan = new TextSpan(lastDot.Span.Start, argumentList.Span.End - lastDot.Span.Start);
-
-                var diagnostic = Diagnostic.Create(Rule, Location.Create(context.Node.SyntaxTree, textspan));
+                var toStringTextSpan = new TextSpan(lastDot.Span.Start, expression.ArgumentList.Span.End - lastDot.Span.Start);
+                var diagnostic = Diagnostic.Create(Rule, Location.Create(context.Node.SyntaxTree, toStringTextSpan));
                 context.ReportDiagnostic(diagnostic);
             }
         }
 
-        private static System.Collections.Generic.List<InvocationExpressionSyntax> GetInvocationExpressionsThatHaveToStringCall(BinaryExpressionSyntax addExpression)
+        private static IEnumerable<InvocationExpressionSyntax> GetInvocationExpressionsThatHaveToStringCall(BinaryExpressionSyntax addExpression)
         {
             return addExpression.ChildNodes().OfType<InvocationExpressionSyntax>()
-                .Where(x => x.Expression.ToString().EndsWith(@".ToString"))
-                .ToList();
+                //Only default call to ToString method must be accepted
+                .Where(x => x.Expression.ToString().EndsWith(@".ToString") && !x.ArgumentList.Arguments.Any());
         }
     }
 }

@@ -10,6 +10,25 @@ namespace CodeCracker.Test.CSharp.Usage
         CodeFixVerifier<CallExtensionMethodAsExtensionAnalyzer, CallExtensionMethodAsExtensionCodeFixProvider>
     {
         [Fact]
+        public async Task IgnoreWhenMissingArguments()
+        {
+            const string source = @"
+using System.Linq;
+class Foo
+{
+    public static void N()
+    {
+        Exts.M();
+    }
+}
+static class Exts
+{
+    public static void M(this string s) => s.ToString();
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task WhenCallExtensionMethodAsExtensionHasNoDiagnostics()
         {
             const string source = @"

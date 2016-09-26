@@ -1096,5 +1096,46 @@ protected bool AllowedInteraction()
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
+
+        [Fact]
+        public async void IgnoreIfAlreadyCheckedForNull()
+        {
+            const string test = @"
+public static int Get(Func<int,int> method) {
+    return method != null ? method(12345) : 0;
+}";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpClass());
+        }
+
+        [Fact]
+        public async void IgnoreIfInLogicalOrThatCheckedForNull()
+        {
+            const string test = @"
+public class Foo
+{
+    private System.Func<bool> _filter;
+    public void Bar()
+    {
+        var b = _filter == null || _filter();
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpClass());
+        }
+
+        [Fact]
+        public async void IgnoreIfInLogicalAndThatCheckedForNotNull()
+        {
+            const string test = @"
+public class Foo
+{
+    private System.Func<bool> _filter;
+    public void Bar()
+    {
+        var b = _filter != null && _filter();
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpClass());
+        }
     }
 }
