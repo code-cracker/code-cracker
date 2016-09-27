@@ -80,7 +80,8 @@
         NameOf_External = 108,
         StringFormatArgs_ExtraArgs = 111,
         AlwaysUseVarOnPrimitives = 105,
+        RemoveAtFromVariablesThatAreNotKeywords = 117,
         UnnecessaryToStringInStringConcatenation = 118,
-        RemoveAtFromVariablesThatAreNotKeywords = 119,
+        
     }
 }

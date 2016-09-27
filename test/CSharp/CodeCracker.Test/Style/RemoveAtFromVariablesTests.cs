@@ -124,7 +124,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 Id = DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords.ToDiagnosticId(),
                 Message = "Remove @ from variables that are not keywords.",
-                Severity = DiagnosticSeverity.Warning,
+                Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -149,7 +149,7 @@ namespace CodeCracker.Test.CSharp.Style
             {
                 Id = DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords.ToDiagnosticId(),
                 Message = "Remove @ from variables that are not keywords.",
-                Severity = DiagnosticSeverity.Warning,
+                Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
             await VerifyCSharpDiagnosticAsync(test, expected);

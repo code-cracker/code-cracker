@@ -5,7 +5,89 @@ namespace CodeCracker
 {
     public static class Extensions
     {
-        public static string ToDiagnosticId(this DiagnosticId diagnosticId) => $"CC{(int)diagnosticId :D4}";
+        public static string ToDiagnosticId(this DiagnosticId diagnosticId) => $"CC{(int)diagnosticId:D4}";
+
+        //extracted from http://source.roslyn.io/#BoundTreeGenerator/BoundNodeClassWriter.cs,1dcced07beac9209,references
+        private static string[] csharpKeywords = new string[] 
+        {
+                "bool",
+                "byte",
+                "sbyte",
+                "short",
+                "ushort",
+                "int",
+                "uint",
+                "long",
+                "ulong",
+                "double",
+                "float",
+                "decimal",
+                "string",
+                "char",
+                "object",
+                "typeof",
+                "sizeof",
+                "null",
+                "true",
+                "false",
+                "if",
+                "else",
+                "while",
+                "for",
+                "foreach",
+                "do",
+                "switch",
+                "case",
+                "default",
+                "lock",
+                "try",
+                "throw",
+                "catch",
+                "finally",
+                "goto",
+                "break",
+                "continue",
+                "return",
+                "public",
+                "private",
+                "internal",
+                "protected",
+                "static",
+                "readonly",
+                "sealed",
+                "const",
+                "new",
+                "override",
+                "abstract",
+                "virtual",
+                "partial",
+                "ref",
+                "out",
+                "in",
+                "where",
+                "params",
+                "this",
+                "base",
+                "namespace",
+                "using",
+                "class",
+                "struct",
+                "interface",
+                "delegate",
+                "checked",
+                "get",
+                "set",
+                "add",
+                "remove",
+                "operator",
+                "implicit",
+                "explicit",
+                "fixed",
+                "extern",
+                "event",
+                "enum",
+                "unsafe"
+        };
 
         public static IDictionary<K, V> AddRange<K, V>(this IDictionary<K, V> dictionary, IDictionary<K, V> newValues)
         {
@@ -33,89 +115,7 @@ namespace CodeCracker
 
         public static bool IsCSharpKeyword(this string name)
         {
-            switch (name)
-            {
-                case "bool":
-                case "byte":
-                case "sbyte":
-                case "short":
-                case "ushort":
-                case "int":
-                case "uint":
-                case "long":
-                case "ulong":
-                case "double":
-                case "float":
-                case "decimal":
-                case "string":
-                case "char":
-                case "object":
-                case "typeof":
-                case "sizeof":
-                case "null":
-                case "true":
-                case "false":
-                case "if":
-                case "else":
-                case "while":
-                case "for":
-                case "foreach":
-                case "do":
-                case "switch":
-                case "case":
-                case "default":
-                case "lock":
-                case "try":
-                case "throw":
-                case "catch":
-                case "finally":
-                case "goto":
-                case "break":
-                case "continue":
-                case "return":
-                case "public":
-                case "private":
-                case "internal":
-                case "protected":
-                case "static":
-                case "readonly":
-                case "sealed":
-                case "const":
-                case "new":
-                case "override":
-                case "abstract":
-                case "virtual":
-                case "partial":
-                case "ref":
-                case "out":
-                case "in":
-                case "where":
-                case "params":
-                case "this":
-                case "base":
-                case "namespace":
-                case "using":
-                case "class":
-                case "struct":
-                case "interface":
-                case "delegate":
-                case "checked":
-                case "get":
-                case "set":
-                case "add":
-                case "remove":
-                case "operator":
-                case "implicit":
-                case "explicit":
-                case "fixed":
-                case "extern":
-                case "event":
-                case "enum":
-                case "unsafe":
-                    return true;
-                default:
-                    return false;
-            }
+            return (Array.IndexOf(csharpKeywords, name) > -1);
         }
     }
 }

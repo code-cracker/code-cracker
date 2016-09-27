@@ -15,28 +15,17 @@ namespace CodeCracker.CSharp.Style
         internal const string Category = SupportedCategories.Style;
         const string Description = "Usage of @ on variable names only when it is a CSharp keyword";
 
-        internal static readonly DiagnosticDescriptor RuleNonPrimitives = new DiagnosticDescriptor(
+        internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords.ToDiagnosticId(),
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords));
 
-        internal static readonly DiagnosticDescriptor RulePrimitives = new DiagnosticDescriptor(
-            DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords.ToDiagnosticId(),
-            Title,
-            MessageFormat,
-            Category,
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: Description,
-            helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords));
-
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(RuleNonPrimitives, RulePrimitives);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context) =>
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LocalDeclarationStatement);
@@ -62,7 +51,7 @@ namespace CodeCracker.CSharp.Style
                     var identifier = variable.Identifier.ValueText;
                     if (identifier.IsCSharpKeyword()) return;
 
-                    var rule = variableType.IsPrimitive() ? RulePrimitives : RuleNonPrimitives;
+                    var rule = Rule;
                     var diagnostic = Diagnostic.Create(rule, variableDeclaration.Type.GetLocation());
                     context.ReportDiagnostic(diagnostic);
                 }
