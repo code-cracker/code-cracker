@@ -51,8 +51,7 @@ namespace CodeCracker.CSharp.Style
                     var identifier = variable.Identifier.ValueText;
                     if (identifier.IsCSharpKeyword()) return;
 
-                    var rule = Rule;
-                    var diagnostic = Diagnostic.Create(rule, variableDeclaration.Type.GetLocation());
+                    var diagnostic = Diagnostic.Create(Rule, variableDeclaration.Type.GetLocation());
                     context.ReportDiagnostic(diagnostic);
                 }
             }
