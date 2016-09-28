@@ -85,6 +85,105 @@ namespace CodeCracker.Test.CSharp.Style
         [InlineData("event")]
         [InlineData("enum")]
         [InlineData("unsafe")]
+        public async Task IgnoresFieldDeclarationsUsingAtSymbolForKeywords(string value)
+        {
+            var test = @"
+    using System;
+
+    namespace ConsoleApplication1
+    {
+        class Foo
+        {
+            string @" + value + @"= ""Foo"";
+            public async Task Bar()
+            {
+                
+            }
+        }
+    }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+
+        }
+
+        [Theory]
+        [InlineData("bool")]
+        [InlineData("byte")]
+        [InlineData("sbyte")]
+        [InlineData("short")]
+        [InlineData("ushort")]
+        [InlineData("int")]
+        [InlineData("uint")]
+        [InlineData("long")]
+        [InlineData("ulong")]
+        [InlineData("double")]
+        [InlineData("float")]
+        [InlineData("decimal")]
+        [InlineData("string")]
+        [InlineData("char")]
+        [InlineData("object")]
+        [InlineData("typeof")]
+        [InlineData("sizeof")]
+        [InlineData("null")]
+        [InlineData("true")]
+        [InlineData("false")]
+        [InlineData("if")]
+        [InlineData("else")]
+        [InlineData("while")]
+        [InlineData("for")]
+        [InlineData("foreach")]
+        [InlineData("do")]
+        [InlineData("switch")]
+        [InlineData("case")]
+        [InlineData("default")]
+        [InlineData("lock")]
+        [InlineData("try")]
+        [InlineData("throw")]
+        [InlineData("catch")]
+        [InlineData("finally")]
+        [InlineData("goto")]
+        [InlineData("break")]
+        [InlineData("continue")]
+        [InlineData("return")]
+        [InlineData("public")]
+        [InlineData("private")]
+        [InlineData("internal")]
+        [InlineData("protected")]
+        [InlineData("static")]
+        [InlineData("readonly")]
+        [InlineData("sealed")]
+        [InlineData("const")]
+        [InlineData("new")]
+        [InlineData("override")]
+        [InlineData("abstract")]
+        [InlineData("virtual")]
+        [InlineData("partial")]
+        [InlineData("ref")]
+        [InlineData("out")]
+        [InlineData("in")]
+        [InlineData("where")]
+        [InlineData("params")]
+        [InlineData("this")]
+        [InlineData("base")]
+        [InlineData("namespace")]
+        [InlineData("using")]
+        [InlineData("class")]
+        [InlineData("struct")]
+        [InlineData("interface")]
+        [InlineData("delegate")]
+        [InlineData("checked")]
+        [InlineData("get")]
+        [InlineData("set")]
+        [InlineData("add")]
+        [InlineData("remove")]
+        [InlineData("operator")]
+        [InlineData("implicit")]
+        [InlineData("explicit")]
+        [InlineData("fixed")]
+        [InlineData("extern")]
+        [InlineData("event")]
+        [InlineData("enum")]
+        [InlineData("unsafe")]
         public async Task IgnoresDeclarationsUsingAtSymbolForKeywords(string value)
         {
             var test = @"

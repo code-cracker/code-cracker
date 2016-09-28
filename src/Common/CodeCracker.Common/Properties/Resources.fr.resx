@@ -214,4 +214,13 @@ Si l'erreur est attendu considérer ajouter du logging ou modifier le flow de co
   <data name="EmptyCatchBlockCodeFixProvider_RemoveAndDocumentation" xml:space="preserve">
     <value>Enlever le block Catch vide et ajouter un lien vers la documentation des bonnes pratiques de Try...Catch</value>
   </data>
+  <data name="RemoveAtFromVariablesAnalyzer_Description" xml:space="preserve">
+    <value>Utilisation de @ sur les noms de variables seulement quand il est un mot-clé CSharp</value>
+  </data>
+  <data name="RemoveAtFromVariablesAnalyzer_MessageFormat" xml:space="preserve">
+    <value>Retirer @ à partir de variables qui ne sont pas des mots-clés.</value>
+  </data>
+  <data name="RemoveAtFromVariablesAnalyzer_Title" xml:space="preserve">
+    <value>Retirer @ à partir de variables qui ne sont pas des mots-clés.</value>
+  </data>
 </root>

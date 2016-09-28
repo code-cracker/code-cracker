@@ -260,6 +260,33 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Usage of @ on variable names only when it is a CSharp keyword.
+        /// </summary>
+        public static string RemoveAtFromVariablesAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("RemoveAtFromVariablesAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove @ from variables that are not keywords..
+        /// </summary>
+        public static string RemoveAtFromVariablesAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("RemoveAtFromVariablesAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove @ from variables that are not keywords..
+        /// </summary>
+        public static string RemoveAtFromVariablesAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("RemoveAtFromVariablesAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to String interpolation allows for better reading of the resulting string when compared to String.Format. You should use String.Format only when another method is supplying the format string..
         /// </summary>
         public static string StringFormatAnalyzer_Description {

@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeCracker.Properties;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -10,10 +11,11 @@ namespace CodeCracker.CSharp.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RemoveAtFromVariablesAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Remove @ from variables that are not keywords.";
-        internal const string MessageFormat = "Remove @ from variables that are not keywords.";
+        internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.RemoveAtFromVariablesAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.RemoveAtFromVariablesAnalyzer_MessageFormat), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.RemoveAtFromVariablesAnalyzer_Description), Resources.ResourceManager, typeof(Resources));
+
         internal const string Category = SupportedCategories.Style;
-        const string Description = "Usage of @ on variable names only when it is a CSharp keyword";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords.ToDiagnosticId(),
