@@ -205,7 +205,7 @@ namespace CodeCracker.Test.CSharp.Style
         }
 
         [Fact]
-        public async Task DeclarationsTypePrimitiveWithAtSymbolOnNameButNotKeywordsCreatesDiagnosic()
+        public async Task DeclarationsTypePrimitiveWithAtSymbolButNotKeywordsCreatesDiagnosic()
         {
             const string test = @"
     using System;
@@ -224,13 +224,13 @@ namespace CodeCracker.Test.CSharp.Style
                 Id = DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords.ToDiagnosticId(),
                 Message = "Remove @ from variables that are not keywords.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 24) }
             };
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
         [Fact]
-        public async Task DeclarationsWithAtSymbolOnNameButNotKeywordsCreatesDiagnosic()
+        public async Task DeclarationsWithAtSymbolButNotKeywordsCreatesDiagnosic()
         {
             const string test = @"
     using System;
@@ -249,9 +249,53 @@ namespace CodeCracker.Test.CSharp.Style
                 Id = DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords.ToDiagnosticId(),
                 Message = "Remove @ from variables that are not keywords.",
                 Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 21) }
             };
             await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task ParametersWithAtSymbolButNotKeywordsCreatesDiagnosic()
+        {
+            const string test = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class Foo
+        {
+            void Bar(string @x)
+            {
+                
+            }
+        }
+    }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.RemoveAtFromVariablesThatAreNotKeywords.ToDiagnosticId(),
+                Message = "Remove @ from variables that are not keywords.",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 29) }
+            };
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task ParametersWithAtSymbolButKeywordsShouldNotCreatesDiagnosic()
+        {
+            const string test = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class Foo
+        {
+            void Bar(string @class)
+            {
+                
+            }
+        }
+    }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
         [Fact]

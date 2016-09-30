@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -29,32 +30,32 @@ namespace CodeCracker.CSharp.Style
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-        public override void Initialize(AnalysisContext context) =>
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LocalDeclarationStatement);
+        public override void Initialize(AnalysisContext context) => context.RegisterSyntaxNodeAction
+            (
+                AnalyzeNode,
+                SyntaxKind.VariableDeclaration,
+                SyntaxKind.FieldDeclaration,
+                SyntaxKind.Parameter
+            );
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
-            var localDeclaration = (LocalDeclarationStatementSyntax)context.Node;
-            if (localDeclaration.IsConst) return;
 
-            var variableDeclaration = localDeclaration.ChildNodes()
-                .OfType<VariableDeclarationSyntax>()
-                .FirstOrDefault();
+            var nodes = context.Node.SyntaxTree.GetRoot().DescendantNodes();
 
-            var semanticModel = context.SemanticModel;
-            var variableTypeName = localDeclaration.Declaration.Type;
-            var variableType = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
-
-            foreach (var variable in variableDeclaration.Variables)
+            foreach (var node in nodes)
             {
-                if (variable.Identifier.Text.StartsWith(@"@"))
+                foreach (var token in node.ChildTokens())
                 {
-                    var identifier = variable.Identifier.ValueText;
-                    if (identifier.IsCSharpKeyword()) return;
+                    if (token.Text.StartsWith(@"@"))
+                    {
+                        var identifier = token.ValueText;
+                        if (identifier.IsCSharpKeyword()) return;
 
-                    var diagnostic = Diagnostic.Create(Rule, variableDeclaration.Type.GetLocation());
-                    context.ReportDiagnostic(diagnostic);
+                        var diagnostic = Diagnostic.Create(Rule, token.GetLocation());
+                        context.ReportDiagnostic(diagnostic);
+                    }
                 }
             }
         }
