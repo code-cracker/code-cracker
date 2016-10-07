@@ -16,7 +16,8 @@ namespace CodeCracker.CSharp.Usage
     public class ReadonlyFieldCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
-            ImmutableArray.Create(DiagnosticId.ReadonlyField.ToDiagnosticId());
+            ImmutableArray.Create(DiagnosticId.ReadonlyField.ToDiagnosticId(), 
+                DiagnosticId.ReadOnlyComplexTypes.ToDiagnosticId());
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
