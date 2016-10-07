@@ -61,7 +61,7 @@ namespace codeCrackerConsole
             await VerifyCSharpFixAsync(source1, source2, 0);
         }
         [Fact]
-        public async Task protectedFieldDontCreateDiagnostics() {
+        public async Task protectedFieldDoesNotCreateDiagnostics() {
             const string source = @"
             namespace ConsoleApplication1
             {
@@ -78,7 +78,7 @@ public class MyClass
         }
 
         [Fact]
-        public async Task publicFieldDontCreateDiagnostics()
+        public async Task publicFieldDoesNotCreateDiagnostic()
         {
             const string source = @"
             namespace ConsoleApplication1
@@ -96,7 +96,7 @@ public class MyClass
         }
 
         [Fact]
-        public async Task publicFieldWithClassDontCreateDiagnostics()
+        public async Task publicFieldWithClassDoesNotCreateDiagnostics()
         {
             const string source = @"
             namespace ConsoleApplication1
@@ -114,7 +114,7 @@ public class MyClass
         }      
 
         [Fact]
-        public async Task readOnlyVarDontCreateDiagnostics()
+        public async Task readOnlyVarDoesNotCreateDiagnostics()
         {
             const string source = @"
             namespace ConsoleApplication1
@@ -128,7 +128,7 @@ public class MyClass
         }
 
         [Fact]
-        public async Task readOnlyFieldDontCreateDiagnostics()
+        public async Task readOnlyFieldDoesNotCreateDiagnostic()
         {
             const string source = @"
             namespace ConsoleApplication1
@@ -142,7 +142,7 @@ public class MyClass
         }
 
         [Fact]
-        public async Task primitiveTypesDontCreateDiagnostics()
+        public async Task primitiveTypesDoesNotCreateDiagnostics()
         {
             const string source = @"
             namespace ConsoleApplication1
@@ -170,7 +170,7 @@ public class MyClass
         }
 
         [Fact]
-        public async Task enumDontCreateDiagnostics()
+        public async Task enumDoesNotCreateDiagnostics()
         {
             const string source = @"
             namespace ConsoleApplication1

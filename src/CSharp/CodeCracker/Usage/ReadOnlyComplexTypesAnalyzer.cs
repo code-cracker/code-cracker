@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Message,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ReadOnlyComplexTypes));
 
