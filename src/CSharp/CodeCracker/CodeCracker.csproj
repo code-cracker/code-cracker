@@ -46,6 +46,8 @@
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInPropertyType.cs" />
     <Compile Include="Design\MakeMethodStaticAnalyzer.cs" />
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
+    <Compile Include="Design\SwitchWithoutDefaultAnalyzer.cs" />
+    <Compile Include="Design\SwitchWithoutDefaultCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Extensions\CSharpGeneratedCodeAnalysisExtensions.cs" />
     <Compile Include="Extensions\InitializerState.cs" />

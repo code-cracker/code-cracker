@@ -129,6 +129,7 @@
     <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
     <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
     <Compile Include="Design\MakeMethodStaticTests.cs" />
+    <Compile Include="Design\SwicthWithoutDefaultTests.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
