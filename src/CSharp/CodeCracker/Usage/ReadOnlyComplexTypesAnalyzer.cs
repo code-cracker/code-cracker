@@ -12,10 +12,10 @@ namespace CodeCracker.CSharp.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ReadOnlyComplexTypesAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Complex files readonly";
+        internal const string Title = "Complex files must be readonly";
         internal const string Message = "Make '{0}' readonly";
         internal const string Category = SupportedCategories.Usage;
-        const string Description = "Complex files must be readonly.";
+        const string Description = "Complex files must be readonly";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.ReadOnlyComplexTypes.ToDiagnosticId(),
@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Message,
             Category,
             DiagnosticSeverity.Warning,
-            isEnabledByDefault: false,
+            isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ReadOnlyComplexTypes));
 

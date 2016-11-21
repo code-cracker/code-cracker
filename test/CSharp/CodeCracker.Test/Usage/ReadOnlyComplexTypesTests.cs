@@ -40,7 +40,7 @@ namespace CodeCracker.Test.CSharp.Usage
         }
 
         [Fact]
-        public async Task dateTimeCreateDiagnostics()
+        public async Task dateTimeDoesNotCreateDiagnostics()
         {
             const string source1 = @"
 namespace codeCrackerConsole
@@ -50,15 +50,7 @@ namespace codeCrackerConsole
         private readonly DateTime dt = new DateTime(1, 1, 2015);
     }
 }";
-            const string source2 = @"
-namespace codeCrackerConsole
-{
-    public class MyClass
-    {
-        private readonly DateTime dt = new DateTime(1, 1, 2015);
-    }
-}";
-            await VerifyCSharpFixAsync(source1, source2, 0);
+          await VerifyCSharpHasNoDiagnosticsAsync(source1);
         }
         [Fact]
         public async Task protectedFieldDoesNotCreateDiagnostics() {
@@ -411,6 +403,38 @@ class TypeName2
         }
     }";
             await VerifyCSharpFixAsync(source1, source2, 0);
+        }
+        [Fact]
+        public async Task enumerationsDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    public class EnumTest
+    {
+        enum Days { Sun, Mon, Tue, Wed, Thu, Fri, Sat };
+
+        static void Main()
+        {
+            int x = (int)Days.Sun;
+            int y = (int)Days.Fri;
+            int z = x + y;            
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
+        }
+
+        [Fact]
+        public async Task privateEnumerationsDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    public class EnumTest
+    {
+        enum Days { Sun, Mon, Tue, Wed, Thu, Fri, Sat };
+        private Days enumDays;
+        static void Main()
+        {            
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
         }
     }
 }
