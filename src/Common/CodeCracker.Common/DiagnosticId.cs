@@ -82,5 +82,6 @@
         AlwaysUseVarOnPrimitives = 105,
         UnnecessaryToStringInStringConcatenation = 118,
         SwitchCaseWithoutDefault = 120,
+        ReadOnlyComplexTypes = 121,
     }
 }
