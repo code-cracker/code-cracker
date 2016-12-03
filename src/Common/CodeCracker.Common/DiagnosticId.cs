@@ -86,6 +86,7 @@
         XmlDocumentation_MissingInXml = 97,
         ChangeCountMethodToProperty = 98,
         PreferAnyToCountGreaterThanZero = 99,
+        ConvertMethodToProperty = 103,
         AlwaysUseVarOnPrimitives = 105,
         NameOf_External = 108,
         InconsistentParameterDefaultValue = 110,

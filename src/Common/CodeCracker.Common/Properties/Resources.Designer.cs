@@ -161,6 +161,24 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Convert this method to a property.
+        /// </summary>
+        public static string ConvertMethodToProperty_MessageFormat {
+            get {
+                return ResourceManager.GetString("ConvertMethodToProperty_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert method to property.
+        /// </summary>
+        public static string ConvertMethodToProperty_Title {
+            get {
+                return ResourceManager.GetString("ConvertMethodToProperty_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to none.
         /// </summary>
         public static string DefaultValue_None {

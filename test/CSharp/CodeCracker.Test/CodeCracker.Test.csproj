@@ -149,6 +149,7 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.Base.cs" />
     <Compile Include="Refactoring\ChangeAnyToAllTests.cs" />
     <Compile Include="Refactoring\ChangeAsToCastTests.cs" />
+    <Compile Include="Refactoring\ConvertMethodToPropertyTest.cs" />
     <Compile Include="Refactoring\MakeMethodNonAsyncTests.cs" />
     <Compile Include="Refactoring\MergeNestedIfTest.cs" />
     <Compile Include="Refactoring\IntroduceFieldFromConstructorTest.cs" />
