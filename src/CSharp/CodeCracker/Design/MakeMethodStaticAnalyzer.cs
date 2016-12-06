@@ -52,16 +52,8 @@ namespace CodeCracker.CSharp.Design
 
             var semanticModel = context.SemanticModel;
             var methodSymbol = semanticModel.GetDeclaredSymbol(method);
-            var theClass = methodSymbol.ContainingType;
-            if (theClass.TypeKind == TypeKind.Interface) return;
-
-            var interfaceMembersWithSameName = theClass.AllInterfaces.SelectMany(i => i.GetMembers(methodSymbol.Name));
-            foreach (var memberSymbol in interfaceMembersWithSameName)
-            {
-                if (memberSymbol.Kind != SymbolKind.Method) continue;
-                var implementation = theClass.FindImplementationForInterfaceMember(memberSymbol);
-                if (implementation != null && implementation.Equals(methodSymbol)) return;
-            }
+            if (methodSymbol == null) return;
+            if (methodSymbol.IsImplementingInterface()) return;
 
             if (method.Body == null)
             {

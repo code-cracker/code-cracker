@@ -29,7 +29,6 @@ namespace CodeCracker.Test.CSharp.Performance
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
-
         [Fact]
         public async Task WhileWithoutStringConcatDoesNotCreateDiagnostic()
         {
@@ -629,6 +628,29 @@ public void Looper(ref int a)
         a += 1;
     }
 }".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoreWhenVariableInTheLoopContextIsChanged()
+        {
+            const string source = @"
+class MyObject
+{
+    public string MyObjectString;
+}
+class MyClass
+{
+    private readonly System.Collections.Generic.List<MyObject> items = new System.Collections.Generic.List<MyObject>();
+    private void M(string suffix)
+    {
+        foreach (MyObject o in items)
+        {
+            o.MyObjectString += suffix;
+        }
+    }
+}
+    }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }

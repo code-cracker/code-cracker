@@ -877,5 +877,38 @@ namespace CodeCracker
                 name = baseName + inscrementer++;
             return name;
         }
+
+        public static bool IsImplementingInterface(this MemberDeclarationSyntax member, SemanticModel semanticModel) =>
+            semanticModel.GetDeclaredSymbol(member).IsImplementingInterface();
+
+        public static bool IsImplementingInterface(this ISymbol memberSymbol)
+        {
+            if (memberSymbol == null) return false;
+            IMethodSymbol methodSymbol;
+            IEventSymbol eventSymbol;
+            IPropertySymbol propertySymbol;
+            if ((methodSymbol = memberSymbol as IMethodSymbol) != null)
+            {
+                if (methodSymbol.ExplicitInterfaceImplementations.Any()) return true;
+            }
+            else if ((propertySymbol = memberSymbol as IPropertySymbol) != null)
+            {
+                if (propertySymbol.ExplicitInterfaceImplementations.Any()) return true;
+            }
+            else if ((eventSymbol = memberSymbol as IEventSymbol) != null)
+            {
+                if (eventSymbol.ExplicitInterfaceImplementations.Any()) return true;
+            }
+            else return false;
+            var type = memberSymbol.ContainingType;
+            if (type == null) return false;
+            var interfaceMembersWithSameName = type.AllInterfaces.SelectMany(i => i.GetMembers(memberSymbol.Name));
+            foreach (var interfaceMember in interfaceMembersWithSameName)
+            {
+                var implementation = type.FindImplementationForInterfaceMember(interfaceMember);
+                if (implementation != null && implementation.Equals(memberSymbol)) return true;
+            }
+            return false;
+        }
     }
 }

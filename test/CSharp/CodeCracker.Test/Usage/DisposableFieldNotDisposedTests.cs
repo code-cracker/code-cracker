@@ -46,6 +46,29 @@ public class A : IDisposable
         }
 
         [Fact]
+        public async Task WhenUsingTheDisposablePatternWithNullPropagationItDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+using System;
+using System.IO;
+public class A : IDisposable
+{
+    private MemoryStream disposableField = new MemoryStream();
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    private void Dispose(bool disposing)
+    {
+        if (disposing)
+            disposableField?.Dispose();
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task WhenAFieldThatImplementsIDisposableIsAssignedThroughAMethodCallCreatesDiagnostic()
         {
             const string source = @"
@@ -199,6 +222,30 @@ public class A : IDisposable
             public void Dispose()
             {
                 field.Dispose();
+            }
+        }
+        class D : IDisposable
+        {
+            public static D Create() => new D();
+            public void Dispose() { }
+        }
+    }";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task WhenAFieldThatImplementsIDisposableIsDisposedWithThisDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+    using System;
+    namespace ConsoleApplication1
+    {
+        class TypeName : IDisposable
+        {
+            private D field = D.Create();
+            public void Dispose()
+            {
+                this.field.Dispose();
             }
         }
         class D : IDisposable

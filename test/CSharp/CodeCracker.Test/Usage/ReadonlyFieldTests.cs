@@ -20,6 +20,32 @@ class TypeName
         }
 
         [Fact]
+        public async Task IgnoreOut()
+        {
+            const string source = @"
+public class C
+{
+    private string field = "";
+    private static void Foo(out string bar) => bar = "";
+    public void Baz() => Foo(out field);
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
+        }
+
+        [Fact]
+        public async Task IgnoreRef()
+        {
+            const string source = @"
+public class C
+{
+    private string field = "";
+    private static void Foo(ref string bar) => bar = "";
+    public void Baz() => Foo(ref field);
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(new[] { source });
+        }
+
+        [Fact]
         public async Task IgnorePostIncrement()
         {
             const string source = @"
@@ -856,7 +882,7 @@ class TypeName
         public class MyClass
         {
             private MyStruct myStruct = default(MyStruct);
-            
+
             private struct MyStruct
             {
                 public int Value;
@@ -940,6 +966,30 @@ class TypeName
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 28) }
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task IgnoreWhenConstructorIsTheLastMember()
+        {
+            const string source = @"
+class Test
+{
+    private int value;
+    public int Value
+    {
+        get { return value; }
+        set { this.value = value; }
+    }
+    public void Foo()
+    {
+        value = 1;
+    }
+    public Test()
+    {
+        value = 8;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
     }
 }

@@ -52,6 +52,9 @@ namespace CodeCracker.CSharp.Design
 
             if (HasCheckForNullThatReturns(invocation, context.SemanticModel, symbol)) return;
             if (IsInsideANullCheck(invocation, context.SemanticModel, symbol)) return;
+            if (IsPartOfATernaryThatChecksForNull(invocation, context.SemanticModel, symbol)) return;
+            if (IsPartOfALogicalOrThatChecksForNull(invocation, context.SemanticModel, symbol)) return;
+            if (IsPartOfALogicalAndThatChecksForNotNull(invocation, context.SemanticModel, symbol)) return;
             if (symbol.IsReadOnlyAndInitializedForCertain(context)) return;
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), identifier.Identifier.Text));
@@ -91,22 +94,37 @@ namespace CodeCracker.CSharp.Design
             return false;
         }
 
-        private static bool IsInsideANullCheck(InvocationExpressionSyntax invocation, SemanticModel semanticModel, ISymbol symbol)
+        private static bool IsPartOfATernaryThatChecksForNull(InvocationExpressionSyntax invocation, SemanticModel semanticModel, ISymbol symbol) =>
+            IsConditionThatChecksForNotEqualsNull(invocation.FirstAncestorOfType<ConditionalExpressionSyntax>()?.Condition, semanticModel, symbol);
+
+        private static bool IsPartOfALogicalOrThatChecksForNull(InvocationExpressionSyntax invocation, SemanticModel semanticModel, ISymbol symbol) =>
+            IsConditionThatChecksForEqualsNull(invocation.FirstAncestorOfKind<BinaryExpressionSyntax>(SyntaxKind.LogicalOrExpression)?.Left, semanticModel, symbol);
+
+        private static bool IsPartOfALogicalAndThatChecksForNotNull(InvocationExpressionSyntax invocation, SemanticModel semanticModel, ISymbol symbol) =>
+            IsConditionThatChecksForNotEqualsNull(invocation.FirstAncestorOfKind<BinaryExpressionSyntax>(SyntaxKind.LogicalAndExpression)?.Left, semanticModel, symbol);
+
+        private static bool IsInsideANullCheck(InvocationExpressionSyntax invocation, SemanticModel semanticModel, ISymbol symbol) =>
+            invocation.Ancestors().OfType<IfStatementSyntax>().Any(@if => IsConditionThatChecksForNotEqualsNull(@if.Condition, semanticModel, symbol));
+
+        private static bool IsConditionThatChecksForNotEqualsNull(ExpressionSyntax condition, SemanticModel semanticModel, ISymbol symbol) =>
+            IsConditionThatChecksForNull(condition, semanticModel, symbol, SyntaxKind.NotEqualsExpression);
+
+        private static bool IsConditionThatChecksForEqualsNull(ExpressionSyntax condition, SemanticModel semanticModel, ISymbol symbol) =>
+            IsConditionThatChecksForNull(condition, semanticModel, symbol, SyntaxKind.EqualsExpression);
+
+        private static bool IsConditionThatChecksForNull(ExpressionSyntax condition, SemanticModel semanticModel, ISymbol symbol, SyntaxKind binarySyntaxKind)
         {
-            var ifs = invocation.Ancestors().OfType<IfStatementSyntax>();
-            foreach (IfStatementSyntax @if in ifs)
-            {
-                if (!@if.Condition?.IsKind(SyntaxKind.NotEqualsExpression) ?? true) continue;
-                var equals = (BinaryExpressionSyntax)@if.Condition;
-                if (equals.Left == null || equals.Right == null) continue;
-                ISymbol identifierSymbol;
-                if (equals.Right.IsKind(SyntaxKind.NullLiteralExpression) && equals.Left.IsKind(SyntaxKind.IdentifierName))
-                    identifierSymbol = semanticModel.GetSymbolInfo(equals.Left).Symbol;
-                else if (equals.Left.IsKind(SyntaxKind.NullLiteralExpression) && equals.Right.IsKind(SyntaxKind.IdentifierName))
-                    identifierSymbol = semanticModel.GetSymbolInfo(equals.Right).Symbol;
-                else continue;
-                if (symbol.Equals(identifierSymbol)) return true;
-            }
+            if (condition == null) return false;
+            if (!condition.IsKind(binarySyntaxKind)) return false;
+            var equals = (BinaryExpressionSyntax)condition;
+            if (equals.Left == null || equals.Right == null) return false;
+            ISymbol identifierSymbol;
+            if (equals.Right.IsKind(SyntaxKind.NullLiteralExpression) && equals.Left.IsKind(SyntaxKind.IdentifierName))
+                identifierSymbol = semanticModel.GetSymbolInfo(equals.Left).Symbol;
+            else if (equals.Left.IsKind(SyntaxKind.NullLiteralExpression) && equals.Right.IsKind(SyntaxKind.IdentifierName))
+                identifierSymbol = semanticModel.GetSymbolInfo(equals.Right).Symbol;
+            else return false;
+            if (symbol.Equals(identifierSymbol)) return true;
             return false;
         }
     }

@@ -1,5 +1,33 @@
 # Change Log
 
+## [v1.0.1](https://github.com/code-cracker/code-cracker/tree/v1.0.1) (2016-09-06)
+[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0...v1.0.1)
+
+**Implemented enhancements:**
+
+- Auto generated files detection [\#773](https://github.com/code-cracker/code-cracker/issues/773)
+
+**Fixed bugs:**
+
+- Bug: "UseStaticRegexIsMatchAnalyzer" causes an exception \(CC0081\) [\#822](https://github.com/code-cracker/code-cracker/issues/822)
+- CC0006 could break code when changing to foreach [\#814](https://github.com/code-cracker/code-cracker/issues/814)
+- BUG: Make readonly \(CC0052\) is incorrectly raised if constructor shows up after member that uses the field [\#812](https://github.com/code-cracker/code-cracker/issues/812)
+- Bug: ArgumentNullException on CallExtensionMethodAsExtensionAnalyzer \(CC0026\) [\#810](https://github.com/code-cracker/code-cracker/issues/810)
+- BUG: GC.SuppressFinalize with arrow methods \(CC0029\) [\#809](https://github.com/code-cracker/code-cracker/issues/809)
+- Bug: CC0039 False positive when concatenating to loop variable propery/field \(StringBuilderInLoop\) [\#797](https://github.com/code-cracker/code-cracker/issues/797)
+- Bug: CC0033 appears again after adding 'this' keyword [\#795](https://github.com/code-cracker/code-cracker/issues/795)
+- CC0061: Implementing interface using async [\#793](https://github.com/code-cracker/code-cracker/issues/793)
+- CC0052 Make field readonly does not take ref out into consideration. [\#788](https://github.com/code-cracker/code-cracker/issues/788)
+- BUG: CallExtensionMethodAsExtensionAnalyzer threw exception when project language was C\# 5.0 [\#781](https://github.com/code-cracker/code-cracker/issues/781)
+- Bug: UseInvokeMethodToFireEventAnalyzer \(CC0031\) should not raise a diagnostic when already checked for null with a ternary [\#779](https://github.com/code-cracker/code-cracker/issues/779)
+- BUG: GC.SuppressFinalize within any block \(CC0029\) [\#776](https://github.com/code-cracker/code-cracker/issues/776)
+- BUG: CC0052 \(Make readonly\) should not be applied to complex value types [\#775](https://github.com/code-cracker/code-cracker/issues/775)
+- BUG: CC0030 should not try to make a pointer const [\#774](https://github.com/code-cracker/code-cracker/issues/774)
+
+**Closed issues:**
+
+- Verify impact of upgrading to Roslyn 1.1 [\#770](https://github.com/code-cracker/code-cracker/issues/770)
+
 ## [v1.0.0](https://github.com/code-cracker/code-cracker/tree/v1.0.0) (2016-04-03)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0-rc6...v1.0.0)
 

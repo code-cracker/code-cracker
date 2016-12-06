@@ -92,14 +92,41 @@ namespace CodeCracker.CSharp.Usage
             var hasDisposeCall = body.DescendantNodes().OfKind<InvocationExpressionSyntax>(SyntaxKind.InvocationExpression)
                 .Any(invocation =>
                 {
-                    if (!invocation?.Expression?.IsKind(SyntaxKind.SimpleMemberAccessExpression) ?? true) return false;
-                    var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
-                    if (memberAccess?.Name == null) return false;
-                    if (memberAccess.Name.Identifier.ToString() != "Dispose" || memberAccess.Name.Arity != 0) return false;
-                    if (!memberAccess.Expression.IsKind(SyntaxKind.IdentifierName)) return false;
-                    return fieldSymbol.Equals(semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol);
+                    if (invocation?.Expression?.IsKind(SyntaxKind.SimpleMemberAccessExpression) ?? false)
+                    {
+                        return IsDisposeCallOnField(invocation, fieldSymbol, semanticModel);
+
+                    }
+
+                    if (invocation?.Expression?.IsKind(SyntaxKind.MemberBindingExpression) ?? false)
+                    {
+                        return IsDisposeWithNullPropagationCallOnField(invocation, fieldSymbol, semanticModel);
+                    }
+
+                    return false;
                 });
             return hasDisposeCall;
+        }
+
+        private static bool IsDisposeCallOnField(InvocationExpressionSyntax expression, IFieldSymbol fieldSymbol, SemanticModel semanticModel)
+        {
+            var memberAccess = (MemberAccessExpressionSyntax)expression.Expression;
+            if (memberAccess?.Name == null) return false;
+            if (memberAccess.Name.Identifier.ToString() != "Dispose" || memberAccess.Name.Arity != 0) return false;
+            var result = fieldSymbol.Equals(semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol);
+            return result;
+        }
+
+        private static bool IsDisposeWithNullPropagationCallOnField(InvocationExpressionSyntax expression, IFieldSymbol fieldSymbol, SemanticModel semanticModel)
+        {
+            var memberBinding = (MemberBindingExpressionSyntax)expression.Expression;
+            if (memberBinding?.Name == null) return false;
+            if (memberBinding.Name.Identifier.ToString() != "Dispose" || memberBinding.Name.Arity != 0) return false;
+
+            var conditionalAccessExpression = memberBinding.Parent.Parent as ConditionalAccessExpressionSyntax;
+            if (conditionalAccessExpression == null) return false;
+            var result = fieldSymbol.Equals(semanticModel.GetSymbolInfo(conditionalAccessExpression.Expression).Symbol);
+            return result;
         }
     }
 }
