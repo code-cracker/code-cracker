@@ -172,6 +172,7 @@
     <Compile Include="Performance\MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
     <Compile Include="Design\NameOfTests.cs" />
     <Compile Include="Refactoring\InvertForTests.cs" />
+    <Compile Include="Usage\ReadOnlyComplexTypesTests.cs" />
     <Compile Include="Usage\RedundantFieldAssignmentTests.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseTests.cs" />
     <Compile Include="Usage\RemoveUnreachableCodeTest.cs" />
