@@ -439,6 +439,84 @@ End Class"
         End Function
 
         <Fact>
+        Public Async Function WhenUsingConcatenationAssignmentOnIfAssignExpandsToConcatenateAtEndOfTernary() As Task
+            Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = ""test""
+        If True Then
+            x &= ""1""
+        Else
+            x = ""2""
+        End If
+    End Sub
+End Class"
+
+            Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = ""test""
+        x = If(True, x & ""1"", ""2"")
+    End Sub
+End Class"
+
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
+
+        <Fact>
+        Public Async Function WhenUsingAddAssiginmentOnIfAssignExpandsOperationProperly() As Task
+            Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        If True Then
+            x += 1
+        Else
+            x = 1
+        End If
+    End Sub
+End Class"
+
+            Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        x = If(True, x + 1, 1)
+    End Sub
+End Class"
+
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
+
+        <Fact>
+        Public Async Function WhenUsingSubtractAssiginmentOnIfAssignExpandsOperationProperly() As Task
+            Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        If True Then
+            x -= 1
+        Else
+            x = 1
+        End If
+    End Sub
+End Class"
+
+            Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        x = If(True, x - 1, 1)
+    End Sub
+End Class"
+
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
+        End Function
+
+        <Fact>
         Public Async Function WhenUsingAssignmentOperatorReturnSameAssignment() As Task
             Const source = "
 Class MyType
@@ -465,6 +543,32 @@ Class MyType
 End Class"
 
             Await VerifyBasicFixAsync(source, fix, formatBeforeCompare:=True)
+        End Function
+
+        <Fact>
+        Public Async Function WhenUsingDifferentAssiginmentsExpandsOperationProperly() As Task
+            Const source = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        If True Then
+            x += 1
+        Else
+            x -= 1
+        End If
+    End Sub
+End Class"
+
+            Const fix = "
+Public Class MyType
+    Public Sub Foo()
+        Dim x = 0
+        x = If(True, x + 1, x - 1)
+    End Sub
+End Class"
+
+            ' Allowing new diagnostics because without it the test fails because the compiler says Integer? is not defined.
+            Await VerifyBasicFixAsync(source, fix, allowNewCompilerDiagnostics:=True)
         End Function
     End Class
 

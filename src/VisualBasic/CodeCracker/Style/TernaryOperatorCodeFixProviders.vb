@@ -112,7 +112,7 @@ Namespace Style
                 EnsureNothingAsType(semanticModel, type, typeSyntax).
                 ConvertToBaseType(elseType, type)
 
-            If ifAssign.OperatorToken.Text <> "=" Then
+            If ifAssign.OperatorToken.Text <> "=" AndAlso ifAssign.OperatorToken.Text = elseAssign.OperatorToken.Text Then
                 trueExpression = ifAssign.Right.
                 EnsureNothingAsType(semanticModel, type, typeSyntax).
                 ConvertToBaseType(ifType, type)
@@ -136,7 +136,11 @@ Namespace Style
                                                                      trueExpression.WithoutTrailingTrivia(),
                                                                      falseExpression.WithoutTrailingTrivia())
 
-            Dim assignment = SyntaxFactory.SimpleAssignmentStatement(ifAssign.Left.WithLeadingTrivia(leadingTrivia), ifAssign.OperatorToken, ternary).
+            Dim ternaryOperatorToken As SyntaxToken = If((ifAssign.OperatorToken.Text <> "=" OrElse elseAssign.OperatorToken.Text <> "=") AndAlso ifAssign.OperatorToken.Text <> elseAssign.OperatorToken.Text,
+                                                          SyntaxFactory.Token(SyntaxKind.EqualsToken),
+                                                          ifAssign.OperatorToken)
+
+            Dim assignment = SyntaxFactory.SimpleAssignmentStatement(ifAssign.Left.WithLeadingTrivia(leadingTrivia), ternaryOperatorToken, ternary).
                 WithTrailingTrivia(trailingTrivia).
                 WithAdditionalAnnotations(Formatter.Annotation)
 
