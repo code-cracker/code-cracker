@@ -9,49 +9,49 @@ namespace CodeCracker.Test.CSharp.Design
         [Fact]
         public async Task SwithWithoutDefaultAnalyserString()
         {
-            const string source = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string source = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
                                               static void Main()
                                               {
 var a = """";
-            switch (a)
-            {
+            switch (a)// c1
+            {// c2
                 case """":
-                    break;                
-            }
+                    break;
+            }// c3
                                               }
                                         }
                                    }";
 
-            const string fixtest = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string fixtest = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
                                               static void Main()
                                               {
 var a = """";
-            switch (a)
-            {
+            switch (a)// c1
+            {// c2
                 case """":
                     break;
                 default:
                     throw new Exception(""Unexpected Case"");
-            }
+            }// c3
     }
                                         }
                                    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0, allowNewCompilerDiagnostics: true);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
         public async Task SwithWithoutDefaultAnalyserBool()
         {
-            const string source = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string source = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
@@ -61,13 +61,13 @@ var a = """";
                                                 switch (s)
                                                 {
                                                     case false:
-                                                    break;                
+                                                    break;
                                                 }
                                         }
                                    }";
 
-            const string fixtest = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string fixtest = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
@@ -81,58 +81,57 @@ var a = """";
                                                     case true:
                                                         break;
                                                 }
-                                        }                                        
+                                        }
                                    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0, allowNewCompilerDiagnostics: true);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
-        public async Task SwithWithoutDefaultAnalyserInt()
+        public async Task SwitchWithoutDefaultAnalyserInt()
         {
-            const string source = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string source = @"using System;
+                                    namespace ConsoleApplication1
                                     {
                                         class TypeName
                                         {
                                               static void Main()
                                               {
-var s = 10;
-            switch (s)
-            {
-                case 10:
-                    break;                
-            }
+                                                    var s = 10;
+                                                    switch (s)
+                                                    {
+                                                        case 10:
+                                                            break;
+                                                    }
+                                               }
+                                         }
+                                   }";
 
-}
+            const string fixtest = @"using System;
+                                     namespace ConsoleApplication1
+                                    {
+                                        class TypeName
+                                        {
+                                              static void Main()
+                                              {
+                                                    var s = 10;
+                                                    switch (s)
+                                                    {
+                                                        case 10:
+                                                            break;
+                                                        default:
+                                                            throw new Exception(""Unexpected Case"");
+                                                    }
+                                            }
                                         }
                                    }";
-
-            const string fixtest = @"using System;namespace 
-                                    ConsoleApplication1 
-                                    {
-                                        class TypeName
-                                        {
-                                              static void Main()
-                                              {
-var s = 10;
-            switch (s)
-            {
-                case 10:
-                    break;
-                default:
-                    throw new Exception(""Unexpected Case"");
-            }
-    }
-}
-                                   }";
-            await VerifyCSharpFixAsync(source, fixtest, 0, allowNewCompilerDiagnostics: true);
-
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
-        public async Task SwithWithoutDefaultAnalyserBoolMethod()
+        [Fact]
+        public async Task SwitchWithoutDefaultAnalyserBoolMethod()
         {
-            const string source = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string source = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
@@ -141,14 +140,14 @@ var s = 10;
             switch (myBool)
             {
                 case false:
-                    break;                
+                    break;
             }
         }
                                         }
                                    }";
 
-            const string fixtest = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string fixtest = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
@@ -162,32 +161,32 @@ var s = 10;
                     break;
             }
         }
-    
                                         }
                                    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0, allowNewCompilerDiagnostics: true);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
+        [Fact]
         public async Task SwithWithoutDefaultAnalyserIntMethod()
         {
-            const string source = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string source = @"namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
  void Bar3(int a)
-        {            
+        {
             switch (a)
             {
                 case 10:
-                    break;                
+                    break;
             }
-        }     
+        }
                                         }
                                    }";
 
-            const string fixtest = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string fixtest = @"namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
@@ -198,18 +197,56 @@ var s = 10;
                 case 10:
                     break;
                 default:
-                    throw new Exception(""Unexpected Case"");
+                    throw new System.Exception(""Unexpected Case"");
             }
        }
 }
                                    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0, allowNewCompilerDiagnostics: true);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
+        [Fact]
+        public async Task SwitchWithCast()
+        {
+            const string source = @"
+using System;
+class TypeName
+{
+    void Bar()
+    {
+        var t = new TypeName();
+        switch ((int)t)
+        {
+            case 1: break;
+        }
+    }
+    public static explicit operator int(TypeName v) => 1;
+}";
+
+            const string fixtest = @"
+using System;
+class TypeName
+{
+    void Bar()
+    {
+        var t = new TypeName();
+        switch ((int)t)
+        {
+            case 1: break;
+            default:
+                throw new Exception(""Unexpected Case"");
+        }
+    }
+    public static explicit operator int(TypeName v) => 1;
+}";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
         public async Task SwithWithoutDefaultAnalyserIntMethodTwoParams()
         {
-            const string source = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string source = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
@@ -218,17 +255,17 @@ void Bar4(int a, int b)
             switch (a)
             {
                 case 10:
-                    break;                
+                    break;
             }
         }
                                         }
                                    }";
 
-            const string fixtest = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string fixtest = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
-                                        {        
+                                        {
 void Bar4(int a, int b)
         {
             switch (a)
@@ -241,14 +278,14 @@ void Bar4(int a, int b)
     }
 }
                                    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0, allowNewCompilerDiagnostics: true);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
         public async Task SwithWithoutDefaultAnalyserIntMethodStatic()
         {
-            const string source = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string source = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
@@ -257,18 +294,18 @@ static void Bar5(int a)
             switch (a)
             {
                 case 10:
-                    break;                
+                    break;
             }
         }
 
                                         }
                                    }";
 
-            const string fixtest = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string fixtest = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
-                                        {        
+                                        {
 static void Bar5(int a)
         {
             switch (a)
@@ -282,7 +319,7 @@ static void Bar5(int a)
 
 }
                                    }";
-            await VerifyCSharpFixAsync(source, fixtest, 0, allowNewCompilerDiagnostics: true);
+            await VerifyCSharpFixAsync(source, fixtest);
         }
 
         [Fact]
@@ -291,7 +328,6 @@ static void Bar5(int a)
             const string source = @"static void M() { }
         static void Main()
         {
-            
             switch (M()) // CS0151
             {
                 default:
@@ -305,8 +341,8 @@ static void Bar5(int a)
         [Fact]
         public async Task SwithWithoutDefaultAnalyserNoDiagnostic()
         {
-            const string source = @"using System;namespace 
-                                    ConsoleApplication1 
+            const string source = @"using System;namespace
+                                    ConsoleApplication1
                                     {
                                         class TypeName
                                         {
@@ -329,23 +365,23 @@ static void Bar5(int a)
         {
             const string source = @"using System;
                                     namespace ConsoleApplication1
-                                    { 
-                                        ConsoleApplication1 
+                                    {
+                                        ConsoleApplication1
                                         {
                                             class Teste { }
                                             class Program
                                             {
                                                 static void Main(string[] args)
                                                 {
-                                                    Teste vo_teste = new Teste(); 
+                                                    Teste vo_teste = new Teste();
                                                     switch (vo_teste)
                                                     {
-                                                        case "":break; 
+                                                        case "":break;
                                                         default:break;
                                                     }
                                                 }
-                                            } 
-                                        }                                     
+                                            }
+                                        }
                                    }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
