@@ -35,7 +35,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
             context.RegisterSymbolAction(AddressOf AnalyzeAsync, SymbolKind.NamedType)
         End Sub
 
-        Public Async Sub AnalyzeAsync(context As SymbolAnalysisContext)
+        Public Sub AnalyzeAsync(context As SymbolAnalysisContext)
             If (context.IsGenerated()) Then Return
             Dim symbol = DirectCast(context.Symbol, INamedTypeSymbol)
             If symbol.TypeKind <> TypeKind.Class Then Exit Sub
@@ -48,7 +48,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
             Dim disposeMethod = FindDisposeMethod(symbol)
             If disposeMethod Is Nothing Then Exit Sub
 
-            Dim syntaxTree = Await disposeMethod.DeclaringSyntaxReferences(0)?.GetSyntaxAsync(context.CancellationToken)
+            Dim syntaxTree = disposeMethod.DeclaringSyntaxReferences(0)?.GetSyntax(context.CancellationToken)
             Dim methodBlock = TryCast(TryCast(syntaxTree, MethodStatementSyntax)?.Parent, MethodBlockSyntax)
             Dim statements = methodBlock?.Statements.OfType(Of ExpressionStatementSyntax)
 
