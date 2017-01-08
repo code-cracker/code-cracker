@@ -850,6 +850,29 @@ class TypeName
         }
 
         [Fact]
+        public async Task FieldsAssignedOnLambdaWithInitializerDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+using System;
+class C
+{
+    private readonly Action set;
+    private int i = 0;
+
+    public C()
+    {
+        set = () => i = 1;
+    }
+
+    public void Modify()
+    {
+        set();
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task VariableInitializerDoesNotCreateDiagnostic()
         {
             const string source = @"
