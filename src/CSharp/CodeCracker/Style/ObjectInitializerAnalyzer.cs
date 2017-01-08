@@ -76,6 +76,7 @@ namespace CodeCracker.CSharp.Style
             if (equalsValueClauseSyntax?.Value.IsNotKind(SyntaxKind.ObjectCreationExpression) ?? true) return;
             if (((ObjectCreationExpressionSyntax)equalsValueClauseSyntax.Value).Initializer?.IsKind(SyntaxKind.CollectionInitializerExpression) ?? false) return;
             var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
+            if (((ILocalSymbol)variableSymbol).Type.TypeKind == TypeKind.Dynamic) return;
             var assignmentExpressionStatements = FindAssignmentExpressions(semanticModel, localDeclarationStatement, variableSymbol);
             if (!assignmentExpressionStatements.Any()) return;
             if (HasAssignmentUsingDeclaredVariable(semanticModel, variableSymbol, assignmentExpressionStatements)) return;
