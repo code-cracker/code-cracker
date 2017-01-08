@@ -46,6 +46,8 @@
     <Compile Include="Design\InconsistentAccessibility\InconsistentAccessibilityInPropertyType.cs" />
     <Compile Include="Design\MakeMethodStaticAnalyzer.cs" />
     <Compile Include="Design\MakeMethodStaticCodeFixProvider.cs" />
+    <Compile Include="Design\SwitchWithoutDefaultAnalyzer.cs" />
+    <Compile Include="Design\SwitchWithoutDefaultCodeFixProvider.cs" />
     <Compile Include="Extensions\CSharpAnalyzerExtensions.cs" />
     <Compile Include="Extensions\CSharpGeneratedCodeAnalysisExtensions.cs" />
     <Compile Include="Extensions\InitializerState.cs" />
@@ -137,6 +139,7 @@
     <Compile Include="Style\StringFormatAnalyzer.cs" />
     <Compile Include="Usage\DisposableFieldNotDisposedAnalyzer.cs" />
     <Compile Include="Usage\DisposableVariableNotDisposedCodeFixProvider.cs" />
+    <Compile Include="Usage\ReadOnlyComplexTypesAnalyzer.cs" />
     <Compile Include="Usage\RedundantFieldAssignmentCodeFixProvider.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseAnalyzer.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseCodeFixProvider.cs" />
