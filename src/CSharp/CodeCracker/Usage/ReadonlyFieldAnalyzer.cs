@@ -2,9 +2,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -140,7 +140,7 @@ namespace CodeCracker.CSharp.Usage
 
         private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, SyntaxNode assignment, SemanticModel semanticModel)
         {
-            if (!fieldSymbol.IsReadOnly && !variablesToMakeReadonly.Keys.Contains(fieldSymbol))
+            if (!fieldSymbol.IsReadOnly && !variablesToMakeReadonly.Keys.Contains(fieldSymbol) && !IsComplexValueType(fieldSymbol.Type))
             {
                 var containingType = assignment.FirstAncestorOfKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
                 if (containingType == null) return;
@@ -199,8 +199,10 @@ namespace CodeCracker.CSharp.Usage
         {
             var fieldTypeName = fieldDeclaration.Declaration.Type;
             var fieldType = semanticModel.GetTypeInfo(fieldTypeName).ConvertedType;
-            return fieldType.IsValueType && !(fieldType.TypeKind == TypeKind.Enum || fieldType.IsPrimitive());
+            return IsComplexValueType(fieldType);
         }
+
+        private static bool IsComplexValueType(ITypeSymbol fieldType) => fieldType.IsValueType && !(fieldType.TypeKind == TypeKind.Enum || fieldType.IsPrimitive());
 
         private static bool CanBeMadeReadonly(IFieldSymbol fieldSymbol)
         {
