@@ -47,16 +47,14 @@ namespace CodeCracker.CSharp.Design
                     var hasInitializer = from nodes in switchStatementToAnalyse.DescendantNodes()
                                          where nodes.Kind() == SyntaxKind.IdentifierName
                                          select nodes;
-                    if (!hasInitializer.Any())
-                        return;
+                    if (!hasInitializer.Any()) return;
                     var hasTrueExpression = from nodes in switchStatementToAnalyse.DescendantNodes()
-                                            where nodes.Kind() == SyntaxKind.FalseLiteralExpression
+                                            where nodes.IsKind(SyntaxKind.FalseLiteralExpression)
                                             select nodes;
                     var hasfalseExpression = from nodes in switchStatementToAnalyse.DescendantNodes()
-                                             where nodes.Kind() == SyntaxKind.TrueLiteralExpression
+                                             where nodes.IsKind(SyntaxKind.TrueLiteralExpression)
                                              select nodes;
-                    if ((hasfalseExpression.Any()) && (hasTrueExpression.Any()))
-                        return;
+                    if (hasfalseExpression.Any() && hasTrueExpression.Any()) return;
                     var diagnostic = Diagnostic.Create(Rule, switchStatementToAnalyse.GetLocation(), "Consider put an default clause in Switch.");
                     context.ReportDiagnostic(diagnostic);
                 }

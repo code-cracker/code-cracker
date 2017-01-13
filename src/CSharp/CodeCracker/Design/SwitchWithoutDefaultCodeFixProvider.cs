@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -15,9 +16,6 @@ namespace CodeCracker.CSharp.Design
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SwitchWithoutDefaultCodeFixProvider)), Shared]
     public class SwitchWithoutDefaultCodeFixProvider : CodeFixProvider
     {
-        private const string EmptyString = "\"\"";
-        private const string BreakString = "\n\t\t\t\t\tbreak;";
-        private const string ThrowString = "throw new Exception(\"Unexpected Case\");";
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(DiagnosticId.SwitchCaseWithoutDefault.ToDiagnosticId());
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -33,69 +31,32 @@ namespace CodeCracker.CSharp.Design
         private async static Task<Document> SwitchWithoutDefaultAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var switchCaseLabel = new SyntaxList<SwitchLabelSyntax>();
-            var kindOfVariable = string.Empty;
-            var idForVariable = string.Empty;
-            var breakStatement = new SyntaxList<StatementSyntax>();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
             var newSections = new List<SwitchSectionSyntax>();
-            var switchCaseStatement = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<SwitchStatementSyntax>().First();
-            idForVariable = ((IdentifierNameSyntax)switchCaseStatement.ChildNodes().ToList().First(n => n.Kind() == SyntaxKind.IdentifierName)).Identifier.ValueText;
-            var parametersOfMethod = from init in root.DescendantNodesAndSelf()
-                                     where init.Kind() == SyntaxKind.Parameter
-                                     select init;
-            // Verify if the variable of Switch as a same of Method Parameter 
-            foreach (var parameter in parametersOfMethod)
-                if (idForVariable == ((ParameterSyntax)parameter).Identifier.ValueText)
-                    kindOfVariable = ((ParameterSyntax)parameter).Type.ToString();
-
-            if (kindOfVariable == string.Empty)
+            var switchCaseStatement = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<SwitchStatementSyntax>().First();
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+            var expressionSymbol = semanticModel.GetSymbolInfo(switchCaseStatement.Expression).Symbol;
+            if (semanticModel.GetTypeInfo(switchCaseStatement.Expression).Type.SpecialType == SpecialType.System_Boolean)
             {
-                var statements = ((BlockSyntax)switchCaseStatement.Parent).Statements;
-                var inicializerOfSwitch = from init in statements
-                                          where init.Kind() == SyntaxKind.LocalDeclarationStatement
-                                          select init;
-                if (inicializerOfSwitch.Any())
-                {
-                    var local = (LocalDeclarationStatementSyntax)inicializerOfSwitch.First();
-                    var switchCaseVariable = ((local).Declaration).Variables[0];
-                    kindOfVariable = ((LiteralExpressionSyntax)(switchCaseVariable.Initializer.Value)).Kind().ToString();
-                }
-            }
-
-            if ((kindOfVariable.Equals("FalseLiteralExpression")) || (kindOfVariable.Equals("TrueLiteralExpression"))
-                || (kindOfVariable.Equals("bool")))
-            {
-                var oldSections = switchCaseStatement.Sections.ToList();
-                var type = string.Empty;
-                foreach (var sec in oldSections)
-                {
-                    newSections.Add(sec);
-                    type = (((CaseSwitchLabelSyntax)((SwitchSectionSyntax)sec).ChildNodes().ToList().First()).Value).GetFirstToken().Text;
-                }
-                var againstType = string.Empty;
-                if (type.Equals("true")) againstType = "false"; else againstType = "true";
-
+                var type = ((CaseSwitchLabelSyntax)switchCaseStatement.Sections.Last().ChildNodes().First()).Value.GetFirstToken().Text;
+                var againstType = type == "true" ? "false" : "true";
                 newSections.Add(SyntaxFactory.SwitchSection().WithLabels(
-                            switchCaseLabel.Add(SyntaxFactory.CaseSwitchLabel(SyntaxFactory.ParseExpression(againstType)))).
-                               WithStatements(breakStatement.Add(SyntaxFactory.ParseStatement(BreakString))));
+                    new SyntaxList<SwitchLabelSyntax>().Add(SyntaxFactory.CaseSwitchLabel(SyntaxFactory.ParseExpression(againstType))))
+                    .WithStatements(new SyntaxList<StatementSyntax>().Add(SyntaxFactory.ParseStatement("break;"))));
             }
             else
             {
-                var oldSections = switchCaseStatement.Sections.ToList();
-                foreach (var sec in oldSections)
-                    newSections.Add(sec);
-
-                breakStatement = breakStatement.Add(SyntaxFactory.ParseStatement(BreakString));
-                newSections.Add(CreateSection(SyntaxFactory.DefaultSwitchLabel(), SyntaxFactory.ParseStatement(ThrowString)));
+                newSections.Add(CreateSection(SyntaxFactory.DefaultSwitchLabel(),
+                    SyntaxFactory.ThrowStatement(SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.Exception").WithAdditionalAnnotations(Simplifier.Annotation),
+                    SyntaxFactory.ArgumentList(new SeparatedSyntaxList<ArgumentSyntax>().Add(SyntaxFactory.Argument(SyntaxFactory.ParseExpression("\"Unexpected Case\"")))), null))));
             }
-            var switchExpression = SyntaxFactory.ParseExpression(idForVariable);
-            var newsSwitchCaseStatement = SyntaxFactory.SwitchStatement(switchExpression).
-                            WithSections(new SyntaxList<SwitchSectionSyntax>().AddRange(newSections));
+            var newsSwitchCaseStatement = switchCaseStatement
+                            .AddSections(newSections.ToArray())
+                            .WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = root.ReplaceNode(switchCaseStatement, newsSwitchCaseStatement);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
+
         static SwitchSectionSyntax CreateSection(SwitchLabelSyntax label, StatementSyntax statement)
         {
             var labels = new SyntaxList<SwitchLabelSyntax>();
