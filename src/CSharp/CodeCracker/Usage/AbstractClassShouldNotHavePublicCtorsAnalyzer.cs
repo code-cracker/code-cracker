@@ -1,9 +1,9 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -33,7 +33,7 @@ namespace CodeCracker.CSharp.Usage
             var ctor = (ConstructorDeclarationSyntax)context.Node;
             if (!ctor.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword))) return;
 
-            var @class = ctor.Ancestors().OfType<ClassDeclarationSyntax>().FirstOrDefault();
+            var @class = ctor.Ancestors().FirstOrDefault() as ClassDeclarationSyntax;
             if (@class == null) return;
             if (!@class.Modifiers.Any(m => m.IsKind(SyntaxKind.AbstractKeyword))) return;
 
