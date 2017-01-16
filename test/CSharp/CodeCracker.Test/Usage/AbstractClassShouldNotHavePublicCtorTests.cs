@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using CodeCracker.CSharp.Usage;
+﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Usage
@@ -61,6 +61,26 @@ namespace CodeCracker.Test.CSharp.Usage
             abstract class Foo
             {
                 private Foo() { /* .. */ }
+            }";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(test);
+        }
+
+        [Fact]
+        public async Task IgnoresCtorOfStructNestedInAbstractClasses()
+        {
+            const string test = @"
+            public abstract class C
+            {
+                public struct S
+                {
+                    private int x;
+
+                    public S(int x)
+                    {
+                        this.x = x;
+                    }
+                }
             }";
 
             await VerifyCSharpHasNoDiagnosticsAsync(test);
