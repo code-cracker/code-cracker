@@ -59,6 +59,12 @@ namespace CodeCracker.CSharp.Usage
             }
 
             var method = methodOrConstructor as MethodDeclarationSyntax;
+
+            // It is legit for virtual methods to have parameters that aren't used in the default
+            // base class implementation, but are only provided for sub classes instead.
+            // See https://github.com/code-cracker/code-cracker/issues/872
+            if (method?.Modifiers.Any(SyntaxKind.VirtualKeyword) == true) return;
+
             IEnumerable<SyntaxNode> methodChildren = methodOrConstructor.Body?.Statements;
             var expressionBody = (methodOrConstructor as MethodDeclarationSyntax)?.ExpressionBody;
             if (methodChildren == null && expressionBody != null)
