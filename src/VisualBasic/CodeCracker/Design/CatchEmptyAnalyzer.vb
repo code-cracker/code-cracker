@@ -9,7 +9,7 @@ Namespace Design
         Inherits DiagnosticAnalyzer
 
         Public Shared ReadOnly Id As String = DiagnosticId.CatchEmpty.ToDiagnosticId()
-        Public Const Title As String = "Your catch should include an Exception";
+        Public Const Title As String = "Your catch should include an Exception"
         Public Const MessageFormat As String = "{0}"
         Public Const Category As String = SupportedCategories.Design
         Protected Shared Rule As DiagnosticDescriptor = New DiagnosticDescriptor(
