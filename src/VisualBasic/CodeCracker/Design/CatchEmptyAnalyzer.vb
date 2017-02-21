@@ -9,7 +9,7 @@ Namespace Design
         Inherits DiagnosticAnalyzer
 
         Public Shared ReadOnly Id As String = DiagnosticId.CatchEmpty.ToDiagnosticId()
-        Public Const Title As String = "Your catch may includes some Exception"
+        Public Const Title As String = "Your catch should include an Exception";
         Public Const MessageFormat As String = "{0}"
         Public Const Category As String = SupportedCategories.Design
         Protected Shared Rule As DiagnosticDescriptor = New DiagnosticDescriptor(
@@ -33,7 +33,7 @@ Namespace Design
                 If catchStatement Is Nothing Then Exit Sub
 
             If catchStatement.IdentifierName Is Nothing Then
-                Dim diag = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Consider including an Exception Class in catch.")
+                Dim diag = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Consider adding an Exception to the catch.")
                 context.ReportDiagnostic(diag)
             End If
         End Sub
