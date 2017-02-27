@@ -723,5 +723,128 @@ class Test
 ";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task WhenReturnStatementContainsMethodCallAnalyzerCreatesDiagnostic()
+        {
+            var source = @"
+            private int Method(int i) => i;
+
+            public int Foo()
+            {
+                if (true)
+                    return Method(1);
+                else
+                    return Method(2);
+            }".WrapInCSharpClass();
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
+                Message = "You can use a ternary operator.",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 17) }
+            };
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodWithSingleDifferentArgumentGetsSimplified()
+        {
+            var source = @"
+            private int Method(int i) => i;
+
+            public int Foo()
+            {
+                if (true)
+                    return Method(1);
+                else
+                    return Method(2);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            private int Method(int i) => i;
+
+            public int Foo()
+            {
+                return Method(true?1:2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodWithMultipleArgumentsWhereSingleDifferentGetsSimplified()
+        {
+            var source = @"
+            private int Method(int i, string t) => i;
+
+            public int Foo()
+            {
+                if (true)
+                    return Method(1, ""hello"");
+                else
+                    return Method(2, ""hello"");
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            private int Method(int i, string t) => i;
+
+            public int Foo()
+            {
+                return Method(true?1:2, ""hello"");
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodWithMultipleArgumentsWhereMultipleDifferentGetsNotSimplified()
+        {
+            var source = @"
+            private int Method(int i, string t) => i;
+
+            public int Foo()
+            {
+                if (true)
+                    return Method(1, ""hello1"");
+                else
+                    return Method(2, ""hello2"");
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            private int Method(int i, string t) => i;
+
+            public int Foo()
+            {
+                return true?Method(1,""hello1""):Method(2, ""hello2"");
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodArgumentsGetCastedWhenSimplified()
+        {
+            var source = @"
+            class Base { }
+            class A : Base { }
+            class B : Base { }
+
+            private string Method(Base b, string t) => t;
+
+            public int Foo()
+            {
+                if (true)
+                    return Method(new A(), ""hello"");
+                else
+                    return Method(new B(), ""hello"");
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            class Base { }
+            class A : Base { }
+            class B : Base { }
+
+            private string Method(Base b, string t) => t;
+
+            public int Foo()
+            {
+                return Method(true?(Base)new A():new B(),""hello"");
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }
