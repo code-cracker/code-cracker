@@ -118,9 +118,12 @@ namespace CodeCracker.CSharp.Style
                 var elseMethodinfo = semanticModel.GetSymbolInfo(elseInvocation.Expression);
                 if (object.Equals(ifMethodinfo, elseMethodinfo)) //same method and overload
                 {
-                    var findSingleArgumentIndexThatDiffers = FindSingleArgumentIndexThatDiffers(ifInvocation.ArgumentList, elseInvocation.ArgumentList, semanticModel);
-                    if (findSingleArgumentIndexThatDiffers >= 0)
-                        return SyntaxFactory.InvocationExpression(ifInvocation.Expression, CreateMethodArgumentList(ifStatementCondition, ifInvocation.ArgumentList, elseInvocation.ArgumentList, findSingleArgumentIndexThatDiffers, semanticModel));
+                    if (ifInvocation.Expression.GetText().ContentEquals(elseInvocation.Expression.GetText())) //same 'path' to the invocation
+                    {
+                        var findSingleArgumentIndexThatDiffers = FindSingleArgumentIndexThatDiffers(ifInvocation.ArgumentList, elseInvocation.ArgumentList, semanticModel);
+                        if (findSingleArgumentIndexThatDiffers >= 0)
+                            return SyntaxFactory.InvocationExpression(ifInvocation.Expression, CreateMethodArgumentList(ifStatementCondition, ifInvocation.ArgumentList, elseInvocation.ArgumentList, findSingleArgumentIndexThatDiffers, semanticModel));
+                    }
                 }
             }
             return null;
@@ -156,7 +159,7 @@ namespace CodeCracker.CSharp.Style
                 var a2Text = args.a2.GetText();
                 return !a1Text.ContentEquals(a2Text);
             }).Take(2).ToList();
-            return (singleMissmatch.Count == 0 || singleMissmatch.Count > 1) ? -1 : singleMissmatch[0].i;
+            return (singleMissmatch.Count == 1) ? singleMissmatch[0].i : -1;
         }
 
         private static void CreateExpressions(ExpressionSyntax ifExpression, ExpressionSyntax elseExpression,

@@ -334,6 +334,68 @@ class Test2
 ";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithAssignmentOfMethodResultChangeToTernaryFixGetsSimplified()
+        {            
+            var source = @"
+            int Method(int a) => a;
+
+            public void Foo()
+            {
+                var something = true;
+                int a;
+                if (something)
+                {
+                    a = Method(1);
+                }
+                else
+                {
+                    a = Method(2);
+                }
+            }".WrapInCSharpClass(); 
+            var fixtest = @"
+            int Method(int a) => a;
+
+            public void Foo()
+            {
+                var something = true;
+                int a;
+                a = Method(something?1:2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithAssignmentOfMethodResultWithComplexArgumentEvaluationChangeToTernaryFixGetsSimplified()
+        {
+            var source = @"
+            int Method(int a) => a;
+
+            public void Foo()
+            {
+                var something = true;
+                int a;
+                if (something)
+                {
+                    a = Method(1);
+                }
+                else
+                {
+                    a = Method(2 + 2);
+                }
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            int Method(int a) => a;
+
+            public void Foo()
+            {
+                var something = true;
+                int a;
+                a = Method(something?1:2 + 2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 
     public class TernaryOperatorWithReturnTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
@@ -824,7 +886,7 @@ class Test
             class A : Base { }
             class B : Base { }
 
-            private string Method(Base b, string t) => t;
+            private int Method(Base b, string t) => 1;
 
             public int Foo()
             {
@@ -838,11 +900,175 @@ class Test
             class A : Base { }
             class B : Base { }
 
-            private string Method(Base b, string t) => t;
+            private int Method(Base b, string t) => 1;
 
             public int Foo()
             {
                 return Method(true?(Base)new A():new B(),""hello"");
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithPrefixedMethodGetsSimplified()
+        {
+            var source = @"
+            private int Method(int a) => a;
+
+            public int Foo()
+            {
+                if (true)
+                    return this.Method(1);
+                else
+                    return this.Method(2);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            private int Method(int a) => a;
+
+            public int Foo()
+            {
+                return this.Method(true?1:2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodOfPropertyGetsSimplified()
+        {
+            var source = @"
+            class A {
+                private int Method(int a) => a;
+            }
+
+            public int Foo()
+            {
+                var a=new A();
+                if (true)
+                    return a.Method(1);
+                else
+                    return a.Method(2);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            class A {
+                private int Method(int a) => a;
+            }
+
+            public int Foo()
+            {
+                var a=new A();
+                return a.Method(true?1:2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodOfDifferentPropertyGetsNotSimplified()
+        {
+            var source = @"
+            class A {
+                public int Method(int a) => a;
+            }
+            A Prop1 { get { return new A(); } }
+            A Prop2 { get { return new A(); } }
+
+            public int Foo()
+            {
+                if (true)
+                    return this.Prop1.Method(1);
+                else
+                    return this.Prop2.Method(2);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            class A {
+                public int Method(int a) => a;
+            }
+            A Prop1 { get { return new A(); } }
+            A Prop2 { get { return new A(); } }
+
+            public int Foo()
+            {
+                return true?this.Prop1.Method(1):this.Prop2.Method(2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodOfSameOverloadGetsSimplified()
+        {
+            var source = @"
+            int Method(int a)=>a;
+            int Method(string a)=>1;
+
+            public int Foo()
+            {                
+                if (true)
+                    return Method(1);
+                else
+                    return Method(2);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            int Method(int a)=>a;
+            int Method(string a)=>1;
+
+            public int Foo()
+            {                
+                return Method(true?1:2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodOfDifferentOverloadGetsNotSimplified()
+        {
+            var source = @"
+            int Method(int a)=>a;
+            int Method(string a)=>1;
+
+            public int Foo()
+            {                
+                if (true)
+                    return Method(1);
+                else
+                    return Method(""2"");
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            int Method(int a)=>a;
+            int Method(string a)=>1;
+
+            public int Foo()
+            {                
+                return true?Method(1):Method(""2"");
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodNestedInMemberAccessGetsNotSimplified()
+        {
+            var source = @"
+            class A {
+                public int Prop { get; }
+            }
+            
+            A GetA(int i) => new A();
+
+            public int Foo()
+            {
+                if (true)
+                    return GetA(1).Prop;
+                else
+                    return GetA(2).Prop;
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            class A {
+                public int Prop { get; }
+            }
+            
+            A GetA(int i) => new A();
+
+            public int Foo()
+            {
+                return true?GetA(1).Prop:GetA(2).Prop;
             }".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, fixtest);
         }
