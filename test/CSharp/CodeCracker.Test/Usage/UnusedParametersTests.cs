@@ -893,5 +893,24 @@ public class TypeName
 }";
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        /// <summary>
+        ///        Virtual methods should be ignored by the analyzer, because variables don't need
+        ///        to be actually used by the base class and still serve a legit purpose.
+        /// </summary>
+        [Fact]
+        public async Task VirtualMethodsShouldBeIgnored()
+        {
+
+            const string source = @"
+public class BaseClass
+{
+    protected virtual void PreProcess(string data)
+    {
+        // no real action in base class
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
