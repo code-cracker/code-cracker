@@ -991,5 +991,31 @@ class Test
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task ComplexTypeDoesNotCreateDiagnosticAsync()
+        {
+            const string source = @"
+class C
+{
+    private S s;
+
+    public C()
+    {
+        s = default(S);
+    }
+
+    public void M1()
+    {
+        s.Value = 1;
+    }
+
+    public struct S
+    {
+        public int Value;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
