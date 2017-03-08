@@ -1072,5 +1072,24 @@ class Test
             }".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task FixWhenReturningWithConstructorGetsSimplified()
+        {
+            var source = @"
+            public int Foo()
+            {                
+                if (true)
+                    return new System.Collections.Generic.List<int>(1);
+                else
+                    return new System.Collections.Generic.List<int>(2);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            public int Foo()
+            {                
+                return new System.Collections.Generic.List<int>(true?1:2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }

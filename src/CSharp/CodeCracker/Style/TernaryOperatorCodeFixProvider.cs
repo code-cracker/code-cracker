@@ -99,6 +99,8 @@ namespace CodeCracker.CSharp.Style
 
             var methodCallSimplification = TrySimplifyMethodCalls(ifStatementCondition, ifExpression, elseExpression, semanticModel);
             if (methodCallSimplification != null) return methodCallSimplification;
+            var constructorSimplification = TrySimplifyConstructorCalls(ifStatementCondition, ifExpression, elseExpression, semanticModel);
+            if (constructorSimplification != null) return constructorSimplification;
             var ifTypeInfo = semanticModel.GetTypeInfo(ifExpression);
             var elseTypeInfo = semanticModel.GetTypeInfo(elseExpression);
             var typeSyntax = SyntaxFactory.IdentifierName(ifTypeInfo.ConvertedType.ToMinimalDisplayString(semanticModel, ifExpression.SpanStart));
@@ -106,6 +108,24 @@ namespace CodeCracker.CSharp.Style
             CreateExpressions(ifExpression, elseExpression, ifTypeInfo.Type, elseTypeInfo.Type,
                 ifTypeInfo.ConvertedType, elseTypeInfo.ConvertedType, typeSyntax, semanticModel, out trueExpression, out falseExpression);
             return SyntaxFactory.ConditionalExpression(ifStatementCondition, trueExpression, falseExpression);
+        }
+
+        private static ExpressionSyntax TrySimplifyConstructorCalls(ExpressionSyntax ifStatementCondition, ExpressionSyntax ifExpression, ExpressionSyntax elseExpression, SemanticModel semanticModel)
+        {
+            if (ifExpression is ObjectCreationExpressionSyntax && elseExpression is ObjectCreationExpressionSyntax)
+            {
+                var ifInvocation = ifExpression as ObjectCreationExpressionSyntax;
+                var elseInvocation = elseExpression as ObjectCreationExpressionSyntax;
+                var ifMethodinfo = semanticModel.GetSymbolInfo(ifInvocation);
+                var elseMethodinfo = semanticModel.GetSymbolInfo(elseInvocation);
+                if (object.Equals(ifMethodinfo, elseMethodinfo)) //same method and overload
+                {
+                    var findSingleArgumentIndexThatDiffers = FindSingleArgumentIndexThatDiffers(ifInvocation.ArgumentList, elseInvocation.ArgumentList, semanticModel);
+                    if (findSingleArgumentIndexThatDiffers >= 0)
+                        return SyntaxFactory.ObjectCreationExpression(ifInvocation.Type, CreateMethodArgumentList(ifStatementCondition, ifInvocation.ArgumentList, elseInvocation.ArgumentList, findSingleArgumentIndexThatDiffers, semanticModel), null);
+                }
+            }
+            return null;
         }
 
         private static ExpressionSyntax TrySimplifyMethodCalls(ExpressionSyntax ifStatementCondition, ExpressionSyntax ifExpression, ExpressionSyntax elseExpression, SemanticModel semanticModel)
