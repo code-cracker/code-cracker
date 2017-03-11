@@ -36,7 +36,7 @@ namespace CodeCracker.CSharp.Refactoring
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             var node = root.FindNode(diagnosticLocation.SourceSpan);
             var parenthesized = node as ParenthesizedExpressionSyntax;
-            var expression = (BinaryExpressionSyntax)(parenthesized != null ? parenthesized.Expression : node);
+            var expression = (BinaryExpressionSyntax)(parenthesized != null ? parenthesized.Expression : node is ArgumentSyntax ? ((ArgumentSyntax)node).Expression : node);
             var newRoot = ComputeExpression(node, expression, root, semanticModel);
             if (newRoot == null) return null;
             var newDocument = document.WithSyntaxRoot(newRoot);
@@ -47,7 +47,11 @@ namespace CodeCracker.CSharp.Refactoring
         {
             var result = semanticModel.GetConstantValue(expression);
             if (!result.HasValue) return null;
-            var newExpression = SyntaxFactory.ParseExpression(System.Convert.ToString(result.Value, System.Globalization.CultureInfo.InvariantCulture));
+            SyntaxNode newExpression = SyntaxFactory.ParseExpression(System.Convert.ToString(result.Value, System.Globalization.CultureInfo.InvariantCulture));
+            if(nodeToReplace is ArgumentSyntax)
+            {
+                newExpression = SyntaxFactory.Argument((ExpressionSyntax)newExpression);
+            }
             var newRoot = root.ReplaceNode(nodeToReplace, newExpression);
             return newRoot;
         }

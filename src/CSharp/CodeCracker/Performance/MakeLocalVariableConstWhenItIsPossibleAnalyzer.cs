@@ -12,7 +12,7 @@ namespace CodeCracker.CSharp.Performance
         DiagnosticAnalyzer
     {
         internal const string Title = "Make Local Variable Constant.";
-        internal const string MessageFormat = "This variables can be made const.";
+        internal const string MessageFormat = "This variable can be made const.";
         internal const string Category = SupportedCategories.Performance;
         const string Description = "This variable is assigned a constant value and never changed it can be made 'const'";
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(

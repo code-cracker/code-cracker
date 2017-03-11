@@ -10,7 +10,7 @@ namespace CodeCracker.CSharp.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class CatchEmptyAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Your catch maybe include some Exception";
+        internal const string Title = "Your catch should include an Exception";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Design;
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -33,7 +33,7 @@ namespace CodeCracker.CSharp.Design
             var catchStatement = (CatchClauseSyntax)context.Node;
 
             if (catchStatement == null || catchStatement.Declaration != null) return;
-            if (catchStatement.Block?.Statements.Count == 0) return; // there is another analizer for this: EmptyCatchBlock
+            if (catchStatement.Block?.Statements.Count == 0) return; // there is another analyzer for this: EmptyCatchBlock
 
             if (catchStatement.Block != null)
             {
@@ -42,7 +42,7 @@ namespace CodeCracker.CSharp.Design
                 if (!controlFlow.EndPointIsReachable &&
                     controlFlow.ExitPoints.All(i => i.IsKind(SyntaxKind.ThrowStatement))) return;
             }
-            var diagnostic = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Consider put an Exception Class in catch.");
+            var diagnostic = Diagnostic.Create(Rule, catchStatement.GetLocation(), "Consider adding an Exception to the catch.");
             context.ReportDiagnostic(diagnostic);
         }
     }

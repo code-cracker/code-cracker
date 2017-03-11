@@ -2,9 +2,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace CodeCracker.CSharp.Usage
 {
@@ -118,26 +118,29 @@ namespace CodeCracker.CSharp.Usage
         {
             if (fieldSymbol == null) return;
             if (!CanBeMadeReadonly(fieldSymbol)) return;
-            if ((method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
-            || (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic))
+            if (!HasAssignmentInLambda(node)
+            && ((method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
+            || (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic)))
                 AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, node, syntaxRefSemanticModel);
             else
                 RemoveVariableThatHasAssignment(variablesToMakeReadonly, fieldSymbol);
         }
 
-        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, SyntaxNode assignment, SemanticModel semanticModel)
+        private static bool HasAssignmentInLambda(SyntaxNode assignment)
         {
             var parent = assignment.Parent;
             while (parent != null)
             {
                 if (parent is AnonymousFunctionExpressionSyntax)
-                    return;
-                if (parent is ConstructorDeclarationSyntax)
-                    break;
+                    return true;
                 parent = parent.Parent;
             }
+            return false;
+        }
 
-            if (!fieldSymbol.IsReadOnly && !variablesToMakeReadonly.Keys.Contains(fieldSymbol))
+        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, SyntaxNode assignment, SemanticModel semanticModel)
+        {
+            if (!fieldSymbol.IsReadOnly && !variablesToMakeReadonly.Keys.Contains(fieldSymbol) && !IsComplexValueType(fieldSymbol.Type))
             {
                 var containingType = assignment.FirstAncestorOfKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
                 if (containingType == null) return;
@@ -196,8 +199,10 @@ namespace CodeCracker.CSharp.Usage
         {
             var fieldTypeName = fieldDeclaration.Declaration.Type;
             var fieldType = semanticModel.GetTypeInfo(fieldTypeName).ConvertedType;
-            return fieldType.IsValueType && !(fieldType.TypeKind == TypeKind.Enum || fieldType.IsPrimitive());
+            return IsComplexValueType(fieldType);
         }
+
+        private static bool IsComplexValueType(ITypeSymbol fieldType) => fieldType.IsValueType && !(fieldType.TypeKind == TypeKind.Enum || fieldType.IsPrimitive());
 
         private static bool CanBeMadeReadonly(IFieldSymbol fieldSymbol)
         {

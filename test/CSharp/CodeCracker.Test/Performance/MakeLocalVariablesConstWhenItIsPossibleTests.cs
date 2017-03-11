@@ -67,7 +67,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
-                Message = "This variables can be made const.",
+                Message = "This variable can be made const.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
@@ -82,7 +82,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
-                Message = "This variables can be made const.",
+                Message = "This variable can be made const.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
@@ -97,7 +97,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
-                Message = "This variables can be made const.",
+                Message = "This variable can be made const.",
                 Severity = DiagnosticSeverity.Info,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
             };
