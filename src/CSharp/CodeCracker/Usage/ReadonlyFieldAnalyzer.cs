@@ -118,25 +118,28 @@ namespace CodeCracker.CSharp.Usage
         {
             if (fieldSymbol == null) return;
             if (!CanBeMadeReadonly(fieldSymbol)) return;
-            if ((method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
-            || (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic))
+            if (!HasAssignmentInLambda(node)
+            && ((method.MethodKind == MethodKind.StaticConstructor && fieldSymbol.IsStatic)
+            || (method.MethodKind == MethodKind.Constructor && !fieldSymbol.IsStatic)))
                 AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(variablesToMakeReadonly, fieldSymbol, node, syntaxRefSemanticModel);
             else
                 RemoveVariableThatHasAssignment(variablesToMakeReadonly, fieldSymbol);
         }
 
-        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, SyntaxNode assignment, SemanticModel semanticModel)
+        private static bool HasAssignmentInLambda(SyntaxNode assignment)
         {
             var parent = assignment.Parent;
             while (parent != null)
             {
                 if (parent is AnonymousFunctionExpressionSyntax)
-                    return;
-                if (parent is ConstructorDeclarationSyntax)
-                    break;
+                    return true;
                 parent = parent.Parent;
             }
+            return false;
+        }
 
+        private static void AddVariableThatWasSkippedBeforeBecauseItLackedAInitializer(Dictionary<IFieldSymbol, VariableDeclaratorSyntax> variablesToMakeReadonly, IFieldSymbol fieldSymbol, SyntaxNode assignment, SemanticModel semanticModel)
+        {
             if (!fieldSymbol.IsReadOnly && !variablesToMakeReadonly.Keys.Contains(fieldSymbol) && !IsComplexValueType(fieldSymbol.Type))
             {
                 var containingType = assignment.FirstAncestorOfKind(SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);

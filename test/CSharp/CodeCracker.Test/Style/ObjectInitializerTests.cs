@@ -8,6 +8,17 @@ namespace CodeCracker.Test.CSharp.Style
     public class ObjectInitializerWithLocalDeclarationTests : CodeFixVerifier<ObjectInitializerAnalyzer, ObjectInitializerCodeFixProvider>
     {
         [Fact]
+        public async Task WhenDeclaringADynamicVariableDoesNotCreateDiagnostic()
+        {
+            var source = @"
+dynamic p = new Person();
+p.Name = ""Giovanni"";
+p.Age = 25;
+";
+            await VerifyCSharpHasNoDiagnosticsAsync(source.WrapInCSharpMethod());
+        }
+
+        [Fact]
         public async Task WhenAssigningButNotCreatingAnalyzerDoesNotCreateDiagnostic()
         {
             const string source = @"
