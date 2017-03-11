@@ -25,4 +25,8 @@ This is a community project, free and open source. Everyone is invited to contri
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="CodeCracker" Path="|CodeCracker|"/>
     <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="CodeCracker" Path="|CodeCracker|"/>
   </Assets>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[14.0,16.0)" DisplayName="Visual Studio core editor" />
+    <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[14.0,16.0)" DisplayName="Roslyn Language Services" />
+  </Prerequisites>
 </PackageManifest>
