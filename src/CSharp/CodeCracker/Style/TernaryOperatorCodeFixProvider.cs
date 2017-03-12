@@ -97,10 +97,10 @@ namespace CodeCracker.CSharp.Style
         public static ExpressionSyntax CreateExpressions(ExpressionSyntax ifExpression, ExpressionSyntax elseExpression, ExpressionSyntax ifStatementCondition, SemanticModel semanticModel)
         {
 
-            var methodCallSimplification = TrySimplifyMethodCalls(ifStatementCondition, ifExpression, elseExpression, semanticModel);
-            if (methodCallSimplification != null) return methodCallSimplification;
-            var constructorSimplification = TrySimplifyConstructorCalls(ifStatementCondition, ifExpression, elseExpression, semanticModel);
-            if (constructorSimplification != null) return constructorSimplification;
+            var methodCallArgApplied = TryApplyArgsOnMethodCalls(ifStatementCondition, ifExpression, elseExpression, semanticModel);
+            if (methodCallArgApplied != null) return methodCallArgApplied;
+            var constructorArgsApplied = TryApplyArgsOnConstructorCalls(ifStatementCondition, ifExpression, elseExpression, semanticModel);
+            if (constructorArgsApplied != null) return constructorArgsApplied;
             var ifTypeInfo = semanticModel.GetTypeInfo(ifExpression);
             var elseTypeInfo = semanticModel.GetTypeInfo(elseExpression);
             var typeSyntax = SyntaxFactory.IdentifierName(ifTypeInfo.ConvertedType.ToMinimalDisplayString(semanticModel, ifExpression.SpanStart));
@@ -110,25 +110,30 @@ namespace CodeCracker.CSharp.Style
             return SyntaxFactory.ConditionalExpression(ifStatementCondition, trueExpression, falseExpression);
         }
 
-        private static ExpressionSyntax TrySimplifyConstructorCalls(ExpressionSyntax ifStatementCondition, ExpressionSyntax ifExpression, ExpressionSyntax elseExpression, SemanticModel semanticModel)
+        private static ExpressionSyntax TryApplyArgsOnConstructorCalls(ExpressionSyntax ifStatementCondition, ExpressionSyntax ifExpression, ExpressionSyntax elseExpression, SemanticModel semanticModel)
         {
             if (ifExpression is ObjectCreationExpressionSyntax && elseExpression is ObjectCreationExpressionSyntax)
             {
-                var ifInvocation = ifExpression as ObjectCreationExpressionSyntax;
-                var elseInvocation = elseExpression as ObjectCreationExpressionSyntax;
-                var ifMethodinfo = semanticModel.GetSymbolInfo(ifInvocation);
-                var elseMethodinfo = semanticModel.GetSymbolInfo(elseInvocation);
-                if (object.Equals(ifMethodinfo, elseMethodinfo)) //same method and overload
+                var ifObjCreation = ifExpression as ObjectCreationExpressionSyntax;
+                var elseObjCreation = elseExpression as ObjectCreationExpressionSyntax;
+                if ((ifObjCreation.Initializer == null && elseObjCreation.Initializer == null) ||
+                    ifObjCreation.Initializer != null && elseObjCreation.Initializer != null &&
+                    ifObjCreation.Initializer.GetText().ContentEquals(elseObjCreation.Initializer.GetText())) // Initializer are either absent or text equals
                 {
-                    var findSingleArgumentIndexThatDiffers = FindSingleArgumentIndexThatDiffers(ifInvocation.ArgumentList, elseInvocation.ArgumentList, semanticModel);
-                    if (findSingleArgumentIndexThatDiffers >= 0)
-                        return SyntaxFactory.ObjectCreationExpression(ifInvocation.Type, CreateMethodArgumentList(ifStatementCondition, ifInvocation.ArgumentList, elseInvocation.ArgumentList, findSingleArgumentIndexThatDiffers, semanticModel), null);
+                    var ifMethodinfo = semanticModel.GetSymbolInfo(ifObjCreation);
+                    var elseMethodinfo = semanticModel.GetSymbolInfo(elseObjCreation);
+                    if (object.Equals(ifMethodinfo, elseMethodinfo)) //same constructor and overload
+                    {
+                        var findSingleArgumentIndexThatDiffers = FindSingleArgumentIndexThatDiffers(ifObjCreation.ArgumentList, elseObjCreation.ArgumentList, semanticModel);
+                        if (findSingleArgumentIndexThatDiffers >= 0)
+                            return SyntaxFactory.ObjectCreationExpression(ifObjCreation.Type, CreateMethodArgumentList(ifStatementCondition, ifObjCreation.ArgumentList, elseObjCreation.ArgumentList, findSingleArgumentIndexThatDiffers, semanticModel), ifObjCreation.Initializer);
+                    }
                 }
             }
             return null;
         }
 
-        private static ExpressionSyntax TrySimplifyMethodCalls(ExpressionSyntax ifStatementCondition, ExpressionSyntax ifExpression, ExpressionSyntax elseExpression, SemanticModel semanticModel)
+        private static ExpressionSyntax TryApplyArgsOnMethodCalls(ExpressionSyntax ifStatementCondition, ExpressionSyntax ifExpression, ExpressionSyntax elseExpression, SemanticModel semanticModel)
         {
             if (ifExpression is InvocationExpressionSyntax && elseExpression is InvocationExpressionSyntax)
             {
@@ -136,7 +141,7 @@ namespace CodeCracker.CSharp.Style
                 var elseInvocation = elseExpression as InvocationExpressionSyntax;
                 var ifMethodinfo = semanticModel.GetSymbolInfo(ifInvocation.Expression);
                 var elseMethodinfo = semanticModel.GetSymbolInfo(elseInvocation.Expression);
-                if (object.Equals(ifMethodinfo, elseMethodinfo)) //same method and overload
+                if (object.Equals(ifMethodinfo, elseMethodinfo) && ifMethodinfo.CandidateReason != CandidateReason.LateBound) //same method and overload, but not dynamic
                 {
                     if (ifInvocation.Expression.GetText().ContentEquals(elseInvocation.Expression.GetText())) //same 'path' to the invocation
                     {
@@ -172,6 +177,7 @@ namespace CodeCracker.CSharp.Style
 
         private static int FindSingleArgumentIndexThatDiffers(ArgumentListSyntax argList1, ArgumentListSyntax argList2, SemanticModel semanticModel)
         {
+            if (argList1.Arguments.Count != argList2.Arguments.Count) return -1; // in case of 'params'
             var zipped = argList1.Arguments.Zip(argList2.Arguments, (a1, a2) => new { a1, a2 }).Select((a, i) => new { a.a1, a.a2, i });
             var singleMissmatch = zipped.Where(args =>
             {

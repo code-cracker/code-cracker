@@ -336,8 +336,8 @@ class Test2
         }
 
         [Fact]
-        public async Task WhenUsingIfAndElseWithAssignmentOfMethodResultChangeToTernaryFixGetsSimplified()
-        {            
+        public async Task WhenUsingIfAndElseWithAssignmentOfMethodResultChangeToTernaryFixGetsArgsApplied()
+        {
             var source = @"
             int Method(int a) => a;
 
@@ -353,7 +353,7 @@ class Test2
                 {
                     a = Method(2);
                 }
-            }".WrapInCSharpClass(); 
+            }".WrapInCSharpClass();
             var fixtest = @"
             int Method(int a) => a;
 
@@ -367,7 +367,7 @@ class Test2
         }
 
         [Fact]
-        public async Task WhenUsingIfAndElseWithAssignmentOfMethodResultWithComplexArgumentEvaluationChangeToTernaryFixGetsSimplified()
+        public async Task WhenUsingIfAndElseWithAssignmentOfMethodResultWithComplexArgumentEvaluationChangeToTernaryFixGetsArgsApplied()
         {
             var source = @"
             int Method(int a) => a;
@@ -810,7 +810,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithMethodWithSingleDifferentArgumentGetsSimplified()
+        public async Task FixWhenReturningWithMethodWithSingleDifferentArgumentGetsArgsApplied()
         {
             var source = @"
             private int Method(int i) => i;
@@ -833,7 +833,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithMethodWithMultipleArgumentsWhereSingleDifferentGetsSimplified()
+        public async Task FixWhenReturningWithMethodWithMultipleArgumentsWhereSingleDifferentGetsArgsApplied()
         {
             var source = @"
             private int Method(int i, string t) => i;
@@ -856,7 +856,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithMethodWithMultipleArgumentsWhereMultipleDifferentGetsNotSimplified()
+        public async Task FixWhenReturningWithMethodWithMultipleArgumentsWhereMultipleDifferentGetsArgsNotApplied()
         {
             var source = @"
             private int Method(int i, string t) => i;
@@ -879,7 +879,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithMethodArgumentsGetCastedWhenSimplified()
+        public async Task FixWhenReturningWithMethodArgumentsGetCastedWhenGetsArgsApplied()
         {
             var source = @"
             class Base { }
@@ -910,7 +910,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithPrefixedMethodGetsSimplified()
+        public async Task FixWhenReturningWithPrefixedMethodGetsArgsApplied()
         {
             var source = @"
             private int Method(int a) => a;
@@ -933,7 +933,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithMethodOfPropertyGetsSimplified()
+        public async Task FixWhenReturningWithMethodOfPropertyGetsArgsApplied()
         {
             var source = @"
             class A {
@@ -962,7 +962,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithMethodOfDifferentPropertyGetsNotSimplified()
+        public async Task FixWhenReturningWithMethodOfDifferentPropertyGetsArgsNotApplied()
         {
             var source = @"
             class A {
@@ -993,7 +993,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithMethodOfSameOverloadGetsSimplified()
+        public async Task FixWhenReturningWithMethodOfSameOverloadGetsArgsApplied()
         {
             var source = @"
             int Method(int a)=>a;
@@ -1018,7 +1018,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithMethodOfDifferentOverloadGetsNotSimplified()
+        public async Task FixWhenReturningWithMethodOfDifferentOverloadGetsArgsNotApplied()
         {
             var source = @"
             int Method(int a)=>a;
@@ -1043,7 +1043,7 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithMethodNestedInMemberAccessGetsNotSimplified()
+        public async Task FixWhenReturningWithMethodNestedInMemberAccessGetsArgsNotApplied()
         {
             var source = @"
             class A {
@@ -1074,10 +1074,113 @@ class Test
         }
 
         [Fact]
-        public async Task FixWhenReturningWithConstructorGetsSimplified()
+        public async Task FixWhenReturningWithMethodParamOverloadAndNumerOfArgsAreEqualGetsApplied()
         {
             var source = @"
+            private int M(params int[] args) { }
+
             public int Foo()
+            {
+                if (true)
+                    return M(1,1);
+                else
+                    return M(1,2);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            private int M(params int[] args) { }
+
+            public int Foo()
+            {
+                return M(1,true?1:2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodParamOverloadAndNumerOfArgsAreDifferentGetsNotApplied()
+        {
+            var source = @"
+            private int M(params int[] args) { }
+
+            public int Foo()
+            {
+                if (true)
+                    return M(1,1);
+                else
+                    return M(1,2,3);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            private int M(params int[] args) { }
+
+            public int Foo()
+            {
+                return true?M(1,1):M(1,2,3);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodOfDynamicObjGetsArgsNotApplied()
+        {
+            // Calls on dynamic objects get dispatched during runtime.
+            // Therefore the semantic would be changed if we apply to arguments 
+            // and casting is involved:
+            // d.M(new A()) else d.M(new B()) -> d.M(cond?(Base)new A():new B());
+            // is not the same as cond?d.M(new A()): d.M(new B()) on dynamic objects.
+            var source = @"
+            public class Base {}
+            public class A: Base {}
+            public class B: Base {}
+            
+            public int Foo()
+            {
+                dynamic d = new object();
+                if (true)
+                    return d.M(new A());
+                else
+                    return d.M(new B());
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            public class Base {}
+            public class A: Base {}
+            public class B: Base {}
+            
+            public int Foo()
+            {
+                dynamic d = new object();
+                return true?d.M(new A()):d.M(new B());
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithMethodOfDynamicObjGetsArgsNeverApplied()
+        {
+            // arguments on dynamic method calls are never applied even if it would be save.
+            // see comments above for why dynamic is dangerous.
+            var source = @"
+            public int Foo()
+            {
+                dynamic d = new object();
+                if (true)
+                    return d.M(1,1);
+                else
+                    return d.M(1,2);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            public int Foo()
+            {
+                dynamic d = new object();
+                return true?d.M(1,1):d.M(1,2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithConstructorGetsArgsApplied()
+        {
+            var source = @"
+            public System.Collections.Generic.List<int> Foo()
             {                
                 if (true)
                     return new System.Collections.Generic.List<int>(1);
@@ -1085,9 +1188,113 @@ class Test
                     return new System.Collections.Generic.List<int>(2);
             }".WrapInCSharpClass();
             var fixtest = @"
-            public int Foo()
+            public System.Collections.Generic.List<int> Foo()
             {                
                 return new System.Collections.Generic.List<int>(true?1:2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithConstructorWithIdenticalInitializerGetsArgsApplied()
+        {
+            var source = @"
+            public new System.Collections.Generic.List<int> Foo()
+            {                
+                if (true)
+                    return new System.Collections.Generic.List<int>(1) { 1 };
+                else
+                    return new System.Collections.Generic.List<int>(2) { 1 };
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            public new System.Collections.Generic.List<int> Foo()
+            {                
+                return new System.Collections.Generic.List<int>(true?1:2) { 1 };
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithConstructorWithDifferentInitializerGetsArgsNotApplied()
+        {
+            var source = @"
+            public System.Collections.Generic.List<int> Foo()
+            {                
+                if (true)
+                    return new System.Collections.Generic.List<int>(1) { 1 };
+                else
+                    return new System.Collections.Generic.List<int>(2) { 1, 2 };
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            public System.Collections.Generic.List<int> Foo()
+            {                
+                return true?new System.Collections.Generic.List<int>(1) { 1 } : new System.Collections.Generic.List<int>(2) { 1, 2 };
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithConstructorWithDifferentOverloadsGetArgsNotApplied()
+        {
+            var source = @"
+            public class A
+            {
+                public A(int i) { }
+                public A(string s) { }
+            }
+            public A Foo()
+            {                
+                if (true)
+                    return new A(1);
+                else
+                    return new A(""1"");
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            public class A
+            {
+                public A(int i) { }
+                public A(string s) { }
+            }
+            public A Foo()
+            {                
+                return true?new A(1):new A(""1"");
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithConstructorOfDifferentObjectsGetArgsNotApplied()
+        {
+            var source = @"
+            public class A 
+            {
+                public A(int i) { } 
+            }
+            public class B
+            {
+                public B(int i) { } 
+            }
+
+            public Object Foo()
+            {                
+                if (true)
+                    return new A(1);
+                else
+                    return new B(2);
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            public class A 
+            {
+                public A(int i) { } 
+            }
+            public class B
+            {
+                public B(int i) { } 
+            }
+
+            public Object Foo()
+            {                
+                return true?(object)new A(1):new B(2);
             }".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, fixtest);
         }
