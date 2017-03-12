@@ -1043,6 +1043,35 @@ class Test
         }
 
         [Fact]
+        public async Task FixWhenReturningWithMethodOfDifferentOverloadButCastingPossibleGetsArgsNotApplied()
+        {
+            var source = @"
+            public class A { }
+            public class B:A { }
+            void Method(A a) { };
+            void Method(B b) { };
+
+            public int Foo()
+            {                
+                if (true)
+                    return Method(new A());
+                else
+                    return Method(new B());
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            public class A { }
+            public class B:A { }
+            void Method(A a) { };
+            void Method(B b) { };
+
+            public int Foo()
+            {                
+                return true?Method(new A()):Method(new B());
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
         public async Task FixWhenReturningWithMethodNestedInMemberAccessGetsArgsNotApplied()
         {
             var source = @"
