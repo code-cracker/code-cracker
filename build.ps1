@@ -1,42 +1,43 @@
 $ErrorActionPreference = "Stop"
 # functions:
 
-function IsNugetVersion3($theNugetExe) {
+function IsNugetVersion3OrAbove($theNugetExe) {
     try {
         $nugetText = . $theNugetExe | Out-String
     } catch {
         return false
     }
-    [regex]$regex = '^NuGet Version: (.*)\n'
+    [regex]$regex = '^NuGet Version: (\d)\.(\d).*\n'
     $match = $regex.Match($nugetText)
     $version = $match.Groups[1].Value
-    return $version.StartsWith(3)
+    Write-Host "Nuget major version is $version"
+    return [System.Convert]::ToInt32($version) -ge 3
 }
 
 function Get-Nuget {
     if (gcm nuget -ErrorAction SilentlyContinue) {
-        if (IsNugetVersion3 'nuget') {
-            return 'nuget'
+        if (IsNugetVersion3OrAbove 'nuget') {
+            $script:nugetExe = 'nuget'
         } else {
             Download-Nuget
-            return $localNuget
+            $script:nugetExe = $localNuget
         }
     } else {
         Download-Nuget
-        return $localNuget
+        $script:nugetExe = $localNuget
     }
 }
 
 function Download-Nuget {
     $tempNuget = "$env:TEMP\codecracker\nuget.exe"
     if (!(Test-Path "$env:TEMP\codecracker\")) {
-        md "$env:TEMP\codecracker\"
+        md "$env:TEMP\codecracker\" | Out-Null
     }
     if (Test-Path $localNuget) {
-        if (IsNugetVersion3($localNuget)) { return }
+        if (IsNugetVersion3OrAbove($localNuget)) { return }
     }
     if (Test-Path $tempNuget) {
-        if (IsNugetVersion3($tempNuget)) {
+        if (IsNugetVersion3OrAbove($tempNuget)) {
             cp $tempNuget $localNuget
             return
         }
@@ -48,7 +49,8 @@ function Download-Nuget {
 function Import-Psake {
     $psakeModule = "$PSScriptRoot\packages\psake.4.5.0\tools\psake.psm1"
     if ((Test-Path $psakeModule) -ne $true) {
-        . $nugetExe restore $PSScriptRoot\.nuget\packages.config -SolutionDirectory $PSScriptRoot
+        Write-Host "Restoring $PSScriptRoot\.nuget with $script:nugetExe"
+        . "$script:nugetExe" restore $PSScriptRoot\.nuget\packages.config -SolutionDirectory $PSScriptRoot
     }
     Import-Module $psakeModule -force
 }
@@ -56,7 +58,8 @@ function Import-Psake {
 # statements:
 
 $localNuget = "$PSScriptRoot\.nuget\nuget.exe"
-$nugetExe = Get-Nuget
+$nugetExe = ""
+Get-Nuget
 Import-Psake
 if ($MyInvocation.UnboundArguments.Count -ne 0) {
     . $PSScriptRoot\psake.ps1 -taskList ($MyInvocation.UnboundArguments -join " ")

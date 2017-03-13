@@ -1,5 +1,33 @@
 # Change Log
 
+## [Unreleased](https://github.com/code-cracker/code-cracker/tree/HEAD)
+
+[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.2...HEAD)
+
+**Closed issues:**
+
+
+## [v1.0.2](https://github.com/code-cracker/code-cracker/tree/v1.0.2) (2017-03-12)
+[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.1...v1.0.2)
+
+**Implemented enhancements:**
+
+- VS 2017RC Support [\#856](https://github.com/code-cracker/code-cracker/issues/856)
+
+**Fixed bugs:**
+
+-  CC0057 UnusedParametersAnalyzer should not be triggered on virtual methods [\#872](https://github.com/code-cracker/code-cracker/issues/872)
+- BUG: CC0060 - detected for nested struct in abstract class [\#867](https://github.com/code-cracker/code-cracker/issues/867)
+- Bug on CC0120 for the fix when there is a conversion [\#859](https://github.com/code-cracker/code-cracker/issues/859)
+- BUG: CC0052 \(Make readonly\) sometimes detects complex value types [\#854](https://github.com/code-cracker/code-cracker/issues/854)
+- BUG: CC0052 \(Make readonly\) does not work with lambda expressions and initialized variables [\#853](https://github.com/code-cracker/code-cracker/issues/853)
+- "Disposable Field Not Disposed" rule does not recognize null propagation [\#848](https://github.com/code-cracker/code-cracker/issues/848)
+- CC0082: ComputeExpressionCodeFixProvider crashs [\#841](https://github.com/code-cracker/code-cracker/issues/841)
+- CC0030: Bad grammar in message [\#838](https://github.com/code-cracker/code-cracker/issues/838)
+- CC0008: Don't suggest for dynamic objects [\#837](https://github.com/code-cracker/code-cracker/issues/837)
+- Bug: Should not use Async methods in analyzers \(CC0029\) [\#821](https://github.com/code-cracker/code-cracker/issues/821)
+- BUG: CC0014 converts if y then x += 1 else x =1 to x +=\(if\(y, 1, 1\) [\#798](https://github.com/code-cracker/code-cracker/issues/798)
+
 ## [v1.0.1](https://github.com/code-cracker/code-cracker/tree/v1.0.1) (2016-09-06)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.0...v1.0.1)
 
