@@ -10,13 +10,11 @@ namespace CodeCracker.CSharp.Design
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StaticConstructorExceptionAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Don't throw exception inside static constructors.";
-        internal const string MessageFormat = "Don't throw exception inside static constructors.";
+        internal const string Title = "Don't throw exceptions inside static constructors.";
+        internal const string MessageFormat = "Don't throw exceptions inside static constructors.";
         internal const string Category = SupportedCategories.Design;
-        const string Description = "Static constructor are called before the first time a class is used but the "
-            + "caller doesn't control when exactly.\r\n"
-            + "Exception thrown in this context force callers to use 'try' block around any useage of the class "
-            + "and should be avoided.";
+        const string Description = "Static constructors are called before a class is used for the first time. "
+            + "Exceptions thrown in static constructors force the use of a try block and should be avoided.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.StaticConstructorException.ToDiagnosticId(),
