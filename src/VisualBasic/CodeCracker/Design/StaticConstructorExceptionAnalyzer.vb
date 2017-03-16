@@ -9,11 +9,11 @@ Namespace Design
         Inherits DiagnosticAnalyzer
 
         Public Shared ReadOnly Id As String = DiagnosticId.StaticConstructorException.ToDiagnosticId()
-        Public Const Title As String = "Don't throw exception inside static constructors."
+        Public Const Title As String = "Don't throw exceptions inside static constructors."
         Public Const MessageFormat As String = "Don't throw exceptions inside static constructors."
         Public Const Category As String = SupportedCategories.Design
-        Public Const Description As String = "Static constructor are called before the first time a class is used but the caller doesn't control when exactly.
-Exception thrown in this context forces callers to use 'try' block around any useage of the class and should be avoided."
+    Public Const Description As String = "Static constructors are called before a class is used for the first time. Exceptions thrown
+    in static constructors force the use of a try block and should be avoided."
         Protected Shared Rule As DiagnosticDescriptor = New DiagnosticDescriptor(
                 Id,
                 Title,
