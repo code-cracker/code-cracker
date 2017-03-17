@@ -850,6 +850,29 @@ class TypeName
         }
 
         [Fact]
+        public async Task FieldsAssignedOnLambdaWithInitializerDoesNotCreateDiagnostic()
+        {
+            const string source = @"
+using System;
+class C
+{
+    private readonly Action set;
+    private int i = 0;
+
+    public C()
+    {
+        set = () => i = 1;
+    }
+
+    public void Modify()
+    {
+        set();
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task VariableInitializerDoesNotCreateDiagnostic()
         {
             const string source = @"
@@ -987,6 +1010,32 @@ class Test
     public Test()
     {
         value = 8;
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task ComplexTypeDoesNotCreateDiagnosticAsync()
+        {
+            const string source = @"
+class C
+{
+    private S s;
+
+    public C()
+    {
+        s = default(S);
+    }
+
+    public void M1()
+    {
+        s.Value = 1;
+    }
+
+    public struct S
+    {
+        public int Value;
     }
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);

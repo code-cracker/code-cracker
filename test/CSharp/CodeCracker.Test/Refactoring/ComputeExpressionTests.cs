@@ -80,5 +80,13 @@ namespace CodeCracker.Test.CSharp.Refactoring
         [Fact]
         public async Task ExpressionThatThrowsDoesNotRegisterAFix() =>
             await VerifyCSharpHasNoFixAsync("var a = int.MaxValue + int.MaxValue;".WrapInCSharpMethod());
+
+        [Fact]
+        public async Task ExpressionOnArgumentsFix()
+        {
+            var source = "string.Format(\"2 Hours in minutes: {0}\", 60 * 2)".WrapInCSharpMethod();
+            var fix = "string.Format(\"2 Hours in minutes: {0}\", 120)".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fix);
+        }
     }
 }
