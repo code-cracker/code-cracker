@@ -10,11 +10,10 @@ namespace CodeCracker.CSharp.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RegexAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Your Regex expression is wrong";
+        internal const string Title = "Your regex expression is incorrect";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Naming;
-        const string Description = "This diagnostic compile the Regex expression and trigger if the compilation fail "
-            + "by throwing an exception.";
+        const string Description = "There is an error in your regex expression.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.Regex.ToDiagnosticId(),
