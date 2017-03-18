@@ -11,7 +11,7 @@ Namespace Usage
 
         Friend Const Title = "Unused Method"
         Friend Const Message = "Method is not used."
-        Private Const Description = "When a private method is declared but not used, remove it to avoid confusion."
+        Private Const Description = "Unused private methods can be safely removed as they are unnecessary."
 
         Friend Shared Rule As New DiagnosticDescriptor(
             DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId(),
