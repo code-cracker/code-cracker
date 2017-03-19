@@ -189,7 +189,7 @@ namespace CodeCracker.Test.CSharp.Usage
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.IfReturnTrue.ToDiagnosticId(),
-                Message = "You should return directly.",
+                Message = "You should return the boolean directly.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
             };
