@@ -43,7 +43,7 @@ namespace CodeCracker.CSharp.Usage
             while (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ParenthesizedExpression, SyntaxKind.ConditionalExpression, SyntaxKind.CastExpression))
                 topSyntaxNode = topSyntaxNode.Parent;
 
-            if (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ReturnStatement, SyntaxKind.UsingStatement))
+            if (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ReturnStatement, SyntaxKind.UsingStatement, SyntaxKind.YieldReturnStatement))
                 return;
 
             if (topSyntaxNode.Ancestors().Any(i => i.IsAnyKind(
@@ -148,10 +148,12 @@ namespace CodeCracker.CSharp.Usage
                 body = method.Body;
             }
             if (body == null) return true;
-            var returnExpressions = body.DescendantNodes().OfType<ReturnStatementSyntax>().Select(r => r.Expression);
             var returnTypeSymbol = methodSymbol?.ReturnType;
             if (returnTypeSymbol == null) return false;
             if (returnTypeSymbol.SpecialType == SpecialType.System_Void) return false;
+            var bodyDescendantNodes = body.DescendantNodes().ToList();
+            var returnExpressions = bodyDescendantNodes.OfType<ReturnStatementSyntax>().Select(r => r.Expression).Union(
+                bodyDescendantNodes.OfKind<YieldStatementSyntax>(SyntaxKind.YieldReturnStatement).Select(yr => yr.Expression));
             var isReturning = returnExpressions.Any(returnExpression =>
             {
                 var returnSymbol = semanticModel.GetSymbolInfo(returnExpression).Symbol;

@@ -124,6 +124,29 @@ namespace CSharpNamespace
         }
 
         [Fact]
+        public async Task IteratorWithDirectReturnDoesNotCreateDiagnostic()
+        {
+            var source = @"
+public System.Collections.Generic.IEnumerable<System.IDisposable> Foo()
+{
+    yield return new System.IO.MemoryStream();
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IteratorWithIndirectReturnDoesNotCreateDiagnostic()
+        {
+            var source = @"
+public System.Collections.Generic.IEnumerable<System.IDisposable> Foo()
+{
+    var disposable = new System.IO.MemoryStream();
+    yield return disposable;
+}".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task DisposableVariableCreatesDiagnostic()
         {
             var source = "new System.IO.MemoryStream();".WrapInCSharpMethod();
