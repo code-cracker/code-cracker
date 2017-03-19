@@ -124,6 +124,13 @@ namespace CSharpNamespace
         }
 
         [Fact]
+        public async Task ReturnOnExpressionBodiedMembersDoNotCreateDiagnostic()
+        {
+            var source = @"public static System.IO.MemoryStream Foo() => new System.IO.MemoryStream();".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task IteratorWithDirectReturnDoesNotCreateDiagnostic()
         {
             var source = @"

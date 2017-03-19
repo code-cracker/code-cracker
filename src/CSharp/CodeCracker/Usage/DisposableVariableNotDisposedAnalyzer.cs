@@ -47,6 +47,7 @@ namespace CodeCracker.CSharp.Usage
                 return;
 
             if (topSyntaxNode.Ancestors().Any(i => i.IsAnyKind(
+                SyntaxKind.ArrowExpressionClause,
                 SyntaxKind.ThisConstructorInitializer,
                 SyntaxKind.BaseConstructorInitializer,
                 SyntaxKind.ObjectCreationExpression)))
