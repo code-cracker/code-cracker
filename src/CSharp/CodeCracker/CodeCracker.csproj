@@ -196,6 +196,7 @@
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsAnalyzer.cs" />
     <Compile Include="Usage\SimplifyRedundantBooleanComparisonsCodeFixProvider.cs" />
     <Compile Include="Usage\UriAnalyzer.cs" />
+    <Compile Include="Usage\ValidateColorAnalyzer.cs" />
     <Compile Include="Usage\VirtualMethodOnConstructorAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>

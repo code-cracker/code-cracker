@@ -47,6 +47,7 @@
         StringFormat = 48,
         SimplifyRedundantBooleanComparisons = 49,
         ReadonlyField = 52,
+        ValidateColor = 53,
         JsonNet = 54,
         StringFormatArgs_InvalidArgs = 56,
         UnusedParameters = 57,
