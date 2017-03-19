@@ -11,13 +11,12 @@ namespace CodeCracker.CSharp.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IPAddressAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Your IP Address syntax is wrong.";
+        internal const string Title = "Your IP Address syntax is incorrect.";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Usage;
 
         private const string Description =
-            "This diagnostic checks the IP Address string and triggers if the parsing fail "
-            + "by throwing an exception.";
+            "An error was found parsing the IP Address string.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.IPAddress.ToDiagnosticId(),

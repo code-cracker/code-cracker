@@ -12,8 +12,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Title = "Return Condition directly";
         internal const string Message = "{0}";
         internal const string Category = SupportedCategories.Usage;
-        const string Description = "Using an if/else to return true/false depending on the condition isn't useful.\r\n"
-            + "As the condition is already a boolean it can be returned directly";
+        const string Description = "Using an if/else statement to return a boolean can be replaced by directly returning a boolean.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.IfReturnTrue.ToDiagnosticId(),
@@ -47,7 +46,8 @@ namespace CodeCracker.CSharp.Usage
                 (returnIf.Expression is LiteralExpressionSyntax && returnIf.Expression.IsKind(SyntaxKind.FalseLiteralExpression) &&
                 returnElse.Expression is LiteralExpressionSyntax && returnElse.Expression.IsKind(SyntaxKind.TrueLiteralExpression)))
             {
-                var diagnostic = Diagnostic.Create(Rule, ifStatement.IfKeyword.GetLocation(), "You should return directly.");
+                var diagnostic = Diagnostic.Create(Rule, ifStatement.IfKeyword.GetLocation(), 
+                    "You should return the boolean directly.");
                 context.ReportDiagnostic(diagnostic);
             }
         }
