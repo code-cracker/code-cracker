@@ -13,9 +13,8 @@ namespace CodeCracker.CSharp.Usage
         internal const string Title = "Your throw does nothing";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Naming;
-        const string Description = "Throwing the same exception as passed to the 'catch' block lose the original "
-            + "stack trace and will make debugging this exception a lot more difficult.\r\n"
-            + "The correct way to rethrow an exception without changing it is by using 'throw' without any parameter.";
+        const string Description = "If a exception is caught and then thrown again the original stack trace will be lost. "
+            + "Instead it is best to throw the exception without using any parameters.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RethrowException.ToDiagnosticId(),
@@ -44,7 +43,7 @@ namespace CodeCracker.CSharp.Usage
             if (catchClause == null) return;
             var catchExSymbol = context.SemanticModel.GetDeclaredSymbol(catchClause.Declaration);
             if (!catchExSymbol.Equals(exSymbol)) return;
-            var diagnostic = Diagnostic.Create(Rule, throwStatement.GetLocation(), "Don't throw the same exception you caught, you lose the original stack trace.");
+            var diagnostic = Diagnostic.Create(Rule, throwStatement.GetLocation(), "Throwing the same exception that was caught will loose the original stack trace.");
             context.ReportDiagnostic(diagnostic);
         }
     }
