@@ -14,7 +14,7 @@ namespace CodeCracker.CSharp.Performance
         internal const string Title = "Make Local Variable Constant.";
         internal const string MessageFormat = "This variable can be made const.";
         internal const string Category = SupportedCategories.Performance;
-        const string Description = "This variable is assigned a constant value and never changed it can be made 'const'";
+        const string Description = "This variable is assigned a constant value and never changes. It can be made 'const'.";
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
             Title,
