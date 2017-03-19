@@ -23,7 +23,7 @@ Properties {
     $testDirVB = "$testDir\VisualBasic\CodeCracker.Test\bin\Release"
     $logDir = "$rootDir\log"
     $outputXml = "$logDir\CodeCoverageResults.xml"
-    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.4.4.0\tools\ReportGenerator.exe"
+    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.5.6\tools\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
     $coverallsNetExe = "$packagesDir\coveralls.io.1.3.4\tools\coveralls.net.exe"
     $isRelease = $isAppVeyor -and (($env:APPVEYOR_REPO_BRANCH -eq "release") -or ($env:APPVEYOR_REPO_TAG -eq "true"))
