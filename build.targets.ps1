@@ -15,7 +15,7 @@ Properties {
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
     $nupkgPathJoint = "$rootDir\CodeCracker.{0}.nupkg"
-    $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.1.0\tools\xunit.console.x86.exe"
+    $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.2.0\tools\xunit.console.x86.exe"
     $openCoverExe = "$packagesDir\OpenCover.4.6.519\tools\OpenCover.Console.exe"
     $testDllCS = "CodeCracker.Test.CSharp.dll"
     $testDllVB = "CodeCracker.Test.VisualBasic.dll"
