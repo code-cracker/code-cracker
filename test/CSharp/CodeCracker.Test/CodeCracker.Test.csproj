@@ -122,6 +122,7 @@
     <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerParameter.cs" />
     <Compile Include="Design\InconsistentAccessibilityTests.MethodIndexerReturnType.cs" />
     <Compile Include="Design\MakeMethodStaticTests.cs" />
+    <Compile Include="Design\SwicthWithoutDefaultTests.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensionsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Performance\UseStaticRegexIsMatchTests.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
     <Compile Include="Reliability\UseConfigureAwaitFalseTests.cs" />
     <Compile Include="Style\ConsoleWriteLineTests.cs" />
+    <Compile Include="Style\UnnecessaryToStringInStringConcatenationTests.cs" />
     <Compile Include="Style\UseEmptyStringTest.cs" />
     <Compile Include="Style\UseStringEmptyTests.cs" />
     <Compile Include="Style\PropertyPrivateSetTests.cs" />
@@ -163,6 +165,7 @@
     <Compile Include="Performance\MakeLocalVariablesConstWhenItIsPossibleTests.cs" />
     <Compile Include="Design\NameOfTests.cs" />
     <Compile Include="Refactoring\InvertForTests.cs" />
+    <Compile Include="Usage\ReadOnlyComplexTypesTests.cs" />
     <Compile Include="Usage\RedundantFieldAssignmentTests.cs" />
     <Compile Include="Usage\RemoveRedundantElseClauseTests.cs" />
     <Compile Include="Usage\RemoveUnreachableCodeTest.cs" />

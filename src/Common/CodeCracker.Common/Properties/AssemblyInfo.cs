@@ -14,6 +14,6 @@ using System.Runtime.CompilerServices;
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguage("en")]
 [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.3.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 [assembly: InternalsVisibleTo("CodeCracker.Test.CSharp")]
 [assembly: InternalsVisibleTo("CodeCracker.Test.VisualBasic")]
