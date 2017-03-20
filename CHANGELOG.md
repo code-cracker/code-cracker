@@ -2,10 +2,15 @@
 
 ## [Unreleased](https://github.com/code-cracker/code-cracker/tree/HEAD)
 
-[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.2...HEAD)
+[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.3...HEAD)
 
-**Closed issues:**
+## [v1.0.3](https://github.com/code-cracker/code-cracker/tree/v1.0.3) (2017-03-20)
+[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.2...v1.0.3)
 
+**Fixed bugs:**
+
+- BUG: CC0022 DisposableVariableNotDisposedAnalyzer: False positive for expression bodied members [\#880](https://github.com/code-cracker/code-cracker/issues/880)
+- BUG: CC0022 DisposableVariableNotDisposedAnalyzer: False positive in iterator methods [\#877](https://github.com/code-cracker/code-cracker/issues/877)
 
 ## [v1.0.2](https://github.com/code-cracker/code-cracker/tree/v1.0.2) (2017-03-12)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.1...v1.0.2)
