@@ -12,8 +12,7 @@ namespace CodeCracker.CSharp.Style
         internal const string Title = "Empty Object Initializer";
         internal const string MessageFormat = "{0}";
         internal const string Category = SupportedCategories.Style;
-        const string Description = "An empty object initializer doesn't add any information and only clutter the code.\r\n"
-            + "If there is no member to initialize, prefer using the standard constructor syntax.";
+        const string Description = "An object initializer without any arguments can be replaced with the standard constructor syntax.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.EmptyObjectInitializer.ToDiagnosticId(),
@@ -38,7 +37,7 @@ namespace CodeCracker.CSharp.Style
 
             if (objectCreation.Initializer != null && !objectCreation.Initializer.Expressions.Any())
             {
-                var diagnostic = Diagnostic.Create(Rule, objectCreation.Initializer.OpenBraceToken.GetLocation(), "Remove empty object initializer.");
+                var diagnostic = Diagnostic.Create(Rule, objectCreation.Initializer.OpenBraceToken.GetLocation(), "Remove the empty object initializer.");
                 context.ReportDiagnostic(diagnostic);
             }
         }
