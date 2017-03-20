@@ -10,7 +10,7 @@ namespace CodeCracker.CSharp.Usage
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AbstractClassShouldNotHavePublicCtorsAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Abastract class should not have public constructors.";
+        internal const string Title = "Abstract class should not have public constructors.";
         internal const string MessageFormat = "Constructor should not be public.";
         internal const string Category = SupportedCategories.Usage;
 

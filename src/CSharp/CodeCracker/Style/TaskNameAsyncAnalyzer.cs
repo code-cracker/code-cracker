@@ -10,10 +10,10 @@ namespace CodeCracker.CSharp.Style
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TaskNameAsyncAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Async method can be terminating with 'Async' name.";
+        internal const string Title = "Asynchronous method can be terminated with the 'Async' keyword.";
         internal const string MessageFormat = "Change method name to {0}";
         internal const string Category = SupportedCategories.Style;
-        const string Description = "Async method can be terminating with 'Async' name.";
+        const string Description = "Asynchronous method can be terminated with the 'Async' keyword.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.TaskNameAsync.ToDiagnosticId(),

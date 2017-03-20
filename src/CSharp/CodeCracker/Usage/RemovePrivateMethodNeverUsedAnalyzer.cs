@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Title = "Unused Method";
         internal const string Message = "Method is not used.";
         internal const string Category = SupportedCategories.Usage;
-        const string Description = "When a private method declared  does not used might bring incorrect conclusions.";
+        const string Description = "Unused private methods can be safely removed as they are unnecessary.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId(),
