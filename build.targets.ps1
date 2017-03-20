@@ -15,7 +15,7 @@ Properties {
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
     $nupkgPathJoint = "$rootDir\CodeCracker.{0}.nupkg"
-    $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.1.0\tools\xunit.console.x86.exe"
+    $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.2.0\tools\xunit.console.x86.exe"
     $openCoverExe = "$packagesDir\OpenCover.4.6.519\tools\OpenCover.Console.exe"
     $testDllCS = "CodeCracker.Test.CSharp.dll"
     $testDllVB = "CodeCracker.Test.VisualBasic.dll"
@@ -23,7 +23,7 @@ Properties {
     $testDirVB = "$testDir\VisualBasic\CodeCracker.Test\bin\Release"
     $logDir = "$rootDir\log"
     $outputXml = "$logDir\CodeCoverageResults.xml"
-    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.4.4.0\tools\ReportGenerator.exe"
+    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.5.6\tools\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
     $coverallsNetExe = "$packagesDir\coveralls.io.1.3.4\tools\coveralls.net.exe"
     $isRelease = $isAppVeyor -and (($env:APPVEYOR_REPO_BRANCH -eq "release") -or ($env:APPVEYOR_REPO_TAG -eq "true"))

@@ -9,9 +9,9 @@ Imports Microsoft.CodeAnalysis.VisualBasic
 Public Class IPAddressAnalyzer
     Inherits DiagnosticAnalyzer
 
-    Friend Const Title = "Your IP Address syntax is wrong."
+    Friend Const Title = "Your IP Address syntax is incorrect."
     Friend Const MessageFormat = "{0}"
-    Private Const Description = "This diagnostic checks the IP Address string and triggers if the parsing will fail by throwing an exception."
+    Private Const Description = "An error was found parsing the IP Address string."
 
     Friend Shared Rule As New DiagnosticDescriptor(
         DiagnosticId.IPAddress.ToDiagnosticId(),

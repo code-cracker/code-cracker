@@ -22,7 +22,7 @@ namespace CodeCracker.Test.CSharp.Design
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.StaticConstructorException.ToDiagnosticId(),
-                Message = "Don't throw exception inside static constructors.",
+                Message = "Don't throw exceptions inside static constructors.",
                 Severity = DiagnosticSeverity.Warning,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
             };

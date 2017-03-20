@@ -65,6 +65,11 @@ CodeCracker has a SonarQube Plugin that can downloaded at [Plugins HomePage](htt
 
 ## Contributing
 
+The main supported IDE for development is Visual Studio 2015.
+If you want to use VS 2015 to contribute to Code Cracker use
+the *.2015.sln files. We recommend migrating to VS 2017 ASAP, as
+we might make VS 2015 obsolete at any time.
+
 Questions, comments, bug reports, and pull requests are all welcome.
 Bug reports that include steps-to-reproduce (including code) are
 preferred. Even better, make them in the form of pull requests.
