@@ -59,6 +59,10 @@ msbuild
 
 Then add a reference to CodeCracker.dll from within the Analyzers node inside References, in Visual Studio.
 
+## SonarQube Plugin
+
+CodeCracker has a SonarQube Plugin that can downloaded at [Plugins HomePage](http://docs.sonarqube.org/display/PLUG/Other+Plugins). 
+
 ## Contributing
 
 The main supported IDE for development is Visual Studio 2015.
