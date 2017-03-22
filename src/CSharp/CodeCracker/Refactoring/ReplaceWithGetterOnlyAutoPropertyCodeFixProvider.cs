@@ -34,7 +34,7 @@ namespace CodeCracker.CSharp.Refactoring
                     title: Resources.ReplaceWithGetterOnlyAutoPropertyCodeFixProvider_Title,
                     createChangedDocument: c => ReplaceByGetterOnlyAutoPropertyAsync(context.Document, diagnosticSpan, c),
                     equivalenceKey: nameof(ReplaceWithGetterOnlyAutoPropertyCodeFixProvider)),
-                diagnostic);
+                    diagnostic);
             return Task.FromResult(0);
         }
         private async static Task<Document> ReplaceByGetterOnlyAutoPropertyAsync(Document document, TextSpan propertyDeclarationSpan, CancellationToken cancellationToken)
@@ -55,12 +55,13 @@ namespace CodeCracker.CSharp.Refactoring
         private static SyntaxNode FixWithTrackNode(SyntaxNode root, PropertyDeclarationSyntax property, VariableDeclaratorSyntax fieldVariableDeclaratorSyntax, IEnumerable<SyntaxNode> nodesToUpdate)
         {
             var newRoot = root.TrackNodes(nodesToUpdate);
-            var fieldReferences = newRoot.GetCurrentNodes(nodesToUpdate.OfType<IdentifierNameSyntax>());
+            var fieldReferences = nodesToUpdate.OfType<IdentifierNameSyntax>();
             foreach (var identifier in fieldReferences)
             {
-                var newIdentifier = SyntaxFactory.IdentifierName(property.Identifier.Text);
-                newIdentifier = newIdentifier.WithLeadingTrivia(identifier.GetLeadingTrivia()).WithTrailingTrivia(identifier.GetTrailingTrivia()).WithAdditionalAnnotations(Formatter.Annotation);
-                newRoot = newRoot.ReplaceNode(identifier, newIdentifier);
+                var trackedIdentifierNode = newRoot.GetCurrentNode(identifier);
+                var newIdentifierExpression = SyntaxFactory.IdentifierName(property.Identifier.Text);
+                newIdentifierExpression = newIdentifierExpression.WithLeadingTrivia(trackedIdentifierNode.GetLeadingTrivia()).WithTrailingTrivia(trackedIdentifierNode.GetTrailingTrivia()).WithAdditionalAnnotations(Formatter.Annotation);
+                newRoot = newRoot.ReplaceNode(trackedIdentifierNode, newIdentifierExpression);
             }
             var prop = newRoot.GetCurrentNode(nodesToUpdate.OfType<PropertyDeclarationSyntax>().Single());
             var fieldInitilization = GetFieldInitialization(fieldVariableDeclaratorSyntax);
@@ -101,25 +102,18 @@ namespace CodeCracker.CSharp.Refactoring
         private static async Task<IEnumerable<IdentifierNameSyntax>> GetFieldReferencesAsync(VariableDeclaratorSyntax fieldDeclarationSyntax, CancellationToken cancellationToken, SemanticModel semanticModel)
         {
             HashSet<IdentifierNameSyntax> fieldReferences = null;
-            var fieldSymbol = semanticModel.GetDeclaredSymbol(fieldDeclarationSyntax);
+            var fieldSymbol = semanticModel.GetDeclaredSymbol(fieldDeclarationSyntax, cancellationToken);
             var declaredInType = fieldSymbol.ContainingType;
             foreach (var reference in declaredInType.DeclaringSyntaxReferences)
             {
-                var allNodesOfType = (await reference.GetSyntaxAsync(cancellationToken)).DescendantNodes();
-                var allFieldReferenceNodes = from n in allNodesOfType.OfType<IdentifierNameSyntax>()
-                                             where n.Identifier.ValueText == fieldDeclarationSyntax.Identifier.ValueText
+                var allNodes = (await reference.GetSyntaxAsync(cancellationToken)).DescendantNodes();
+                var allFieldReferenceNodes = from n in allNodes.OfType<IdentifierNameSyntax>()
+                                             let nodeSymbolInfo = semanticModel.GetSymbolInfo(n, cancellationToken)
+                                             where object.Equals(nodeSymbolInfo.Symbol, fieldSymbol)
                                              select n;
                 foreach (var fieldReference in allFieldReferenceNodes)
                 {
-                    var parentExpression = fieldReference.Parent;
-                    if (parentExpression is MemberAccessExpressionSyntax)
-                        parentExpression = parentExpression.Parent;
-                    if (parentExpression is AssignmentExpressionSyntax)
-                    {
-                        var assignmentEx = (AssignmentExpressionSyntax)parentExpression;
-                        if (assignmentEx.Left == fieldReference || assignmentEx.Left == fieldReference.Parent)
-                            (fieldReferences ?? (fieldReferences = new HashSet<IdentifierNameSyntax>())).Add(fieldReference);
-                    }
+                    (fieldReferences ?? (fieldReferences = new HashSet<IdentifierNameSyntax>())).Add(fieldReference);
                 }
             }
             return fieldReferences ?? Enumerable.Empty<IdentifierNameSyntax>();

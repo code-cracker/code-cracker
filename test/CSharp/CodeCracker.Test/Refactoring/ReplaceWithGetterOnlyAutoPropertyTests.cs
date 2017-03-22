@@ -1,10 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -301,25 +297,216 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 }
             }
             ".WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(),
-                Message = GetDiagnosticMessage("X"),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 11, 24)
-                        }
-            };
-
-            await VerifyCSharpDiagnosticAsync(test, expected);
-
             var fixtest = @"
             readonly int a = 0, y = 1, z = 2;
 
             public int X { get; } = 1;
             ".WrapInCSharpClass();
             await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task FieldNameIsRenamedInClass()
+        {
+            var test = @"
+            readonly int _X;
+
+            public TypeName(int x)
+            {
+                _X=x;
+                _X=_X*2;
+                Console.Write(_X);
+            }
+
+            protected void M() => Console.Write(_X);
+
+            public int X
+            {
+                get
+                {
+                    return _X;
+                }
+            }
+            ".WrapInCSharpClass();
+            var fixtest = @"
+            public TypeName(int x)
+            {
+                X=x;
+                X=X*2;
+                Console.Write(X);
+            }
+
+            protected void M() => Console.Write(X);
+
+            public int X { get; }
+            ".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task ShadowedFieldNameIsNotRenamedInClass()
+        {
+            var test = @"
+            readonly int _X;
+
+            public TypeName(int x)
+            {
+                _X=x;
+            }
+
+            protected void M()
+            {
+                string _X="";
+                Console.Write(_X);
+            }                
+
+            public int X
+            {
+                get
+                {
+                    return _X;
+                }
+            }
+            ".WrapInCSharpClass();
+            var fixtest = @"
+            public TypeName(int x)
+            {
+                X=x;
+            }
+
+            protected void M()
+            {
+                string _X="";
+                Console.Write(_X);
+            }                
+
+            public int X { get; }
+            ".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task FieldAccessInInnerClassIsRenamed()
+        {
+            var test = @"
+            readonly int _A;
+
+            public TypeName(int a)
+            {
+                _A=a;
+            }
+
+            class InnerClass {
+                InnerClass(TypeName outterObject)
+                {
+                    Console.Write(outterObject._A);
+                }
+            }
+            public int A
+            {
+                get
+                {
+                    return _A;
+                }
+            }
+            ".WrapInCSharpClass();
+            var fixtest = @"
+            public TypeName(int a)
+            {
+                A=a;
+            }
+
+            class InnerClass {
+                InnerClass(TypeName outterObject)
+                {
+                    Console.Write(outterObject.A);
+                }
+            }
+            public int A { get; }
+            ".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task FieldWithSameNameInOtherClassIsNotRenamed()
+        {
+            var test = @"
+            using System;
+            namespace App {
+                public class C1 
+                {
+                    readonly int _A;
+
+                    public C1(int a)
+                    {
+                        _A=a;
+                    }
+
+                    public int A
+                    {
+                        get
+                        {
+                            return _A;
+                        }
+                    }
+                }
+                public class C2 
+                {
+                    readonly int _A;
+                }
+            }";
+            var fixtest = @"
+            using System;
+            namespace App {
+                public class C1 
+                {
+
+                    public C1(int a)
+                    {
+                        A=a;
+                    }
+
+                    public int A { get; }
+                }
+                public class C2 
+                {
+                    readonly int _A;
+                }
+            }";
+            await VerifyCSharpFixAsync(test, fixtest);
+        }
+
+        [Fact]
+        public async Task RenamingOfFieldAccessCanIntroduceNameClashesCaughtByCompilerWarningCS1717()
+        {
+            var test = @"
+            readonly int _A;
+
+            public TypeName(int A)
+            {
+                _A=A;
+            }
+
+            public int A
+            {
+                get
+                {
+                    return _A;
+                }
+            }
+            ".WrapInCSharpClass();
+            var fixtest = @"
+            public TypeName(int A)
+            {
+                A=A;
+            }
+
+            public int A { get; }
+            ".WrapInCSharpClass();
+            // "A=A;" causes new compiler warning CS1717: Assignment made to same variable; did you mean to assign something else?
+            // The fix would be to transform  the expression to this.A=A;
+            // Maybe using Microsoft.CodeAnalysis.Rename.Renamer.RenameSymbolAsync() for the renaming is the able to fix this.
+            await VerifyCSharpFixAsync(oldSource: test, newSource: fixtest, allowNewCompilerDiagnostics: true);
         }
     }
 }
