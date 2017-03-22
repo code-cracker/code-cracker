@@ -28,6 +28,7 @@ namespace CodeCracker.CSharp.Refactoring
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ReplaceWithGetterOnlyAutoProperty));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterSymbolAction(LanguageVersion.CSharp6, AnalyzeSymbol, SymbolKind.Property);
@@ -39,12 +40,11 @@ namespace CodeCracker.CSharp.Refactoring
             var namedTypeSymbol = (IPropertySymbol)context.Symbol;
             var properties = GetPropsWithOnlyGettersAndReadonlyBackingField(namedTypeSymbol, context);
             if (properties == null) return;
-            var diagnostic = Diagnostic.Create(Rule, properties.Item1.Locations[0], properties.Item1.Name);
+            var diagnostic = Diagnostic.Create(Rule, properties.Locations[0], properties.Name);
             context.ReportDiagnostic(diagnostic);
         }
-        private static Tuple<ISymbol, IFieldSymbol> GetPropsWithOnlyGettersAndReadonlyBackingField(IPropertySymbol propertySymbol, SymbolAnalysisContext context)
+        private static ISymbol GetPropsWithOnlyGettersAndReadonlyBackingField(IPropertySymbol propertySymbol, SymbolAnalysisContext context)
         {
-            SemanticModel model = null;
             if (!propertySymbol.IsReadOnly || propertySymbol.IsStatic || !propertySymbol.CanBeReferencedByName) return null;
             var getMethod = propertySymbol.GetMethod;
             if (getMethod == null) return null;
@@ -59,7 +59,7 @@ namespace CodeCracker.CSharp.Refactoring
             if (fieldNode.Kind() == SyntaxKind.SimpleMemberAccessExpression)
                 fieldNode = (fieldNode as MemberAccessExpressionSyntax).Name;
             if (fieldNode.Kind() != SyntaxKind.IdentifierName) return null;
-            model = model ?? context.Compilation.GetSemanticModel(fieldNode.SyntaxTree);
+            var model = context.Compilation.GetSemanticModel(fieldNode.SyntaxTree);
             var symbolInfo = model.GetSymbolInfo(fieldNode).Symbol as IFieldSymbol;
             if (symbolInfo != null &&
                 symbolInfo.IsReadOnly &&
@@ -67,7 +67,7 @@ namespace CodeCracker.CSharp.Refactoring
                 symbolInfo.ContainingType == propertySymbol.ContainingType &&
                 symbolInfo.Type.Equals(propertySymbol.Type))
 
-                return new Tuple<ISymbol, IFieldSymbol>(propertySymbol, symbolInfo);
+                return propertySymbol;
             return null;
         }
     }
