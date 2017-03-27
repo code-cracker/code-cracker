@@ -106,6 +106,7 @@ namespace CodeCracker.CSharp.Refactoring
             {
                 var allNodes = (await reference.GetSyntaxAsync(cancellationToken)).DescendantNodes();
                 var allFieldReferenceNodes = from n in allNodes.OfType<IdentifierNameSyntax>()
+                                             where n.Identifier.Text == fieldSymbol.Name
                                              let nodeSymbolInfo = semanticModel.GetSymbolInfo(n, cancellationToken)
                                              where object.Equals(nodeSymbolInfo.Symbol, fieldSymbol)
                                              select n;
