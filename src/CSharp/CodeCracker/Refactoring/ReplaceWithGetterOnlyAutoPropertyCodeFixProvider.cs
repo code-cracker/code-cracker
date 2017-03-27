@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Refactoring
     {
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId());
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public override FixAllProvider GetFixAllProvider() => ReplaceWithGetterOnlyAutoPropertyCodeFixProviderAll.Instance;
 
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -39,15 +39,21 @@ namespace CodeCracker.CSharp.Refactoring
         {
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
             var root = await document.GetSyntaxRootAsync(cancellationToken);
+            var newRoot= await ReplacePropertyInSyntaxRoot(propertyDeclarationSpan, cancellationToken, semanticModel, root);
+            var resultDocument = document.WithSyntaxRoot(newRoot);
+            return resultDocument;
+        }
+
+        internal static async Task<SyntaxNode> ReplacePropertyInSyntaxRoot(TextSpan propertyDeclarationSpan, CancellationToken cancellationToken, SemanticModel semanticModel, SyntaxNode root)
+        {
             var token = root.FindToken(propertyDeclarationSpan.Start);
             var property = token.Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
             var fieldVariableDeclaratorSyntax = await GetFieldDeclarationSyntaxNodeAsync(property, cancellationToken, semanticModel);
-            if (fieldVariableDeclaratorSyntax == null) return document;
+            if (fieldVariableDeclaratorSyntax == null) return root;
             var fieldReferences = await GetFieldReferencesAsync(fieldVariableDeclaratorSyntax, cancellationToken, semanticModel);
             var nodesToUpdate = fieldReferences.Cast<SyntaxNode>().Union(Enumerable.Repeat(property, 1)).Union(Enumerable.Repeat(fieldVariableDeclaratorSyntax, 1));
             var newRoot = FixWithTrackNode(root, property, fieldVariableDeclaratorSyntax, nodesToUpdate);
-            var resultDocument = document.WithSyntaxRoot(newRoot);
-            return resultDocument;
+            return newRoot;
         }
 
         private static SyntaxNode FixWithTrackNode(SyntaxNode root, PropertyDeclarationSyntax property, VariableDeclaratorSyntax fieldVariableDeclaratorSyntax, IEnumerable<SyntaxNode> nodesToUpdate)
