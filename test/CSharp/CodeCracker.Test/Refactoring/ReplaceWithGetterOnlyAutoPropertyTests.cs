@@ -430,7 +430,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         [Fact]
         public async Task FieldWithSameNameInOtherClassIsNotRenamed()
         {
-            var test = @"
+            const string test = @"
             using System;
             namespace App {
                 public class C1 
@@ -455,7 +455,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     readonly int _A;
                 }
             }";
-            var fixtest = @"
+            const string fixtest = @"
             using System;
             namespace App {
                 public class C1 
@@ -546,7 +546,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         [Fact]
         public async Task ReplaceMultiplePropertiesInOneClassInMultipleDocumentsFixAllTest()
         {
-            var source1 = @"
+            const string source1 = @"
             namespace A 
             {
                 public class A1
@@ -565,7 +565,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     public string C { get { return _C; } }
                 }
             }";
-            var source2 = @"
+            const string source2 = @"
             namespace A 
             {
                 public class A2
@@ -584,7 +584,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     public string C { get { return _C; } }
                 }
             }";
-            var source3 = @"
+            const string source3 = @"
             namespace B 
             {
                 public class B1
@@ -603,7 +603,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     public string C { get { return _C; } }
                 }
             }";
-            var fixtest1 = @"
+            const string fixtest1 = @"
             namespace A 
             {
                 public class A1
@@ -619,7 +619,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     public string C { get; }
                 }
             }";
-            var fixtest2 = @"
+            const string fixtest2 = @"
             namespace A 
             {
                 public class A2
@@ -635,7 +635,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     public string C { get; }
                 }
             }";
-            var fixtest3 = @"
+            const string fixtest3 = @"
             namespace B 
             {
                 public class B1
@@ -657,7 +657,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         [Fact]
         public async Task ReplaceMultiplePropertiesInOneClassInMultipleDocumentsAndKeepExisitingDocumentsWithoutDiagnosticsFixAllTest()
         {
-            var source1 = @"
+            const string source1 = @"
             namespace A 
             {
                 public class A1
@@ -676,7 +676,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     public string C { get { return _C; } }
                 }
             }";
-            var source2 = @"
+            const string source2 = @"
             namespace A 
             {
                 public class A2
@@ -686,7 +686,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     }
                 }
             }";
-            var fixtest1 = @"
+            const string fixtest1 = @"
             namespace A 
             {
                 public class A1

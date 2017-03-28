@@ -3,19 +3,30 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-    public sealed class ReplaceWithGetterOnlyAutoPropertyCodeFixProviderAll : FixAllProvider
+    public interface IFixDocumentInternalsOnly
     {
-        private static readonly SyntaxAnnotation replacePropertyAnnotation = new SyntaxAnnotation(nameof(ReplaceWithGetterOnlyAutoPropertyCodeFixProviderAll));
-        private ReplaceWithGetterOnlyAutoPropertyCodeFixProviderAll() { }
-        public static readonly ReplaceWithGetterOnlyAutoPropertyCodeFixProviderAll Instance = new ReplaceWithGetterOnlyAutoPropertyCodeFixProviderAll();
+        Task<Document> FixDocumentAsync(SyntaxNode nodeWithDiagnostic, Document document, CancellationToken cancellationToken);
+    }
+
+    public sealed class DocumentCodeFixProviderAll<CodeFixer> : FixAllProvider where CodeFixer : IFixDocumentInternalsOnly
+    {
+        private readonly static SyntaxAnnotation DiagnosticNodeSyntaxAnnotation = new SyntaxAnnotation("DocumentCodeFixProviderAllSyntaxAnnotation");
+
+        public DocumentCodeFixProviderAll(CodeFixer codeFixer) {
+            DocumentCodeFixer = codeFixer;
+        }
+
+        private CodeFixer DocumentCodeFixer { get; }
 
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {
@@ -34,7 +45,7 @@ namespace CodeCracker.CSharp.Refactoring
             return null;
         }
 
-        private async static Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)
+        private async Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)
         {
             var newSolution = fixAllContext.Solution;
             foreach (var projectId in newSolution.ProjectIds)
@@ -42,38 +53,40 @@ namespace CodeCracker.CSharp.Refactoring
             return newSolution;
         }
 
-        private async static Task<Solution> GetFixedProjectAsync(FixAllContext fixAllContext, Project project)
+        private async Task<Solution> GetFixedProjectAsync(FixAllContext fixAllContext, Project project)
         {
             var solution = project.Solution;
             var newDocuments = project.Documents.ToDictionary(d => d.Id, d => GetFixedDocumentAsync(fixAllContext, d));
             await Task.WhenAll(newDocuments.Values).ConfigureAwait(false);
             var changedDocumentsSyntaxRoots = from kvp in newDocuments
-                                     where kvp.Value.Result != null
-                                     select new { DocumentId = kvp.Key, SyntaxRoot = kvp.Value.Result };
+                                              where kvp.Value.Result != null
+                                              select new { DocumentId = kvp.Key, SyntaxRoot = kvp.Value.Result };
             foreach (var newDocumentSyntaxRoot in changedDocumentsSyntaxRoots)
                 solution = solution.WithDocumentSyntaxRoot(newDocumentSyntaxRoot.DocumentId, newDocumentSyntaxRoot.SyntaxRoot);
             return solution;
         }
 
-        private async static Task<SyntaxNode> GetFixedDocumentAsync(FixAllContext fixAllContext, Document document)
+        private async Task<SyntaxNode> GetFixedDocumentAsync(FixAllContext fixAllContext, Document document)
         {
             var diagnostics = await fixAllContext.GetDocumentDiagnosticsAsync(document).ConfigureAwait(false);
             if (diagnostics.Length == 0) return null;
             var root = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
             var nodes = diagnostics.Select(d => root.FindNode(d.Location.SourceSpan)).Where(n => !n.IsMissing);
-            var newRoot = root.ReplaceNodes(nodes, (original, rewritten) => original.WithAdditionalAnnotations(replacePropertyAnnotation));
+            var newRoot = root.ReplaceNodes(nodes, (original, rewritten) => original.WithAdditionalAnnotations(DiagnosticNodeSyntaxAnnotation));
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            newRoot = await newDocument.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
             while (true)
             {
-                var newDocument = document.WithSyntaxRoot(newRoot);
-                newRoot = await newDocument.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-                var semanticModel = await newDocument.GetSemanticModelAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-                var annotatedNodes = newRoot.GetAnnotatedNodes(replacePropertyAnnotation);
+                var annotatedNodes = newRoot.GetAnnotatedNodes(DiagnosticNodeSyntaxAnnotation);
                 var node = annotatedNodes.FirstOrDefault();
                 if (node == null) break;
 
-                newRoot = await ReplaceWithGetterOnlyAutoPropertyCodeFixProvider.ReplacePropertyInSyntaxRoot(node.Span, fixAllContext.CancellationToken, semanticModel, newRoot);
-                node = newRoot.GetAnnotatedNodes(replacePropertyAnnotation).First();
-                newRoot = newRoot.ReplaceNode(node, node.WithoutAnnotations(replacePropertyAnnotation));
+                newDocument = await DocumentCodeFixer.FixDocumentAsync(node, newDocument, fixAllContext.CancellationToken);
+                newRoot = await newDocument.GetSyntaxRootAsync();
+                node = newRoot.GetAnnotatedNodes(DiagnosticNodeSyntaxAnnotation).First();
+                newRoot = newRoot.ReplaceNode(node, node.WithoutAnnotations(DiagnosticNodeSyntaxAnnotation));
+                newDocument = newDocument.WithSyntaxRoot(newRoot);
+                newRoot = await newDocument.GetSyntaxRootAsync();
             }
             return newRoot;
         }
