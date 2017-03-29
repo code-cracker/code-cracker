@@ -81,21 +81,20 @@ namespace CodeCracker.CSharp.Refactoring
                     return newNode;
                 });
             var newDocument = document.WithSyntaxRoot(newRoot);
-            newDocument = await FixCodeForAnnotatedNodes(newDocument, codeFixer, annotations, fixAllContext.CancellationToken).ConfigureAwait(false);
+            newDocument = await FixCodeForAnnotatedNodesAsync(newDocument, codeFixer, annotations, fixAllContext.CancellationToken).ConfigureAwait(false);
             newDocument = await RemoveAnnontationsAsync(newDocument, annotations).ConfigureAwait(false);
             return newDocument;
         }
 
-        private static async Task<Document> FixCodeForAnnotatedNodes(Document document, IFixDocumentInternalsOnly codeFixer, IEnumerable<SyntaxAnnotation> annotations, CancellationToken cancellationToken)
+        private static async Task<Document> FixCodeForAnnotatedNodesAsync(Document document, IFixDocumentInternalsOnly codeFixer, IEnumerable<SyntaxAnnotation> annotations, CancellationToken cancellationToken)
         {
-            var newRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             foreach (var annotation in annotations)
             {
+                var newRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
                 var annotatedNodes = newRoot.GetAnnotatedNodes(annotation);
                 var node = annotatedNodes.FirstOrDefault();
                 if (node == null) continue;
                 document = await codeFixer.FixDocumentAsync(node, document, cancellationToken).ConfigureAwait(false);
-                newRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
             }
             return document;
         }
