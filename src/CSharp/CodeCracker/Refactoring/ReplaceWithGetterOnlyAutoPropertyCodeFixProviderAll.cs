@@ -13,82 +13,100 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Refactoring
 {
+    /// <summary>
+    /// This interface must be implemented by the associated CodeFixProvider. The CodeFixProvider must operate on a single document and
+    /// should only change the document. This limits the possible operations of the CodeFixProvider to change only document internals without
+    /// effecting other parts of the solution.
+    /// </summary>
     public interface IFixDocumentInternalsOnly
     {
         Task<Document> FixDocumentAsync(SyntaxNode nodeWithDiagnostic, Document document, CancellationToken cancellationToken);
     }
 
-    public sealed class DocumentCodeFixProviderAll<CodeFixer> : FixAllProvider where CodeFixer : IFixDocumentInternalsOnly
+    public sealed class DocumentCodeFixProviderAll : FixAllProvider
     {
-        private readonly static SyntaxAnnotation DiagnosticNodeSyntaxAnnotation = new SyntaxAnnotation("DocumentCodeFixProviderAllSyntaxAnnotation");
+        private const string SyntaxAnnotationKey = "DocumentCodeFixProviderAllSyntaxAnnotation";
 
-        public DocumentCodeFixProviderAll(CodeFixer codeFixer) {
-            DocumentCodeFixer = codeFixer;
+        public DocumentCodeFixProviderAll(string codeFixTitle)
+        {
+            CodeFixTitle = codeFixTitle;
         }
 
-        private CodeFixer DocumentCodeFixer { get; }
+        private string CodeFixTitle { get; }
 
         public override Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
         {
             switch (fixAllContext.Scope)
             {
                 case FixAllScope.Document:
-                    return Task.FromResult(CodeAction.Create(Resources.ReplaceWithGetterOnlyAutoPropertyCodeFixProvider_Title,
-                        async ct => fixAllContext.Document.WithSyntaxRoot(await GetFixedDocumentAsync(fixAllContext, fixAllContext.Document))));
+                    return Task.FromResult(CodeAction.Create(CodeFixTitle,
+                        ct => GetFixedDocumentsAsync(fixAllContext, Enumerable.Repeat(fixAllContext.Document, 1))));
                 case FixAllScope.Project:
-                    return Task.FromResult(CodeAction.Create(Resources.ReplaceWithGetterOnlyAutoPropertyCodeFixProvider_Title,
-                        ct => GetFixedProjectAsync(fixAllContext, fixAllContext.Project)));
+                    return Task.FromResult(CodeAction.Create(CodeFixTitle,
+                        ct => GetFixedDocumentsAsync(fixAllContext, fixAllContext.Project.Documents)));
                 case FixAllScope.Solution:
-                    return Task.FromResult(CodeAction.Create(Resources.ReplaceWithGetterOnlyAutoPropertyCodeFixProvider_Title,
-                        ct => GetFixedSolutionAsync(fixAllContext)));
+                    return Task.FromResult(CodeAction.Create(CodeFixTitle,
+                        ct => GetFixedDocumentsAsync(fixAllContext, fixAllContext.Solution.Projects.SelectMany(p => p.Documents))));
             }
             return null;
         }
 
-        private async Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)
+        private async static Task<Solution> GetFixedDocumentsAsync(FixAllContext fixAllContext, IEnumerable<Document> documents)
         {
-            var newSolution = fixAllContext.Solution;
-            foreach (var projectId in newSolution.ProjectIds)
-                newSolution = await GetFixedProjectAsync(fixAllContext, newSolution.GetProject(projectId)).ConfigureAwait(false);
-            return newSolution;
-        }
-
-        private async Task<Solution> GetFixedProjectAsync(FixAllContext fixAllContext, Project project)
-        {
-            var solution = project.Solution;
-            var newDocuments = project.Documents.ToDictionary(d => d.Id, d => GetFixedDocumentAsync(fixAllContext, d));
+            var solution = fixAllContext.Solution;
+            var newDocuments = documents.ToDictionary(d => d.Id, d => GetFixedDocumentAsync(fixAllContext, d));
             await Task.WhenAll(newDocuments.Values).ConfigureAwait(false);
-            var changedDocumentsSyntaxRoots = from kvp in newDocuments
-                                              where kvp.Value.Result != null
-                                              select new { DocumentId = kvp.Key, SyntaxRoot = kvp.Value.Result };
-            foreach (var newDocumentSyntaxRoot in changedDocumentsSyntaxRoots)
-                solution = solution.WithDocumentSyntaxRoot(newDocumentSyntaxRoot.DocumentId, newDocumentSyntaxRoot.SyntaxRoot);
+            var changedDocuments = from kvp in newDocuments
+                                   where kvp.Value.Result != null
+                                   select new { DocumentId = kvp.Key, Document = kvp.Value.Result };
+            foreach (var newDocument in changedDocuments)
+                solution = solution.WithDocumentSyntaxRoot(newDocument.DocumentId, await newDocument.Document.GetSyntaxRootAsync().ConfigureAwait(false));
             return solution;
         }
 
-        private async Task<SyntaxNode> GetFixedDocumentAsync(FixAllContext fixAllContext, Document document)
+        private async static Task<Document> GetFixedDocumentAsync(FixAllContext fixAllContext, Document document)
         {
+            var codeFixer = fixAllContext.CodeFixProvider as IFixDocumentInternalsOnly;
+            if (codeFixer == null) throw new ArgumentException("This CodeFixAllProvider requires that your CodeFixProvider implements the IFixDocumentInternalsOnly.");
             var diagnostics = await fixAllContext.GetDocumentDiagnosticsAsync(document).ConfigureAwait(false);
             if (diagnostics.Length == 0) return null;
             var root = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
             var nodes = diagnostics.Select(d => root.FindNode(d.Location.SourceSpan)).Where(n => !n.IsMissing);
-            var newRoot = root.ReplaceNodes(nodes, (original, rewritten) => original.WithAdditionalAnnotations(DiagnosticNodeSyntaxAnnotation));
+            var annotations = new List<SyntaxAnnotation>();
+            var newRoot = root.ReplaceNodes(nodes, (original, rewritten) =>
+                {
+                    var annotation = new SyntaxAnnotation(SyntaxAnnotationKey);
+                    annotations.Add(annotation);
+                    var newNode = original.WithAdditionalAnnotations(annotation);
+                    return newNode;
+                });
             var newDocument = document.WithSyntaxRoot(newRoot);
-            newRoot = await newDocument.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-            while (true)
-            {
-                var annotatedNodes = newRoot.GetAnnotatedNodes(DiagnosticNodeSyntaxAnnotation);
-                var node = annotatedNodes.FirstOrDefault();
-                if (node == null) break;
+            newDocument = await FixCodeForAnnotatedNodes(newDocument, codeFixer, annotations, fixAllContext.CancellationToken).ConfigureAwait(false);
+            newDocument = await RemoveAnnontationsAsync(newDocument, annotations).ConfigureAwait(false);
+            return newDocument;
+        }
 
-                newDocument = await DocumentCodeFixer.FixDocumentAsync(node, newDocument, fixAllContext.CancellationToken);
-                newRoot = await newDocument.GetSyntaxRootAsync();
-                node = newRoot.GetAnnotatedNodes(DiagnosticNodeSyntaxAnnotation).First();
-                newRoot = newRoot.ReplaceNode(node, node.WithoutAnnotations(DiagnosticNodeSyntaxAnnotation));
-                newDocument = newDocument.WithSyntaxRoot(newRoot);
-                newRoot = await newDocument.GetSyntaxRootAsync();
+        private static async Task<Document> FixCodeForAnnotatedNodes(Document document, IFixDocumentInternalsOnly codeFixer, IEnumerable<SyntaxAnnotation> annotations, CancellationToken cancellationToken)
+        {
+            var newRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            foreach (var annotation in annotations)
+            {
+                var annotatedNodes = newRoot.GetAnnotatedNodes(annotation);
+                var node = annotatedNodes.FirstOrDefault();
+                if (node == null) continue;
+                document = await codeFixer.FixDocumentAsync(node, document, cancellationToken).ConfigureAwait(false);
+                newRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
             }
-            return newRoot;
+            return document;
+        }
+
+        private static async Task<Document> RemoveAnnontationsAsync(Document document, IEnumerable<SyntaxAnnotation> annotations)
+        {
+            var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+            var nodes = annotations.SelectMany(annotation => root.GetAnnotatedNodes(annotation));
+            root = root.ReplaceNodes(nodes, (original, rewritten) => original.WithoutAnnotations(annotations));
+            var newDocument = document.WithSyntaxRoot(root);
+            return newDocument;
         }
     }
 }

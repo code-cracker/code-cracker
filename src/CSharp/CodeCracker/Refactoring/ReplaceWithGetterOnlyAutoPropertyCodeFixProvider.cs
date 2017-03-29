@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Refactoring
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ReplaceWithGetterOnlyAutoPropertyCodeFixProvider)), Shared]
     public class ReplaceWithGetterOnlyAutoPropertyCodeFixProvider : CodeFixProvider, IFixDocumentInternalsOnly
     {
-        private static readonly FixAllProvider FixAllProvider = new DocumentCodeFixProviderAll<ReplaceWithGetterOnlyAutoPropertyCodeFixProvider>(new ReplaceWithGetterOnlyAutoPropertyCodeFixProvider());
+        private static readonly FixAllProvider FixAllProvider = new DocumentCodeFixProviderAll(Resources.ReplaceWithGetterOnlyAutoPropertyCodeFixProvider_Title);
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId());
 
         public override FixAllProvider GetFixAllProvider() => FixAllProvider;
@@ -39,16 +39,16 @@ namespace CodeCracker.CSharp.Refactoring
         }
         private async Task<Document> ReplaceByGetterOnlyAutoPropertyAsync(Document document, TextSpan propertyDeclarationSpan, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var node = root.FindNode(propertyDeclarationSpan);
-            return await FixDocumentAsync(node, document, cancellationToken);
+            return await FixDocumentAsync(node, document, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<Document> FixDocumentAsync(SyntaxNode nodeWithDiagnostic, Document document, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
-            var semanticModel = await document.GetSemanticModelAsync();
-            var newRoot = await ReplacePropertyInSyntaxRootAsync(nodeWithDiagnostic, cancellationToken, semanticModel, root);
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
+            var newRoot = await ReplacePropertyInSyntaxRootAsync(nodeWithDiagnostic, cancellationToken, semanticModel, root).ConfigureAwait(false);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return newDocument;
         }
@@ -57,9 +57,9 @@ namespace CodeCracker.CSharp.Refactoring
         private static async Task<SyntaxNode> ReplacePropertyInSyntaxRootAsync(SyntaxNode propertyDeclarationSyntaxNode, CancellationToken cancellationToken, SemanticModel semanticModel, SyntaxNode root)
         {
             var property = propertyDeclarationSyntaxNode.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
-            var fieldVariableDeclaratorSyntax = await GetFieldDeclarationSyntaxNodeAsync(property, cancellationToken, semanticModel);
+            var fieldVariableDeclaratorSyntax = await GetFieldDeclarationSyntaxNodeAsync(property, cancellationToken, semanticModel).ConfigureAwait(false);
             if (fieldVariableDeclaratorSyntax == null) return root;
-            var fieldReferences = await GetFieldReferencesAsync(fieldVariableDeclaratorSyntax, cancellationToken, semanticModel);
+            var fieldReferences = await GetFieldReferencesAsync(fieldVariableDeclaratorSyntax, cancellationToken, semanticModel).ConfigureAwait(false);
             var nodesToUpdate = fieldReferences.Cast<SyntaxNode>().Union(Enumerable.Repeat(property, 1)).Union(Enumerable.Repeat(fieldVariableDeclaratorSyntax, 1));
             var newRoot = FixWithTrackNode(root, property, fieldVariableDeclaratorSyntax, nodesToUpdate);
             return newRoot;
