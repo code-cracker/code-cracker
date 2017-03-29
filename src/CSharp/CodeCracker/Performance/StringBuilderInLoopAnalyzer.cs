@@ -14,8 +14,7 @@ namespace CodeCracker.CSharp.Usage
         internal const string Title = "Don't concatenate strings in loops";
         internal const string MessageFormat = "Don't concatenate '{0}' in a loop";
         internal const string Category = SupportedCategories.Performance;
-        const string Description = "Do not concatenate a string on a loop. It will alocate a lot of memory."
-            + "Use a StringBuilder instead. It will will require less allocation, less garbage collector work, less CPU cycles, and less overall time.";
+        const string Description = "Don't concatenate strings in a loop. Using a StringBuilder will require less memory and time.";
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),

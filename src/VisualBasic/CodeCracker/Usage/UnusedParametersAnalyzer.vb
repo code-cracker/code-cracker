@@ -11,8 +11,7 @@ Namespace Usage
 
         Friend Const Title = "Unused parameters."
         Friend Const Message = "Parameter '{0}' is not used."
-        Private Const Description = "When a method declares a parameter and does not use it might bring incorrect concolusions for anyone reading the code and anso demands the parameter when the method is called unnecessarily.
-You should delete the parameter in such cases."
+        Private Const Description = "A method with an unused parameter creates unnecessary confusion and should be deleted."
 
         Friend Shared Rule As New DiagnosticDescriptor(
         DiagnosticId.UnusedParameters.ToDiagnosticId(),

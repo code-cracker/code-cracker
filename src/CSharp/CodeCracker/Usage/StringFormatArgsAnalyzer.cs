@@ -15,7 +15,8 @@ namespace CodeCracker.CSharp.Usage
         internal const string IncorrectNumberOfArgsMessage = "The number of arguments in String.Format is incorrect.";
         internal const string InvalidArgsReferenceMessage = "Invalid argument reference in String.Format.";
         internal const string Category = SupportedCategories.Usage;
-        const string Description = "The format argument in String.Format determines the number of argument, considering the {} inside. You should pass the correct number of arguments.";
+        const string Description = "The format argument in String.Format determines the number of other arguments that need to be "
+            + "passed into the method based on the number of curly braces {} used. The incorrect number of arguments are being passed.";
 
         internal static readonly DiagnosticDescriptor ExtraArgs = new DiagnosticDescriptor(
             DiagnosticId.StringFormatArgs_ExtraArgs.ToDiagnosticId(),

@@ -13,7 +13,7 @@ Namespace Performance
         Public Const Title As String = "Don't concatenate strings in loops"
         Public Const MessageFormat As String = "Don't concatenate '{0}' in a loop."
         Public Const Category As String = SupportedCategories.Performance
-        Public Const Description As String = "Do not concatenate a string in a loop. It will allocate a lot of memory. Use a StringBuilder instead. It will require less allocation, less garbage collection work, less CPU cycles, and less overall time."
+        Public Const Description As String = "Don't concatenate strings in a loop. Using a StringBuilder will require less memory and time."
         Protected Shared Rule As DiagnosticDescriptor = New DiagnosticDescriptor(
             Id,
             Title,
