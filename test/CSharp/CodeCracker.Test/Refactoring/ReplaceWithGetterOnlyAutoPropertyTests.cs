@@ -508,5 +508,97 @@ namespace CodeCracker.Test.CSharp.Refactoring
             // Maybe using Microsoft.CodeAnalysis.Rename.Renamer.RenameSymbolAsync() for the renaming is the able to fix this.
             await VerifyCSharpFixAsync(oldSource: test, newSource: fixtest, allowNewCompilerDiagnostics: true);
         }
+
+        [Fact]
+        public async Task FieldReferencesInPartialClassesGetNotRenamedAndCasueCompilerErrorCS0103()
+        {
+            const string test = @"
+            namespace A
+            {
+                using System;
+                public partial class A1
+                {
+                    readonly int _I;
+                    public A1(int i)
+                    {
+                        _I = i;
+                    }
+                    public int I {  get { return _I; } }
+                }
+                public partial class A1
+                {
+                    public void Print() => Console.Write(_I);
+                }
+            }";
+            const string fixtest = @"
+            namespace A
+            {
+                using System;
+                public partial class A1
+                {
+                    public A1(int i)
+                    {
+                        I = i;
+                    }
+                    public int I {  get; }
+                }
+                public partial class A1
+                {
+                    public void Print() => Console.Write(_I);
+                }
+            }";
+            //Console.Write(_I); causes CS0103 The name '_I' does not exist in the current context
+            await VerifyCSharpFixAsync(oldSource: test, newSource: fixtest, allowNewCompilerDiagnostics: true);
+        }
+
+        [Fact]
+        public async Task FieldReferencesInPartialClassesInDifferentDocumentsGetNotRenamedAndCauseCompilerErrorCS0103()
+        {
+            const string testPart1 = @"
+            namespace A
+            {
+                public partial class A1
+                {
+                    readonly int _I;
+                    public A1(int i)
+                    {
+                        _I = i;
+                    }
+                    public int I {  get { return _I; } }
+                }
+            }";
+            const string testPart2 = @"
+            namespace A
+            {
+                using System;
+                public partial class A1
+                {
+                    public void Print() => Console.Write(_I);
+                }
+            }";
+            const string fixtestPart1 = @"
+            namespace A
+            {
+                public partial class A1
+                {
+                    public A1(int i)
+                    {
+                        I = i;
+                    }
+                    public int I {  get; }
+                }
+            }";
+            const string fixtestPart2 = @"
+            namespace A
+            {
+                using System;
+                public partial class A1
+                {
+                    public void Print() => Console.Write(_I);
+                }
+            }";
+            //Console.Write(_I); causes CS0103 The name '_I' does not exist in the current context
+            await VerifyCSharpFixAllAsync(oldSources: new string[] { testPart1, testPart2 }, newSources: new string[] { fixtestPart1, fixtestPart2 }, allowNewCompilerDiagnostics: true);
+        }
     }
 }

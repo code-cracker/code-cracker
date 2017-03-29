@@ -102,18 +102,16 @@ namespace CodeCracker.CSharp.Refactoring
             HashSet<IdentifierNameSyntax> fieldReferences = null;
             var fieldSymbol = semanticModel.GetDeclaredSymbol(fieldDeclarationSyntax, cancellationToken);
             var declaredInType = fieldSymbol.ContainingType;
-            foreach (var reference in declaredInType.DeclaringSyntaxReferences)
+            var reference = declaredInType.DeclaringSyntaxReferences[0];
+            var allNodes = (await reference.GetSyntaxAsync(cancellationToken)).DescendantNodes();
+            var allFieldReferenceNodes = from n in allNodes.OfType<IdentifierNameSyntax>()
+                                         where n.Identifier.Text == fieldSymbol.Name
+                                         let nodeSymbolInfo = semanticModel.GetSymbolInfo(n, cancellationToken)
+                                         where object.Equals(nodeSymbolInfo.Symbol, fieldSymbol)
+                                         select n;
+            foreach (var fieldReference in allFieldReferenceNodes)
             {
-                var allNodes = (await reference.GetSyntaxAsync(cancellationToken)).DescendantNodes();
-                var allFieldReferenceNodes = from n in allNodes.OfType<IdentifierNameSyntax>()
-                                             where n.Identifier.Text == fieldSymbol.Name
-                                             let nodeSymbolInfo = semanticModel.GetSymbolInfo(n, cancellationToken)
-                                             where object.Equals(nodeSymbolInfo.Symbol, fieldSymbol)
-                                             select n;
-                foreach (var fieldReference in allFieldReferenceNodes)
-                {
-                    (fieldReferences ?? (fieldReferences = new HashSet<IdentifierNameSyntax>())).Add(fieldReference);
-                }
+                (fieldReferences ?? (fieldReferences = new HashSet<IdentifierNameSyntax>())).Add(fieldReference);
             }
             return fieldReferences ?? Enumerable.Empty<IdentifierNameSyntax>();
         }
