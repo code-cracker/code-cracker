@@ -396,6 +396,23 @@ class Test2
             }".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task IfAssignedToAnInterfaceVariableAFittingCastIsInserted()
+        {
+            var source = @"
+            System.Collections.Generic.IEnumerable<int> e= null;
+            if (true)
+                e = new int[10];
+            else
+                e = new System.Collections.Generic.List<int>();
+            ".WrapInCSharpMethod();
+            var fixtest = @"
+            IEnumerable<int> e= null;
+            e = true ? (System.Collections.Generic.IEnumerable<int>)new int[10] : new System.Collections.Generic.List<int>();
+            ".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 
     public class TernaryOperatorWithReturnTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
@@ -1325,6 +1342,29 @@ class Test
             {                
                 return true?(object)new A(1):new B(2);
             }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task IfReturnTypeIsAnInterfaceAFittingCastIsInserted()
+        {
+            var source = @"
+            IComparable GetComparable()
+            {
+                var cond = true;
+                if (cond)
+                    return 1;
+                else
+                    return ""1"";
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            IComparable GetComparable()
+            {
+                var cond = true;
+                return cond?(IComparable)1 : ""1"";
+            }".WrapInCSharpClass();
+            // Code to get the target type name and the minimal name without namespaces.
+            // semanticModel.GetTypeInfo(returnStatementInsideIf.Expression).ConvertedType.ToMinimalDisplayString(semanticModel,0)
             await VerifyCSharpFixAsync(source, fixtest);
         }
     }
