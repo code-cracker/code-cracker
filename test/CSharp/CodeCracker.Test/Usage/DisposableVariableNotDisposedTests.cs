@@ -1578,10 +1578,10 @@ class Foo
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
-    [Fact]
-    public async Task IgnoreWhenAssignedToFieldByNullCoalescingOperator()
-    {
-        const string source = @"
+        [Fact]
+        public async Task IgnoreWhenAssignedToFieldByNullCoalescingOperator()
+        {
+            const string source = @"
 using System.IO;
 public class Test : IDisposable
 {
@@ -1597,6 +1597,7 @@ public class Test : IDisposable
         _stream.Dispose();
     }
 }";
-        await VerifyCSharpHasNoDiagnosticsAsync(source);
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
-}}
+}
