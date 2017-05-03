@@ -232,9 +232,11 @@ namespace CodeCracker.CSharp.Style
         private static ExpressionSyntax CastToBaseType(ExpressionSyntax ifExpression, ITypeSymbol ifType, ITypeSymbol elseType, ExpressionSyntax trueExpression)
         {
             var commonBaseType = ifType.GetCommonBaseType(elseType);
-            if (commonBaseType.Equals(ifType)) return trueExpression;
             if (commonBaseType != null)
+            {
+                if (commonBaseType.Equals(ifType)) return trueExpression;
                 trueExpression = SyntaxFactory.CastExpression(SyntaxFactory.ParseTypeName(commonBaseType.Name).WithAdditionalAnnotations(Simplifier.Annotation), ifExpression);
+            }
             return trueExpression;
         }
 
