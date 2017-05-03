@@ -1577,5 +1577,27 @@ class Foo
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
+
+        [Fact]
+        public async Task IgnoreWhenAssignedToFieldByNullCoalescingOperator()
+        {
+            const string source = @"
+using System.IO;
+public class Test : IDisposable
+{
+    private IDisposable _stream;
+
+    public void Update()
+    {
+        _stream = _stream ?? new MemoryStream();
+    }
+
+    public void Dispose()
+    {
+        _stream.Dispose();
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
     }
 }
