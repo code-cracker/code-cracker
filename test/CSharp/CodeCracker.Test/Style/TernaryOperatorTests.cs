@@ -1327,5 +1327,30 @@ class Test
             }".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task FixWhenTernaryIsGenericType()
+        {
+            var source = @"
+            public static IComparer<T> Reverse<T>(this IComparer<T> comparer)
+        {
+            var originalAsReverse = comparer as ReverseComparer<T>;
+            if (originalAsReverse == null)
+            {
+                return new ReverseComparer<T>(comparer ?? Comparer<T>.Default);
+            }
+            else
+            {
+                return originalAsReverse.Wrapped;
+            }
+        }".WrapInCSharpClass();
+            var fixtest = @"
+            public static IComparer<T> Reverse<T>(this IComparer<T> comparer)
+        {
+            var originalAsReverse = comparer as ReverseComparer<T>;
+            return originalAsReverse == null ? new ReverseComparer<T>(comparer ?? Comparer<T>.Default) : originalAsReverse.Wrapped;
+        }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }
