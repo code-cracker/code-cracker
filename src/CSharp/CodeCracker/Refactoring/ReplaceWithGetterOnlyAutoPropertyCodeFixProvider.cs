@@ -118,7 +118,8 @@ namespace CodeCracker.CSharp.Refactoring
             HashSet<IdentifierNameSyntax> fieldReferences = null;
             var fieldSymbol = semanticModel.GetDeclaredSymbol(fieldDeclarationSyntax, cancellationToken);
             var declaredInType = fieldSymbol.ContainingType;
-            foreach (var reference in declaredInType.DeclaringSyntaxReferences)
+            var reference = declaredInType.DeclaringSyntaxReferences.FirstOrDefault(r => r.SyntaxTree == semanticModel.SyntaxTree);
+            if (reference != null)
             {
                 var allNodes = (await reference.GetSyntaxAsync(cancellationToken)).DescendantNodes();
                 var allFieldReferenceNodes = from n in allNodes.OfType<IdentifierNameSyntax>()
