@@ -216,4 +216,16 @@
   <data name="EmptyCatchBlockCodeFixProvider_RemoveTry" xml:space="preserve">
     <value>Remove wrapping Try Block</value>
   </data>
+  <data name="ReplaceWithGetterOnlyAutoPropertyAnalyzer_Description" xml:space="preserve">
+    <value>Getter only properties with backing read-only field can be converted to getter-only auto-properties.</value>
+  </data>
+  <data name="ReplaceWithGetterOnlyAutoPropertyAnalyzer_MessageFormat" xml:space="preserve">
+    <value>Property {0} can be converted to an getter-only auto-property.</value>
+  </data>
+  <data name="ReplaceWithGetterOnlyAutoPropertyAnalyzer_Title" xml:space="preserve">
+    <value>Property can be simplified by using an getter-only auto-property.</value>
+  </data>
+  <data name="ReplaceWithGetterOnlyAutoPropertyCodeFixProvider_Title" xml:space="preserve">
+    <value>Simplify by using an getter-only auto-property</value>
+  </data>
 </root>

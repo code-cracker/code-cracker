@@ -83,5 +83,6 @@
         UnnecessaryToStringInStringConcatenation = 118,
         SwitchCaseWithoutDefault = 120,
         ReadOnlyComplexTypes = 121,
+        ReplaceWithGetterOnlyAutoProperty = 125,
     }
 }

@@ -17,12 +17,17 @@ namespace CodeCracker
 
         public static void RegisterCompilationStartAction(this AnalysisContext context, LanguageVersion greaterOrEqualThanLanguageVersion, Action<CompilationStartAnalysisContext> registrationAction) =>
             context.RegisterCompilationStartAction(compilationContext => compilationContext.RunIfCSharpVersionOrGreater(greaterOrEqualThanLanguageVersion, () => registrationAction?.Invoke(compilationContext)));
+
+        public static void RegisterSymbolAction(this AnalysisContext context, LanguageVersion greaterOrEqualThanLanguageVersion, Action<SymbolAnalysisContext> registrationAction, params SymbolKind[] symbolKinds) =>
+            context.RegisterSymbolAction(compilationContext => compilationContext.RunIfCSharpVersionOrGreater(greaterOrEqualThanLanguageVersion, () => registrationAction?.Invoke(compilationContext)), symbolKinds);
 #pragma warning disable RS1012
         private static void RunIfCSharpVersionOrGreater(this CompilationStartAnalysisContext context, LanguageVersion greaterOrEqualThanLanguageVersion, Action action) =>
             context.Compilation.RunIfCSharpVersionOrGreater(action, greaterOrEqualThanLanguageVersion);
 #pragma warning restore RS1012
         private static void RunIfCSharpVersionOrGreater(this Compilation compilation, Action action, LanguageVersion greaterOrEqualThanLanguageVersion) =>
             (compilation as CSharpCompilation)?.LanguageVersion.RunIfCSharpVersionGreater(action, greaterOrEqualThanLanguageVersion);
+        private static void RunIfCSharpVersionOrGreater(this SymbolAnalysisContext context, LanguageVersion greaterOrEqualThanLanguageVersion, Action action) =>
+            context.Compilation.RunIfCSharpVersionOrGreater(action, greaterOrEqualThanLanguageVersion);
 
         private static void RunIfCSharpVersionGreater(this LanguageVersion languageVersion, Action action, LanguageVersion greaterOrEqualThanLanguageVersion)
         {

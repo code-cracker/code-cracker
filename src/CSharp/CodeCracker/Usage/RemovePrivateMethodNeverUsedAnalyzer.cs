@@ -44,6 +44,7 @@ namespace CodeCracker.CSharp.Usage
             if (IsMethodUsed(methodDeclaration, context.SemanticModel)) return;
             if (IsMainMethodEntryPoint(methodDeclaration, context.SemanticModel)) return;
             if (methodDeclaration.Modifiers.Any(SyntaxKind.ExternKeyword)) return;
+            if (IsWinformsPropertyDefaultValueDefinitionMethod(methodDeclaration, context.SemanticModel)) return;
             var props = new Dictionary<string, string> { { "identifier", methodDeclaration.Identifier.Text } }.ToImmutableDictionary();
             var diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation(), props);
             context.ReportDiagnostic(diagnostic);
@@ -124,6 +125,40 @@ namespace CodeCracker.CSharp.Usage
             var parameterType = semanticModel.GetTypeInfo(parameters.First().Type).Type;
             if (!parameterType.OriginalDefinition.ToString().Equals("String[]", StringComparison.OrdinalIgnoreCase)) return false;
             return true;
+        }
+
+        // see https://msdn.microsoft.com/en-us/library/53b8022e(v=vs.110).aspx
+        private static bool IsWinformsPropertyDefaultValueDefinitionMethod(MethodDeclarationSyntax methodTarget, SemanticModel semanticModel)
+        {
+            var propertyName = GetPropertyNameForWinformDefaultValueMethods(methodTarget, semanticModel);
+            if (string.IsNullOrWhiteSpace(propertyName)) return false;
+            if (!ExistsProperty(propertyName, methodTarget, semanticModel)) return false;
+            return true;
+        }
+
+        private static string GetPropertyNameForWinformDefaultValueMethods(MethodDeclarationSyntax methodTarget, SemanticModel semanticModel) =>
+            GetPropertyNameForMethodWithSignature(methodTarget, semanticModel, "Reset", "Void") ??
+            GetPropertyNameForMethodWithSignature(methodTarget, semanticModel, "ShouldSerialize", "Boolean");
+
+        private static string GetPropertyNameForMethodWithSignature(MethodDeclarationSyntax methodTarget, SemanticModel semanticModel, string startsWith, string returnType)
+        {
+            var methodName = methodTarget.Identifier.Text;
+            if (methodName.StartsWith(startsWith))
+                if (methodTarget.ParameterList.Parameters.Count == 0)
+                {
+                    var returnTypeInfo = semanticModel.GetTypeInfo(methodTarget.ReturnType).Type;
+                    if (returnTypeInfo.Name.Equals(returnType, StringComparison.OrdinalIgnoreCase))
+                        return methodName.Substring(startsWith.Length); ;
+                }
+            return null;
+        }
+
+        private static bool ExistsProperty(string propertyName, SyntaxNode nodeInType, SemanticModel semanticModel)
+        {
+            var typeDeclaration = nodeInType.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+            if (typeDeclaration == null) return false;
+            var propertyDeclarations = typeDeclaration.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+            return propertyDeclarations.Any(pd => pd.Identifier.Text == propertyName);
         }
     }
 }
