@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
+using CodeCracker.FixAllProviders;
 
 namespace CodeCracker.CSharp.Refactoring
 {

@@ -1,27 +1,14 @@
-﻿using CodeCracker.Properties;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeCracker.CSharp.Refactoring
+namespace CodeCracker.FixAllProviders
 {
-    /// <summary>
-    /// This interface must be implemented by the associated CodeFixProvider. The CodeFixProvider must operate on a single document and
-    /// should only change the document. This limits the possible operations of the CodeFixProvider to change only document internals without
-    /// effecting other parts of the solution.
-    /// </summary>
-    public interface IFixDocumentInternalsOnly
-    {
-        Task<Document> FixDocumentAsync(SyntaxNode nodeWithDiagnostic, Document document, CancellationToken cancellationToken);
-    }
 
     public sealed class DocumentCodeFixProviderAll : FixAllProvider
     {

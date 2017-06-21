@@ -40,6 +40,8 @@
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Extensions\GeneratedCodeAnalysisExtensions.cs" />
+    <Compile Include="FixAllProviders\DocumentCodeFixProviderAll.cs" />
+    <Compile Include="FixAllProviders\IFixDocumentInternalsOnly.cs" />
     <Compile Include="HelpLink.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
