@@ -40,7 +40,7 @@ namespace CodeCracker.CSharp.Usage
 
             var originalNode = objectCreation;
             SyntaxNode topSyntaxNode = originalNode;
-            while (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ParenthesizedExpression, SyntaxKind.ConditionalExpression, SyntaxKind.CastExpression))
+            while (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ParenthesizedExpression, SyntaxKind.ConditionalExpression, SyntaxKind.CastExpression, SyntaxKind.CoalesceExpression))
                 topSyntaxNode = topSyntaxNode.Parent;
 
             if (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.ReturnStatement, SyntaxKind.UsingStatement, SyntaxKind.YieldReturnStatement))

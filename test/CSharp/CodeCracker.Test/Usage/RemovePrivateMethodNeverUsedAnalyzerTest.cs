@@ -1,4 +1,5 @@
 ﻿using CodeCracker.CSharp.Usage;
+using Microsoft.CodeAnalysis;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Usage
@@ -407,6 +408,81 @@ public class Foo : System.IEquatable<Foo>
     }
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        // see https://msdn.microsoft.com/en-us/library/53b8022e(v=vs.110).aspx
+        [Fact]
+        public async void WinFormsPropertyDefaultValueDefinitionMethodsShouldBeIgnored()
+        {
+            var source = @"
+public int PropertyXXX {
+    get;
+    set;
+}
+
+private bool ShouldSerializePropertyXXX() => true;
+
+private void ResetPropertyXXX() { };
+".WrapInCSharpClass();
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        private static DiagnosticResult CreateDiagnosticResult(int line, int column) =>
+            new DiagnosticResult
+            {
+                Id = DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId(),
+                Locations = new DiagnosticResultLocation[] { new DiagnosticResultLocation("Test0.cs", line, column) },
+                Message = RemovePrivateMethodNeverUsedAnalyzer.Message,
+                Severity = DiagnosticSeverity.Info,
+            };
+
+        [Fact]
+        public async void WinFormsPropertyDefaultValueDefinitionMethodsMustHaveCorrectSignature()
+        {
+            var source = @"
+public int Property1 { get; set; }
+public int Property2 { get; set; }
+public int Property3 { get; set; }
+
+private int ShouldSerializeProperty1() => 1;
+private bool ShouldSerializeProperty2(int i) => true;
+private void ShouldSerializeProperty3() { };
+
+private bool ResetProperty1() => true;
+private void ResetProperty2(int i) { };
+".WrapInCSharpClass();
+            var result1 = CreateDiagnosticResult(13, 1);
+            var result2 = CreateDiagnosticResult(14, 1);
+            var result3 = CreateDiagnosticResult(15, 1);
+            var result4 = CreateDiagnosticResult(17, 1);
+            var result5 = CreateDiagnosticResult(18, 1);
+            await VerifyCSharpDiagnosticAsync(source, new DiagnosticResult[] { result1, result2, result3, result4, result5 });
+        }
+
+        [Fact]
+        public async void WinFormsPropertyDefaultValueDefinitionMethodsMustHaveCorrespondingProperty()
+        {
+            var source = @"
+private bool ShouldSerializePropertyXXX() => true;
+
+private void ResetPropertyXXX() { };
+".WrapInCSharpClass();
+            var result1 = CreateDiagnosticResult(9, 1);
+            var result2 = CreateDiagnosticResult(11, 1);
+            await VerifyCSharpDiagnosticAsync(source, new DiagnosticResult[] { result1, result2 });
+        }
+
+        [Fact]
+        public async void WinFormsPropertyDefaultValueDefinitionMethodsMustHaveASuffix()
+        {
+            var source = @"
+private bool ShouldSerialize() => true;
+
+private void ResetProperty() { };
+".WrapInCSharpClass();
+            var result1 = CreateDiagnosticResult(9, 1);
+            var result2 = CreateDiagnosticResult(11, 1);
+            await VerifyCSharpDiagnosticAsync(source, new DiagnosticResult[] { result1, result2 });
         }
     }
 }
