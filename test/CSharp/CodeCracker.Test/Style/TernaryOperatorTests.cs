@@ -398,7 +398,7 @@ class Test2
         }
 
         [Fact]
-        public async Task IfAssignedToAnInterfaceVariableAFittingCastIsInserted()
+        public async Task WhenUsingIfAndElseWithAssignmentToAnInterfaceVariableAFittingCastIsInserted()
         {
             var source = @"
             System.Collections.Generic.IEnumerable<int> e= null;
@@ -408,7 +408,7 @@ class Test2
                 e = new System.Collections.Generic.List<int>();
             ".WrapInCSharpMethod();
             var fixtest = @"
-            IEnumerable<int> e= null;
+            System.Collections.Generic.IEnumerable<int> e= null;
             e = true ? (System.Collections.Generic.IEnumerable<int>)new int[10] : new System.Collections.Generic.List<int>();
             ".WrapInCSharpMethod();
             await VerifyCSharpFixAsync(source, fixtest);
@@ -1346,13 +1346,12 @@ class Test
         }
 
         [Fact]
-        public async Task IfReturnTypeIsAnInterfaceAFittingCastIsInserted()
+        public async Task WhenReturnTypeIsAnInterfaceAFittingCastIsInserted()
         {
             var source = @"
             IComparable GetComparable()
             {
-                var cond = true;
-                if (cond)
+                if (true)
                     return 1;
                 else
                     return ""1"";
@@ -1360,11 +1359,27 @@ class Test
             var fixtest = @"
             IComparable GetComparable()
             {
-                var cond = true;
-                return cond?(IComparable)1 : ""1"";
+                return true?(IComparable)1 : ""1"";
             }".WrapInCSharpClass();
-            // Code to get the target type name and the minimal name without namespaces.
-            // semanticModel.GetTypeInfo(returnStatementInsideIf.Expression).ConvertedType.ToMinimalDisplayString(semanticModel,0)
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithReturnTypeIsExplicitConvertable()
+        {
+            var source = @"
+            double GetNumber()
+            {
+                if (true)
+                    return 1;
+                else
+                    return 1.1;
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            double GetNumber()
+            {
+                return true?(double)1:1.1;
+            }".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, fixtest);
         }
     }
