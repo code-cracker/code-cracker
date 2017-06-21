@@ -510,7 +510,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         }
 
         [Fact]
-        public async Task FieldReferencesInPartialClassesGetNotRenamedAndCasueCompilerErrorCS0103()
+        public async Task FieldReferencesInPartialClassesGetRenamedIfInTheSameDocument()
         {
             const string test = @"
             namespace A
@@ -544,11 +544,10 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 }
                 public partial class A1
                 {
-                    public void Print() => Console.Write(_I);
+                    public void Print() => Console.Write(I);
                 }
             }";
-            //Console.Write(_I); causes CS0103 The name '_I' does not exist in the current context
-            await VerifyCSharpFixAsync(oldSource: test, newSource: fixtest, allowNewCompilerDiagnostics: true);
+            await VerifyCSharpFixAsync(oldSource: test, newSource: fixtest, allowNewCompilerDiagnostics: false);
         }
 
         [Fact]
