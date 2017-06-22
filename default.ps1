@@ -205,7 +205,7 @@ function UpdateNuspec($nuspecPath, $language) {
 function RestorePkgs($sln) {
     Write-Host "Restoring $sln..." -ForegroundColor Green
     Retry {
-        . $nugetExe restore $sln
+        . $nugetExe restore "$sln" -MSBuildVersion 14 -NonInteractive -ConfigFile "$rootDir\nuget.config"
         if ($LASTEXITCODE) { throw "Nuget restore for $sln failed." }
     }
 }
