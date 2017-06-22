@@ -5,7 +5,7 @@ Properties {
     $srcDir = "$rootDir\src"
     $testDir = "$rootDir\test"
     $isAppVeyor = $env:APPVEYOR -eq $true
-    $slns = ls "$rootDir\*.sln"
+    $slns = ls "$rootDir\*.sln" | ? { ! $_.Name.Contains('.2015.') }
     $packagesDir = "$rootDir\packages"
     $buildNumber = [Convert]::ToInt32($env:APPVEYOR_BUILD_NUMBER).ToString("0000")
     $nuspecPathCS = "$rootDir\src\CSharp\CodeCracker\CodeCracker.nuspec"
