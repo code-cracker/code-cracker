@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CodeCracker", "src\VisualBasic\CodeCracker\CodeCracker.vbproj", "{41FA4971-D354-4647-A269-4A886DA2EF4C}"
 EndProject
@@ -24,8 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D1591C8E
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
 		build.ps1 = build.ps1
-		build.targets.ps1 = build.targets.ps1
-		psake.ps1 = psake.ps1
+		default.ps1 = default.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{22D6C608-E7F1-4236-BB07-BE5F97A4C810}"
