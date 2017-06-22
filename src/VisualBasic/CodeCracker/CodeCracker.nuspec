@@ -21,7 +21,7 @@ This is a community project, free and open source. Everyone is invited to contri
         </frameworkAssemblies>
     </metadata>
     <files>
-        <file src="bin\release\*.dll" target="analyzers\dotnet\vb" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*;**\System.Composition.*" />
+        <file src="bin\release\merged\*.dll" target="analyzers\dotnet\vb" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*;**\System.Composition.*" />
         <file src="tools\*.ps1" target="tools\" />
     </files>
 </package>
