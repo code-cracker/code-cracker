@@ -10,7 +10,8 @@ Properties {
     $buildNumber = [Convert]::ToInt32($env:APPVEYOR_BUILD_NUMBER).ToString("0000")
     $nuspecPathCS = "$rootDir\src\CSharp\CodeCracker\CodeCracker.nuspec"
     $nuspecPathVB = "$rootDir\src\VisualBasic\CodeCracker\CodeCracker.nuspec"
-    $nugetExe = "$packagesDir\NuGet.CommandLine.3.3.0\tools\NuGet.exe"
+    $nugetPackagesExe = "$packagesDir\NuGet.CommandLine.4.1.0\tools\NuGet.exe"
+    $nugetExe = if (Test-Path $nugetPackagesExe) { $nugetPackagesExe } else { 'nuget' }
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
     $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.2.0\tools\xunit.console.x86.exe"
