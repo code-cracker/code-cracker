@@ -73,7 +73,7 @@ Get-Nuget
 Import-Psake
 Import-ILMerge
 if ($MyInvocation.UnboundArguments.Count -ne 0) {
-    . $PSScriptRoot\psake.ps1 -taskList ($MyInvocation.UnboundArguments -join " ")
+    Invoke-Expression("Invoke-psake -framework '4.5.2' $PSScriptRoot\default.ps1 -taskList " + $MyInvocation.UnboundArguments -join " ")
 }
 else {
     . $PSScriptRoot\build.ps1 Build
