@@ -20,9 +20,9 @@ namespace CodeCracker.Test.CSharp.Style
         [Fact]
         public async Task InstantiatingAnStringBuilderAndCallToStringInsideAStringConcatenationShouldGenerateDiagnosticResult()
         {
-            const string source = @"var foo = ""a"" + new System.Text.StringBuilder().ToString();";
+            var source = @"var foo = ""a"" + new System.Text.StringBuilder().ToString();".WrapInCSharpMethod();
 
-            var expected = CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(1, 48);
+            var expected = CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(10, 64);
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -37,9 +37,9 @@ namespace CodeCracker.Test.CSharp.Style
     {
         class AuxClass
         {
-            public override void ToString()
+            public override string ToString()
             {
-                return ""Test""; 
+                return ""Test"";
             }
         }
 
@@ -51,7 +51,7 @@ namespace CodeCracker.Test.CSharp.Style
 
                 var bar = ""a"" + new AuxClass().ToString();
                 var foo = ""a"" + auxClass.ToString();
-                var far = ""a"" + new AuxClass().ToString() + auxClass.ToString() + new object().ToString(""C"");
+                var far = ""a"" + new AuxClass().ToString() + auxClass.ToString() + new int().ToString(""C"");
             }
         }
     }";
@@ -64,6 +64,25 @@ namespace CodeCracker.Test.CSharp.Style
             var expected = new DiagnosticResult[] { expected1, expected2, expected3, expected4 };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task CallToStringFollowedByACallToAStringMethodShouldNotGenerateDiagnosticResult()
+        {
+            const string source = @"var salary = ""salary: "" + 1000.ToString().Trim();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task CallToLambdaNamedToStringShouldNotGenerateDiagnosticResult()
+        {
+            var source = @"
+        Func<string> ToString = () => ""Dummy"";
+        var t = 1 + ToString();
+".WrapInCSharpMethod();
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
@@ -95,6 +114,87 @@ namespace CodeCracker.Test.CSharp.Style
             };
 
             return expected;
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_RightSide()
+        {
+            const string source = @"var value = 1 + 2.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_LeftSide()
+        {
+            const string source = @"var value = 2.ToString() + 1;";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_WithExpression()
+        {
+            const string source = @"var value = (1 + 1) + 2.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_Double()
+        {
+            const string source = @"var value = (true ? 1.1 : 0.99) + 2.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_DateTime()
+        {
+            const string source = @"var value = new System.DateTime(2000, 1, 1) + 2.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_CompilerGeneratedEnumOperator()
+        {
+            const string source = @"var value = System.AttributeTargets.Assembly + System.AttributeTargets.Module.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_DifferentUnderlyingTypes()
+        {
+            //In this case it might actually be safe to remove "ToString" but this is an awkward case anyway.
+            const string source = @"var value = new System.Random() + System.StringComparer.CurrentCulture.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_UserDefinedOperator()
+        {
+            const string source = @"
+    namespace A
+    {
+        public class C1
+        {
+            public static string operator +(C1 c, object o) => ""Dummy"";
+        }
+
+        public class C2
+        {
+            public void M()
+            {
+                var t = new C1().ToString() + ""a"";
+            }
+        }
+    }
+";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
