@@ -222,21 +222,16 @@ namespace CodeCracker.CSharp.Style
             if (!elseType.HasImplicitNumericConversion(ifType)
                 && !IsEnumAndZero(ifType, elseExpression)
                 && !IsEnumAndZero(elseType, ifExpression)
-                && (!isNullable && !ifType.CanBeAssignedTo(elseType) || !elseType.CanBeAssignedTo(ifType)))
-                trueExpression = CastToBaseType(ifExpression, ifType, elseType, trueExpression);
+                && (!isNullable && !ifType.CanBeAssignedTo(elseType) || !elseType.CanBeAssignedTo(ifType))
+                && ifType != ifConvertedType)
+                trueExpression = CastToConvertedType(ifExpression, ifConvertedType);
         }
 
         private static bool IsEnumAndZero(ITypeSymbol type, ExpressionSyntax expression) =>
             type?.BaseType?.SpecialType == SpecialType.System_Enum && expression?.ToString() == "0";
 
-        private static ExpressionSyntax CastToBaseType(ExpressionSyntax ifExpression, ITypeSymbol ifType, ITypeSymbol elseType, ExpressionSyntax trueExpression)
-        {
-            var commonBaseType = ifType.GetCommonBaseType(elseType);
-            if (commonBaseType.Equals(ifType)) return trueExpression;
-            if (commonBaseType != null)
-                trueExpression = SyntaxFactory.CastExpression(SyntaxFactory.ParseTypeName(commonBaseType.Name).WithAdditionalAnnotations(Simplifier.Annotation), ifExpression);
-            return trueExpression;
-        }
+        private static ExpressionSyntax CastToConvertedType(ExpressionSyntax ifExpression, ITypeSymbol ifConvertedType)
+            => SyntaxFactory.CastExpression(SyntaxFactory.ParseTypeName(ifConvertedType.ToString()).WithAdditionalAnnotations(Simplifier.Annotation), ifExpression);
 
         private static bool CanBeAssignedTo(this ITypeSymbol type, ITypeSymbol possibleBaseType)
         {
@@ -251,22 +246,6 @@ namespace CodeCracker.CSharp.Style
                 baseType = baseType.BaseType;
             }
             return false;
-        }
-
-        private static ITypeSymbol GetCommonBaseType(this ITypeSymbol type, ITypeSymbol otherType)
-        {
-            var baseType = type;
-            while (baseType != null)
-            {
-                var otherBaseType = otherType;
-                while (otherBaseType != null)
-                {
-                    if (baseType.Equals(otherBaseType)) return baseType;
-                    otherBaseType = otherBaseType.BaseType;
-                }
-                baseType = baseType.BaseType;
-            }
-            return null;
         }
     }
 }
