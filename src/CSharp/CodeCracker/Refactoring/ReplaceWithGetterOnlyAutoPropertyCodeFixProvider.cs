@@ -12,15 +12,18 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
+using CodeCracker.FixAllProviders;
 
 namespace CodeCracker.CSharp.Refactoring
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ReplaceWithGetterOnlyAutoPropertyCodeFixProvider)), Shared]
-    public class ReplaceWithGetterOnlyAutoPropertyCodeFixProvider : CodeFixProvider
+    public class ReplaceWithGetterOnlyAutoPropertyCodeFixProvider : CodeFixProvider, IFixDocumentInternalsOnly
     {
+        private static readonly FixAllProvider FixAllProvider = new DocumentCodeFixProviderAll(Resources.ReplaceWithGetterOnlyAutoPropertyCodeFixProvider_Title);
         public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId());
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+        public override FixAllProvider GetFixAllProvider() => FixAllProvider;
 
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -35,19 +38,32 @@ namespace CodeCracker.CSharp.Refactoring
                     diagnostic);
             return Task.FromResult(0);
         }
-        private async static Task<Document> ReplaceByGetterOnlyAutoPropertyAsync(Document document, TextSpan propertyDeclarationSpan, CancellationToken cancellationToken)
+        private async Task<Document> ReplaceByGetterOnlyAutoPropertyAsync(Document document, TextSpan propertyDeclarationSpan, CancellationToken cancellationToken)
         {
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var root = await document.GetSyntaxRootAsync(cancellationToken);
-            var token = root.FindToken(propertyDeclarationSpan.Start);
-            var property = token.Parent.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
-            var fieldVariableDeclaratorSyntax = await GetFieldDeclarationSyntaxNodeAsync(property, cancellationToken, semanticModel);
-            if (fieldVariableDeclaratorSyntax == null) return document;
-            var fieldReferences = await GetFieldReferencesAsync(fieldVariableDeclaratorSyntax, cancellationToken, semanticModel);
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var node = root.FindNode(propertyDeclarationSpan);
+            return await FixDocumentAsync(node, document, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<Document> FixDocumentAsync(SyntaxNode nodeWithDiagnostic, Document document, CancellationToken cancellationToken)
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
+            var newRoot = await ReplacePropertyInSyntaxRootAsync(nodeWithDiagnostic, cancellationToken, semanticModel, root).ConfigureAwait(false);
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            return newDocument;
+        }
+
+
+        private static async Task<SyntaxNode> ReplacePropertyInSyntaxRootAsync(SyntaxNode propertyDeclarationSyntaxNode, CancellationToken cancellationToken, SemanticModel semanticModel, SyntaxNode root)
+        {
+            var property = propertyDeclarationSyntaxNode.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
+            var fieldVariableDeclaratorSyntax = await GetFieldDeclarationSyntaxNodeAsync(property, cancellationToken, semanticModel).ConfigureAwait(false);
+            if (fieldVariableDeclaratorSyntax == null) return root;
+            var fieldReferences = await GetFieldReferencesAsync(fieldVariableDeclaratorSyntax, cancellationToken, semanticModel).ConfigureAwait(false);
             var nodesToUpdate = fieldReferences.Cast<SyntaxNode>().Union(Enumerable.Repeat(property, 1)).Union(Enumerable.Repeat(fieldVariableDeclaratorSyntax, 1));
             var newRoot = FixWithTrackNode(root, property, fieldVariableDeclaratorSyntax, nodesToUpdate);
-            var resultDocument = document.WithSyntaxRoot(newRoot);
-            return resultDocument;
+            return newRoot;
         }
 
         private static SyntaxNode FixWithTrackNode(SyntaxNode root, PropertyDeclarationSyntax property, VariableDeclaratorSyntax fieldVariableDeclaratorSyntax, IEnumerable<SyntaxNode> nodesToUpdate)
@@ -102,16 +118,19 @@ namespace CodeCracker.CSharp.Refactoring
             HashSet<IdentifierNameSyntax> fieldReferences = null;
             var fieldSymbol = semanticModel.GetDeclaredSymbol(fieldDeclarationSyntax, cancellationToken);
             var declaredInType = fieldSymbol.ContainingType;
-            var reference = declaredInType.DeclaringSyntaxReferences[0];
-            var allNodes = (await reference.GetSyntaxAsync(cancellationToken)).DescendantNodes();
-            var allFieldReferenceNodes = from n in allNodes.OfType<IdentifierNameSyntax>()
-                                         where n.Identifier.Text == fieldSymbol.Name
-                                         let nodeSymbolInfo = semanticModel.GetSymbolInfo(n, cancellationToken)
-                                         where object.Equals(nodeSymbolInfo.Symbol, fieldSymbol)
-                                         select n;
-            foreach (var fieldReference in allFieldReferenceNodes)
+            var references = declaredInType.DeclaringSyntaxReferences.Where(r => r.SyntaxTree == semanticModel.SyntaxTree);
+            foreach (var reference in references)
             {
-                (fieldReferences ?? (fieldReferences = new HashSet<IdentifierNameSyntax>())).Add(fieldReference);
+                var allNodes = (await reference.GetSyntaxAsync(cancellationToken)).DescendantNodes();
+                var allFieldReferenceNodes = from n in allNodes.OfType<IdentifierNameSyntax>()
+                                             where n.Identifier.Text == fieldSymbol.Name
+                                             let nodeSymbolInfo = semanticModel.GetSymbolInfo(n, cancellationToken)
+                                             where object.Equals(nodeSymbolInfo.Symbol, fieldSymbol)
+                                             select n;
+                foreach (var fieldReference in allFieldReferenceNodes)
+                {
+                    (fieldReferences ?? (fieldReferences = new HashSet<IdentifierNameSyntax>())).Add(fieldReference);
+                }
             }
             return fieldReferences ?? Enumerable.Empty<IdentifierNameSyntax>();
         }

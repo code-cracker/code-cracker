@@ -1,4 +1,6 @@
 $ErrorActionPreference = "Stop"
+$tempDir = Join-Path "$([System.IO.Path]::GetTempPath())" "CodeCracker"
+if (!(Test-Path $tempDir)) { mkdir $tempDir | Out-Null }
 # functions:
 
 function IsNugetVersion3OrAbove($theNugetExe) {
@@ -47,12 +49,20 @@ function Download-Nuget {
 }
 
 function Import-Psake {
-    $psakeModule = "$PSScriptRoot\packages\psake.4.5.0\tools\psake.psm1"
+    $psakeModule = "$PSScriptRoot\packages\psake.4.6.0\tools\psake.psm1"
     if ((Test-Path $psakeModule) -ne $true) {
         Write-Host "Restoring $PSScriptRoot\.nuget with $script:nugetExe"
         . "$script:nugetExe" restore $PSScriptRoot\.nuget\packages.config -SolutionDirectory $PSScriptRoot
     }
     Import-Module $psakeModule -force
+}
+
+function Import-ILMerge {
+    $ilmergeExe = "$PSScriptRoot\packages\ilmerge.2.14.1208\tools\ILMerge.exe"
+    if ((Test-Path $ilmergeExe) -ne $true) {
+        Write-Host "Restoring $PSScriptRoot\.nuget with $script:nugetExe"
+        . "$script:nugetExe" restore $PSScriptRoot\.nuget\packages.config -SolutionDirectory $PSScriptRoot
+    }
 }
 
 # statements:
@@ -61,8 +71,9 @@ $localNuget = "$PSScriptRoot\.nuget\nuget.exe"
 $nugetExe = ""
 Get-Nuget
 Import-Psake
+Import-ILMerge
 if ($MyInvocation.UnboundArguments.Count -ne 0) {
-    . $PSScriptRoot\psake.ps1 -taskList ($MyInvocation.UnboundArguments -join " ")
+    Invoke-Expression("Invoke-psake -framework '4.5.2' $PSScriptRoot\default.ps1 -taskList " + $MyInvocation.UnboundArguments -join " ")
 }
 else {
     . $PSScriptRoot\build.ps1 Build

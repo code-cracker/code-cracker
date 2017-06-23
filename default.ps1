@@ -5,29 +5,39 @@ Properties {
     $srcDir = "$rootDir\src"
     $testDir = "$rootDir\test"
     $isAppVeyor = $env:APPVEYOR -eq $true
-    $slns = ls "$rootDir\*.sln"
+    $slns = ls "$rootDir\*.sln" | ? { ! $_.Name.Contains('.2015.') }
     $packagesDir = "$rootDir\packages"
     $buildNumber = [Convert]::ToInt32($env:APPVEYOR_BUILD_NUMBER).ToString("0000")
     $nuspecPathCS = "$rootDir\src\CSharp\CodeCracker\CodeCracker.nuspec"
     $nuspecPathVB = "$rootDir\src\VisualBasic\CodeCracker\CodeCracker.nuspec"
-    $nuspecPathJoint = "$rootDir\src\CodeCracker.nuspec"
-    $nugetExe = "$packagesDir\NuGet.CommandLine.3.3.0\tools\NuGet.exe"
+    $nugetPackagesExe = "$packagesDir\NuGet.CommandLine.4.1.0\tools\NuGet.exe"
+    $nugetExe = if (Test-Path $nugetPackagesExe) { $nugetPackagesExe } else { 'nuget' }
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
-    $nupkgPathJoint = "$rootDir\CodeCracker.{0}.nupkg"
     $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.2.0\tools\xunit.console.x86.exe"
     $openCoverExe = "$packagesDir\OpenCover.4.6.519\tools\OpenCover.Console.exe"
+    $dllCS = "CodeCracker.CSharp.dll"
+    $dllVB = "CodeCracker.VisualBasic.dll"
+    $dllCommon = "CodeCracker.Common.dll"
     $testDllCS = "CodeCracker.Test.CSharp.dll"
     $testDllVB = "CodeCracker.Test.VisualBasic.dll"
     $testDirCS = "$testDir\CSharp\CodeCracker.Test\bin\Release"
     $testDirVB = "$testDir\VisualBasic\CodeCracker.Test\bin\Release"
+    $projectDirVB = "$srcDir\VisualBasic\CodeCracker"
+    $projectFileVB = "$projectDirVB\CodeCracker.vbproj"
+    $releaseDirVB = "$projectDirVB\bin\Release"
+    $projectDirCS = "$srcDir\CSharp\CodeCracker"
+    $projectFileCS = "$projectDirCS\CodeCracker.csproj"
+    $releaseDirCS = "$projectDirCS\bin\Release"
     $logDir = "$rootDir\log"
     $outputXml = "$logDir\CodeCoverageResults.xml"
     $reportGeneratorExe = "$packagesDir\ReportGenerator.2.5.6\tools\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
     $coverallsNetExe = "$packagesDir\coveralls.io.1.3.4\tools\coveralls.net.exe"
+    $ilmergeExe = "$packagesDir\ilmerge.2.14.1208\tools\ILMerge.exe"
     $isRelease = $isAppVeyor -and (($env:APPVEYOR_REPO_BRANCH -eq "release") -or ($env:APPVEYOR_REPO_TAG -eq "true"))
     $isPullRequest = $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null
+    $tempDir = Join-Path "$([System.IO.Path]::GetTempPath())" "CodeCracker"
 }
 
 FormatTaskName (("-"*25) + "[{0}]" + ("-"*25))
@@ -49,19 +59,64 @@ Task Build-CS -depends Prepare-Build, Build-Only-CS
 Task Build-VB -depends Prepare-Build, Build-Only-VB
 
 Task Build-Only -depends Build-Only-CS, Build-Only-VB
-Task Build-Only-CS {
+Task Build-Only-CS -depends Build-MSBuild-CS, ILMerge-CS
+Task Build-MSBuild-CS {
     if ($isAppVeyor) {
         Exec { msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=ReleaseNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
     } else {
         Exec { msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=ReleaseNoVsix }
     }
 }
-Task Build-Only-VB {
+Task Build-Only-VB -depends Build-MSBuild-VB, ILMerge-VB
+Task Build-MSBuild-VB {
     if ($isAppVeyor) {
         Exec { msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=ReleaseNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
     } else {
         Exec { msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=ReleaseNoVsix }
     }
+}
+
+Task ILMerge-VB { ILMerge $releaseDirVB $dllVB $projectFileVB $projectDirVB }
+Task ILMerge-CS { ILMerge $releaseDirCS $dllCS $projectFileCS $projectDirCS }
+
+function ILMerge($releaseDir, $dll, $projectFile, $projectDir) {
+	Write-Host "IL Merge:"
+    $mergedDir = $tempDir
+    if (!(Test-Path $mergedDir)) { mkdir "$mergedDir" }
+    $inputDll = "$releaseDir\$dll"
+    $inputDllCommon = "$releaseDir\$dllCommon"
+    $pdbCommon = Change-Extension $inputDllCommon "pdb"
+    if (Test-Path $inputDllCommon) {
+        if ((ls $inputDllCommon).LastWriteTime -gt (ls $inputDll).LastWriteTime) {
+            # common is newer, but no changes on main dll
+            Write-Host "Common dll is newer than $inputDll, stopping IL merge."
+            return
+        }
+    } else {
+        # no common dll, can't merge
+        Write-Host "Can't find common dll, stopping IL merge."
+        return
+    }
+    $mergedDll = "$mergedDir\$dll"
+    [xml]$proj = cat $projectFile
+    $libs = @()
+    foreach ($ref in $proj.Project.ItemGroup.Reference.HintPath) {
+        $dir += [System.IO.Path]::GetDirectoryName("$projectDir\$ref")
+        $libs += "/lib:`"$([System.IO.Path]::GetDirectoryName("$projectDir\$ref"))`" "
+    }
+    Exec { . $ilmergeExe $libs /out:"$mergedDll" "$inputDll" "$inputDllCommon" }
+    $releaseMergedDir = "$releaseDir\merged"
+    if (!(Test-Path $releaseMergedDir)) { mkdir $releaseMergedDir | Out-Null }
+    cp $mergedDll "$releaseMergedDir\" -Force
+	Write-Host "  $dll -> $releaseMergedDir\$dll"
+    $mergedPdb = Change-Extension $mergedDll "pdb"
+    cp $mergedPdb "$releaseMergedDir\" -Force
+	$pdb = (ls $mergedPdb).Name
+	Write-Host "  $pdb -> $releaseMergedDir\$pdb"
+}
+
+function Change-Extension ($filename, $extension) {
+    Join-Path "$([System.IO.Path]::GetDirectoryName($filename))" "$([System.IO.Path]::GetFileNameWithoutExtension($filename)).$extension"
 }
 
 Task Clean {
@@ -99,10 +154,7 @@ Task Test-No-Coverage-CSharp {
     RunTest "$testDirCS\$testDllCS"
 }
 
-Task Update-Nuspec -precondition { return $isAppVeyor -and ($isRelease -ne $true) } -depends Update-Nuspec-Joint
-Task Update-Nuspec-Joint -precondition { return $isAppVeyor -and ($isRelease -ne $true) } -depends Update-Nuspec-CSharp, Update-Nuspec-VB {
-    UpdateNuspec $nuspecPathJoint "joint package"
-}
+Task Update-Nuspec -precondition { return $isAppVeyor -and ($isRelease -ne $true) } -depends Update-Nuspec-CSharp, Update-Nuspec-VB
 Task Update-Nuspec-CSharp -precondition { return $isAppVeyor -and ($isRelease -ne $true) } {
     UpdateNuspec $nuspecPathCS "C#"
 }
@@ -110,15 +162,18 @@ Task Update-Nuspec-VB -precondition { return $isAppVeyor -and ($isRelease -ne $t
     UpdateNuspec $nuspecPathVB "VB"
 }
 
-Task Pack-Nuget -precondition { return $isAppVeyor } -depends Pack-Nuget-Joint
-Task Pack-Nuget-Joint -precondition { return $isAppVeyor } -depends Pack-Nuget-Csharp, Pack-Nuget-VB {
-    #we won't be publishing the common package anymore
-    #PackNuget "Joint package" "$rootDir" $nuspecPathJoint $nupkgPathJoint
-}
+Task Pack-Nuget -precondition { return $isAppVeyor } -depends Pack-Nuget-Csharp, Pack-Nuget-VB
 Task Pack-Nuget-CSharp -precondition { return $isAppVeyor } {
     PackNuget "C#" "$rootDir\src\CSharp" $nuspecPathCS $nupkgPathCS
 }
 Task Pack-Nuget-VB -precondition { return $isAppVeyor } {
+    PackNuget "VB" "$rootDir\src\VisualBasic" $nuspecPathVB $nupkgPathVB
+}
+Task Pack-Nuget-Force -depends Pack-Nuget-Csharp-Force, Pack-Nuget-VB-Force
+Task Pack-Nuget-Csharp-Force {
+    PackNuget "C#" "$rootDir\src\CSharp" $nuspecPathCS $nupkgPathCS
+}
+Task Pack-Nuget-VB-Force {
     PackNuget "VB" "$rootDir\src\VisualBasic" $nuspecPathVB $nupkgPathVB
 }
 
@@ -126,15 +181,16 @@ Task Echo { echo echo }
 
 function PackNuget($language, $dir, $nuspecFile, $nupkgFile) {
     Write-Host "Packing nuget for $language..."
-    [xml]$xml = cat $nuspecFile
+    [xml]$xml = cat "$nuspecFile"
     $nupkgFile = $nupkgFile -f $xml.package.metadata.version
-    Write-Host "Nupkg path is $nupkgFile"
-    . $nugetExe pack $nuspecFile -OutputDirectory $dir
-    ls $nupkgFile
-    Write-Host "Nuget packed for $language!"
-    Write-Host "Pushing nuget artifact for $language..."
-    appveyor PushArtifact $nupkgFile
-    Write-Host "Nupkg pushed for $language!"
+    . $nugetExe pack "$nuspecFile" -OutputDirectory "$dir"
+    $nuspecFileName = (ls $nuspecFile).Name
+	Write-Host "  $nuspecFileName ($language/$($xml.package.metadata.version)) -> $nupkgFile"
+    if ($isAppVeyor) {
+        Write-Host "Pushing nuget artifact for $language..."
+        appveyor PushArtifact $nupkgFile
+        Write-Host "Nupkg pushed for $language!"
+    }
 }
 
 function UpdateNuspec($nuspecPath, $language) {
@@ -149,7 +205,7 @@ function UpdateNuspec($nuspecPath, $language) {
 function RestorePkgs($sln) {
     Write-Host "Restoring $sln..." -ForegroundColor Green
     Retry {
-        . $nugetExe restore $sln
+        . $nugetExe restore "$sln" -MSBuildVersion 14 -NonInteractive -ConfigFile "$rootDir\nuget.config"
         if ($LASTEXITCODE) { throw "Nuget restore for $sln failed." }
     }
 }
