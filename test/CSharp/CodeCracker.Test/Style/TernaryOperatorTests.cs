@@ -396,6 +396,23 @@ class Test2
             }".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, fixtest);
         }
+
+        [Fact]
+        public async Task WhenUsingIfAndElseWithAssignmentToAnInterfaceVariableAFittingCastIsInserted()
+        {
+            var source = @"
+            System.Collections.Generic.IEnumerable<int> e= null;
+            if (true)
+                e = new int[10];
+            else
+                e = new System.Collections.Generic.List<int>();
+            ".WrapInCSharpMethod();
+            var fixtest = @"
+            System.Collections.Generic.IEnumerable<int> e= null;
+            e = true ? (System.Collections.Generic.IEnumerable<int>)new int[10] : new System.Collections.Generic.List<int>();
+            ".WrapInCSharpMethod();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 
     public class TernaryOperatorWithReturnTests : CodeFixVerifier<TernaryOperatorAnalyzer, TernaryOperatorWithReturnCodeFixProvider>
@@ -1324,6 +1341,44 @@ class Test
             public Object Foo()
             {                
                 return true?(object)new A(1):new B(2);
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task WhenReturnTypeIsAnInterfaceAFittingCastIsInserted()
+        {
+            var source = @"
+            IComparable GetComparable()
+            {
+                if (true)
+                    return 1;
+                else
+                    return ""1"";
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            IComparable GetComparable()
+            {
+                return true?(IComparable)1 : ""1"";
+            }".WrapInCSharpClass();
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task FixWhenReturningWithReturnTypeIsExplicitConvertable()
+        {
+            var source = @"
+            double GetNumber()
+            {
+                if (true)
+                    return 1;
+                else
+                    return 1.1;
+            }".WrapInCSharpClass();
+            var fixtest = @"
+            double GetNumber()
+            {
+                return true?(double)1:1.1;
             }".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, fixtest);
         }
