@@ -1332,7 +1332,9 @@ class Test
         public async Task FixWhenTernaryIsGenericType()
         {
             var source = @"
-            public static IComparer<T> Reverse<T>(this IComparer<T> comparer)
+       public static class ComparerExtensions
+    {
+        public static IComparer<T> Reverse<T>(this IComparer<T> comparer)
         {
             var originalAsReverse = comparer as ReverseComparer<T>;
             if (originalAsReverse == null)
@@ -1343,12 +1345,50 @@ class Test
             {
                 return originalAsReverse.Wrapped;
             }
-        }".WrapInCSharpClass();
+        }
+
+        private class ReverseComparer<T> : IComparer<T>
+        {
+            private readonly IComparer<T> _wrapped;
+
+            public ReverseComparer(IComparer<T> wrapped)
+            {
+                _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
+            }
+
+            internal IComparer<T> Wrapped => _wrapped;
+
+            public int Compare(T x, T y)
+            {
+                return _wrapped.Compare(y, x);
+            }
+        }
+    }".WrapInCSharpClass();
             var fixtest = @"
+    public static class ComparerExtensions
+    {
             public static IComparer<T> Reverse<T>(this IComparer<T> comparer)
         {
             var originalAsReverse = comparer as ReverseComparer<T>;
             return originalAsReverse == null ? new ReverseComparer<T>(comparer ?? Comparer<T>.Default) : originalAsReverse.Wrapped;
+        }
+
+        private class ReverseComparer<T> : IComparer<T>
+        {
+            private readonly IComparer<T> _wrapped;
+
+            public ReverseComparer(IComparer<T> wrapped)
+            {
+                _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
+            }
+
+            internal IComparer<T> Wrapped => _wrapped;
+
+            public int Compare(T x, T y)
+            {
+                return _wrapped.Compare(y, x);
+            }
+        }
         }".WrapInCSharpClass();
             await VerifyCSharpFixAsync(source, fixtest);
         }
