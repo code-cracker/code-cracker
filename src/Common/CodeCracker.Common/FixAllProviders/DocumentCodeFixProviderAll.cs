@@ -69,7 +69,7 @@ namespace CodeCracker.FixAllProviders
                 });
             var newDocument = document.WithSyntaxRoot(newRoot);
             newDocument = await FixCodeForAnnotatedNodesAsync(newDocument, codeFixer, annotations, fixAllContext.CancellationToken).ConfigureAwait(false);
-            newDocument = await RemoveAnnontationsAsync(newDocument, annotations).ConfigureAwait(false);
+            newDocument = await RemoveAnnotationsAsync(newDocument, annotations).ConfigureAwait(false);
             return newDocument;
         }
 
@@ -86,7 +86,7 @@ namespace CodeCracker.FixAllProviders
             return document;
         }
 
-        private static async Task<Document> RemoveAnnontationsAsync(Document document, IEnumerable<SyntaxAnnotation> annotations)
+        private static async Task<Document> RemoveAnnotationsAsync(Document document, IEnumerable<SyntaxAnnotation> annotations)
         {
             var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
             var nodes = annotations.SelectMany(annotation => root.GetAnnotatedNodes(annotation));
