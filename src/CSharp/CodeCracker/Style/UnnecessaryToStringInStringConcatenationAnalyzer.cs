@@ -70,7 +70,9 @@ namespace CodeCracker.CSharp.Style
             foreach (var node in invocationExpressionsThatHaveToStringCall)
             {
                 var toStringReceiver = GetTypeInfoOfReceiverOfToStringCall(node, semanticModel, cancellationToken);
-                if (toStringReceiver == null)
+                //As long as the underlying type can not be resolved by the compiler (e.g. undefined type) 
+                //removal is not save.
+                if (toStringReceiver == null || toStringReceiver.TypeKind==TypeKind.Error)
                     continue;
                 //If the underlying type is string, removal is save.
                 if (IsTypeSymbolSystem_String(toStringReceiver))
@@ -132,13 +134,22 @@ namespace CodeCracker.CSharp.Style
                 return false;
             }
 
-            return toStringReceiver == otherType;
+            //If both sides are delegates, the plus operator combines the delegates:
+            //https://msdn.microsoft.com/en-us/library/ms173175(v=vs.110).aspx
+            if (IsTypeSmybolDelegateType(toStringReceiver) && IsTypeSmybolDelegateType(otherType))
+            {
+                return false;
+            }
+
+            //There might be more cases were removal is save but for now we opt out.
+            return false;
         }
 
+        private static bool IsTypeSmybolDelegateType(ITypeSymbol typeSymbol)
+            => typeSymbol.TypeKind == TypeKind.Delegate;
+
         private static bool IsTypeSymbolSystem_String(ITypeSymbol typeSymbol)
-        {
-            return typeSymbol.SpecialType == SpecialType.System_String;
-        }
+            => typeSymbol.SpecialType == SpecialType.System_String;
 
 
         // see https://stackoverflow.com/a/41223159
@@ -177,7 +188,7 @@ namespace CodeCracker.CSharp.Style
         private static bool HasTypeCustomAddOperator(ITypeSymbol type)
         {
             var customAdditionOperators = type.GetMembers("op_Addition").OfType<IMethodSymbol>();
-            return customAdditionOperators.Any(ms => ms.IsStatic && ms.Parameters.Length == 2);
+            return customAdditionOperators.Any(ms => ms.MethodKind == MethodKind.UserDefinedOperator);
         }
     }
 }
