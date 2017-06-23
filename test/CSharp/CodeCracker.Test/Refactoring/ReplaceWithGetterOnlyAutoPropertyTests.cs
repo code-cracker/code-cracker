@@ -430,7 +430,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         [Fact]
         public async Task FieldWithSameNameInOtherClassIsNotRenamed()
         {
-            var test = @"
+            const string test = @"
             using System;
             namespace App {
                 public class C1 
@@ -455,7 +455,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
                     readonly int _A;
                 }
             }";
-            var fixtest = @"
+            const string fixtest = @"
             using System;
             namespace App {
                 public class C1 
@@ -510,7 +510,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         }
 
         [Fact]
-        public async Task FieldReferencesInPartialClassesGetNotRenamedAndCasueCompilerErrorCS0103()
+        public async Task FieldReferencesInPartialClassesGetRenamedIfInTheSameDocument()
         {
             const string test = @"
             namespace A
@@ -544,11 +544,10 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 }
                 public partial class A1
                 {
-                    public void Print() => Console.Write(_I);
+                    public void Print() => Console.Write(I);
                 }
             }";
-            //Console.Write(_I); causes CS0103 The name '_I' does not exist in the current context
-            await VerifyCSharpFixAsync(oldSource: test, newSource: fixtest, allowNewCompilerDiagnostics: true);
+            await VerifyCSharpFixAsync(oldSource: test, newSource: fixtest, allowNewCompilerDiagnostics: false);
         }
 
         [Fact]
@@ -600,5 +599,202 @@ namespace CodeCracker.Test.CSharp.Refactoring
             //Console.Write(_I); causes CS0103 The name '_I' does not exist in the current context
             await VerifyCSharpFixAllAsync(oldSources: new string[] { testPart1, testPart2 }, newSources: new string[] { fixtestPart1, fixtestPart2 }, allowNewCompilerDiagnostics: true);
         }
+
+        #region FixAll Tests
+
+        [Fact]
+        public async Task ReplaceMultiplePropertiesInOneClassFixAllTest()
+        {
+            var source1 = @"
+            readonly int _A;
+            readonly int _B;
+            readonly string _C;
+
+            public TypeName(int a, int b, string c)
+            {
+                _A=a;
+                _B=b;
+                _C=c;
+            }
+            public int A { get { return _A; } }
+            public int B { get { return _B; } }
+            public string C { get { return _C; } }
+            ".WrapInCSharpClass();
+            var fixtest1 = @"
+            public TypeName(int a, int b, string c)
+            {
+                A=a;
+                B=b;
+                C=c;
+            }
+            public int A { get; }
+            public int B { get; }
+            public string C { get; }
+            ".WrapInCSharpClass();
+            await VerifyCSharpFixAllAsync(new[] { source1 }, new[] { fixtest1 });
+        }
+
+        [Fact]
+        public async Task ReplaceMultiplePropertiesInOneClassInMultipleDocumentsFixAllTest()
+        {
+            const string source1 = @"
+            namespace A 
+            {
+                public class A1
+                {
+                    readonly int _A;
+                    readonly int _B;
+                    readonly string _C;
+                    public A1(int a, int b, string c)
+                    {
+                        _A=a;
+                        _B=b;
+                        _C=c;
+                    }
+                    public int A { get { return _A; } }
+                    public int B { get { return _B; } }
+                    public string C { get { return _C; } }
+                }
+            }";
+            const string source2 = @"
+            namespace A 
+            {
+                public class A2
+                {
+                    readonly int _A;
+                    readonly int _B;
+                    readonly string _C;
+                    public A2(int a, int b, string c)
+                    {
+                        _A=a;
+                        _B=b;
+                        _C=c;
+                    }
+                    public int A { get { return _A; } }
+                    public int B { get { return _B; } }
+                    public string C { get { return _C; } }
+                }
+            }";
+            const string source3 = @"
+            namespace B 
+            {
+                public class B1
+                {
+                    readonly int _A;
+                    readonly int _B;
+                    readonly string _C;
+                    public B1(int a, int b, string c)
+                    {
+                        _A=a;
+                        _B=b;
+                        _C=c;
+                    }
+                    public int A { get { return _A; } }
+                    public int B { get { return _B; } }
+                    public string C { get { return _C; } }
+                }
+            }";
+            const string fixtest1 = @"
+            namespace A 
+            {
+                public class A1
+                {
+                    public A1(int a, int b, string c)
+                    {
+                        A=a;
+                        B=b;
+                        C=c;
+                    }
+                    public int A { get; }
+                    public int B { get; }
+                    public string C { get; }
+                }
+            }";
+            const string fixtest2 = @"
+            namespace A 
+            {
+                public class A2
+                {
+                    public A2(int a, int b, string c)
+                    {
+                        A=a;
+                        B=b;
+                        C=c;
+                    }
+                    public int A { get; }
+                    public int B { get; }
+                    public string C { get; }
+                }
+            }";
+            const string fixtest3 = @"
+            namespace B 
+            {
+                public class B1
+                {
+                    public B1(int a, int b, string c)
+                    {
+                        A=a;
+                        B=b;
+                        C=c;
+                    }
+                    public int A { get; }
+                    public int B { get; }
+                    public string C { get; }
+                }
+            }";
+            await VerifyCSharpFixAllAsync(new[] { source1, source2, source3 }, new[] { fixtest1, fixtest2, fixtest3 });
+        }
+
+        [Fact]
+        public async Task ReplaceMultiplePropertiesInOneClassInMultipleDocumentsAndKeepExisitingDocumentsWithoutDiagnosticsFixAllTest()
+        {
+            const string source1 = @"
+            namespace A 
+            {
+                public class A1
+                {
+                    readonly int _A;
+                    readonly int _B;
+                    readonly string _C;
+                    public A1(int a, int b, string c)
+                    {
+                        _A=a;
+                        _B=b;
+                        _C=c;
+                    }
+                    public int A { get { return _A; } }
+                    public int B { get { return _B; } }
+                    public string C { get { return _C; } }
+                }
+            }";
+            const string source2 = @"
+            namespace A 
+            {
+                public class A2
+                {
+                    public A2()
+                    {
+                    }
+                }
+            }";
+            const string fixtest1 = @"
+            namespace A 
+            {
+                public class A1
+                {
+                    public A1(int a, int b, string c)
+                    {
+                        A=a;
+                        B=b;
+                        C=c;
+                    }
+                    public int A { get; }
+                    public int B { get; }
+                    public string C { get; }
+                }
+            }";
+            await VerifyCSharpFixAllAsync(new[] { source1, source2 }, new[] { fixtest1, source2 });
+        }
+        #endregion
     }
 }
