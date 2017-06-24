@@ -7,6 +7,19 @@ namespace CodeCracker.Test.CSharp.Style
 {
     public class UnnecessaryToStringInStringConcatenationTests : CodeFixVerifier<UnnecessaryToStringInStringConcatenationAnalyzer, UnnecessaryToStringInStringConcatenationCodeFixProvider>
     {
+        private static DiagnosticResult CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(int expectedRow, int expectedColumn)
+        {
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.UnnecessaryToStringInStringConcatenation.ToDiagnosticId(),
+                Message = "Unnecessary '.ToString()' call in string concatenation.",
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", expectedRow, expectedColumn) }
+            };
+
+            return expected;
+        }
+
         [Fact]
         public async Task InstantiatingAnObjectAndCallToStringInsideAStringConcatenationShouldGenerateDiagnosticResult()
         {
@@ -20,9 +33,9 @@ namespace CodeCracker.Test.CSharp.Style
         [Fact]
         public async Task InstantiatingAnStringBuilderAndCallToStringInsideAStringConcatenationShouldGenerateDiagnosticResult()
         {
-            const string source = @"var foo = ""a"" + new System.Text.StringBuilder().ToString();";
+            var source = @"var foo = ""a"" + new System.Text.StringBuilder().ToString();".WrapInCSharpMethod();
 
-            var expected = CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(1, 48);
+            var expected = CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(10, 64);
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -37,9 +50,9 @@ namespace CodeCracker.Test.CSharp.Style
     {
         class AuxClass
         {
-            public override void ToString()
+            public override string ToString()
             {
-                return ""Test""; 
+                return ""Test"";
             }
         }
 
@@ -51,7 +64,7 @@ namespace CodeCracker.Test.CSharp.Style
 
                 var bar = ""a"" + new AuxClass().ToString();
                 var foo = ""a"" + auxClass.ToString();
-                var far = ""a"" + new AuxClass().ToString() + auxClass.ToString() + new object().ToString(""C"");
+                var far = ""a"" + new AuxClass().ToString() + auxClass.ToString() + new int().ToString(""C"");
             }
         }
     }";
@@ -64,6 +77,35 @@ namespace CodeCracker.Test.CSharp.Style
             var expected = new DiagnosticResult[] { expected1, expected2, expected3, expected4 };
 
             await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task CallToStringOnStringExpressionsShouldGenerateDiagnosticResult()
+        {
+            const string test = @"var t1 = (true ? ""1"" : ""2"") + new object().ToString();";
+
+            var expected = CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(1, 43);
+
+            await VerifyCSharpDiagnosticAsync(test, expected);
+        }
+
+        [Fact]
+        public async Task CallToStringFollowedByACallToAStringMethodShouldNotGenerateDiagnosticResult()
+        {
+            const string source = @"var salary = ""salary: "" + 1000.ToString().Trim();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task CallToLambdaNamedToStringShouldNotGenerateDiagnosticResult()
+        {
+            var source = @"
+            Func<string> ToString = () => ""Dummy"";
+            var t = 1 + ToString();
+            ".WrapInCSharpMethod();
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
@@ -83,18 +125,120 @@ namespace CodeCracker.Test.CSharp.Style
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
-
-        private static DiagnosticResult CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(int expectedRow, int expectedColumn)
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_RightSide()
         {
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UnnecessaryToStringInStringConcatenation.ToDiagnosticId(),
-                Message = "Unnecessary '.ToString()' call in string concatenation.",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", expectedRow, expectedColumn) }
-            };
+            const string source = @"var value = 1 + 2.ToString();";
 
-            return expected;
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_LeftSide()
+        {
+            const string source = @"var value = 2.ToString() + 1;";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_WithExpression()
+        {
+            const string source = @"var value = (1 + 1) + 2.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_Double()
+        {
+            const string source = @"var value = (true ? 1.1 : 0.99) + 2.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_NumericAddition_DateTime()
+        {
+            const string source = @"var value = new System.DateTime(2000, 1, 1) + 2.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_CompilerGeneratedEnumOperator()
+        {
+            const string source = @"var value = System.AttributeTargets.Assembly + System.AttributeTargets.Module.ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_UnderlyingTypeDoesntHaveAddOperatorOverload()
+        {
+            const string source = @"var value = new System.Random() + new System.Random().ToString();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_UserDefinedOperator()
+        {
+            const string source = @"
+    namespace A
+    {
+        public class C1
+        {
+            public static string operator +(C1 c, object o) => ""Dummy"";
+        }
+
+        public class C2
+        {
+            public void M()
+            {
+                var t = new C1().ToString() + ""a"";
+            }
+        }
+    }
+";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfOtherOverloadsTakePrecedence_DelegateCombination()
+        {
+            var source = @"
+            var ea1 = new System.EventHandler((o, e) => { });
+            var ea2 = new System.EventHandler((o, e) => { });
+            var t = ea1 + ea2.ToString();
+            ".WrapInCSharpMethod();
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfTheTypesOfTheOperationAreNotResovable_ToStringReceiver()
+        {
+            const string source = @"var t = new UndefinedType().ToString() + ""a""";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfTheTypesOfTheOperationAreNotResovable_OtherSide()
+        {
+            const string source = @"var t = 1.ToString() + new UndefinedType();";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task AStringConcatinationShouldNotBeRemovedIfTheTypesOfTheOperationAreNotResovable_SyntaxError()
+        {
+            const string source = @"var t = new System.Random().ToString() + new ThisIsAnSyntaxError";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
         [Fact]
