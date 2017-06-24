@@ -215,6 +215,51 @@ namespace CodeCracker.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Consider introduce field for constructor parameters. ähnelt.
+        /// </summary>
+        public static string IntroduceFieldFromConstructorAnalyzer_Description {
+            get {
+                return ResourceManager.GetString("IntroduceFieldFromConstructorAnalyzer_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Introduce a field for parameter: {0} ähnelt.
+        /// </summary>
+        public static string IntroduceFieldFromConstructorAnalyzer_MessageFormat {
+            get {
+                return ResourceManager.GetString("IntroduceFieldFromConstructorAnalyzer_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Consider introduce field for constructor parameters. ähnelt.
+        /// </summary>
+        public static string IntroduceFieldFromConstructorAnalyzer_Title {
+            get {
+                return ResourceManager.GetString("IntroduceFieldFromConstructorAnalyzer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Introduce field: {0} from constructor. ähnelt.
+        /// </summary>
+        public static string IntroduceFieldFromConstructorCodeFixProvider_MessageFormat {
+            get {
+                return ResourceManager.GetString("IntroduceFieldFromConstructorCodeFixProvider_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Introduce fields for constructor parameters. ähnelt.
+        /// </summary>
+        public static string IntroduceFieldFromConstructorCodeFixProvider_Title {
+            get {
+                return ResourceManager.GetString("IntroduceFieldFromConstructorCodeFixProvider_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Make method non async ähnelt.
         /// </summary>
         public static string MakeMethodNonAsyncCodeFixProvider_Title {
