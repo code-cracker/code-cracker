@@ -62,7 +62,7 @@ namespace CodeCracker.CSharp.Design
 
         private static bool HasCheckForNullThatReturns(InvocationExpressionSyntax invocation, SemanticModel semanticModel, ISymbol symbol)
         {
-            var method = invocation.FirstAncestorOfKind(SyntaxKind.MethodDeclaration) as MethodDeclarationSyntax;
+            var method = invocation.FirstAncestorOfKind(SyntaxKind.MethodDeclaration, SyntaxKind.ConstructorDeclaration) as BaseMethodDeclarationSyntax;
             if (method != null && method.Body != null)
             {
                 var ifs = method.Body.Statements.OfKind(SyntaxKind.IfStatement);
