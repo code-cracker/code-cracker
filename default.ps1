@@ -38,6 +38,10 @@ Properties {
     $isRelease = $isAppVeyor -and (($env:APPVEYOR_REPO_BRANCH -eq "release") -or ($env:APPVEYOR_REPO_TAG -eq "true"))
     $isPullRequest = $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null
     $tempDir = Join-Path "$([System.IO.Path]::GetTempPath())" "CodeCracker"
+    # msbuild hack necessary until https://github.com/psake/psake/issues/201 is fixed:
+    $msbuild64 = Resolve-Path "$(if (${env:ProgramFiles(x86)}) { ${env:ProgramFiles(x86)} } else { $env:ProgramFiles } )\Microsoft Visual Studio\2017\*\MSBuild\15.0\Bin\msbuild.exe"
+    $msbuild32 = Resolve-Path "$(if (${env:ProgramFiles(x86)}) { ${env:ProgramFiles(x86)} } else { $env:ProgramFiles } )\Microsoft Visual Studio\2017\*\MSBuild\15.0\Bin\msbuild.exe"
+    $msbuild = if ($msbuild64) { $msbuild64 } else { $msbuild32 }
 }
 
 FormatTaskName (("-"*25) + "[{0}]" + ("-"*25))
@@ -62,17 +66,17 @@ Task Build-Only -depends Build-Only-CS, Build-Only-VB
 Task Build-Only-CS -depends Build-MSBuild-CS, ILMerge-CS
 Task Build-MSBuild-CS {
     if ($isAppVeyor) {
-        Exec { msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=ReleaseNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
+        Exec { . $msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=ReleaseNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
     } else {
-        Exec { msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=ReleaseNoVsix }
+        Exec { . $msbuild $solutionFileCS /m /verbosity:minimal /p:Configuration=ReleaseNoVsix }
     }
 }
 Task Build-Only-VB -depends Build-MSBuild-VB, ILMerge-VB
 Task Build-MSBuild-VB {
     if ($isAppVeyor) {
-        Exec { msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=ReleaseNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
+        Exec { . $msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=ReleaseNoVsix /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" }
     } else {
-        Exec { msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=ReleaseNoVsix }
+        Exec { . $msbuild $solutionFileVB /m /verbosity:minimal /p:Configuration=ReleaseNoVsix }
     }
 }
 
@@ -120,8 +124,8 @@ function Change-Extension ($filename, $extension) {
 }
 
 Task Clean {
-    Exec { msbuild $solutionFileCS /t:Clean /v:quiet }
-    Exec { msbuild $solutionFileVB /t:Clean /v:quiet }
+    Exec { . $msbuild $solutionFileCS /t:Clean /v:quiet }
+    Exec { . $msbuild $solutionFileVB /t:Clean /v:quiet }
 }
 
 Task Set-Log {
