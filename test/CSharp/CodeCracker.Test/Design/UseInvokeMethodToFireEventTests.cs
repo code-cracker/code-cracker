@@ -1137,5 +1137,22 @@ public class Foo
 }";
             await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpClass());
         }
+
+        [Fact]
+        public async void IgnoreIfInConstructorAndThatCheckedForNotNull()
+        {
+            //https://github.com/code-cracker/code-cracker/issues/926
+            const string test = @"
+public class Foo
+{
+    public Foo(System.Action action)
+    {
+        if (action == null)
+            throw new System.ArgumentNullException();
+        action();
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(test.WrapInCSharpClass());
+        }
     }
 }
