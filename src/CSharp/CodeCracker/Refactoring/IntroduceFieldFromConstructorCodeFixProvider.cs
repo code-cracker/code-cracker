@@ -1,3 +1,5 @@
+using CodeCracker.FixAllProviders;
+using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -14,12 +16,14 @@ using System.Threading.Tasks;
 namespace CodeCracker.CSharp.Refactoring
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(IntroduceFieldFromConstructorCodeFixProvider)), Shared]
-    public class IntroduceFieldFromConstructorCodeFixProvider : CodeFixProvider
+    public sealed class IntroduceFieldFromConstructorCodeFixProvider : CodeFixProvider, IFixDocumentInternalsOnly
     {
-        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.IntroduceFieldFromConstructor.ToDiagnosticId());
-        public readonly static string MessageFormat = "Introduce field: {0} from constructor.";
+        private static readonly FixAllProvider FixAllProvider = new DocumentCodeFixProviderAll(Resources.IntroduceFieldFromConstructorCodeFixProvider_Title);
+        private static readonly string MessageFormat = Resources.IntroduceFieldFromConstructorCodeFixProvider_MessageFormat;
 
-        public sealed override FixAllProvider GetFixAllProvider() => IntroduceFieldFromConstructorCodeFixAllProvider.Instance;
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.IntroduceFieldFromConstructor.ToDiagnosticId());
+
+        public sealed override FixAllProvider GetFixAllProvider() => FixAllProvider;
 
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -29,15 +33,22 @@ namespace CodeCracker.CSharp.Refactoring
             return Task.FromResult(0);
         }
 
-        public async static Task<Document> IntroduceFieldFromConstructorDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        public async Task<Document> FixDocumentAsync(SyntaxNode nodeWithDiagnostic, Document document, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var parameter = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ParameterSyntax>().First();
-            var constructor = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
+            var parameter = nodeWithDiagnostic.AncestorsAndSelf().OfType<ParameterSyntax>().First();
+            var constructor = nodeWithDiagnostic.AncestorsAndSelf().OfType<ConstructorDeclarationSyntax>().First();
             var newRoot = IntroduceFieldFromConstructor(root, constructor, parameter);
             var newDocument = document.WithSyntaxRoot(newRoot);
             return document.WithSyntaxRoot(newRoot);
+        }
+
+        public async Task<Document> IntroduceFieldFromConstructorDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var nodeWithDiagnostic = root.FindToken(diagnosticSpan.Start).Parent;
+            return await FixDocumentAsync(nodeWithDiagnostic, document, cancellationToken);
         }
 
         public static SyntaxNode IntroduceFieldFromConstructor(SyntaxNode root, ConstructorDeclarationSyntax constructorStatement, ParameterSyntax parameter)

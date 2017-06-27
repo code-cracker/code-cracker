@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeCracker.Properties;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -11,10 +12,10 @@ namespace CodeCracker.CSharp.Refactoring
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IntroduceFieldFromConstructorAnalyzer : DiagnosticAnalyzer
     {
-        internal const string Title = "Consider introduce field for constructor parameters.";
-        internal const string MessageFormat = "Introduce a field for parameter: {0}";
         internal const string Category = SupportedCategories.Refactoring;
-        const string Description = "Consider introduce field for constructor parameters.";
+        internal static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.IntroduceFieldFromConstructorAnalyzer_Title), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.IntroduceFieldFromConstructorAnalyzer_Description), Resources.ResourceManager, typeof(Resources));
+        internal static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.IntroduceFieldFromConstructorAnalyzer_MessageFormat), Resources.ResourceManager, typeof(Resources));
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.IntroduceFieldFromConstructor.ToDiagnosticId(),
