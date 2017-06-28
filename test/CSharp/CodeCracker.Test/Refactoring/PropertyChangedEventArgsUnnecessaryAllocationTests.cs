@@ -1,16 +1,166 @@
 ﻿using CodeCracker.CSharp.Refactoring;
+using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Refactoring
 {
-    public class PropertyChangedEventArgsUnnecessaryAllocationCodeFixProviderTests :
-            CodeFixVerifier
-                <PropertyChangedEventArgsUnnecessaryAllocationAnalyzer,
-                    PropertyChangedEventArgsUnnecessaryAllocationCodeFixProvider>
+    public class PropertyChangedEventArgsUnnecessaryAllocationTests : CodeFixVerifier <PropertyChangedEventArgsUnnecessaryAllocationAnalyzer, PropertyChangedEventArgsUnnecessaryAllocationCodeFixProvider>
     {
-        public static IEnumerable<object[]> SharedData
+        public static IEnumerable<object[]> SharedDataAnalyzer
+        {
+            get
+            {
+                yield return new[] { "\"Name\"" };
+                yield return new[] { "nameof(Name)" };
+                yield return new[] { "null" };
+            }
+        }
+
+        [Fact]
+        public async Task DoesNotTriggerDiagnosticWithEmptySourceCodeAsync()
+        {
+            const string source = @"";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Theory]
+        [MemberData(nameof(SharedDataAnalyzer))]
+        public async Task DoesTriggerDiagnosticAtPropertyChangedEventArgsInstanceCreation(string ctorArg)
+        {
+            var source = $"var args = new PropertyChangedEventArgs({ctorArg})";
+
+            await VerifyCSharpDiagnosticAsync(source, PropertyChangedUnnecessaryAllocationDiagnostic(0, 12));
+        }
+
+        [Theory]
+        [MemberData(nameof(SharedDataAnalyzer))]
+        public async Task DoesTriggerDiagnosticAtPropertyChangedEventArgsInstanceCreationInMethodInvocation(string ctorArg)
+        {
+            var source = $@"
+public class Test
+{{
+    public void TestMethod()
+    {{
+        PropertyChanged(new PropertyChangedEventArgs({ctorArg}))
+    }}
+}}";
+
+            await VerifyCSharpDiagnosticAsync(source, PropertyChangedUnnecessaryAllocationDiagnostic(6, 25));
+        }
+
+        [Theory]
+        [MemberData(nameof(SharedDataAnalyzer))]
+        public async Task DoesTriggerDiagnosticAtPropertyChangedEventArgsInstanceCreationInObjectInitializer(string ctorArg)
+        {
+            var source = $"object args = new {{ Name = new PropertyChangedEventArgs({ctorArg}) }}";
+
+            await VerifyCSharpDiagnosticAsync(source, PropertyChangedUnnecessaryAllocationDiagnostic(0, 28));
+        }
+
+        [Theory]
+        [MemberData(nameof(SharedDataAnalyzer))]
+        public async Task DoesNotTriggerDiagnosticAtPropertyChangedEventArgsInstanceCreationInFieldAssignmentWhenFieldIsStatic(string ctorArg)
+        {
+            var source = $@"
+public class Test
+{{
+    private static PropertyChangedEventArgs field = new PropertyChangedEventArgs({ctorArg});
+}}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task DoesNotTriggerDiagnosticAtPropertyChangedEventArgsInstanceCreationInStaticConstructor()
+        {
+            const string source = @"
+public class Test
+{
+    private static PropertyChangedEventArgs field;
+
+    static Test()
+    {
+        field = new PropertyChangedEventArgs(""Name"");
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task DoesNotTriggerDiagnosticAtObjectInstanceCreation()
+        {
+            const string source = @"
+public class Test
+{
+    private object field = new object();
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task DoesTriggerDiagnosticAtObjectInstanceCreationUsingQualifiedName()
+        {
+            const string source = @"
+public class Test
+{
+    private object field = new System.ComponentModel.PropertyChangedEventArgs(null);
+}";
+
+            await VerifyCSharpDiagnosticAsync(source, PropertyChangedUnnecessaryAllocationDiagnostic(4, 28));
+        }
+
+        [Theory]
+        [MemberData(nameof(SharedDataAnalyzer))]
+        public async Task DoesTriggerDiagnosticInLambdaExpression(string ctorArg)
+        {
+            var source = $@"
+using System;
+using System.ComponentModel;
+public class Test
+{{
+    private PropertyChangedEventArgs field;
+
+    public Test()
+    {{
+        Action action = () => field = new PropertyChangedEventArgs({ctorArg});
+    }}
+}}";
+
+            await VerifyCSharpDiagnosticAsync(source, PropertyChangedUnnecessaryAllocationDiagnostic(10, 39));
+        }
+
+        [Fact]
+        public async Task DoesNotTriggerWhenArgumentIsNotLiteral()
+        {
+            var source = $@"
+public class Test
+{{
+    public void TestMethod(string propertyName)
+    {{
+        PropertyChanged(new PropertyChangedEventArgs(propertyName))
+    }}
+}}";
+
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        public static DiagnosticResult PropertyChangedUnnecessaryAllocationDiagnostic(int line, int column)
+        {
+            return new DiagnosticResult
+            {
+                Id = DiagnosticId.PropertyChangedEventArgsUnnecessaryAllocation.ToDiagnosticId(),
+                Message = "Create PropertyChangedEventArgs static instance and reuse it to avoid unecessary memory allocation.",
+                Severity = DiagnosticSeverity.Hidden,
+                Locations = new[]
+                {
+                    new DiagnosticResultLocation("Test0.cs", line, column),
+                }
+            };
+        }
+
+        public static IEnumerable<object[]> SharedDataCodeFix
         {
             get
             {
@@ -23,7 +173,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         }
 
         [Theory]
-        [MemberData(nameof(SharedData))]
+        [MemberData(nameof(SharedDataCodeFix))]
         public async Task ChangesPropertyChangedEventArgsInstanceToUseStaticField(string ctorArg, string fieldSuffix)
         {
             var source = $@"
@@ -56,7 +206,7 @@ public class TestClass
         }
 
         [Theory]
-        [MemberData(nameof(SharedData))]
+        [MemberData(nameof(SharedDataCodeFix))]
         public async Task DoesFixWhenEventArgsUsedInMethodInvocation(string ctorArg, string fieldSuffix)
         {
             var source = $@"
@@ -93,7 +243,7 @@ public class TestClass
         }
 
         [Theory]
-        [MemberData(nameof(SharedData))]
+        [MemberData(nameof(SharedDataCodeFix))]
         public async Task HandlesMultipleClassDeclarations(string ctorArg, string fieldSuffix)
         {
             var source = $@"
@@ -134,7 +284,7 @@ public class TestClass2
         }
 
         [Theory]
-        [MemberData(nameof(SharedData))]
+        [MemberData(nameof(SharedDataCodeFix))]
         public async Task DoesFixWhenQualifiedNameUsed(string ctorArg, string fieldSuffix)
         {
             var source = $@"
@@ -165,7 +315,7 @@ public class TestClass
         }
 
         [Theory]
-        [MemberData(nameof(SharedData))]
+        [MemberData(nameof(SharedDataCodeFix))]
         public async Task DoesFixWhenEventArgsCreatedInField(string ctorArg, string fieldSuffix)
         {
             var source = $@"
@@ -187,7 +337,7 @@ public class TestClass
         }
 
         [Theory]
-        [MemberData(nameof(SharedData))]
+        [MemberData(nameof(SharedDataCodeFix))]
         public async Task DoesFixWhenEventArgsCreatedInObjectInitializer(string ctorArg, string fieldSuffix)
         {
             var source = $@"
@@ -220,7 +370,7 @@ public class TestClass
         }
 
         [Theory]
-        [MemberData(nameof(SharedData))]
+        [MemberData(nameof(SharedDataCodeFix))]
         public async Task HandlesNestedClass(string ctorArg, string fieldSuffix)
         {
             var source = $@"
@@ -248,7 +398,7 @@ public class OuterClass
         }
 
         [Theory]
-        [MemberData(nameof(SharedData))]
+        [MemberData(nameof(SharedDataCodeFix))]
         public async Task DoesFixLambdaExpression(string ctorArg, string fieldSuffix)
         {
             var source = $@"
@@ -282,7 +432,7 @@ public class Test
         }
 
         [Theory]
-        [MemberData(nameof(SharedData))]
+        [MemberData(nameof(SharedDataCodeFix))]
         public async Task DoesFixWhenFieldNameIsAlreadyUsed(string ctorArg, string fieldSuffix)
         {
             var source = $@"

@@ -1,11 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Collections.Generic;
-using System.Composition;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-using CodeCracker.Properties;
+﻿using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -13,7 +6,12 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
-
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Composition;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace CodeCracker.CSharp.Refactoring
@@ -31,35 +29,32 @@ namespace CodeCracker.CSharp.Refactoring
             var diagnostic = context.Diagnostics.First();
             context.RegisterCodeFix(
                 CodeAction.Create(CodeActionTitle.ToString(),
-                    token => ChangePropertyChangedEventArgsToStatic(context.Document, diagnostic.Location, diagnostic.Properties, token),
+                    token => ChangePropertyChangedEventArgsToStaticAsync(context.Document, diagnostic.Location, diagnostic.Properties, token),
                     nameof(PropertyChangedEventArgsUnnecessaryAllocationCodeFixProvider)), diagnostic);
 
             return Task.FromResult(true);
         }
 
-        private static async Task<Document> ChangePropertyChangedEventArgsToStatic(Document document, Location location,
+        private static async Task<Document> ChangePropertyChangedEventArgsToStaticAsync(Document document, Location location,
             ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
         {
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken);
             var data = PropertyChangedEventArgsAnalyzerData.FromDiagnosticProperties(properties);
-
             var newSyntaxRoot = new PropertyChangedUnnecessaryAllocationRewriter(data, location.SourceSpan).Visit(syntaxRoot);
-
             return document.WithSyntaxRoot(newSyntaxRoot);
         }
 
         private class PropertyChangedUnnecessaryAllocationRewriter : CSharpSyntaxRewriter
         {
-            private readonly PropertyChangedEventArgsAnalyzerData ContextData;
-            private readonly TextSpan DiagnosticLocation;
-
-            private bool DiagnosticLocationFound = false;
+            private readonly PropertyChangedEventArgsAnalyzerData contextData;
+            private readonly TextSpan diagnosticLocation;
+            private bool diagnosticLocationFound;
             private IEnumerable<string> nameHints;
 
             public PropertyChangedUnnecessaryAllocationRewriter(PropertyChangedEventArgsAnalyzerData contextData, TextSpan diagnosticLocation)
             {
-                this.ContextData = contextData;
-                this.DiagnosticLocation = diagnosticLocation;
+                this.contextData = contextData;
+                this.diagnosticLocation = diagnosticLocation;
             }
 
             public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
@@ -68,18 +63,18 @@ namespace CodeCracker.CSharp.Refactoring
                                 .SelectMany(fd => fd.Declaration.Variables.Select(vds => vds.Identifier.ValueText));
 
                 var traverseResult = base.VisitClassDeclaration(node) as ClassDeclarationSyntax;
-                var result = DiagnosticLocationFound ? AddPropertyChangedEventArgsStaticField(traverseResult, nameHints ?? Enumerable.Empty<string>()) : traverseResult;
-                DiagnosticLocationFound = false;
+                var result = diagnosticLocationFound ? AddPropertyChangedEventArgsStaticField(traverseResult, nameHints ?? Enumerable.Empty<string>()) : traverseResult;
+                diagnosticLocationFound = false;
                 return result;
             }
 
             public override SyntaxNode VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
             {
-                if(node.Span == DiagnosticLocation)
+                if(node.Span == diagnosticLocation)
                 {
-                    DiagnosticLocationFound = true;
+                    diagnosticLocationFound = true;
 
-                    return ParseExpression(ContextData.StaticFieldIdentifierName(nameHints ?? Enumerable.Empty<string>()))
+                    return ParseExpression(contextData.StaticFieldIdentifierName(nameHints ?? Enumerable.Empty<string>()))
                         .WithLeadingTrivia(node.GetLeadingTrivia())
                         .WithTrailingTrivia(node.GetTrailingTrivia());
                 }
@@ -87,7 +82,7 @@ namespace CodeCracker.CSharp.Refactoring
             }
 
             private ClassDeclarationSyntax AddPropertyChangedEventArgsStaticField(ClassDeclarationSyntax declaration, IEnumerable<string> nameHints) => declaration
-                .WithMembers(declaration.Members.Insert(0, ContextData.PropertyChangedEventArgsStaticField(nameHints).WithAdditionalAnnotations(Formatter.Annotation)));
+                .WithMembers(declaration.Members.Insert(0, contextData.PropertyChangedEventArgsStaticField(nameHints).WithAdditionalAnnotations(Formatter.Annotation)));
         }
     }
 }

@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using CodeCracker.Properties;
+﻿using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFacts;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFacts;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxKind;
 
 namespace CodeCracker.CSharp.Refactoring
@@ -49,7 +47,7 @@ namespace CodeCracker.CSharp.Refactoring
 
         private static void PropertyChangedCreation(SyntaxNodeAnalysisContext context)
         {
-            var propertyChangedEventArgsCreationExpr = (ObjectCreationExpressionSyntax) context.Node;
+            var propertyChangedEventArgsCreationExpr = (ObjectCreationExpressionSyntax)context.Node;
             var identifier = propertyChangedEventArgsCreationExpr.Type.Accept(ExtractIdentifier);
             if (ShouldReportDiagnostic(propertyChangedEventArgsCreationExpr, identifier.ValueText))
             {
@@ -59,14 +57,12 @@ namespace CodeCracker.CSharp.Refactoring
             }
         }
 
-        private static bool ShouldReportDiagnostic(ObjectCreationExpressionSyntax propertyChangedExpr,
-            string identifierName) =>
+        private static bool ShouldReportDiagnostic(ObjectCreationExpressionSyntax propertyChangedExpr, string identifierName) =>
                 IsPropertyChangedEventArgs(identifierName)
                 && propertyChangedExpr.ArgumentList.Accept(IsAnyArgumentLiteralOrNameof)
                 && !IsAlreadyStatic(propertyChangedExpr);
 
-        private static bool IsPropertyChangedEventArgs(string s)
-            => string.Equals(PropertyChangedEventArgsClassName, s, StringComparison.Ordinal);
+        private static bool IsPropertyChangedEventArgs(string s) => string.Equals(PropertyChangedEventArgsClassName, s, StringComparison.Ordinal);
 
         private static bool IsAlreadyStatic(ObjectCreationExpressionSyntax objectCreationExpr)
         {
@@ -75,7 +71,7 @@ namespace CodeCracker.CSharp.Refactoring
             switch (memberForObjectCreationExpr.Kind())
             {
                 case SyntaxKind.ConstructorDeclaration:
-                    var constructorDeclaration = (ConstructorDeclarationSyntax) memberForObjectCreationExpr;
+                    var constructorDeclaration = (ConstructorDeclarationSyntax)memberForObjectCreationExpr;
                     result = ContainsStaticModifier(constructorDeclaration.Modifiers);
                     break;
                 case SyntaxKind.FieldDeclaration:
@@ -123,31 +119,27 @@ namespace CodeCracker.CSharp.Refactoring
 
         private PropertyChangedEventArgsAnalyzerData(string fullTypeName, string argumentName, string isNullLiteral, string isNameof)
         {
-            this.FullTypeName = fullTypeName;
-            this.ArgumentName = argumentName ?? string.Empty;
-            this.ArgumentIsNullLiteral = bool.Parse(isNullLiteral);
-            this.ArgumentIsNameofExpression = bool.Parse(isNameof);
+            FullTypeName = fullTypeName;
+            ArgumentName = argumentName ?? string.Empty;
+            ArgumentIsNullLiteral = bool.Parse(isNullLiteral);
+            ArgumentIsNameofExpression = bool.Parse(isNameof);
 
-            this.StaticFieldIdentifierNameProposition = $"PropertyChangedEventArgsFor{SuffixForStaticInstance()}";
+            StaticFieldIdentifierNameProposition = $"PropertyChangedEventArgsFor{SuffixForStaticInstance()}";
         }
 
         public PropertyChangedEventArgsAnalyzerData(ObjectCreationExpressionSyntax propertyChangedInstanceCreationExpr)
         {
             if (propertyChangedInstanceCreationExpr == null)
-            {
                 throw new ArgumentNullException(nameof(propertyChangedInstanceCreationExpr));
-            }
-
             var analyzer = new PropertyChangedCreationSyntaxAnalyzer();
             propertyChangedInstanceCreationExpr.ArgumentList.Accept(analyzer);
-
-            this.FullTypeName = propertyChangedInstanceCreationExpr.Type.ToString();
-            this.ArgumentName = analyzer.IdentifierName;
-            this.ArgumentIsNullLiteral = analyzer.NullLiteralExpressionFound;
-            this.ArgumentIsNameofExpression = analyzer.NameofExpressionFound;
+            FullTypeName = propertyChangedInstanceCreationExpr.Type.ToString();
+            ArgumentName = analyzer.IdentifierName;
+            ArgumentIsNullLiteral = analyzer.NullLiteralExpressionFound;
+            ArgumentIsNameofExpression = analyzer.NameofExpressionFound;
         }
 
-        public string StaticFieldIdentifierName(IEnumerable<string> nameHints) => nameHints.Contains(StaticFieldIdentifierNameProposition) ? 
+        public string StaticFieldIdentifierName(IEnumerable<string> nameHints) => nameHints.Contains(StaticFieldIdentifierNameProposition) ?
                                                                                     CreateNewIdenfitierName(StaticFieldIdentifierNameProposition, 1, nameHints) : StaticFieldIdentifierNameProposition;
 
         public MemberDeclarationSyntax PropertyChangedEventArgsStaticField(IEnumerable<string> nameHints)
@@ -215,8 +207,8 @@ namespace CodeCracker.CSharp.Refactoring
         private static string CreateNewIdenfitierName(string oldName, int extension, IEnumerable<string> nameHints)
         {
             var number = int.Parse(new string(oldName.ToCharArray().Reverse().TakeWhile(char.IsNumber).DefaultIfEmpty('0').ToArray()));
-            var proposition = $"{oldName}{number+extension}";
-            return nameHints.Contains(proposition) ? CreateNewIdenfitierName(oldName, extension+1, nameHints) : proposition;
+            var proposition = $"{oldName}{number + extension}";
+            return nameHints.Contains(proposition) ? CreateNewIdenfitierName(oldName, extension + 1, nameHints) : proposition;
         }
 
         private class PropertyChangedCreationSyntaxAnalyzer : CSharpSyntaxWalker
