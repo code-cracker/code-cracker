@@ -52,7 +52,7 @@ namespace CodeCracker.CSharp.Style
             }
         }
 
-        readonly CSharpParseOptions options = new CSharpParseOptions(documentationMode: DocumentationMode.None);//todo:bring kind: SourceCodeKind.Interactive back, it is not supported at the current release
+        readonly CSharpParseOptions options = new CSharpParseOptions(documentationMode: DocumentationMode.None, kind: SourceCodeKind.Script);
         bool CouldBeSourceCode(string source)
         {
             source = source.Trim();
