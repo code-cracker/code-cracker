@@ -43,7 +43,7 @@ namespace CodeCracker.CSharp.Usage
             if (catchClause == null) return;
             var catchExSymbol = context.SemanticModel.GetDeclaredSymbol(catchClause.Declaration);
             if (!catchExSymbol.Equals(exSymbol)) return;
-            var diagnostic = Diagnostic.Create(Rule, throwStatement.GetLocation(), "Throwing the same exception that was caught will loose the original stack trace.");
+            var diagnostic = Diagnostic.Create(Rule, throwStatement.GetLocation(), "Throwing the same exception that was caught will lose the original stack trace.");
             context.ReportDiagnostic(diagnostic);
         }
     }
