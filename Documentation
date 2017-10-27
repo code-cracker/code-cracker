@@ -1,0 +1,40 @@
+Code Cracker
+
+An analyzer library for C# and VB that uses Roslyn to produce refactorings, code analysis, and other niceties.
+
+Check the official project site on code-cracker.github.io. There you will find information on how to contribute, our task board, definition of done, definition of ready, etc.
+
+Build status Nuget count License Issues open Coverage Status Source Browser
+
+This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this software, nor it will be. Ever.
+
+Installing
+
+You may use CodeCracker in two ways: as an analyzer library that you install with Nuget into your project or as a Visual Studio extension. The way you want to use it depends on the scenario you are working on. You most likely want the Nuget package.
+
+If you want the analyzers to work during your build, and generate warnings and errors during the build, also on build servers, then you want to use the Nuget package. The package is available on nuget (C#, VB). If you want to be able to configure which analyzers are being used in your project, and which ones you will ignore, and commit those changes to source control and share with your team, then you also want the Nuget package.
+
+To install from Nuget, for the C# version:
+
+Install-Package CodeCracker.CSharp
+Or for the Visual Basic version:
+
+Install-Package CodeCracker.VisualBasic
+Or use the Package Manager in Visual Studio.
+
+There is also a version for both named CodeCracker only, but it makes not sense to get it, you should search for the C# or VB version.
+
+If you want the alpha builds that build on each push to the repo, add https://www.myget.org/F/codecrackerbuild/ to your nuget feed. We only push complete releases to Nuget.org, and commit builds go to Myget.org.
+
+If you want global analyzers that will work on every project you open in Visual Studio, then you want the Extension. Grab the extension at the Visual Studio Extensions Gallery (C#, VB).
+
+To build from source:
+
+git clone https://github.com/code-cracker/code-cracker.git
+cd CodeCracker
+msbuild
+Then add a reference to CodeCracker.dll from within the Analyzers node inside References, in Visual Studio.
+
+SonarQube Plugin
+
+CodeCracker has a SonarQube Plugin that can downloaded at Plugins HomePage.
