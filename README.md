@@ -272,7 +272,7 @@ The maintainers have to:
 
 To become part of the core team one has to be invited. Invitations happen only if all the core team agrees.
 
-If a member of the core team is not active for at least to months, they will probably be removed from the core team.
+If a member of the core team is not active for at least two months, they will probably be removed from the core team.
 
 ## Contact
 
