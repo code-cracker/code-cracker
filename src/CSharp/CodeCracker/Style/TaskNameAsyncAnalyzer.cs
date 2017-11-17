@@ -7,6 +7,10 @@ using System.Linq;
 
 namespace CodeCracker.CSharp.Style
 {
+
+
+
+
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TaskNameAsyncAnalyzer : DiagnosticAnalyzer
     {
@@ -32,7 +36,14 @@ namespace CodeCracker.CSharp.Style
         private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
         {
             if (context.IsGenerated()) return;
+
             var method = (MethodDeclarationSyntax)context.Node;
+
+            //for teste
+            var semanticModel = context.SemanticModel;
+            if (method.IsImplementingInterface(semanticModel)) return;
+
+
             if (method.Identifier.ToString().EndsWith("Async")) return;
             if (method.Modifiers.Any(SyntaxKind.NewKeyword, SyntaxKind.OverrideKeyword)) return;
 
@@ -44,7 +55,7 @@ namespace CodeCracker.CSharp.Style
                 context.ReportDiagnostic(diag);
                 return;
             }
-            var semanticModel = context.SemanticModel;
+            semanticModel = context.SemanticModel;
             var returnType = semanticModel.GetSymbolInfo(method.ReturnType).Symbol as INamedTypeSymbol;
             if (returnType == null) return;
 
