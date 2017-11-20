@@ -7,9 +7,8 @@ namespace CodeCracker.Test.CSharp.Style
 {
     public class TaskNameAsyncTests : CodeFixVerifier<TaskNameAsyncAnalyzer, TaskNameAsyncCodeFixProvider>
     {
-
         [Fact]
-        public async Task TaskNameAsyncMethodEqualsInterface()
+        public async Task TaskNameAsyncMethodEqualsNameMethodInterface()
         {
             const string source = @"
             using System.Threading.Tasks;
@@ -38,8 +37,7 @@ namespace CodeCracker.Test.CSharp.Style
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
-
-
+        
         [Fact]
         public async Task TaskNameAsyncMethodCorrect()
         {
