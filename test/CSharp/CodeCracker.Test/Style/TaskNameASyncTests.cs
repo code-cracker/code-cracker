@@ -26,7 +26,6 @@ namespace CodeCracker.Test.CSharp.Style
                     { }
                 }
             }";
-
             var expected = new DiagnosticResult
             {
                 Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
@@ -37,7 +36,7 @@ namespace CodeCracker.Test.CSharp.Style
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
-        
+
         [Fact]
         public async Task TaskNameAsyncMethodCorrect()
         {
