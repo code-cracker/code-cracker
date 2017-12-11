@@ -8,6 +8,36 @@ namespace CodeCracker.Test.CSharp.Style
     public class TaskNameAsyncTests : CodeFixVerifier<TaskNameAsyncAnalyzer, TaskNameAsyncCodeFixProvider>
     {
         [Fact]
+        public async Task TaskNameAsyncMethodEqualsNameMethodInterface()
+        {
+            const string source = @"
+            using System.Threading.Tasks;
+
+            namespace ConsoleApplication1
+            {
+                public interface IBar
+                {
+                    Task Foo();
+                }
+
+                public class Bar : IBar
+                {
+                    public Task Foo()
+                    { }
+                }
+            }";
+            var expected = new DiagnosticResult
+            {
+                Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
+                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat, "FooAsync"),
+                Severity = DiagnosticSeverity.Info,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 26) }
+            };
+
+            await VerifyCSharpDiagnosticAsync(source, expected);
+        }
+
+        [Fact]
         public async Task TaskNameAsyncMethodCorrect()
         {
             const string source = @"

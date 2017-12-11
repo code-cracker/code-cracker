@@ -33,25 +33,22 @@ namespace CodeCracker.CSharp.Style
         {
             if (context.IsGenerated()) return;
             var method = (MethodDeclarationSyntax)context.Node;
+            var semanticModel = context.SemanticModel;
+            if (method.IsImplementingInterface(semanticModel)) return;
             if (method.Identifier.ToString().EndsWith("Async")) return;
             if (method.Modifiers.Any(SyntaxKind.NewKeyword, SyntaxKind.OverrideKeyword)) return;
-
             var errorMessage = method.Identifier.ToString() + "Async";
             var diag = Diagnostic.Create(Rule, method.Identifier.GetLocation(), errorMessage);
-
             if (method.Modifiers.Any(SyntaxKind.AsyncKeyword))
             {
                 context.ReportDiagnostic(diag);
                 return;
             }
-            var semanticModel = context.SemanticModel;
             var returnType = semanticModel.GetSymbolInfo(method.ReturnType).Symbol as INamedTypeSymbol;
             if (returnType == null) return;
-
             if (returnType.ToString() != "System.Threading.Tasks.Task" &&
                 (!returnType.IsGenericType || returnType.ConstructedFrom.ToString() != "System.Threading.Tasks.Task<TResult>"))
                 return;
-            if (method.IsImplementingInterface(semanticModel)) return;
             context.ReportDiagnostic(diag);
         }
     }
