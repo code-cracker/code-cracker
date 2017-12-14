@@ -64,7 +64,7 @@ If you want to use CodeCracker in all your projects, install the Visual Studio e
 
 ## SonarQube Plugin
 
-CodeCracker has a SonarQube Plugin that can downloaded at [Plugins HomePage](http://docs.sonarqube.org/display/PLUG/Other+Plugins). 
+CodeCracker has a SonarQube Plugin that can be downloaded at [Plugins HomePage](http://docs.sonarqube.org/display/PLUG/Other+Plugins). 
 
 ## Contributing
 
