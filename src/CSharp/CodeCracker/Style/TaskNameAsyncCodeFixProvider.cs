@@ -22,8 +22,23 @@ namespace CodeCracker.CSharp.Style
         public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
+
+            if (GetMethodName(diagnostic) == "Main" && IsUsingCSharp7(diagnostic))
+                return Task.FromResult(0);
+
             context.RegisterCodeFix(CodeAction.Create("Change method name including 'Async'.", c => ChangeMethodNameAsync(context.Document, diagnostic, c), nameof(TaskNameAsyncCodeFixProvider)), diagnostic);
+
             return Task.FromResult(0);
+        }
+
+        private static string GetMethodName(Diagnostic diagnostic)
+        {
+            return diagnostic.Location.SourceTree.ToString().Substring(diagnostic.Location.SourceSpan.Start, diagnostic.Location.SourceSpan.End - diagnostic.Location.SourceSpan.Start);
+        }
+
+        private static bool IsUsingCSharp7(Diagnostic diagnostic)
+        {
+            return ((CSharpParseOptions)diagnostic.Location.SourceTree.Options).LanguageVersion.ToString() == "CSharp7";
         }
 
         private static async Task<Solution> ChangeMethodNameAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
