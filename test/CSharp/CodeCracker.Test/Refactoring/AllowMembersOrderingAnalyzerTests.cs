@@ -14,7 +14,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         [Theory]
         [InlineData("class")]
         [InlineData("struct")]
-        public async void AllowMembersOrderingForEmptyTypeShouldNotTiggerDiagnostic(string typeDeclaration)
+        public async void AllowMembersOrderingForEmptyTypeShouldNotTriggerDiagnostic(string typeDeclaration)
         {
             var test = @"
             " + typeDeclaration + @" Foo
@@ -27,7 +27,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         [Theory]
         [InlineData("class")]
         [InlineData("struct")]
-        public async void AllowMembersOrderingForOneMemberShouldNotTiggerDiagnostic(string typeDeclaration)
+        public async void AllowMembersOrderingForOneMemberShouldNotTriggerDiagnostic(string typeDeclaration)
         {
             var test = @"
             " + typeDeclaration + @" Foo
@@ -41,7 +41,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         [Theory]
         [InlineData("class")]
         [InlineData("struct")]
-        public async void AllowMembersOrderingForMoreThanOneMemberShouldTiggerDiagnostic(string typeDeclaration)
+        public async void AllowMembersOrderingForMoreThanOneMemberShouldTriggerDiagnostic(string typeDeclaration)
         {
             var test = @"
             " + typeDeclaration + @" Foo
