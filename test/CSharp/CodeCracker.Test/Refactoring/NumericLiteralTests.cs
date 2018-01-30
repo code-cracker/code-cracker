@@ -54,6 +54,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
+        [Fact]
         public async Task FixOnMethodCallReplacesLiteral()
         {
             var source = @"

@@ -1,8 +1,10 @@
 param([String]$testClass)
-$testDllDirPath = "$PSScriptRoot\test\CSharp\CodeCracker.Test\bin\Debug\"
+# $testDllDirPath = "$PSScriptRoot\test\CSharp\CodeCracker.Test\bin\Debug\"
+$testDllDirPath = "test\CSharp\CodeCracker.Test\bin\Debug\"
 $testDllFileName = "CodeCracker.Test.CSharp.dll"
 $testDllFullFileName = "$testDllDirPath$testDllFileName"
-$xunitConsole = "$PSScriptRoot\packages\xunit.runner.console.2.2.0\tools\xunit.console.x86.exe"
+# $xunitConsole = "$PSScriptRoot\packages\xunit.runner.console.2.2.0\tools\xunit.console.x86.exe"
+$xunitConsole = "packages\xunit.runner.console.2.2.0\tools\xunit.console.x86.exe"
 
 if (!(gcm nodemon -ErrorAction Ignore)) {
     Write-Host -ForegroundColor DarkRed 'Nodemon not found, install it with npm: `npm i -g nodemon`'
