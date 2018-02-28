@@ -64,9 +64,9 @@ If you want to use CodeCracker in all your projects, install the Visual Studio e
 
 ## SonarQube Plugin
 
-CodeCracker has a SonarQube Plugin that can be downloaded at [Plugins HomePage](http://docs.sonarqube.org/display/PLUG/Other+Plugins). 
+CodeCracker has a SonarQube Plugin that can be downloaded at [Plugins HomePage](http://docs.sonarqube.org/display/PLUG/Other+Plugins).
 
-## Contributing
+## Contributing [![Open Source Helpers](https://www.codetriage.com/code-cracker/code-cracker/badges/users.svg)](https://www.codetriage.com/code-cracker/code-cracker)
 
 The main supported IDE for development is Visual Studio 2015.
 If you want to use VS 2015 to contribute to Code Cracker use
@@ -90,7 +90,7 @@ be assigned to this team.
 
 The easiest way to start is looking into the issues that are
 [up for grabs](https://github.com/code-cracker/code-cracker/labels/up-for-grabs). You
-may ask to work on any of them, read below to see how.
+may ask to work on any of them, read below to see how. You can also triage issues which may include reproducing bug reports, or asking for vital information such as version numbers or reproduction instructions. If you would like to start triaging issues, one easy way to get started is to [subscribe to code-cracker on CodeTriage](https://www.codetriage.com/code-cracker/code-cracker).
 
 If you are just starting with Roslyn, want to contribute, and feel you are not yet ready
 to start working on full analyzers or code fixes, you can start helping with areas that are
