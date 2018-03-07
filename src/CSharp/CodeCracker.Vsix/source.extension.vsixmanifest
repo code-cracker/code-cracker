@@ -9,6 +9,7 @@ Build status Nuget count Nuget downloads Issues open
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this software, nor it will be. Ever.</Description>
     <MoreInfo>http://code-cracker.github.io/</MoreInfo>
     <License>LICENSE.txt</License>
+    <ReleaseNotes>http://code-cracker.github.io/changelog.html</ReleaseNotes>
     <Icon>codecrackerlogo.png</Icon>
     <PreviewImage>ccexample.png</PreviewImage>
     <Tags>ReSharper, Refactoring, code analysis, analyzer, CodeRush, roslyn, roslyn c#, Refactoring c# Roslyn</Tags>
