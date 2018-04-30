@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCracker.Common", "src\Common\CodeCracker.Common\CodeCracker.Common.csproj", "{753D4757-FCBA-43BA-B1BE-89201ACDA192}"
 EndProject
@@ -136,5 +136,8 @@ Global
 		{5399E7A8-F8F1-4F2E-A5D2-9C96F3DD2A2D} = {11473308-7FD9-43CE-84CE-5912EEFDD1DC}
 		{234973E7-794D-4BC5-8D5F-FB98D8BFA967} = {E1B8ADBF-3442-4EF3-8C6B-146B576340E9}
 		{C5584F20-6E93-4D2D-B6F0-141B977AFC9F} = {E1B8ADBF-3442-4EF3-8C6B-146B576340E9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15B937E4-F880-478B-B387-3438FDD895F7}
 	EndGlobalSection
 EndGlobal
