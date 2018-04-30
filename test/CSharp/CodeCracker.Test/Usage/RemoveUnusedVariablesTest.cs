@@ -9,6 +9,7 @@ namespace CodeCracker.Test.CSharp.Usage
     {
         protected override CodeFixProvider GetCodeFixProvider() => new RemoveUnusedVariablesCodeFixProvider();
 
+        [Fact]
         public async Task UsingExternNoDiagnostics()
         {
             const string source = @"
