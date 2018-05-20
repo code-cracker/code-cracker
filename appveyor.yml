@@ -68,13 +68,6 @@ deploy:
     secure: 42eslsnaZIIcMVVaeC9Qu5NI9yjzLzHWYUGl0HLhl0YurivQezpMyJOwgSVjiGmj
   skip_symbols: true
   on:
-    branch: vnext
-- provider: NuGet
-  server: https://www.myget.org/F/codecrackerbuild/api/v2/package
-  api_key:
-    secure: 42eslsnaZIIcMVVaeC9Qu5NI9yjzLzHWYUGl0HLhl0YurivQezpMyJOwgSVjiGmj
-  skip_symbols: true
-  on:
     branch: /v\d\.\d\.x/
 
 notifications:
