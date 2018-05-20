@@ -181,6 +181,30 @@ Task Pack-Nuget-VB-Force {
     PackNuget "VB" "$rootDir\src\VisualBasic" $nuspecPathVB $nupkgPathVB
 }
 
+Task Count-Analyzers {
+    $count = $(ls $rootDir\src\*.cs -Recurse | ? { $_.Name.contains('Analyzer') } | ? { !((cat $_) -match 'abstract class') }).count
+    Write-Host "Found $count C# Analyzers"
+    $count = $(ls $rootDir\src\*.cs -Recurse | ? { $_.Name.contains('CodeFix') } | ? { !((cat $_) -match 'abstract class') }).count
+    Write-Host "Found $count C# Code Fixes"
+    $count = $(ls $rootDir\src\*.cs -Recurse | ? { $_.Name.contains('FixAll') } | ? { !((cat $_) -match 'abstract class') }).count
+    Write-Host "Found $count C# Code Fixes All"
+    $count = $(ls $rootDir\src\*.vb -Recurse | ? { $_.Name.contains('Analyzer') } | ? { !((cat $_) -match 'mustinherit class') }).count
+    Write-Host "Found $count VB Analyzers"
+    $count = $(ls $rootDir\src\*.vb -Recurse | ? { $_.Name.contains('CodeFix') } | ? { !((cat $_) -match 'mustinherit class') }).count
+    Write-Host "Found $count VB Code Fixes"
+    $count = $(ls $rootDir\src\*.vb -Recurse | ? { $_.Name.contains('FixAll') } | ? { !((cat $_) -match 'mustinherit class') }).count
+    Write-Host "Found $count VB Code Fixes All"
+}
+
+Task Update-ChangeLog {
+    # invoke-psake default.ps1 -tasklist update-changelog -parameters @{"token"="<token>"}
+    echo $token
+    return
+    Exec {
+        github_changelog_generator code-cracker/code-cracker --no-pull-requests --no-issues-wo-labels --exclude-labels "Can't repro","update readme",decision,docs,duplicate,question,invalid,wontfix,Duplicate,Question,Invalid,Wontfix  -t $token
+    }
+}
+
 Task Echo { echo echo }
 
 function PackNuget($language, $dir, $nuspecFile, $nupkgFile) {
