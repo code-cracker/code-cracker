@@ -1,17 +1,5 @@
 # Change Log
 
-## [Unreleased](https://github.com/code-cracker/code-cracker/tree/HEAD)
-
-[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.1.0...HEAD)
-
-**Fixed bugs:**
-
-- TernaryOperatorWithReturnCodeFixProvider NullReferenceException [\#906](https://github.com/code-cracker/code-cracker/issues/906)
-
-- Update VS Code Galley page -- broken link for code-cracker.github.io  [\#546](https://github.com/code-cracker/code-cracker/issues/546)
-- Is there any way to config inspect severity? Some errors are not necessary but noisy [\#543](https://github.com/code-cracker/code-cracker/issues/543)
-- Prefer "Count" to "Count\(\)" [\#489](https://github.com/code-cracker/code-cracker/issues/489)
-
 ## [v1.1.0](https://github.com/code-cracker/code-cracker/tree/v1.1.0) (2018-05-20)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.3...v1.1.0)
 
@@ -29,6 +17,7 @@
 - Check consistency of optional parameter default value [\#575](https://github.com/code-cracker/code-cracker/issues/575)
 - Make accessibility consistent \(code fix for CS0050 to CS0061\) [\#381](https://github.com/code-cracker/code-cracker/issues/381)
 - Prefer "Any" to "Count\(\) \> 0" [\#490](https://github.com/code-cracker/code-cracker/issues/490)
+- Prefer "Count" to "Count\(\)" [\#489](https://github.com/code-cracker/code-cracker/issues/489)
 - Extract Class to a New File [\#382](https://github.com/code-cracker/code-cracker/issues/382)
 - Seal member if possible [\#372](https://github.com/code-cracker/code-cracker/issues/372)
 - Remove virtual modifier if possible [\#371](https://github.com/code-cracker/code-cracker/issues/371)
@@ -42,6 +31,7 @@
 - Bug: CC0061: Implementing interface using async keyword should not raise a diagnostic [\#936](https://github.com/code-cracker/code-cracker/issues/936)
 - Bug CC0031 UseInvokeMethodToFireEventAnalyzer false positive in constructor [\#926](https://github.com/code-cracker/code-cracker/issues/926)
 - BUG: CC0014 Casting to interface or implicit casts for the ternary operator are fixed wrong [\#911](https://github.com/code-cracker/code-cracker/issues/911)
+- TernaryOperatorWithReturnCodeFixProvider NullReferenceException [\#906](https://github.com/code-cracker/code-cracker/issues/906)
 - BUG: CC0022 failed to show fix with null coalesce operator [\#870](https://github.com/code-cracker/code-cracker/issues/870)
 - BUG: CC0118 - Unnecessary '.ToString\(\)' call in string concatenation [\#866](https://github.com/code-cracker/code-cracker/issues/866)
 
