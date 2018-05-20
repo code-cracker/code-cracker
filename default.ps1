@@ -84,7 +84,7 @@ Task ILMerge-VB { ILMerge $releaseDirVB $dllVB $projectFileVB $projectDirVB }
 Task ILMerge-CS { ILMerge $releaseDirCS $dllCS $projectFileCS $projectDirCS }
 
 function ILMerge($releaseDir, $dll, $projectFile, $projectDir) {
-	Write-Host "IL Merge:"
+    Write-Host "IL Merge:"
     $mergedDir = $tempDir
     if (!(Test-Path $mergedDir)) { mkdir "$mergedDir" }
     $inputDll = "$releaseDir\$dll"
@@ -112,11 +112,11 @@ function ILMerge($releaseDir, $dll, $projectFile, $projectDir) {
     $releaseMergedDir = "$releaseDir\merged"
     if (!(Test-Path $releaseMergedDir)) { mkdir $releaseMergedDir | Out-Null }
     cp $mergedDll "$releaseMergedDir\" -Force
-	Write-Host "  $dll -> $releaseMergedDir\$dll"
+    Write-Host "  $dll -> $releaseMergedDir\$dll"
     $mergedPdb = Change-Extension $mergedDll "pdb"
     cp $mergedPdb "$releaseMergedDir\" -Force
-	$pdb = (ls $mergedPdb).Name
-	Write-Host "  $pdb -> $releaseMergedDir\$pdb"
+    $pdb = (ls $mergedPdb).Name
+    Write-Host "  $pdb -> $releaseMergedDir\$pdb"
 }
 
 function Change-Extension ($filename, $extension) {
@@ -189,7 +189,7 @@ function PackNuget($language, $dir, $nuspecFile, $nupkgFile) {
     $nupkgFile = $nupkgFile -f $xml.package.metadata.version
     . $nugetExe pack "$nuspecFile" -OutputDirectory "$dir"
     $nuspecFileName = (ls $nuspecFile).Name
-	Write-Host "  $nuspecFileName ($language/$($xml.package.metadata.version)) -> $nupkgFile"
+    Write-Host "  $nuspecFileName ($language/$($xml.package.metadata.version)) -> $nupkgFile"
     if ($isAppVeyor) {
         Write-Host "Pushing nuget artifact for $language..."
         appveyor PushArtifact $nupkgFile
