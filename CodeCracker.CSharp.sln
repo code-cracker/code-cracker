@@ -62,7 +62,6 @@ Global
 		{FF1097FB-A890-461B-979E-064697891B96}.ReleaseNoVsix|Any CPU.ActiveCfg = Release|Any CPU
 		{FF1097FB-A890-461B-979E-064697891B96}.ReleaseNoVsix|Any CPU.Build.0 = Release|Any CPU
 		{6BAC4057-7239-485E-A04B-02E687A83BAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BAC4057-7239-485E-A04B-02E687A83BAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BAC4057-7239-485E-A04B-02E687A83BAA}.DebugNoVsix|Any CPU.ActiveCfg = Debug|Any CPU
 		{6BAC4057-7239-485E-A04B-02E687A83BAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BAC4057-7239-485E-A04B-02E687A83BAA}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -95,7 +94,6 @@ Global
 		{E3B0C133-B97E-46B9-809D-16BB762EF74F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3B0C133-B97E-46B9-809D-16BB762EF74F}.DebugNoVsix|Any CPU.ActiveCfg = Debug|Any CPU
 		{E3B0C133-B97E-46B9-809D-16BB762EF74F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3B0C133-B97E-46B9-809D-16BB762EF74F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E3B0C133-B97E-46B9-809D-16BB762EF74F}.ReleaseNoVsix|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
