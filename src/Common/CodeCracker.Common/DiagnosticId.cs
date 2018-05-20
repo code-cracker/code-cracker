@@ -85,5 +85,6 @@
         SwitchCaseWithoutDefault = 120,
         ReadOnlyComplexTypes = 121,
         ReplaceWithGetterOnlyAutoProperty = 125,
+        SortUsings = 126,
     }
 }
