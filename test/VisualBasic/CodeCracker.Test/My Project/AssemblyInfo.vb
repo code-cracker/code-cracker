@@ -8,7 +8,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyConfiguration("")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("CodeCracker")>
-<Assembly: AssemblyCopyright("Copyright © 2014-2015")>
+<Assembly: AssemblyCopyright("Copyright © 2014-2018")>
 <Assembly: AssemblyTrademark("")>
 <Assembly: AssemblyCulture("")>
 <Assembly: ComVisible(False)>
