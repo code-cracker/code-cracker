@@ -72,6 +72,8 @@ namespace CodeCracker.CSharp.Design.InconsistentAccessibility
                 case InconsistentAccessibilityInIndexerParameterCompilerErrorNumber:
                     inconsistentAccessibilityProvider = new InconsistentAccessibilityInIndexerParameter();
                     break;
+                default:
+                    break;
             }
 
             return await inconsistentAccessibilityProvider.GetInconsistentAccessibilityInfoAsync(document, diagnostic, cancellationToken).ConfigureAwait(false);

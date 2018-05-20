@@ -47,6 +47,8 @@ namespace CodeCracker.CSharp.Refactoring
                     if (section.Statements.First() is BlockSyntax && section.Statements.Last() is BreakStatementSyntax)
                         return true;
                     break;
+                default:
+                    break;
             }
             return false;
         }

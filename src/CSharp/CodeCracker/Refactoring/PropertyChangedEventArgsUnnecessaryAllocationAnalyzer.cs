@@ -78,6 +78,8 @@ namespace CodeCracker.CSharp.Refactoring
                     var fieldDeclaration = (FieldDeclarationSyntax)memberForObjectCreationExpr;
                     result = ContainsStaticModifier(fieldDeclaration.Modifiers);
                     break;
+                default:
+                    break;
             }
             return result;
         }

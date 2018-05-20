@@ -25,8 +25,9 @@ namespace CodeCracker.CSharp.Usage
                 case FixAllScope.Solution:
                     return Task.FromResult(CodeAction.Create(DisposableVariableNotDisposedCodeFixProvider.MessageFormat,
                         ct => GetFixedSolutionAsync(fixAllContext)));
+                default:
+                    return null;
             }
-            return null;
         }
 
         private async static Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)

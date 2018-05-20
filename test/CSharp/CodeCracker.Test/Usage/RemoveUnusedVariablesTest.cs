@@ -9,20 +9,6 @@ namespace CodeCracker.Test.CSharp.Usage
     {
         protected override CodeFixProvider GetCodeFixProvider() => new RemoveUnusedVariablesCodeFixProvider();
 
-        public async Task UsingExternNoDiagnostics()
-        {
-            const string source = @"
-            using System;
-            using System.Runtime.InteropServices;
-
-            class TypeName
-            {
-                [DllImport(""wininet.dll"", SetLastError = true)]
-                public static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int lpdwBufferLength);
-            }";
-            await VerifyCSharpHasNoDiagnosticsAsync(source);
-        }
-
         [Fact]
         public async Task WhenVariableIsAssignedButItsValueIsNeverUsedShouldCreateDiagnostics()
         {

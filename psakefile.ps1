@@ -10,11 +10,11 @@ Properties {
     $buildNumber = [Convert]::ToInt32($env:APPVEYOR_BUILD_NUMBER).ToString("0000")
     $nuspecPathCS = "$rootDir\src\CSharp\CodeCracker\CodeCracker.nuspec"
     $nuspecPathVB = "$rootDir\src\VisualBasic\CodeCracker\CodeCracker.nuspec"
-    $nugetPackagesExe = "$packagesDir\NuGet.CommandLine.4.1.0\tools\NuGet.exe"
+    $nugetPackagesExe = "$packagesDir\NuGet.CommandLine.4.6.2\tools\NuGet.exe"
     $nugetExe = if (Test-Path $nugetPackagesExe) { $nugetPackagesExe } else { 'nuget' }
     $nupkgPathCS = "$rootDir\src\CSharp\CodeCracker.CSharp.{0}.nupkg"
     $nupkgPathVB = "$rootDir\src\VisualBasic\CodeCracker.VisualBasic.{0}.nupkg"
-    $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.2.0\tools\xunit.console.x86.exe"
+    $xunitConsoleExe = "$packagesDir\xunit.runner.console.2.3.1\tools\net452\xunit.console.x86.exe"
     $openCoverExe = "$packagesDir\OpenCover.4.6.519\tools\OpenCover.Console.exe"
     $dllCS = "CodeCracker.CSharp.dll"
     $dllVB = "CodeCracker.VisualBasic.dll"
@@ -31,9 +31,9 @@ Properties {
     $releaseDirCS = "$projectDirCS\bin\Release"
     $logDir = "$rootDir\log"
     $outputXml = "$logDir\CodeCoverageResults.xml"
-    $reportGeneratorExe = "$packagesDir\ReportGenerator.2.5.6\tools\ReportGenerator.exe"
+    $reportGeneratorExe = "$packagesDir\ReportGenerator.3.1.2\tools\ReportGenerator.exe"
     $coverageReportDir = "$logDir\codecoverage\"
-    $coverallsNetExe = "$packagesDir\coveralls.io.1.3.4\tools\coveralls.net.exe"
+    $coverallsNetExe = "$packagesDir\coveralls.io.1.4.2\tools\coveralls.net.exe"
     $ilmergeExe = "$packagesDir\ilmerge.2.14.1208\tools\ILMerge.exe"
     $isRelease = $isAppVeyor -and (($env:APPVEYOR_REPO_BRANCH -eq "release") -or ($env:APPVEYOR_REPO_TAG -eq "true"))
     $isPullRequest = $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null
@@ -233,7 +233,7 @@ function UpdateNuspec($nuspecPath, $language) {
 function RestorePkgs($sln) {
     Write-Host "Restoring $sln..." -ForegroundColor Green
     Retry {
-        . $nugetExe restore "$sln" -MSBuildVersion 14 -NonInteractive -ConfigFile "$rootDir\nuget.config"
+        . $nugetExe restore "$sln" -NonInteractive -ConfigFile "$rootDir\nuget.config"
         if ($LASTEXITCODE) { throw "Nuget restore for $sln failed." }
     }
 }

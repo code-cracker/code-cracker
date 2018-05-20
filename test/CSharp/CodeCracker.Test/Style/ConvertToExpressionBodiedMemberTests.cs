@@ -373,6 +373,7 @@ using System;
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
         public async Task IgnoresIndexersWithArrows()
         {
             const string test = @"
@@ -431,6 +432,7 @@ using System;
             await VerifyCSharpHasNoDiagnosticsAsync(test);
         }
 
+        [Fact]
         public async Task IgnoresPropertiesWithArrows()
         {
             const string test = @"

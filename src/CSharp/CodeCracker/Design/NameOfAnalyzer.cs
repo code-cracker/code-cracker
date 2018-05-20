@@ -114,6 +114,8 @@ namespace CodeCracker.CSharp.Design
                         break;
                     case SyntaxKind.AttributeList:
                         break;
+                    default:
+                        break;
                 }
                 parameterName = GetParameterWithIdentifierEqualToStringLiteral(stringLiteral, parameters)?.Identifier.Text;
             }

@@ -21,14 +21,16 @@ namespace CodeCracker.Test.CSharp.Style
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
+        [Fact]
         public async Task MethodAsyncWithoutAsyncKeyword()
         {
             const string source = @"
+    using System.Threading.Tasks;
     namespace ConsoleApplication1
     {
         public class Foo
         {
-            Task TestAsync() {};
+            Task TestAsync() {}
         }
     }";
             await VerifyCSharpHasNoDiagnosticsAsync(source);

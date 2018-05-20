@@ -317,6 +317,8 @@ namespace CodeCracker
                 case SyntaxKind.AliasQualifiedName:
                     result = ((AliasQualifiedNameSyntax)node).Name.Identifier.ValueText;
                     break;
+                default:
+                    break;
             }
             return result;
         }
@@ -336,8 +338,9 @@ namespace CodeCracker
                 case SyntaxKind.DestructorDeclaration:
                     result = ((DestructorDeclarationSyntax)method).Identifier;
                     break;
+                default:
+                    return result;
             }
-
             return result;
         }
 
@@ -392,6 +395,8 @@ namespace CodeCracker
                 case SyntaxKind.EventDeclaration:
                     result = ((EventDeclarationSyntax)declaration).WithModifiers(newModifiers);
                     break;
+                default:
+                    break;
             }
 
             return result;
@@ -427,6 +432,8 @@ namespace CodeCracker
                 case SyntaxKind.IndexerDeclaration:
                 case SyntaxKind.EventDeclaration:
                     result = ((BasePropertyDeclarationSyntax)memberDeclaration).Modifiers;
+                    break;
+                default:
                     break;
             }
 
