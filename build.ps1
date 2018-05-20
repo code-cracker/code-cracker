@@ -49,7 +49,7 @@ function Download-Nuget {
 }
 
 function Import-Psake {
-    $psakeModule = "$PSScriptRoot\packages\psake.4.6.0\tools\psake.psm1"
+    $psakeModule = "$PSScriptRoot\packages\psake.4.7.0\tools\psake\psake.psm1"
     if ((Test-Path $psakeModule) -ne $true) {
         Write-Host "Restoring $PSScriptRoot\.nuget with $script:nugetExe"
         . "$script:nugetExe" restore $PSScriptRoot\.nuget\packages.config -SolutionDirectory $PSScriptRoot
@@ -73,7 +73,7 @@ Get-Nuget
 Import-Psake
 Import-ILMerge
 if ($MyInvocation.UnboundArguments.Count -ne 0) {
-    Invoke-Expression("Invoke-psake -framework '4.6' $PSScriptRoot\default.ps1 -taskList " + $MyInvocation.UnboundArguments -join " ")
+    Invoke-Expression("Invoke-psake -framework '4.6' $PSScriptRoot\psakefile.ps1 -taskList " + $MyInvocation.UnboundArguments -join " ")
 }
 else {
     . $PSScriptRoot\build.ps1 Build

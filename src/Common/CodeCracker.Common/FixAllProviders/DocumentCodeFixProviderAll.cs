@@ -34,8 +34,9 @@ namespace CodeCracker.FixAllProviders
                 case FixAllScope.Solution:
                     return Task.FromResult(CodeAction.Create(CodeFixTitle,
                         ct => GetFixedDocumentsAsync(fixAllContext, fixAllContext.Solution.Projects.SelectMany(p => p.Documents))));
+                default:
+                    return null;
             }
-            return null;
         }
 
         private async static Task<Solution> GetFixedDocumentsAsync(FixAllContext fixAllContext, IEnumerable<Document> documents)

@@ -27,8 +27,9 @@ namespace CodeCracker.CSharp.Usage
                 case FixAllScope.Solution:
                     return Task.FromResult(CodeAction.Create(message,
                         async ct => await GetFixedSolutionAsync(fixAllContext, await GetSolutionWithDocsAsync(fixAllContext, fixAllContext.Solution))));
+                default:
+                    return null;
             }
-            return null;
         }
 
         private async static Task<SolutionWithDocs> GetSolutionWithDocsAsync(FixAllContext fixAllContext, Solution solution)

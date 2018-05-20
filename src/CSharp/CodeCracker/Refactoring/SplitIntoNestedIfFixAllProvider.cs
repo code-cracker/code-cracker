@@ -25,8 +25,9 @@ namespace CodeCracker.CSharp.Refactoring
                 case FixAllScope.Solution:
                     return Task.FromResult(CodeAction.Create(SplitIntoNestedIfCodeFixProvider.MessageFormat,
                         ct => GetFixedSolutionAsync(fixAllContext)));
+                default:
+                    return null;
             }
-            return null;
         }
 
         private async static Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)

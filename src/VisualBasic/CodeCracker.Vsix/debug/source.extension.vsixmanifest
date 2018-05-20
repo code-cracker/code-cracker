@@ -24,6 +24,7 @@ This is a community project, free and open source. Everyone is invited to contri
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="CodeCracker" Path="|CodeCracker|" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="CodeCracker.Common" Path="|CodeCracker.Common|" />
     <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="CodeCracker" Path="|CodeCracker|" />
   </Assets>
   <Prerequisites>

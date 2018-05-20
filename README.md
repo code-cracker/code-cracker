@@ -15,6 +15,20 @@ our task board, definition of done, definition of ready, etc.
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this
 software, nor it will be. Ever.
 
+## Features
+
+The list of features is documented here: http://code-cracker.github.io/diagnostics.html
+
+#### Design
+Code | Analyzer | Severity | Description 
+-- | -- | -- | --
+[CC0003](http://code-cracker.github.io/diagnostics/CC0003.html) | CatchEmptyAnalyzer | Warning | Catch statements with no Exception as an argument is not recommended. Consider adding an Exception class to the catch statement.
+[CC0004](http://code-cracker.github.io/diagnostics/CC0004.html) | EmptyCatchBlockAnalyzer | Warning | An empty catch block suppress all errors and shouldn’t be used. If the error is expected consider logging it or changing the control flow such that it is explicit.
+[CC0016](http://code-cracker.github.io/diagnostics/CC0016.html) | CopyEventToVariableBeforeFireAnalyzer | Warning | Events should always be checked for null before being invoked. As in a multi-threading context it is possible for an event to be unsuscribed between the moment where it is checked to be non-null and the moment it is raised, the event must be copied to a temporary variable before the check.
+[CC0021](http://code-cracker.github.io/diagnostics/CC0021.html) | NameOfAnalyzer | Warning | In C#6 the nameof() operator should be used to specify the name of a program element instead of a string literal as it produce code that is easier to refactor.
+[CC0024](http://code-cracker.github.io/diagnostics/CC0024.html) | StaticConstructorExceptionAnalyzer | Warning | Static constructor are called before the first time a class is used but the caller doesn’t control when exactly. Exception thrown in this context force callers to use ‘try’ block around any useage of the class and should be avoided.
+[CC0031](http://code-cracker.github.io/diagnostics/CC0031.html) | UseInvokeMethodToFireEventAnalyzer | Warning | In C#6 a delegate can be invoked using the null-propagating operator (?.) and it’s invoke method to avoid throwing a NullReference exception when there is no method attached to the delegate.
+
 ## Installing
 
 You may use CodeCracker in two ways: as an analyzer library that you install with Nuget into your project or as a Visual Studio extension.
@@ -64,14 +78,12 @@ If you want to use CodeCracker in all your projects, install the Visual Studio e
 
 ## SonarQube Plugin
 
-CodeCracker has a SonarQube Plugin that can be downloaded at [Plugins HomePage](http://docs.sonarqube.org/display/PLUG/Other+Plugins). 
+CodeCracker has a SonarQube Plugin that can be downloaded at [Plugins HomePage](http://docs.sonarqube.org/display/PLUG/Other+Plugins).
 
-## Contributing
+## Contributing [![Open Source Helpers](https://www.codetriage.com/code-cracker/code-cracker/badges/users.svg)](https://www.codetriage.com/code-cracker/code-cracker)
 
-The main supported IDE for development is Visual Studio 2015.
-If you want to use VS 2015 to contribute to Code Cracker use
-the *.2015.sln files. We recommend migrating to VS 2017 ASAP, as
-we might make VS 2015 obsolete at any time.
+The main supported IDE for development is Visual Studio 2017.
+We do not support VS 2015 anymore.
 
 Questions, comments, bug reports, and pull requests are all welcome.
 Bug reports that include steps-to-reproduce (including code) are
@@ -90,7 +102,7 @@ be assigned to this team.
 
 The easiest way to start is looking into the issues that are
 [up for grabs](https://github.com/code-cracker/code-cracker/labels/up-for-grabs). You
-may ask to work on any of them, read below to see how.
+may ask to work on any of them, read below to see how. You can also triage issues which may include reproducing bug reports, or asking for vital information such as version numbers or reproduction instructions. If you would like to start triaging issues, one easy way to get started is to [subscribe to code-cracker on CodeTriage](https://www.codetriage.com/code-cracker/code-cracker).
 
 If you are just starting with Roslyn, want to contribute, and feel you are not yet ready
 to start working on full analyzers or code fixes, you can start helping with areas that are
