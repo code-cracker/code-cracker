@@ -51,7 +51,7 @@ artifacts:
 deploy:
 - provider: NuGet
   api_key:
-    secure: s1aIT1sGbIeG5Ccgree7K+k/h7LOSzPfJOrsWcCuzgFGrcuexPZUwX/CfYnU9w4v
+    secure: CosNPh0GfqQtJs2da/qdtykCGRhaJ1keXXxAcEFR0jNGAmveTtj01kPfqIlLPjFv
   skip_symbols: true
   on:
     appveyor_repo_tag: true
@@ -62,13 +62,6 @@ deploy:
   skip_symbols: true
   on:
     branch: master
-- provider: NuGet
-  server: https://www.myget.org/F/codecrackerbuild/api/v2/package
-  api_key:
-    secure: 42eslsnaZIIcMVVaeC9Qu5NI9yjzLzHWYUGl0HLhl0YurivQezpMyJOwgSVjiGmj
-  skip_symbols: true
-  on:
-    branch: vnext
 - provider: NuGet
   server: https://www.myget.org/F/codecrackerbuild/api/v2/package
   api_key:

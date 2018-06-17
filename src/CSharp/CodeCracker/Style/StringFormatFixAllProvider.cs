@@ -26,8 +26,9 @@ namespace CodeCracker.CSharp.Style
                 case FixAllScope.Solution:
                     return Task.FromResult(CodeAction.Create(Resources.StringFormatCodeFixProvider_Title,
                         ct => GetFixedSolutionAsync(fixAllContext)));
+                default:
+                    return null;
             }
-            return null;
         }
 
         private async static Task<Solution> GetFixedSolutionAsync(FixAllContext fixAllContext)

@@ -70,7 +70,7 @@ namespace CodeCracker.CSharp.Style
             foreach (var node in invocationExpressionsThatHaveToStringCall)
             {
                 var toStringReceiver = GetTypeInfoOfReceiverOfToStringCall(node, semanticModel, cancellationToken);
-                //As long as the underlying type can not be resolved by the compiler (e.g. undefined type) 
+                //As long as the underlying type can not be resolved by the compiler (e.g. undefined type)
                 //removal is not save.
                 if (toStringReceiver == null || toStringReceiver.TypeKind==TypeKind.Error)
                     continue;
@@ -115,7 +115,7 @@ namespace CodeCracker.CSharp.Style
 
         private static bool CheckAddOperationOverloadsOfTypes(ITypeSymbol toStringReceiver, ITypeSymbol otherType)
         {
-            //If the underlying type has a custom AddOperator this operator will take precedence over everything else 
+            //If the underlying type has a custom AddOperator this operator will take precedence over everything else
             if (HasTypeCustomAddOperator(toStringReceiver))
             {
                 return false;
@@ -128,7 +128,7 @@ namespace CodeCracker.CSharp.Style
             }
 
             //If the underlying type is one of the build in types (numeric, datetime and so on) and the other side is not a string,
-            //the result a removal is hard to predict and might be wrong. 
+            //the result a removal is hard to predict and might be wrong.
             if (HasAdditionOperator(toStringReceiver))
             {
                 return false;
@@ -177,11 +177,11 @@ namespace CodeCracker.CSharp.Style
                 case SpecialType.System_UIntPtr:
                 case SpecialType.System_DateTime:
                     return true;
+                default:
+                    break;
             }
             if (type.TypeKind == TypeKind.Enum)
-            {
                 return true;
-            }
             return false;
         }
 

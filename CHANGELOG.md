@@ -1,8 +1,46 @@
 # Change Log
 
-## [Unreleased](https://github.com/code-cracker/code-cracker/tree/HEAD)
+## [v1.1.0](https://github.com/code-cracker/code-cracker/tree/v1.1.0) (2018-05-20)
+[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.3...v1.1.0)
 
-[Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.3...HEAD)
+**Implemented enhancements:**
+
+- Create a reusable FixAllProvider based on IntroduceFieldFromConstructorCodeFixProviderAll [\#910](https://github.com/code-cracker/code-cracker/issues/910)
+- Enable CodeCracker to work with .NET Core [\#871](https://github.com/code-cracker/code-cracker/issues/871)
+- CC0068 \(Remove private method\): ShouldSerializeXXX\(\) and ResetXXX\(\) should not trigger the message [\#762](https://github.com/code-cracker/code-cracker/issues/762)
+- Create PropertyChangedEventArgs statically [\#42](https://github.com/code-cracker/code-cracker/issues/42)
+
+- CC0013 Check for applicability as argument [\#522](https://github.com/code-cracker/code-cracker/issues/522)
+- Make readonly \(for complex value types\) [\#808](https://github.com/code-cracker/code-cracker/issues/808)
+- CC0120: Suggest default for switch statements \(C\#\) [\#780](https://github.com/code-cracker/code-cracker/issues/780)
+- Remove Unnecessary ToString in String Concatenation [\#753](https://github.com/code-cracker/code-cracker/issues/753)
+- Check consistency of optional parameter default value [\#575](https://github.com/code-cracker/code-cracker/issues/575)
+- Make accessibility consistent \(code fix for CS0050 to CS0061\) [\#381](https://github.com/code-cracker/code-cracker/issues/381)
+- Prefer "Any" to "Count\(\) \> 0" [\#490](https://github.com/code-cracker/code-cracker/issues/490)
+- Prefer "Count" to "Count\(\)" [\#489](https://github.com/code-cracker/code-cracker/issues/489)
+- Extract Class to a New File [\#382](https://github.com/code-cracker/code-cracker/issues/382)
+- Seal member if possible [\#372](https://github.com/code-cracker/code-cracker/issues/372)
+- Remove virtual modifier if possible [\#371](https://github.com/code-cracker/code-cracker/issues/371)
+- Remove async and return task directly [\#151](https://github.com/code-cracker/code-cracker/issues/151)
+- Change from as operator to direct cast or the opposite [\#65](https://github.com/code-cracker/code-cracker/issues/65)
+- Convert loop to linq expression [\#22](https://github.com/code-cracker/code-cracker/issues/22)
+
+**Fixed bugs:**
+
+- CC0061 shouldn't pop for async Main [\#958](https://github.com/code-cracker/code-cracker/issues/958)
+- Bug: CC0061: Implementing interface using async keyword should not raise a diagnostic [\#936](https://github.com/code-cracker/code-cracker/issues/936)
+- Bug CC0031 UseInvokeMethodToFireEventAnalyzer false positive in constructor [\#926](https://github.com/code-cracker/code-cracker/issues/926)
+- BUG: CC0014 Casting to interface or implicit casts for the ternary operator are fixed wrong [\#911](https://github.com/code-cracker/code-cracker/issues/911)
+- TernaryOperatorWithReturnCodeFixProvider NullReferenceException [\#906](https://github.com/code-cracker/code-cracker/issues/906)
+- BUG: CC0022 failed to show fix with null coalesce operator [\#870](https://github.com/code-cracker/code-cracker/issues/870)
+- BUG: CC0118 - Unnecessary '.ToString\(\)' call in string concatenation [\#866](https://github.com/code-cracker/code-cracker/issues/866)
+
+**Closed issues:**
+
+- Support Hacktoberfest event adding hacktoberfest tag. [\#949](https://github.com/code-cracker/code-cracker/issues/949)
+- Using Extension & NuGet package together causes VS2017 to crash [\#944](https://github.com/code-cracker/code-cracker/issues/944)
+- False postives and NullReferenceException when using eventhandler in code behind for UWP apps. [\#916](https://github.com/code-cracker/code-cracker/issues/916)
+- Replace getter only properties with backing readonly field with getter-only auto-property [\#881](https://github.com/code-cracker/code-cracker/issues/881)
 
 ## [v1.0.3](https://github.com/code-cracker/code-cracker/tree/v1.0.3) (2017-03-20)
 [Full Changelog](https://github.com/code-cracker/code-cracker/compare/v1.0.2...v1.0.3)
@@ -38,6 +76,7 @@
 
 **Implemented enhancements:**
 
+- developmentDependency not added when used with SonarLint [\#829](https://github.com/code-cracker/code-cracker/issues/829)
 - Auto generated files detection [\#773](https://github.com/code-cracker/code-cracker/issues/773)
 
 **Fixed bugs:**
@@ -49,7 +88,7 @@
 - BUG: GC.SuppressFinalize with arrow methods \(CC0029\) [\#809](https://github.com/code-cracker/code-cracker/issues/809)
 - Bug: CC0039 False positive when concatenating to loop variable propery/field \(StringBuilderInLoop\) [\#797](https://github.com/code-cracker/code-cracker/issues/797)
 - Bug: CC0033 appears again after adding 'this' keyword [\#795](https://github.com/code-cracker/code-cracker/issues/795)
-- CC0061: Implementing interface using async [\#793](https://github.com/code-cracker/code-cracker/issues/793)
+- CC0061: Implementing interface using async pattern [\#793](https://github.com/code-cracker/code-cracker/issues/793)
 - CC0052 Make field readonly does not take ref out into consideration. [\#788](https://github.com/code-cracker/code-cracker/issues/788)
 - BUG: CallExtensionMethodAsExtensionAnalyzer threw exception when project language was C\# 5.0 [\#781](https://github.com/code-cracker/code-cracker/issues/781)
 - Bug: UseInvokeMethodToFireEventAnalyzer \(CC0031\) should not raise a diagnostic when already checked for null with a ternary [\#779](https://github.com/code-cracker/code-cracker/issues/779)
@@ -225,6 +264,7 @@
 - Update VB Allow Members Ordering to work with Modules [\#440](https://github.com/code-cracker/code-cracker/issues/440)
 - Provide an equivalence key on all code fix providers [\#417](https://github.com/code-cracker/code-cracker/issues/417)
 - Unit test methods raises CC0091 - "Make \<xxxx\> method static" [\#404](https://github.com/code-cracker/code-cracker/issues/404)
+- Validate color from System.Drawing.ColorTranslator.FromHtml [\#1](https://github.com/code-cracker/code-cracker/issues/1)
 
 **Fixed bugs:**
 
