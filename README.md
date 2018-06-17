@@ -15,7 +15,7 @@ our task board, definition of done, definition of ready, etc.
 You can find this document in the following languages
 
 [![English](https://img.shields.io/badge/language-english-blue.svg)](https://github.com/code-cracker/code-cracker/blob/master/README.md)
-[![Brazilian Portuguese](https://img.shields.io/badge/language-brazilan%20portuguese-brightgreen.svg)](https://github.com/code-cracker/code-cracker/blob/master/README.md.pt.md)
+[![Brazilian Portuguese](https://img.shields.io/badge/language-brazilan%20portuguese-brightgreen.svg)](https://github.com/code-cracker/code-cracker/blob/master/README.pt.md)
 
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this

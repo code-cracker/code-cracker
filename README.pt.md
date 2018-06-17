@@ -15,7 +15,7 @@ nossa lista de tarefas, definição para "done", definição para "ready" entre 
 Você pode encontrar este documento nas seguintes línguas
 
 [![English](https://img.shields.io/badge/language-english-blue.svg)](https://github.com/code-cracker/code-cracker/blob/master/README.md)
-[![Brazilian Portuguese](https://img.shields.io/badge/language-brazilan%20portuguese-brightgreen.svg)](https://github.com/code-cracker/code-cracker/blob/master/README.md.pt.md)
+[![Brazilian Portuguese](https://img.shields.io/badge/language-brazilan%20portuguese-brightgreen.svg)](https://github.com/code-cracker/code-cracker/blob/master/README.pt.md)
 
 
 Este é um projeto da comunidade, *free* e *open source*. Todos estão convidados para contribuir, forkar, compartilhar e usar o código.
