@@ -1,6 +1,6 @@
 # Code Cracker
 
-An analyzer library for C# and VB that uses [Roslyn](https://github.com/dotnet/roslyn) to produce refactorings, code analysis, and other niceties.
+An analyzer library for C# and VB that uses [Roslyn](https://github.com/dotnet/roslyn) to produce refactorings, code analysis, and other niceties. 
 
 Check the official project site on [code-cracker.github.io](http://code-cracker.github.io). There you will find information on how to contribute,
 our task board, definition of done, definition of ready, etc.
@@ -11,6 +11,12 @@ our task board, definition of done, definition of ready, etc.
 [![Issues open](https://img.shields.io/github/issues-raw/code-cracker/code-cracker.svg)](https://huboard.com/code-cracker/code-cracker/)
 [![Coverage Status](https://img.shields.io/coveralls/code-cracker/code-cracker/master.svg)](https://coveralls.io/r/code-cracker/code-cracker?branch=master)
 [![Source Browser](https://img.shields.io/badge/Browse-Source-green.svg)](http://ccref.azurewebsites.net)
+
+You can find this document in the following languages
+
+[![English](https://img.shields.io/badge/language-english-blue.svg)](https://github.com/code-cracker/code-cracker/blob/master/README.md)
+[![Brazilian Portuguese](https://img.shields.io/badge/language-brazilan%20portuguese-brightgreen.svg)](https://github.com/code-cracker/code-cracker/blob/master/README.pt.md)
+
 
 This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this
 software, nor it will be. Ever.
