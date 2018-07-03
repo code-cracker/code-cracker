@@ -60,9 +60,9 @@ Install-Package CodeCracker.VisualBasic
 
 Or use the Package Manager in Visual Studio.
 
-There is also a version for both named `CodeCracker` only, but it makes not sense to get it, you should search for the C# or VB version.
+There is also a version for both named `CodeCracker` only, but it makes no sense to get it, you should search for the C# or VB version.
 
-If you want the alpha builds that build on each push to the repo, add https://www.myget.org/F/codecrackerbuild/ to your nuget feed.
+If you want the alpha builds that build on each push to the repo, add https://www.myget.org/F/codecrackerbuild/ to your Nuget feed.
 We only push complete releases to Nuget.org, and commit builds go to Myget.org.
 
 If you want global analyzers that will work on every project you open in Visual Studio, then you want the Extension.
@@ -143,8 +143,9 @@ defined ready as:
 
 1. Have most of the scenarios/test cases defined on the issue on Github
 2. If it has an analyzer then
-  1. The warning level of the analyzer must be in the issue's description (`Hidden`, `Information`, `Warning`, or `Error`)
-  2. The diagnostics it provides should already have numeric ids defined formated as `CC0000`.
+
+        1. The warning level of the analyzer must be in the issue's description (`Hidden`, `Information`, `Warning`, or `Error`)
+        2. The diagnostics it provides should already have numeric ids defined formated as `CC0000`.
 3. If it has a code fix then the category should be in the issue's description. The supported categories are listed on the `SupportedCategories.cs` file.
 4. Have some of the maintainers verify it (cannot be the same one who wrote the issue and/or test cases)
 
@@ -175,11 +176,13 @@ The DoD is still evolving. At the present time the checklist is as follows:
 2. Has tests for analyzers, code fixes (including fix all providers) and refactoring
 3. All tests pass
 4. Analyzers follow the guidelines for names
-  1. Always named `<featurename>Analyzer`
-  2. Always add the diagnostic id to the `DiagnosticIds.cs` file.
+
+        1. Always named `<featurename>Analyzer`
+        2. Always add the diagnostic id to the `DiagnosticIds.cs` file.
 5. Code fixes should follow the guidelines for names
-  1. Always named `<featurename>CodeFixProvider`
-  2. Always use the same diagnostic id added to the `DiagnosticIds.cs` file, unless you are writing a code fix for a diagnostic id raised by the C# compiler itself (staring with `CS`).
+
+        1. Always named `<featurename>CodeFixProvider`
+        2. Always use the same diagnostic id added to the `DiagnosticIds.cs` file, unless you are writing a code fix for a diagnostic id raised by the C# compiler itself (staring with `CS`).
 6. Fix all scenarios (fix all in document, fix all in project and fix all in solution) work. You might need to write a `FixAllProvider`. Check the `DisposableVariableNotDisposedFixAllProvider` as an example.
 7. Follow the coding standards present on the project code files.
 8. Works in Visual Studio
