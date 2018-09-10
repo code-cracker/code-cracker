@@ -66,7 +66,7 @@ namespace CodeCracker.Test.CSharp.Performance
         {
             var test = @"int a = 10;".WrapInCSharpMethod();
             var expected = new DiagnosticResult(DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(), DiagnosticSeverity.Info)
-                .WithLocation(10, 17)
+                .WithLocation(10, 13)
                 .WithMessage("This variable can be made const.");
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -77,7 +77,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var test = @"var a = 10;".WrapInCSharpMethod();
 
             var expected = new DiagnosticResult(DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(), DiagnosticSeverity.Info)
-                .WithLocation(10, 17)
+                .WithLocation(10, 13)
                 .WithMessage("This variable can be made const.");
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -88,7 +88,7 @@ namespace CodeCracker.Test.CSharp.Performance
             var test = @"Foo a = null;".WrapInCSharpMethod();
 
             var expected = new DiagnosticResult(DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(), DiagnosticSeverity.Info)
-                .WithLocation(10, 17)
+                .WithLocation(10, 13)
                 .WithMessage("This variable can be made const.");
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

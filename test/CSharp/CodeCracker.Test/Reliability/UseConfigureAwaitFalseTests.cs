@@ -9,12 +9,12 @@ namespace CodeCracker.Test.CSharp.Reliability
     public class UseConfigureAwaitFalseTests : CodeFixVerifier<UseConfigureAwaitFalseAnalyzer, UseConfigureAwaitFalseCodeFixProvider>
     {
         [Theory]
-        [InlineData("System.Threading.Tasks.Task t; await t;", 48)]
-        [InlineData("System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42);", 48)]
-        [InlineData("await System.Threading.Tasks.Task.Delay(1000);", 17)]
-        [InlineData("await System.Threading.Tasks.Task.FromResult(0);", 17)]
-        [InlineData("await System.Threading.Tasks.Task.Run(() => {});", 17)]
-        [InlineData("Func<System.Threading.Tasks.Task> f; await f();", 54)]
+        [InlineData("System.Threading.Tasks.Task t; await t;", 44)]
+        [InlineData("System.Threading.Tasks.Task t; await t.ContinueWith(_ => 42);", 44)]
+        [InlineData("await System.Threading.Tasks.Task.Delay(1000);", 13)]
+        [InlineData("await System.Threading.Tasks.Task.FromResult(0);", 13)]
+        [InlineData("await System.Threading.Tasks.Task.Run(() => {});", 13)]
+        [InlineData("Func<System.Threading.Tasks.Task> f; await f();", 50)]
         public async Task WhenAwaitingTaskAnalyzerCreatesDiagnostic(string sample, int column)
         {
             var test = sample.WrapInCSharpMethod(isAsync: true);

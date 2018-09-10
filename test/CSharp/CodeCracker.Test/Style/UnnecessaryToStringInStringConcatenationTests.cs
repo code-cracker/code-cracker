@@ -30,7 +30,7 @@ namespace CodeCracker.Test.CSharp.Style
         {
             var source = @"var foo = ""a"" + new System.Text.StringBuilder().ToString();".WrapInCSharpMethod();
 
-            var expected = CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(10, 64);
+            var expected = CreateUnnecessaryToStringInStringConcatenationDiagnosticResult(10, 60);
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }

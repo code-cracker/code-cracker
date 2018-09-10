@@ -34,7 +34,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         {
             var source = "if (true && true) { }".WrapInCSharpMethod();
             var expected = new DiagnosticResult(DiagnosticId.SplitIntoNestedIf.ToDiagnosticId(), DiagnosticSeverity.Hidden)
-                .WithLocation(10, 21)
+                .WithLocation(10, 17)
                 .WithMessage(string.Format(SplitIntoNestedIfAnalyzer.Message));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }

@@ -40,7 +40,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
             var source = original.WrapInCSharpMethod();
             var expression = original.Substring(columnOffset, original.Length - columnOffset - columnRightTrim - 1);
             var expected = new DiagnosticResult(DiagnosticId.ComputeExpression.ToDiagnosticId(), DiagnosticSeverity.Hidden)
-                .WithLocation(10, 17 + columnOffset)
+                .WithLocation(10, 13 + columnOffset)
                 .WithMessage(string.Format(ComputeExpressionAnalyzer.Message, expression));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
