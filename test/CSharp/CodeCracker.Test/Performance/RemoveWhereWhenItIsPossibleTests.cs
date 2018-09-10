@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,13 +33,9 @@ namespace Sample
         }
     }
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId(),
-                Message = "You can remove 'Where' moving the predicate to '" + method + "'.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 23) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(11, 23)
+                .WithMessage("You can remove 'Where' moving the predicate to '" + method + "'.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
 

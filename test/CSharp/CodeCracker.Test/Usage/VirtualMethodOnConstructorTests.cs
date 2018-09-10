@@ -2,6 +2,7 @@
 using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Usage {
@@ -21,12 +22,9 @@ public class Person
 	{
 	}
 }";
-            var expected = new DiagnosticResult {
-                Id = DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
-                Message = VirtualMethodOnConstructorAnalyzer.Message,
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 3) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(6, 3)
+                .WithMessage(VirtualMethodOnConstructorAnalyzer.Message);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -45,12 +43,9 @@ public class Person
 	{
 	}
 }";
-            var expected = new DiagnosticResult {
-                Id = DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
-                Message = VirtualMethodOnConstructorAnalyzer.Message,
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 3) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(6, 3)
+                .WithMessage(VirtualMethodOnConstructorAnalyzer.Message);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -110,18 +105,12 @@ public class Person
 	{
 	}
 }";
-            var expected = new DiagnosticResult {
-                Id = DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
-                Message = VirtualMethodOnConstructorAnalyzer.Message,
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 3) }
-            };
-            var expected2 = new DiagnosticResult {
-                Id = DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(),
-                Message = VirtualMethodOnConstructorAnalyzer.Message,
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 3) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(6, 3)
+                .WithMessage(VirtualMethodOnConstructorAnalyzer.Message);
+            var expected2 = new DiagnosticResult(DiagnosticId.VirtualMethodOnConstructor.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(7, 3)
+                .WithMessage(VirtualMethodOnConstructorAnalyzer.Message);
             await VerifyCSharpDiagnosticAsync(test, expected, expected2);
         }
 

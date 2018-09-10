@@ -1,6 +1,7 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 namespace CodeCracker.Test.CSharp.Refactoring
 {
@@ -50,13 +51,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
                 void car() { }
             }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.AllowMembersOrdering.ToDiagnosticId(),
-                Message = AllowMembersOrderingAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 14 + typeDeclaration.Length) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.AllowMembersOrdering.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(2, 14 + typeDeclaration.Length)
+                .WithMessage(AllowMembersOrderingAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

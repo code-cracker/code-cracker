@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -32,7 +33,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         {
             var source = $"var args = new PropertyChangedEventArgs({ctorArg})";
 
-            await VerifyCSharpDiagnosticAsync(source, PropertyChangedUnnecessaryAllocationDiagnostic(0, 12));
+            await VerifyCSharpDiagnosticAsync(source, PropertyChangedUnnecessaryAllocationDiagnostic(1, 12));
         }
 
         [Theory]
@@ -57,7 +58,7 @@ public class Test
         {
             var source = $"object args = new {{ Name = new PropertyChangedEventArgs({ctorArg}) }}";
 
-            await VerifyCSharpDiagnosticAsync(source, PropertyChangedUnnecessaryAllocationDiagnostic(0, 28));
+            await VerifyCSharpDiagnosticAsync(source, PropertyChangedUnnecessaryAllocationDiagnostic(1, 28));
         }
 
         [Theory]
@@ -148,16 +149,9 @@ public class Test
 
         public static DiagnosticResult PropertyChangedUnnecessaryAllocationDiagnostic(int line, int column)
         {
-            return new DiagnosticResult
-            {
-                Id = DiagnosticId.PropertyChangedEventArgsUnnecessaryAllocation.ToDiagnosticId(),
-                Message = "Create PropertyChangedEventArgs static instance and reuse it to avoid unecessary memory allocation.",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[]
-                {
-                    new DiagnosticResultLocation("Test0.cs", line, column),
-                }
-            };
+            return new DiagnosticResult(DiagnosticId.PropertyChangedEventArgsUnnecessaryAllocation.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(line, column)
+                .WithMessage("Create PropertyChangedEventArgs static instance and reuse it to avoid unecessary memory allocation.");
         }
 
         public static IEnumerable<object[]> SharedDataCodeFix

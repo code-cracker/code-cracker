@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
 
 namespace CodeCracker.Test.CSharp.Usage
 {
@@ -10,14 +11,12 @@ namespace CodeCracker.Test.CSharp.Usage
     {
         protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() => new NoPrivateReadonlyFieldAnalyzer();
 
-        static DiagnosticResult CreateExpectedDiagnosticResult(int line, int column, string fieldName = "i") =>
-            new DiagnosticResult
-            {
-                Id = DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(),
-                Message = string.Format(NoPrivateReadonlyFieldAnalyzer.Message, fieldName),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-            };
+        static DiagnosticResult CreateExpectedDiagnosticResult(int line, int column, string fieldName = "i")
+        {
+            return new DiagnosticResult(DiagnosticId.NoPrivateReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(line, column)
+                .WithMessage(string.Format(NoPrivateReadonlyFieldAnalyzer.Message, fieldName));
+        }
 
         [Fact]
         public async Task PrivateFieldWithAssignmentOnDeclarationCreatesNoDiagnostic()

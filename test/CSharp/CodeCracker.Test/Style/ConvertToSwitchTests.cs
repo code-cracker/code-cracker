@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -38,13 +39,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertToSwitch.ToDiagnosticId(),
-                Message = "You could use 'switch' instead of 'if'.",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertToSwitch.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 17)
+                .WithMessage("You could use 'switch' instead of 'if'.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -76,13 +73,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertToSwitch.ToDiagnosticId(),
-                Message = "You could use 'switch' instead of 'if'.",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertToSwitch.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 17)
+                .WithMessage("You could use 'switch' instead of 'if'.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

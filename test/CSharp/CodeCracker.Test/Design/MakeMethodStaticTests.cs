@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -100,13 +101,9 @@ static string i;")]
         public async Task WithDiagnostic(string code)
         {
             var source = code.WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.MakeMethodStatic.ToDiagnosticId(),
-                Message = string.Format(MakeMethodStaticAnalyzer.MessageFormat, "Foo"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 18) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.MakeMethodStatic.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(8, 18)
+                .WithMessage(string.Format(MakeMethodStaticAnalyzer.MessageFormat, "Foo"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -1014,13 +1011,9 @@ struct Foo
     }
     public static void N() { }
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.MakeMethodStatic.ToDiagnosticId(),
-                Message = string.Format(MakeMethodStaticAnalyzer.MessageFormat, "M"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.MakeMethodStatic.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(4, 17)
+                .WithMessage(string.Format(MakeMethodStaticAnalyzer.MessageFormat, "M"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -1053,13 +1046,9 @@ class Foo
 
     public static void N() { }
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.MakeMethodStatic.ToDiagnosticId(),
-                Message = string.Format(MakeMethodStaticAnalyzer.MessageFormat, "GetEnumerator"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.MakeMethodStatic.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(4, 17)
+                .WithMessage(string.Format(MakeMethodStaticAnalyzer.MessageFormat, "GetEnumerator"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

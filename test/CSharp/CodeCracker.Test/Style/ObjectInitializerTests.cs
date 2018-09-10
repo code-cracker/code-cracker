@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -141,13 +142,9 @@ p.Age = 25;
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(),
-                Message = "You can use initializers in here.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(8, 17)
+                .WithMessage("You can use initializers in here.");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -284,13 +281,9 @@ class Program
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(),
-                Message = "You can use initializers in here.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ObjectInitializer_LocalDeclaration.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(15, 17)
+                .WithMessage("You can use initializers in here.");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -520,13 +513,9 @@ public void Foo()
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ObjectInitializer_Assignment.ToDiagnosticId(),
-                Message = "You can use initializers in here.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ObjectInitializer_Assignment.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(9, 17)
+                .WithMessage("You can use initializers in here.");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

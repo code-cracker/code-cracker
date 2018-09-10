@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,13 +20,9 @@ namespace CodeCracker.Test.CSharp.Performance
                     } 
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
-                Message = "Remove Empty Finalizers",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.EmptyFinalizer.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(4, 21)
+                .WithMessage("Remove Empty Finalizers");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -42,13 +39,9 @@ namespace CodeCracker.Test.CSharp.Performance
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
-                Message = "Remove Empty Finalizers",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.EmptyFinalizer.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(4, 21)
+                .WithMessage("Remove Empty Finalizers");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -68,13 +61,9 @@ namespace CodeCracker.Test.CSharp.Performance
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.EmptyFinalizer.ToDiagnosticId(),
-                Message = "Remove Empty Finalizers",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.EmptyFinalizer.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(4, 21)
+                .WithMessage("Remove Empty Finalizers");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

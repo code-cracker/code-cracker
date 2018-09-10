@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -52,13 +53,9 @@ namespace CodeCracker.Test.CSharp.Style
             public int MyProperty { get; set; }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.PropertyPrivateSet.ToDiagnosticId(),
-                Message = PropertyPrivateSetAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.PropertyPrivateSet.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(8, 13)
+                .WithMessage(PropertyPrivateSetAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -174,13 +175,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConsoleWriteLine.ToDiagnosticId(),
-                Message = ConsoleWriteLineAnalyzer.MessageFormat.ToString(),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConsoleWriteLine.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(11, 17)
+                .WithMessage(ConsoleWriteLineAnalyzer.MessageFormat.ToString());
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -200,13 +197,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConsoleWriteLine.ToDiagnosticId(),
-                Message = ConsoleWriteLineAnalyzer.MessageFormat.ToString(),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConsoleWriteLine.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 17)
+                .WithMessage(ConsoleWriteLineAnalyzer.MessageFormat.ToString());
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -404,13 +397,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConsoleWriteLine.ToDiagnosticId(),
-                Message = ConsoleWriteLineAnalyzer.MessageFormat.ToString(),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConsoleWriteLine.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(11, 17)
+                .WithMessage(ConsoleWriteLineAnalyzer.MessageFormat.ToString());
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

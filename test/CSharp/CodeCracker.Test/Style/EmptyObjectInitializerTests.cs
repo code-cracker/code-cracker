@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,13 +12,9 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task EmptyObjectInitializerTriggersFix()
         {
             const string code = @"var a = new A {};";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.EmptyObjectInitializer.ToDiagnosticId(),
-                Message = "Remove the empty object initializer.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 15) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.EmptyObjectInitializer.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(1, 15)
+                .WithMessage("Remove the empty object initializer.");
 
             await VerifyCSharpDiagnosticAsync(code, expected);
         }

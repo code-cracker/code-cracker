@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -80,13 +81,11 @@ namespace CodeCracker.Test.CSharp.Refactoring
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
-        private static DiagnosticResult CreateDiagnosticResult(string literal, bool isDecimal, int row = 10, int col = 25) =>
-            new DiagnosticResult
-            {
-                Id = DiagnosticId.NumericLiteral.ToDiagnosticId(),
-                Message = string.Format(NumericLiteralAnalyzer.Message, literal, isDecimal ? "hexadecimal" : "decimal"),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] {new DiagnosticResultLocation("Test0.cs", row, col)}
-            };
+        private static DiagnosticResult CreateDiagnosticResult(string literal, bool isDecimal, int row = 10, int col = 25)
+        {
+            return new DiagnosticResult(DiagnosticId.NumericLiteral.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(row, col)
+                .WithMessage(string.Format(NumericLiteralAnalyzer.Message, literal, isDecimal ? "hexadecimal" : "decimal"));
+        }
     }
 }

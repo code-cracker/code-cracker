@@ -1,5 +1,6 @@
 ﻿Imports CodeCracker.VisualBasic.Performance
 Imports Microsoft.CodeAnalysis
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Performance
@@ -39,39 +40,27 @@ Namespace Performance
         <Fact>
         Public Async Function CreateDiagnosticsWhenAssigningAPotentialConstant() As Task
             Dim test = "Dim a As Integer = 10".WrapInVBMethod()
-            Dim expected = New DiagnosticResult With
-        {
-            .Id = MakeLocalVariableConstWhenPossibleAnalyzer.Id,
-            .Message = "This variable can be made const.",
-            .Severity = DiagnosticSeverity.Info,
-            .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 13)}
-        }
+            Dim expected = New DiagnosticResult(MakeLocalVariableConstWhenPossibleAnalyzer.Id, DiagnosticSeverity.Info) _
+                .WithLocation(6, 13) _
+                .WithMessage("This variable can be made const.")
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 
         <Fact>
         Public Async Function CreateDiagnosticsWhenAssigningAPotentialConstantUsingTypeInference() As Task
             Dim test = "Dim a = 10".WrapInVBMethod()
-            Dim expected = New DiagnosticResult With
-        {
-            .Id = MakeLocalVariableConstWhenPossibleAnalyzer.Id,
-            .Message = "This variable can be made const.",
-            .Severity = DiagnosticSeverity.Info,
-            .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 13)}
-        }
+            Dim expected = New DiagnosticResult(MakeLocalVariableConstWhenPossibleAnalyzer.Id, DiagnosticSeverity.Info) _
+                .WithLocation(6, 13) _
+                .WithMessage("This variable can be made const.")
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 
         <Fact>
         Public Async Function CreateDiagnosticsWhenAssigningNothingToAReferenceType() As Task
             Dim test = "Dim a As Foo = Nothing".WrapInVBMethod()
-            Dim expected = New DiagnosticResult With
-        {
-            .Id = MakeLocalVariableConstWhenPossibleAnalyzer.Id,
-            .Message = "This variable can be made const.",
-            .Severity = DiagnosticSeverity.Info,
-            .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 13)}
-        }
+            Dim expected = New DiagnosticResult(MakeLocalVariableConstWhenPossibleAnalyzer.Id, DiagnosticSeverity.Info) _
+                .WithLocation(6, 13) _
+                .WithMessage("This variable can be made const.")
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 

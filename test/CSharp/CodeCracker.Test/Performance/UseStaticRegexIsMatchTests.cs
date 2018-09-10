@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,13 +27,9 @@ namespace CodeCracker.Test.CSharp.Performance
         [Fact]
         public async Task CreatesDiagnosticsWhenDeclaringALocalRegexAndUsingIsMatch()
         {
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseStaticRegexIsMatch.ToDiagnosticId(),
-                Message = UseStaticRegexIsMatchAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseStaticRegexIsMatch.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(12, 17)
+                .WithMessage(UseStaticRegexIsMatchAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

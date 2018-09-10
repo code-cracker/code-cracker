@@ -1,5 +1,6 @@
 ﻿Imports CodeCracker.VisualBasic.Usage
 Imports Microsoft.CodeAnalysis.Diagnostics
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Usage
@@ -19,12 +20,9 @@ Namespace ConsoleApplication1
 End Namespace"
 
         Private Shared Function CreateDiagnosticResult(line As Integer, column As Integer) As DiagnosticResult
-            Return New DiagnosticResult With {
-                .Id = DiagnosticId.JsonNet.ToDiagnosticId(),
-                .Message = "Unexpected end when reading JSON. Path '', line 1, position 3.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", line, column)}
-            }
+            Return New DiagnosticResult(DiagnosticId.JsonNet.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Error) _
+                .WithLocation(line, column) _
+                .WithMessage("Unexpected end when reading JSON. Path '', line 1, position 3.")
         End Function
 
         Protected Overrides Function GetDiagnosticAnalyzer() As DiagnosticAnalyzer

@@ -1,6 +1,7 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,16 +31,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
 
             public string Value { get { return _value; } }
             ".WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = "CC0125",
-                Message = GetDiagnosticMessage("Value"),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 16, 27)
-                        }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(16, 27)
+                .WithMessage(GetDiagnosticMessage("Value"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
 
@@ -83,16 +77,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
 
             public string Value { get { return this.value; } }
             ".WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(),
-                Message = GetDiagnosticMessage("Value"),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 16, 27)
-                        }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(16, 27)
+                .WithMessage(GetDiagnosticMessage("Value"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
 
@@ -125,26 +112,12 @@ namespace CodeCracker.Test.CSharp.Refactoring
             public string Value2 { get { return this.value2; } }
             ".WrapInCSharpClass();
 
-            var expected1 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(),
-                Message = GetDiagnosticMessage("Value"),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 17, 27)
-                        }
-            };
-            var expected2 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(),
-                Message = GetDiagnosticMessage("Value2"),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 18, 27)
-                        }
-            };
+            var expected1 = new DiagnosticResult(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(17, 27)
+                .WithMessage(GetDiagnosticMessage("Value"));
+            var expected2 = new DiagnosticResult(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(18, 27)
+                .WithMessage(GetDiagnosticMessage("Value2"));
 
             await VerifyCSharpDiagnosticAsync(test, new DiagnosticResult[] { expected1, expected2 });
 
@@ -176,26 +149,12 @@ namespace CodeCracker.Test.CSharp.Refactoring
             public string Value { get { return this.value; } }
             public string Value2 { get { return this.value2; } }
             ".WrapInCSharpClass();
-            var expected1 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(),
-                Message = GetDiagnosticMessage("Value"),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 17, 27)
-                        }
-            };
-            var expected2 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(),
-                Message = GetDiagnosticMessage("Value2"),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 18, 27)
-                        }
-            };
+            var expected1 = new DiagnosticResult(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(17, 27)
+                .WithMessage(GetDiagnosticMessage("Value"));
+            var expected2 = new DiagnosticResult(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(18, 27)
+                .WithMessage(GetDiagnosticMessage("Value2"));
 
             await VerifyCSharpDiagnosticAsync(test, new DiagnosticResult[] { expected1, expected2 });
 
@@ -229,16 +188,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
             public IEnumerable<string> Value { get { return this.value; } }
             public IList<string> Value2 { get { return this.value2; } }
             ".WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(),
-                Message = GetDiagnosticMessage("Value2"),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 18, 34)
-                        }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReplaceWithGetterOnlyAutoProperty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(18, 34)
+                .WithMessage(GetDiagnosticMessage("Value2"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
 

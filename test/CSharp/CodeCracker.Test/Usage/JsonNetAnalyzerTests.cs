@@ -2,6 +2,7 @@
 using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Usage
@@ -94,12 +95,9 @@ namespace ConsoleApplication1
         }
 
         private static DiagnosticResult CreateDiagnosticResult(int line, int column) {
-            return new DiagnosticResult {
-                Id = DiagnosticId.JsonNet.ToDiagnosticId(),
-                Message = "Unexpected end when reading JSON. Path '', line 1, position 3.",
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] {new DiagnosticResultLocation("Test0.cs", line, column)}
-            };
+            return new DiagnosticResult(DiagnosticId.JsonNet.ToDiagnosticId(), DiagnosticSeverity.Error)
+                .WithLocation(line, column)
+                .WithMessage("Unexpected end when reading JSON. Path '', line 1, position 3.");
         }
 
         protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() => new JsonNetAnalyzer();

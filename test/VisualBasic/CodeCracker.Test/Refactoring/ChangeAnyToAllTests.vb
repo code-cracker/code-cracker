@@ -1,5 +1,6 @@
 ﻿Imports CodeCracker.VisualBasic.Refactoring
 Imports Microsoft.CodeAnalysis
+Imports Microsoft.CodeAnalysis.Testing
 Imports System.Threading.Tasks
 Imports Xunit
 
@@ -29,12 +30,9 @@ Namespace Refactoring
         Public Async Function AnyAndAllWithLinqCreatesDiagnostic(code As String, column As Integer, diagnosticId As DiagnosticId) As Task
             Dim source = code.WrapInVBMethod(imports:="
 Imports System.Linq")
-            Dim expected = New DiagnosticResult With {
-                .Id = diagnosticId.ToDiagnosticId(),
-                .Message = If(diagnosticId = DiagnosticId.ChangeAnyToAll, ChangeAnyToAllAnalyzer.MessageAny, ChangeAnyToAllAnalyzer.MessageAll),
-                .Severity = DiagnosticSeverity.Hidden,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 9, column)}
-            }
+            Dim expected = New DiagnosticResult(diagnosticId.ToDiagnosticId(), DiagnosticSeverity.Hidden) _
+                .WithLocation(9, column) _
+                .WithMessage(If(diagnosticId = DiagnosticId.ChangeAnyToAll, ChangeAnyToAllAnalyzer.MessageAny, ChangeAnyToAllAnalyzer.MessageAll))
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
 

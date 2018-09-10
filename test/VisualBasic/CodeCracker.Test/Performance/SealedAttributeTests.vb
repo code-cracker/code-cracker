@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Performance
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Performance
@@ -12,13 +13,9 @@ Public Class MyAttribute
     Inherits System.Attribute
 End Class"
 
-            Dim expected = New DiagnosticResult With
-                {
-                .Id = SealedAttributeAnalyzer.Id,
-                .Message = "Mark 'MyAttribute' as NotInheritable.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 2, 14)}
-            }
+            Dim expected = New DiagnosticResult(SealedAttributeAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(2, 14) _
+                .WithMessage("Mark 'MyAttribute' as NotInheritable.")
 
             Await VerifyBasicDiagnosticAsync(test, expected)
 
@@ -35,13 +32,9 @@ Public Class OtherAttribute
     Inherits MyAttribute
 End Class"
 
-            Dim expected = New DiagnosticResult With
-                {
-                .Id = SealedAttributeAnalyzer.Id,
-                .Message = "Mark 'OtherAttribute' as NotInheritable.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 14)}
-            }
+            Dim expected = New DiagnosticResult(SealedAttributeAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(6, 14) _
+                .WithMessage("Mark 'OtherAttribute' as NotInheritable.")
 
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function

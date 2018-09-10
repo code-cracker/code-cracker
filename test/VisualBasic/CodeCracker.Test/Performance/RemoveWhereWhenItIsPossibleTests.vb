@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Performance
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Performance
@@ -26,13 +27,9 @@ Namespace Sample
     End Class
 End Namespace"
 
-            Dim expected = New DiagnosticResult With
-            {
-                .Id = RemoveWhereWhenItIsPossibleAnalyzer.Id,
-                .Message = "You can remove 'Where' moving the predicate to '" + method + "'.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 7, 23)}
-            }
+            Dim expected = New DiagnosticResult(RemoveWhereWhenItIsPossibleAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(7, 23) _
+                .WithMessage("You can remove 'Where' moving the predicate to '" + method + "'.")
 
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function

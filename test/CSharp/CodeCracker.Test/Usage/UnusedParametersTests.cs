@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -330,13 +331,9 @@ public int Foo(int @a)
 
         public static DiagnosticResult CreateDiagnosticResult(string parameterName, int line, int column)
         {
-            return new DiagnosticResult
-            {
-                Id = DiagnosticId.UnusedParameters.ToDiagnosticId(),
-                Message = string.Format(UnusedParametersAnalyzer.Message, parameterName),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-            };
+            return new DiagnosticResult(DiagnosticId.UnusedParameters.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(line, column)
+                .WithMessage(string.Format(UnusedParametersAnalyzer.Message, parameterName));
         }
 
         [Fact]

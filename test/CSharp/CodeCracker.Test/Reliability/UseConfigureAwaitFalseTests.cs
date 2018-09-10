@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Reliability;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -18,13 +19,9 @@ namespace CodeCracker.Test.CSharp.Reliability
         {
             var test = sample.WrapInCSharpMethod(isAsync: true);
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId(),
-                Message = "Consider using ConfigureAwait(false) on the awaited task.",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, column) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, column)
+                .WithMessage("Consider using ConfigureAwait(false) on the awaited task.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

@@ -1,5 +1,6 @@
 ﻿Imports CodeCracker.VisualBasic.Design
 Imports Microsoft.CodeAnalysis
+Imports Microsoft.CodeAnalysis.Testing
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports System.IO
@@ -18,12 +19,9 @@ Public Class TestClass
     End Sub
 End Class"
 
-            Dim expected = New DiagnosticResult With {
-                .Id = DiagnosticId.StaticConstructorException.ToDiagnosticId(),
-                .Message = "Don't throw exceptions inside static constructors.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 4, 9)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.StaticConstructorException.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(4, 9) _
+                .WithMessage("Don't throw exceptions inside static constructors.")
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 

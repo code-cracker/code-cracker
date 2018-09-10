@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -113,7 +114,8 @@ namespace CodeCracker.Test
         private async static Task VerifyDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer, DiagnosticResult[] expected, LanguageVersion languageVersionCSharp, Microsoft.CodeAnalysis.VisualBasic.LanguageVersion languageVersionVB)
         {
             var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer, languageVersionCSharp, languageVersionVB).ConfigureAwait(true);
-            VerifyDiagnosticResults(diagnostics, analyzer, expected);
+            var defaultFilePath = language == LanguageNames.CSharp ? CSharpDefaultFilePath : VisualBasicDefaultFilePath;
+            VerifyDiagnosticResults(diagnostics, analyzer, defaultFilePath, expected);
         }
 
 
@@ -124,7 +126,7 @@ namespace CodeCracker.Test
         /// <param name="actualResults">The Diagnostics found by the compiler after running the analyzer on the source code</param>
         /// <param name="analyzer">The analyzer that was being run on the sources</param>
         /// <param name="expectedResults">Diagnsotic Results that should have appeared in the code</param>
-        private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expectedResults)
+        private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, string defaultFilePath, params DiagnosticResult[] expectedResults)
         {
             var expectedCount = expectedResults.Length;
             var actualCount = actualResults.Count();
@@ -139,9 +141,9 @@ namespace CodeCracker.Test
             for (int i = 0; i < expectedResults.Length; i++)
             {
                 var actual = actualResults.ElementAt(i);
-                var expected = expectedResults[i];
+                var expected = expectedResults[i].WithDefaultPath(defaultFilePath);
 
-                if (expected.Line == -1 && expected.Column == -1)
+                if (!expected.HasLocation)
                 {
                     if (actual.Location != Location.None)
                     {
@@ -150,17 +152,17 @@ namespace CodeCracker.Test
                 }
                 else
                 {
-                    VerifyDiagnosticLocation(analyzer, actual, actual.Location, expected.Locations.First());
+                    VerifyDiagnosticLocation(analyzer, actual, actual.Location, expected.Spans.First());
                     var additionalLocations = actual.AdditionalLocations.ToArray();
 
-                    if (additionalLocations.Length != expected.Locations.Length - 1)
+                    if (additionalLocations.Length != expected.Spans.Length - 1)
                     {
-                        Assert.True(false, $"Expected {expected.Locations.Length - 1} additional locations but got {additionalLocations.Length} for Diagnostic:\r\n    {FormatDiagnostics(analyzer, actual)}\r\n");
+                        Assert.True(false, $"Expected {expected.Spans.Length - 1} additional locations but got {additionalLocations.Length} for Diagnostic:\r\n    {FormatDiagnostics(analyzer, actual)}\r\n");
                     }
 
                     for (int j = 0; j < additionalLocations.Length; ++j)
                     {
-                        VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expected.Locations[j + 1]);
+                        VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expected.Spans[j + 1]);
                     }
                 }
 
@@ -182,7 +184,7 @@ namespace CodeCracker.Test
         /// <param name="diagnostic">The diagnostic that was found in the code</param>
         /// <param name="actual">The Location of the Diagnostic found in the code</param>
         /// <param name="expected">The DiagnosticResultLocation that should have been found</param>
-        private static void VerifyDiagnosticLocation(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
+        private static void VerifyDiagnosticLocation(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, FileLinePositionSpan expected)
         {
             var actualSpan = actual.GetLineSpan();
 
@@ -193,13 +195,13 @@ namespace CodeCracker.Test
 
             // Only check line position if there is an actual line in the real diagnostic
             if (actualLinePosition.Line > 0)
-                if (actualLinePosition.Line + 1 != expected.Line)
-                    Assert.True(false, $"Expected diagnostic to be on line \"{expected.Line}\" was actually on line \"{actualLinePosition.Line + 1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
+                if (actualLinePosition.Line != expected.StartLinePosition.Line)
+                    Assert.True(false, $"Expected diagnostic to be on line \"{expected.StartLinePosition.Line + 1}\" was actually on line \"{actualLinePosition.Line + 1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
 
             // Only check column position if there is an actual column position in the real diagnostic
             if (actualLinePosition.Character > 0)
-                if (actualLinePosition.Character + 1 != expected.Column)
-                    Assert.True(false, $"Expected diagnostic to start at column \"{expected.Column}\" was actually at column \"{actualLinePosition.Character + 1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
+                if (actualLinePosition.Character != expected.StartLinePosition.Character)
+                    Assert.True(false, $"Expected diagnostic to start at column \"{expected.StartLinePosition.Character + 1}\" was actually at column \"{actualLinePosition.Character + 1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
         }
 
         /// <summary>

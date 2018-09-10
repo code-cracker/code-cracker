@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,13 +17,9 @@ namespace CodeCracker.Test.CSharp.Usage
                 throw new ArgumentException(""message"", ""c"");
             }");
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
-                Message = "Type argument 'c' is not in the argument list.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 56) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ArgumentException.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(11, 56)
+                .WithMessage("Type argument 'c' is not in the argument list.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -36,13 +33,9 @@ namespace CodeCracker.Test.CSharp.Usage
                 throw new ArgumentException(""message"", ""c"");
             }");
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
-                Message = "Type argument 'c' is not in the argument list.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 56) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ArgumentException.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(11, 56)
+                .WithMessage("Type argument 'c' is not in the argument list.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -145,13 +138,9 @@ namespace CodeCracker.Test.CSharp.Usage
             }
             ");
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
-                Message = "Type argument 'c' is not in the argument list.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 62) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ArgumentException.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(12, 62)
+                .WithMessage("Type argument 'c' is not in the argument list.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -187,13 +176,9 @@ namespace CodeCracker.Test.CSharp.Usage
             }
             ");
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
-                Message = "Type argument 'c' is not in the argument list.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 62) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ArgumentException.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(11, 62)
+                .WithMessage("Type argument 'c' is not in the argument list.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -225,13 +210,9 @@ namespace CodeCracker.Test.CSharp.Usage
             Action<int> action = (p) => { throw new ArgumentException(""message"", ""paramName""); };
             ");
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
-                Message = "Type argument 'paramName' is not in the argument list.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 82) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ArgumentException.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(9, 82)
+                .WithMessage("Type argument 'paramName' is not in the argument list.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

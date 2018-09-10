@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Usage
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Usage
@@ -35,13 +36,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                {
-                .Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
-                .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Info,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 17)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Info) _
+                .WithLocation(5, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
 
@@ -83,20 +80,12 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                {
-                .Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
-                .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Info,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 17)}
-            }
-            Dim expected2 As New DiagnosticResult With
-                {
-                .Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
-                .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field2"),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Info,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 17)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Info) _
+                .WithLocation(5, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
+            Dim expected2 = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Info) _
+                .WithLocation(6, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field2"))
 
             Await VerifyBasicDiagnosticAsync(source, expected, expected2)
         End Function
@@ -122,13 +111,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                {
-                .Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
-                .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Info,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 17)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Info) _
+                .WithLocation(5, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
@@ -154,13 +139,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                {
-                .Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
-                .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Info,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 17)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Info) _
+                .WithLocation(6, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
@@ -208,13 +189,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                {
-                .Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
-                .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 7, 17)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(7, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
@@ -240,13 +217,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                    {
-                    .Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
-                    .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                    .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                    .Locations = {New DiagnosticResultLocation("Test0.vb", 8, 17)}
-                }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(8, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
@@ -273,13 +246,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                        {
-                        .Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
-                        .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                        .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                        .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 17)}
-                    }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(6, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
@@ -307,13 +276,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                        {
-                        .Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
-                        .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                        .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                        .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 17)}
-                    }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(6, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
@@ -334,13 +299,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                        {
-                        .Id = DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(),
-                        .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                        .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                        .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 17)}
-                    }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Created.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(5, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
@@ -361,13 +322,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As New DiagnosticResult With
-                        {
-                        .Id = DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(),
-                        .Message = String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"),
-                        .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Info,
-                        .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 17)}
-                    }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposableFieldNotDisposed_Returned.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Info) _
+                .WithLocation(5, 17) _
+                .WithMessage(String.Format(DisposableFieldNotDisposedAnalyzer.MessageFormat, "field"))
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function

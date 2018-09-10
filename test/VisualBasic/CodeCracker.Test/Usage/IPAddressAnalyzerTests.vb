@@ -2,6 +2,7 @@
 Imports CodeCracker.VisualBasic
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Public Class IPAddressAnalyzerTests
@@ -53,11 +54,9 @@ End Namespace"
     End Function
 
     Private Function CreateDiagnosticResult(line As Integer, column As Integer, errorMessageAction As Action) As DiagnosticResult
-        Return New DiagnosticResult With {
-            .Id = DiagnosticId.IPAddress.ToDiagnosticId(),
-            .Message = GetErrorMessage(errorMessageAction),
-            .Severity = DiagnosticSeverity.Error,
-            .Locations = {New DiagnosticResultLocation("Test0.vb", line, column)}}
+        Return New DiagnosticResult(DiagnosticId.IPAddress.ToDiagnosticId(), DiagnosticSeverity.Error) _
+            .WithLocation(line, column) _
+            .WithMessage(GetErrorMessage(errorMessageAction))
     End Function
 
     Private Shared Function GetErrorMessage(action As Action) As String

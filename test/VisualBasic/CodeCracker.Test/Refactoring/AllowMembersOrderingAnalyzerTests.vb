@@ -1,6 +1,7 @@
 ﻿Imports Microsoft.CodeAnalysis.Diagnostics
 Imports CodeCracker.VisualBasic.Refactoring
 Imports Xunit
+Imports Microsoft.CodeAnalysis.Testing
 
 Namespace Refactoring
     Public Class AllowMembersOrderingAnalyzerTests
@@ -43,12 +44,9 @@ End {0}", typeDeclaration)
     End Sub
 End {0}", typeDeclaration)
 
-            Dim expected = New DiagnosticResult With {
-                .Id = AllowMembersOrderingAnalyzer.Id,
-                .Message = AllowMembersOrderingAnalyzer.MessageFormat,
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 2, 14 + typeDeclaration.Length)}
-                }
+            Dim expected = New DiagnosticResult(AllowMembersOrderingAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden) _
+                .WithLocation(2, 14 + typeDeclaration.Length) _
+                .WithMessage(AllowMembersOrderingAnalyzer.MessageFormat)
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
     End Class

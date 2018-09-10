@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Microsoft.CodeAnalysis.Diagnostics;
 using CodeCracker.CSharp.Usage;
+using Microsoft.CodeAnalysis.Testing;
 
 namespace CodeCracker.Test.CSharp.Usage
 {
@@ -82,13 +83,9 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task NoParametersCreatesError()
         {
             var source = @"var result = string.Format(""{0}"");".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(),
-                Message = StringFormatArgsAnalyzer.InvalidArgsReferenceMessage,
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(), DiagnosticSeverity.Error)
+                .WithLocation(10, 30)
+                .WithMessage(StringFormatArgsAnalyzer.InvalidArgsReferenceMessage);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -96,13 +93,9 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task LessParametersCreatesError()
         {
             var source = @"var result = string.Format(""one {0} two {1}"", ""a"");".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(),
-                Message = StringFormatArgsAnalyzer.InvalidArgsReferenceMessage,
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(), DiagnosticSeverity.Error)
+                .WithLocation(10, 30)
+                .WithMessage(StringFormatArgsAnalyzer.InvalidArgsReferenceMessage);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -110,13 +103,9 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task MoreArgumentsCreatesWarning()
         {
             var source = @"var result = string.Format(""one {0} two {1}"", ""a"", ""b"", ""c"");".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormatArgs_ExtraArgs.ToDiagnosticId(),
-                Message = StringFormatArgsAnalyzer.IncorrectNumberOfArgsMessage,
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormatArgs_ExtraArgs.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 30)
+                .WithMessage(StringFormatArgsAnalyzer.IncorrectNumberOfArgsMessage);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -145,13 +134,9 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task TwoParametersReferencingSamePlaceholderCreatesWarning()
         {
             var source = @"var result = string.Format(""one {0} two {0}"", ""a"", ""b"");".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormatArgs_ExtraArgs.ToDiagnosticId(),
-                Message = StringFormatArgsAnalyzer.IncorrectNumberOfArgsMessage,
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormatArgs_ExtraArgs.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 30)
+                .WithMessage(StringFormatArgsAnalyzer.IncorrectNumberOfArgsMessage);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -183,13 +168,9 @@ namespace CodeCracker.Test.CSharp.Usage
                 var noun = ""Giovanni"";
                 var s = string.Format(@""This {0} is
 """"{1}""""."", noun);".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(),
-                Message = StringFormatArgsAnalyzer.InvalidArgsReferenceMessage,
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(), DiagnosticSeverity.Error)
+                .WithLocation(12, 25)
+                .WithMessage(StringFormatArgsAnalyzer.InvalidArgsReferenceMessage);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -197,13 +178,9 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task InvalidArgumentReferenceCreatesError()
         {
             var source = @"var result = string.Format(""one {1}"", ""a"");".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(),
-                Message = StringFormatArgsAnalyzer.InvalidArgsReferenceMessage,
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(), DiagnosticSeverity.Error)
+                .WithLocation(10, 30)
+                .WithMessage(StringFormatArgsAnalyzer.InvalidArgsReferenceMessage);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -211,13 +188,9 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task NonIntegerPlaceholderCreatesError()
         {
             var source = @"var result = string.Format(""one {notZero}"", ""a"");".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(),
-                Message = StringFormatArgsAnalyzer.InvalidArgsReferenceMessage,
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormatArgs_InvalidArgs.ToDiagnosticId(), DiagnosticSeverity.Error)
+                .WithLocation(10, 30)
+                .WithMessage(StringFormatArgsAnalyzer.InvalidArgsReferenceMessage);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -225,13 +198,9 @@ namespace CodeCracker.Test.CSharp.Usage
         public async Task UnusedArgsCreatesWarning()
         {
             var source = @"string.Format(""{0}{1}{3}{5}"", ""a"", ""b"", ""c"", ""d"", ""e"", ""f"");".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormatArgs_ExtraArgs.ToDiagnosticId(),
-                Message = StringFormatArgsAnalyzer.IncorrectNumberOfArgsMessage,
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormatArgs_ExtraArgs.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 17)
+                .WithMessage(StringFormatArgsAnalyzer.IncorrectNumberOfArgsMessage);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
     }

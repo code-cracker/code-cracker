@@ -1,6 +1,7 @@
 ﻿Imports CodeCracker.VisualBasic.Usage
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Usage
@@ -78,12 +79,9 @@ End Namespace"
         End Function
 
         Private Shared Function CreateDiagnosticResult(line As Integer, column As Integer, getErrorMessageAction As Action) As DiagnosticResult
-            Return New DiagnosticResult() With {
-                .Id = DiagnosticId.Uri.ToDiagnosticId(),
-                .Message = GetErrorMessage(getErrorMessageAction),
-                .Severity = DiagnosticSeverity.[Error],
-                .Locations = New DiagnosticResultLocation() {New DiagnosticResultLocation("Test0.vb", line, column)}
-            }
+            Return New DiagnosticResult(DiagnosticId.Uri.ToDiagnosticId(), DiagnosticSeverity.Error) _
+                .WithLocation(line, column) _
+                .WithMessage(GetErrorMessage(getErrorMessageAction))
         End Function
 
         Private Shared Function GetErrorMessage(action As Action) As String

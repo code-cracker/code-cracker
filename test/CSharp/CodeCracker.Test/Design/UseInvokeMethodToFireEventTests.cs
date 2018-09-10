@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Design
@@ -20,13 +21,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(8, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -45,13 +42,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(8, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -78,13 +71,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(16, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -111,13 +100,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(16, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -144,13 +129,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(16, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -178,13 +159,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 17, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(17, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -212,13 +189,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 17, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(17, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -237,13 +210,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(8, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -267,13 +236,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(13, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -298,13 +263,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(14, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -332,13 +293,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 17, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(17, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -366,13 +323,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 17, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(17, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -410,13 +363,9 @@ namespace CodeCracker.Test.CSharp.Design
                     public void Execute() =>
                         MyEvent(this, System.EventArgs.Empty);
                 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(6, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -460,13 +409,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(13, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -492,13 +437,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "MyEvent"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(15, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "MyEvent"));
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -548,13 +489,9 @@ namespace CodeCracker.Test.CSharp.Design
                         action();
                     }
                 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "action"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "action"));
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -571,13 +508,9 @@ namespace CodeCracker.Test.CSharp.Design
                         action();
                     }
                 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "action"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(8, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "action"));
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -593,13 +526,9 @@ namespace CodeCracker.Test.CSharp.Design
                         if (action == null) throw new Exception();
                     }
                 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "action"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(6, 25)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "action"));
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -683,13 +612,9 @@ public static void Execute(System.Action action)
     if (null == action)
         action();
 }".WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "action"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 9) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(12, 9)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "action"));
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -799,13 +724,9 @@ public static TReturn Method<T, TReturn>(System.Func<T, TReturn> getter) where T
 {
     return getter(default(T));
 }".WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(),
-                Message = string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat.ToString(), "getter"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 12) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseInvokeMethodToFireEvent.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(11, 12)
+                .WithMessage(string.Format(UseInvokeMethodToFireEventAnalyzer.MessageFormat, "getter"));
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 

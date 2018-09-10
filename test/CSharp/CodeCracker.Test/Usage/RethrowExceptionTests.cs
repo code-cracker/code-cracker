@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -27,13 +28,9 @@ namespace CodeCracker.Test.CSharp.Usage
         [Fact]
         public async Task WhenThrowingOriginalExceptionAnalyzerCreatesDiagnostic()
         {
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RethrowException.ToDiagnosticId(),
-                Message = "Throwing the same exception that was caught will lose the original stack trace.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RethrowException.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(12, 21)
+                .WithMessage("Throwing the same exception that was caught will lose the original stack trace.");
 
             await VerifyCSharpDiagnosticAsync(sourceWithUsingSystem, expected);
         }

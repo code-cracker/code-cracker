@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -50,13 +51,9 @@ namespace CodeCracker.Test.CSharp.Performance
                 {
                     myString += """";
                 }".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(14, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -78,13 +75,9 @@ namespace CodeCracker.Test.CSharp.Performance
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(11, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -107,13 +100,9 @@ namespace CodeCracker.Test.CSharp.Performance
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "MyString"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(11, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "MyString"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -128,20 +117,12 @@ namespace CodeCracker.Test.CSharp.Performance
                     myString1 += """";
                     myString2 += """";
                 }".WrapInCSharpMethod();
-            var expected1 = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString1"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, 21) }
-            };
-            var expected2 = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString2"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
-            };
+            var expected1 = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(15, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString1"));
+            var expected2 = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(16, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString2"));
             await VerifyCSharpDiagnosticAsync(source, expected1, expected2);
         }
 
@@ -154,13 +135,9 @@ namespace CodeCracker.Test.CSharp.Performance
                 {
                     myString = myString + """";
                 }".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(14, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -387,13 +364,9 @@ namespace CodeCracker.Test.CSharp.Performance
                 {
                     myString += """";
                 }".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(14, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -443,13 +416,9 @@ namespace CodeCracker.Test.CSharp.Performance
                 {
                     myString += """";
                 }".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(14, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -483,13 +452,9 @@ namespace CodeCracker.Test.CSharp.Performance
                 {
                     myString += """";
                 } while (DateTime.Now.Second % 2 == 0);".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 14, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(14, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -537,13 +502,9 @@ namespace CodeCracker.Test.CSharp.Performance
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(16, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -570,13 +531,9 @@ namespace CodeCracker.Test.CSharp.Performance
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringBuilderInLoop.ToDiagnosticId(),
-                Message = string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A[DateTime.Now.Second]"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringBuilderInLoop.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(16, 21)
+                .WithMessage(string.Format(StringBuilderInLoopAnalyzer.MessageFormat, "someObject.A[DateTime.Now.Second]"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -157,13 +158,9 @@ public System.Collections.Generic.IEnumerable<System.IDisposable> Foo()
         public async Task DisposableVariableCreatesDiagnostic()
         {
             var source = "new System.IO.MemoryStream();".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 17)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -178,13 +175,9 @@ public System.Collections.Generic.IEnumerable<System.IDisposable> Foo()
         public async Task DisposableVariableDeclaredWithAnotherVariableCreatesOnlyOneDiagnostic()
         {
             var source = "System.IO.MemoryStream a, b = new System.IO.MemoryStream();".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 47) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 47)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -336,13 +329,9 @@ class Container
     void Register(System.Action f) { }
 }
 ";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 34) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(7, 34)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -362,13 +351,9 @@ class Container
     void Register(System.Action f) { }
 }
 ";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 32) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(8, 32)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -388,13 +373,9 @@ class Container
     void Register(System.Action<int> f) { }
 }
 ";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 32) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(8, 32)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -414,13 +395,9 @@ class Container
     void Register(System.Action f) { }
 }
 ";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 32) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(8, 32)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -468,13 +445,9 @@ class Container
         public async Task DisposableVariablePassedAsParamCreatesDiagnostic()
         {
             var source = "string.Format(\"\", new System.IO.MemoryStream());".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 35) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 35)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -483,13 +456,9 @@ class Container
         {
             var source = @"var m = new System.IO.MemoryStream();
 m.Dispose(true);".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 25)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -511,13 +480,9 @@ m.Dispose(true);".WrapInCSharpMethod();
                     public void Dispose() { }
                 }
 ";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "Disposable"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 33) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(6, 33)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "Disposable"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -563,13 +528,9 @@ m.Dispose(true);".WrapInCSharpMethod();
                     void IOtherDisposable.Dispose() { }
                 }
 ";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(),
-                Message = string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "Disposable"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 33) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(6, 33)
+                .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "Disposable"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

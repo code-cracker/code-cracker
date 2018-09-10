@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Design
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Design
@@ -591,13 +592,9 @@ End Class"
         End Function
 
         Private Function CreateNameofDiagnosticResult(nameofArgument As String, diagnosticLine As Integer, diagnosticColumn As Integer, Optional id As DiagnosticId = DiagnosticId.NameOf) As DiagnosticResult
-            Return New DiagnosticResult With
-            {
-                .Id = id.ToDiagnosticId(),
-                .Message = $"Use 'NameOf({nameofArgument})' instead of specifying the program element name.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", diagnosticLine, diagnosticColumn)}
-            }
+            Return New DiagnosticResult(id.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(diagnosticLine, diagnosticColumn) _
+                .WithMessage($"Use 'NameOf({nameofArgument})' instead of specifying the program element name.")
         End Function
     End Class
 End Namespace

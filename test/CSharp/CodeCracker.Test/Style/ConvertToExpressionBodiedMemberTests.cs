@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -177,13 +178,9 @@ using System;
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
-                Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(8, 13)
+                .WithMessage(ConvertToExpressionBodiedMemberAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -204,13 +201,9 @@ using System;
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
-                Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(8, 13)
+                .WithMessage(ConvertToExpressionBodiedMemberAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -231,13 +224,9 @@ using System;
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
-                Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(8, 13)
+                .WithMessage(ConvertToExpressionBodiedMemberAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -258,13 +247,9 @@ using System;
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
-                Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(8, 13)
+                .WithMessage(ConvertToExpressionBodiedMemberAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -285,13 +270,9 @@ using System;
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(),
-                Message = ConvertToExpressionBodiedMemberAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 13) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertToExpressionBodiedMember.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(8, 13)
+                .WithMessage(ConvertToExpressionBodiedMemberAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

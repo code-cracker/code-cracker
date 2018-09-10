@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Usage
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Usage
@@ -704,12 +705,9 @@ End Class"
         End Function
 
         Private Function CreateDiagnosticResult(parameterName As String, line As Integer, column As Integer) As DiagnosticResult
-            Return New DiagnosticResult With {
-                .Id = DiagnosticId.UnusedParameters.ToDiagnosticId(),
-                .Message = String.Format(UnusedParametersAnalyzer.Message, parameterName),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", line, column)}
-                }
+            Return New DiagnosticResult(DiagnosticId.UnusedParameters.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(line, column) _
+                .WithMessage(String.Format(UnusedParametersAnalyzer.Message, parameterName))
         End Function
     End Class
 End Namespace

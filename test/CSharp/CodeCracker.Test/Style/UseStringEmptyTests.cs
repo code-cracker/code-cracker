@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -43,13 +44,9 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseStringEmpty.ToDiagnosticId(),
-                Message = "Use 'String.Empty' instead of \"\"",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseStringEmpty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 25)
+                .WithMessage("Use 'String.Empty' instead of \"\"");
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -91,13 +88,9 @@ namespace CodeCracker.Test.CSharp.Style
         }
     }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseStringEmpty.ToDiagnosticId(),
-                Message = "Use 'String.Empty' instead of \"\"",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 21) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UseStringEmpty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(12, 21)
+                .WithMessage("Use 'String.Empty' instead of \"\"");
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -193,20 +186,12 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task TwoEmptyStringsGenerateTwoDiagnostics()
         {
             var test = @"var s = """" + """";".WrapInCSharpMethod();
-            var expected1 = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseStringEmpty.ToDiagnosticId(),
-                Message = "Use 'String.Empty' instead of \"\"",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
-            };
-            var expected2 = new DiagnosticResult
-            {
-                Id = DiagnosticId.UseStringEmpty.ToDiagnosticId(),
-                Message = "Use 'String.Empty' instead of \"\"",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 30) }
-            };
+            var expected1 = new DiagnosticResult(DiagnosticId.UseStringEmpty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 25)
+                .WithMessage("Use 'String.Empty' instead of \"\"");
+            var expected2 = new DiagnosticResult(DiagnosticId.UseStringEmpty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 30)
+                .WithMessage("Use 'String.Empty' instead of \"\"");
             await VerifyCSharpDiagnosticAsync(test, expected1, expected2);
         }
 

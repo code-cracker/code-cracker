@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Maintainability;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -110,13 +111,9 @@ public int Foo(int value)
         }
     }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.XmlDocumentation_MissingInCSharp.ToDiagnosticId(),
-                Message = "You have missing/unexistent parameters in Xml Docs",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 16) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.XmlDocumentation_MissingInCSharp.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 16)
+                .WithMessage("You have missing/unexistent parameters in Xml Docs");
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -141,13 +138,9 @@ public int Foo(int value)
         }
     }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.XmlDocumentation_MissingInXml.ToDiagnosticId(),
-                Message = "You have missing/unexistent parameters in Xml Docs",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 16) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.XmlDocumentation_MissingInXml.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(6, 16)
+                .WithMessage("You have missing/unexistent parameters in Xml Docs");
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }

@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,13 +12,9 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task ConstructorWithEmptyParenthesisWithInitializerTriggersFix()
         {
             const string source = @"var a = new B() { X = 1 };";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.UnnecessaryParenthesis.ToDiagnosticId(),
-                Message = "Remove unnecessary parenthesis.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 14) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.UnnecessaryParenthesis.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(1, 14)
+                .WithMessage("Remove unnecessary parenthesis.");
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }

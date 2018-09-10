@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -64,13 +65,9 @@ namespace CodeCracker.Test.CSharp.Performance
         public async Task CreateDiagnosticsWhenAssigningAPotentialConstant()
         {
             var test = @"int a = 10;".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
-                Message = "This variable can be made const.",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 17)
+                .WithMessage("This variable can be made const.");
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -79,13 +76,9 @@ namespace CodeCracker.Test.CSharp.Performance
         {
             var test = @"var a = 10;".WrapInCSharpMethod();
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
-                Message = "This variable can be made const.",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 17)
+                .WithMessage("This variable can be made const.");
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -94,13 +87,9 @@ namespace CodeCracker.Test.CSharp.Performance
         {
             var test = @"Foo a = null;".WrapInCSharpMethod();
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(),
-                Message = "This variable can be made const.",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.MakeLocalVariableConstWhenItIsPossible.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 17)
+                .WithMessage("This variable can be made const.");
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 

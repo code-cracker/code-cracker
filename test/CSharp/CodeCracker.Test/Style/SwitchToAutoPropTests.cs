@@ -1,6 +1,7 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -278,13 +279,9 @@ namespace ConsoleApplication1
             set { id = value; }
         }
 ".WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.SwitchToAutoProp.ToDiagnosticId(),
-                Message = string.Format(SwitchToAutoPropAnalyzer.MessageFormat.ToString(), "Id"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 9) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.SwitchToAutoProp.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 9)
+                .WithMessage(string.Format(SwitchToAutoPropAnalyzer.MessageFormat.ToString(), "Id"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

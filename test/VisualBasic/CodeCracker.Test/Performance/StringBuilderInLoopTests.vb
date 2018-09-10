@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Performance
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Performance
@@ -75,19 +76,16 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As DiagnosticResult = GetExpected()
-            expected.Locations(0).Line = 7
-            expected.Locations(0).Column = 17
+            Dim expected = New DiagnosticResult(StringBuilderInLoopAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(7, 17) _
+                .WithMessage(String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"))
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
 
         Private Shared Function GetExpected() As DiagnosticResult
-            Return New DiagnosticResult With {
-                .Id = StringBuilderInLoopAnalyzer.Id,
-                .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 9, 17)}
-            }
+            Return New DiagnosticResult(StringBuilderInLoopAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(9, 17) _
+                .WithMessage(String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"))
         End Function
 
         <Fact>
@@ -116,9 +114,9 @@ Namespace ConsoleApplication1
     End Class
 End Namespace"
 
-            Dim expected As DiagnosticResult = GetExpected()
-            expected.Locations(0).Line = 7
-            expected.Locations(0).Column = 17
+            Dim expected = New DiagnosticResult(StringBuilderInLoopAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(7, 17) _
+                .WithMessage(String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"))
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
@@ -134,19 +132,12 @@ End Namespace"
             Console.WriteLine(myString2)
 ".WrapInVBMethod()
 
-            Dim expected1 As New DiagnosticResult With {
-                    .Id = StringBuilderInLoopAnalyzer.Id,
-                    .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"),
-                    .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                    .Locations = {New DiagnosticResultLocation("Test0.vb", 10, 17)}
-                }
-
-            Dim expected2 As New DiagnosticResult With {
-                    .Id = StringBuilderInLoopAnalyzer.Id,
-                    .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString2"),
-                    .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                    .Locations = {New DiagnosticResultLocation("Test0.vb", 11, 17)}
-                }
+            Dim expected1 = New DiagnosticResult(StringBuilderInLoopAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(10, 17) _
+                .WithMessage(String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"))
+            Dim expected2 = New DiagnosticResult(StringBuilderInLoopAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(11, 17) _
+                .WithMessage(String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "myString2"))
 
             Await VerifyBasicDiagnosticAsync(source, expected1, expected2)
         End Function
@@ -392,13 +383,9 @@ End Namespace"
                 a += """"
             Next".WrapInVBMethod
 
-            Dim expected As New DiagnosticResult With
-                {
-                .Id = StringBuilderInLoopAnalyzer.Id,
-                .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 9, 17)}
-            }
+            Dim expected = New DiagnosticResult(StringBuilderInLoopAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(9, 17) _
+                .WithMessage(String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"))
             Await VerifyBasicDiagnosticAsync(source, expected)
 
         End Function
@@ -430,13 +417,9 @@ End Namespace"
             Loop Until DateTime.Now.Second Mod 2 = 0
 ".WrapInVBMethod
 
-            Dim expected As New DiagnosticResult With
-                {
-                .Id = StringBuilderInLoopAnalyzer.Id,
-                .Message = String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"),
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 9, 17)}
-            }
+            Dim expected = New DiagnosticResult(StringBuilderInLoopAnalyzer.Id, Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(9, 17) _
+                .WithMessage(String.Format(StringBuilderInLoopAnalyzer.MessageFormat, "a"))
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
 

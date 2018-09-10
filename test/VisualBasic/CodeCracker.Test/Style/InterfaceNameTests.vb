@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Style
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Style
@@ -23,12 +24,9 @@ End Namespace"
     End Interface
 End Namespace"
 
-            Dim expected = New DiagnosticResult With {
-                .Id = DiagnosticId.InterfaceName.ToDiagnosticId(),
-                .Message = InterfaceNameAnalyzer.MessageFormat,
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Info,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 2, 5)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.InterfaceName.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Info) _
+                .WithLocation(2, 5) _
+                .WithMessage(InterfaceNameAnalyzer.MessageFormat)
 
             Await VerifyBasicDiagnosticAsync(source, expected)
         End Function
