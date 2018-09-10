@@ -1,11 +1,12 @@
-﻿using CodeCracker.CSharp.Design.InconsistentAccessibility;
-using Microsoft.CodeAnalysis.CodeFixes;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using CodeCracker.CSharp.Design.InconsistentAccessibility;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Design
 {
-    public partial class InconsistentAccessibilityTests : CodeFixVerifier
+    using Verify = CSharpCodeFixVerifier<EmptyAnalyzer, InconsistentAccessibilityCodeFixProvider>;
+
+    public partial class InconsistentAccessibilityTests
     {
         [Theory]
         [InlineData("class","internal")]
@@ -17,11 +18,11 @@ namespace CodeCracker.Test.CSharp.Design
             var sourceCode = @"
 public " + type + @" Dependent
 {
-    public Dependent(int a, DependendedUpon d, string b)
+    public {|CS0051:Dependent|}(int a, DependendedUpon d, string b)
     {
     }
 }
-" + dependedUponModfifier + @" class DependendedUpon
+" + dependedUponModfifier + (dependedUponModfifier.Length > 0 ? " " : "") + @"class DependendedUpon
 {
 }";
 
@@ -36,7 +37,7 @@ public class DependendedUpon
 {
 }";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -49,7 +50,7 @@ public class DependendedUpon
         [InlineData("protected", "internal /* comment */", "protected /* comment */")]
         [InlineData("protected", "private", "protected")]
         [InlineData("protected internal", "", "protected internal")]
-        [InlineData("protected internal", "  protected  ", "  protected internal  ")]
+        [InlineData("protected internal", "  protected  ", "protected internal")]
         [InlineData("protected internal", "internal", "protected internal")]
         [InlineData("internal protected", "private", "protected internal")]
         [InlineData("internal", "protected", "internal")]
@@ -59,11 +60,11 @@ public class DependendedUpon
             var sourceCode = @"
 public class Dependent
 {
-    " + methodModifier + @" void SomeMethod(DependendedUpon d)
+    " + methodModifier + @" void {|CS0051:SomeMethod|}(DependendedUpon d)
     {
     }
 
-    " + dependedUponModifier + @" class DependendedUpon
+    " + dependedUponModifier + (dependedUponModifier.Length > 0 ? " " : "") + @"class DependendedUpon
     {
     }
 }";
@@ -80,7 +81,7 @@ public class Dependent
     }
 }";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -91,9 +92,9 @@ public class Dependent
             var sourceCode = @"
 " + interfaceAccessibilityModifier + @" interface Dependent
 {
-    void SomeMethod(DependendedUpon d);
+    void {|CS0051:SomeMethod|}(DependendedUpon d);
 }
-" + dependedUponModifier + @" class DependendedUpon
+" + dependedUponModifier + (dependedUponModifier.Length > 0 ? " " : "") + @"class DependendedUpon
 {
 }";
 
@@ -106,7 +107,7 @@ public class Dependent
 {
 }";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -115,7 +116,7 @@ public class Dependent
             const string sourceCode = @"
 public class Dependent
 {
-    public Dependent(Dependent.DependendedUpon d)
+    public {|CS0051:Dependent|}(Dependent.DependendedUpon d)
     {
     }
 
@@ -136,7 +137,7 @@ public class Dependent
     }
 }";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -145,7 +146,7 @@ public class Dependent
             const string sourceCode = @"
 public class Dependent
 {
-    public Dependent(global::DependendedUpon d)
+    public {|CS0051:Dependent|}(global::DependendedUpon d)
     {
     }
 }
@@ -164,7 +165,7 @@ public class DependendedUpon
 {
 }";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -173,7 +174,7 @@ public class DependendedUpon
             const string sourceCode = @"
 public class Dependent
 {
-    public Dependent(DependedUpon d)
+    public {|CS0051:Dependent|}(DependedUpon d)
     {
     }
 }
@@ -188,7 +189,7 @@ public class Dependent
 }
 public delegate void DependedUpon(int a);";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -197,7 +198,7 @@ public delegate void DependedUpon(int a);";
             const string sourceCode = @"
 public class Dependent
 {
-    public Dependent(DependedUpon d)
+    public {|CS0051:Dependent|}(DependedUpon d)
     {
     }
 }
@@ -212,7 +213,7 @@ public class Dependent
 }
 public enum DependedUpon {}";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -221,7 +222,7 @@ public enum DependedUpon {}";
             const string sourceCode = @"
 public class Dependent
 {
-    public Dependent(DependedUpon d)
+    public {|CS0051:Dependent|}(DependedUpon d)
     {
     }
 }
@@ -236,7 +237,7 @@ public class Dependent
 }
 public interface DependedUpon {}";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -245,7 +246,7 @@ public interface DependedUpon {}";
             const string sourceCode = @"
 public class Dependent
 {
-    public Dependent(DependedUpon<int> d)
+    public {|CS0051:Dependent|}(DependedUpon<int> d)
     {
     }
 }
@@ -260,7 +261,7 @@ public class Dependent
 }
 public class DependedUpon<T> {}";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -269,7 +270,7 @@ public class DependedUpon<T> {}";
             const string sourceCode = @"
 public class Dependent
 {
-    public Dependent(DependedUpon d)
+    public {|CS0051:Dependent|}(DependedUpon d)
     {
     }
 }
@@ -288,7 +289,7 @@ public partial class DependedUpon {}
 class SomeClass {}
 public partial class DependedUpon {}";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -296,7 +297,7 @@ public partial class DependedUpon {}";
         {
             const string sourceCode = @"public class Dependent
 {
-    public int this[int idx, DependedUpon dependedUpon]
+    public int {|CS0055:this|}[int idx, DependedUpon dependedUpon]
     {
         get { return 0; }
         set { }
@@ -320,7 +321,7 @@ public class DependedUpon
 {
 }";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -328,7 +329,7 @@ public class DependedUpon
         {
             const string sourceCode = @"public class Dependent
 {
-    public int this[int idx, Dependent.DependedUpon dependedUpon]
+    public int {|CS0055:this|}[int idx, Dependent.DependedUpon dependedUpon]
     {
         get { return 0; }
         set { }
@@ -352,7 +353,7 @@ public class DependedUpon
     }
 }";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -360,7 +361,7 @@ public class DependedUpon
         {
             const string sourceCode = @"public class Dependent
 {
-    public int this[int idx, Dependent.DependedUpon dependedUpon, DependedUpon2 dependedUpon2]
+    public int {|CS0055:{|CS0055:this|}|}[int idx, Dependent.DependedUpon dependedUpon, DependedUpon2 dependedUpon2]
     {
         get { return 0; }
         set { }
@@ -392,9 +393,7 @@ public class DependedUpon2
 {
 }";
 
-            await VerifyCSharpFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(sourceCode, fixedCode).ConfigureAwait(false);
         }
-
-        protected override CodeFixProvider GetCodeFixProvider() => new InconsistentAccessibilityCodeFixProvider();
     }
 }
