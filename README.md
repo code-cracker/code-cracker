@@ -18,7 +18,7 @@ You can find this document in the following languages
 [![Brazilian Portuguese](https://img.shields.io/badge/language-brazilan%20portuguese-brightgreen.svg)](https://github.com/code-cracker/code-cracker/blob/master/README.pt.md)
 
 
-This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this
+This is a community project, free and open source. Everyone is invited to contribute, fork, share and use the code. No money shall be charged by this 
 software, nor it will be. Ever.
 
 ## Features
@@ -30,23 +30,23 @@ Code | Analyzer | Severity | Description
 -- | -- | -- | --
 [CC0003](http://code-cracker.github.io/diagnostics/CC0003.html) | CatchEmptyAnalyzer | Warning | Catch statements with no Exception as an argument is not recommended. Consider adding an Exception class to the catch statement.
 [CC0004](http://code-cracker.github.io/diagnostics/CC0004.html) | EmptyCatchBlockAnalyzer | Warning | An empty catch block suppress all errors and shouldn’t be used. If the error is expected consider logging it or changing the control flow such that it is explicit.
-[CC0016](http://code-cracker.github.io/diagnostics/CC0016.html) | CopyEventToVariableBeforeFireAnalyzer | Warning | Events should always be checked for null before being invoked. As in a multi-threading context it is possible for an event to be unsuscribed between the moment where it is checked to be non-null and the moment it is raised, the event must be copied to a temporary variable before the check.
-[CC0021](http://code-cracker.github.io/diagnostics/CC0021.html) | NameOfAnalyzer | Warning | In C#6 the nameof() operator should be used to specify the name of a program element instead of a string literal as it produce code that is easier to refactor.
-[CC0024](http://code-cracker.github.io/diagnostics/CC0024.html) | StaticConstructorExceptionAnalyzer | Warning | Static constructor are called before the first time a class is used but the caller doesn’t control when exactly. Exception thrown in this context force callers to use ‘try’ block around any useage of the class and should be avoided.
-[CC0031](http://code-cracker.github.io/diagnostics/CC0031.html) | UseInvokeMethodToFireEventAnalyzer | Warning | In C#6 a delegate can be invoked using the null-propagating operator (?.) and it’s invoke method to avoid throwing a NullReference exception when there is no method attached to the delegate.
+[CC0016](http://code-cracker.github.io/diagnostics/CC0016.html) | CopyEventToVariableBeforeFireAnalyzer | Warning | Events should always be checked for null before being invoked. As in a multi-threading context, it is possible for an event to be unsubscribed between the moment where it is checked to be non-null and the moment it is raised, the event must be copied to a temporary variable before the check.
+[CC0021](http://code-cracker.github.io/diagnostics/CC0021.html) | NameOfAnalyzer | Warning | In C#6 the nameof() operator should be used to specify the name of a program element instead of a string literal as it produces code that is easier to refactor.
+[CC0024](http://code-cracker.github.io/diagnostics/CC0024.html) | StaticConstructorExceptionAnalyzer | Warning | Static constructor are called before the first time a class is used but the caller doesn’t control when exactly. Exceptions thrown in this context force callers to use ‘try’ block around any usage of the class and should be avoided.
+[CC0031](http://code-cracker.github.io/diagnostics/CC0031.html) | UseInvokeMethodToFireEventAnalyzer | Warning | In C#6 a delegate can be invoked using the null-propagating operator (?.) and its invoke method to avoid throwing a NullReference exception when there is no method attached to the delegate.
 
 ## Installing
 
-You may use CodeCracker in two ways: as an analyzer library that you install with Nuget into your project or as a Visual Studio extension.
+You may use CodeCracker in two ways: as an analyzer library that you install with NuGet into your project, or as a Visual Studio extension.
 The way you want to use it depends on the scenario you are working on. You most likely want the Nuget package.
 
 If you want the analyzers to work during your build, and generate warnings and errors during the build, also on build servers, then you want
-to use the Nuget package. The package is available on nuget ([C#](https://www.nuget.org/packages/codecracker.CSharp),
+to use the Nuget package. The package is available on NuGet ([C#](https://www.nuget.org/packages/codecracker.CSharp),
 [VB](https://www.nuget.org/packages/codecracker.VisualBasic)).
 If you want to be able to configure which analyzers are being used in your project, and which ones you will ignore, and commit those
 changes to source control and share with your team, then you also want the Nuget package.
 
-To install from Nuget, for the C# version:
+To install from NuGet, for the C# version:
 
 ```powershell
 Install-Package CodeCracker.CSharp
@@ -62,7 +62,7 @@ Or use the Package Manager in Visual Studio.
 
 There is also a version for both named `CodeCracker` only, but it makes no sense to get it, you should search for the C# or VB version.
 
-If you want the alpha builds that build on each push to the repo, add https://www.myget.org/F/codecrackerbuild/ to your Nuget feed.
+If you want the alpha builds that build on each push to the repo, add [this](https://www.myget.org/F/codecrackerbuild/) to your NuGet feed.
 We only push complete releases to Nuget.org, and commit builds go to Myget.org.
 
 If you want global analyzers that will work on every project you open in Visual Studio, then you want the Extension.
@@ -92,13 +92,13 @@ The main supported IDE for development is Visual Studio 2017.
 We do not support VS 2015 anymore.
 
 Questions, comments, bug reports, and pull requests are all welcome.
-Bug reports that include steps-to-reproduce (including code) are
+Bug reports that include steps to reproduce (including code) are
 preferred. Even better, make them in the form of pull requests.
 Before you start to work on an existing issue, check if it is not assigned
 to anyone yet, and if it is, talk to that person.
-Also check the project [board](https://huboard.com/code-cracker/code-cracker/)
+Also, check the project [board](https://huboard.com/code-cracker/code-cracker/)
 and verify it is not being worked on (it will be tagged with the `Working` tag).
-If it is not being worked on, before you start check if the item is `Ready`.
+If it is not being worked on, check if the item is `Ready` before you start.
 If the issue has the `Working` tag (working swimlane on Huboard) and has no Assignee
 then it is not being worked on by somebody on the core team. Check the issue's
 description to find out who it is (if it is not there it has to be on the comments).
@@ -108,7 +108,7 @@ be assigned to this team.
 
 The easiest way to start is looking into the issues that are
 [up for grabs](https://github.com/code-cracker/code-cracker/labels/up-for-grabs). You
-may ask to work on any of them, read below to see how. You can also triage issues which may include reproducing bug reports, or asking for vital information such as version numbers or reproduction instructions. If you would like to start triaging issues, one easy way to get started is to [subscribe to code-cracker on CodeTriage](https://www.codetriage.com/code-cracker/code-cracker).
+may ask to work on any of them, read below to see how. You can also triage issues which may include reproducing bug reports or asking for vital information such as version numbers or reproduction instructions. If you would like to start triaging issues, one easy way to get started is to [subscribe to code-cracker on CodeTriage](https://www.codetriage.com/code-cracker/code-cracker).
 
 If you are just starting with Roslyn, want to contribute, and feel you are not yet ready
 to start working on full analyzers or code fixes, you can start helping with areas that are
@@ -116,8 +116,7 @@ less demanding. We have identified a few:
 
 * Fixing bugs
 
-  Still demands knowledge of Roslyn internals but it is easier than coming up with a full
-  analyzer or code fix. Look for the [bugs that are up for grabs](https://github.com/code-cracker/code-cracker/issues?utf8=%E2%9C%93&q=is%3Aopen+label%3Abug+label%3Aup-for-grabs).
+  Still demands knowledge of Roslyn internals but it is easier than coming up with a full analyzer or code fix. Look for the [bugs that are up for grabs](https://github.com/code-cracker/code-cracker/issues?utf8=%E2%9C%93&q=is%3Aopen+label%3Abug+label%3Aup-for-grabs).
 
 * Documentation
 
@@ -126,10 +125,8 @@ less demanding. We have identified a few:
 
 * Localization/Translation
 
-  We are starting to translate the analyzers and code fixes messages to other languages. If you want CodeCracker
-  on your language feel free to create an issue and start working on it. If you want to help with an ongoing translation,
-  comment on the existing issue and say you are ready to help. We also need to update existing analyzers, which were
-  not created ready for localization.
+  We are starting to translate the analyzers and code fixes messages to other languages. If you want CodeCracker on your language feel free to create an issue and start working on it. If you want to help with an ongoing translation,
+  comment on the existing issue and say you are ready to help. We also need to update existing analyzers, which were not created ready for localization.
 
 ## Issues and task board
 
@@ -145,7 +142,7 @@ defined ready as:
 2. If it has an analyzer then
 
         1. The warning level of the analyzer must be in the issue's description (`Hidden`, `Information`, `Warning`, or `Error`)
-        2. The diagnostics it provides should already have numeric ids defined formated as `CC0000`.
+        2. The diagnostics it provides should already have numeric ids defined formatted as `CC0000`.
 3. If it has a code fix then the category should be in the issue's description. The supported categories are listed on the `SupportedCategories.cs` file.
 4. Have some of the maintainers verify it (cannot be the same one who wrote the issue and/or test cases)
 
@@ -161,9 +158,9 @@ and [#10](https://github.com/code-cracker/code-cracker/issues/10).
 These are the 4 severity levels supported on Roslyn and how they are understood on the Code Cracker project:
 
 1. **Hidden**: Only used for refactorings. See #66 (and its comments) to understand why.
-2. **Info**: An alternative way (ex: replacing for with foreach). Clearly a matter of opinion and/or current way could be correct, or maybe the new code could be correct. We cannot determine.
+2. **Info**: An alternative way (ex: replacing for with foreach). Clearly, a matter of opinion and/or current way could be correct, or maybe the new code could be correct. We cannot determine.
 3. **Warning**: Code that could/should be improved. It is a code smell and most likely is wrong, but there are situations where the pattern is acceptable or desired.
-4. **Error**: Clearly a mistake (ex: throwing ArgumentException with an non-existent parameter). There is no situation where this code could be correct. There are no differences of opinion.
+4. **Error**: Clearly a mistake (ex: throwing ArgumentException with a non-existent parameter). There is no situation where this code could be correct. There are no differences of opinion.
 
 You can read [directly on Microsoft's source code](http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis/Diagnostic/DiagnosticSeverity.cs,e70281df673d47f6,references)
 how they interpret these levels.
@@ -182,7 +179,7 @@ The DoD is still evolving. At the present time the checklist is as follows:
 5. Code fixes should follow the guidelines for names
 
         1. Always named `<featurename>CodeFixProvider`
-        2. Always use the same diagnostic id added to the `DiagnosticIds.cs` file, unless you are writing a code fix for a diagnostic id raised by the C# compiler itself (staring with `CS`).
+        2. Always use the same diagnostic id added to the `DiagnosticIds.cs` file, unless you are writing a code fix for a diagnostic id raised by the C# compiler itself (starting with `CS`).
 6. Fix all scenarios (fix all in document, fix all in project and fix all in solution) work. You might need to write a `FixAllProvider`. Check the `DisposableVariableNotDisposedFixAllProvider` as an example.
 7. Follow the coding standards present on the project code files.
 8. Works in Visual Studio
@@ -190,11 +187,11 @@ The DoD is still evolving. At the present time the checklist is as follows:
 
 ### Start working
 
-Once it is Ready and agreed on by any one from the core team, just state in
+Once it is Ready and agreed on by anyone from the core team, just state in
 a comment that you intend to start working on that item and mention any/all
 the maintainers (use @code-cracker/owners) so they can tag it correctly and move it on the board.
 
-If you are not familiar with the way Github works you might want to check the [Github guides](https://guides.github.com/), specially
+If you are not familiar with the way Github works you might want to check the [Github guides](https://guides.github.com/), especially
 the [Github flow](https://guides.github.com/introduction/flow/) one. The
 [GitHub for the Roslyn Team video](http://channel9.msdn.com/Blogs/dotnet/github-for-the-roslyn-team) might help you as well, and
 it also explains some Git concepts.
@@ -203,7 +200,7 @@ To start working fork the project on Github to your own account and clone it **f
 from the main CodeCracker repository. Before you start coding create a new branch and name it in a way that makes
 sense for the issue that you will be working on. Don't work on the `master` branch because that may make
 things harder if you have to update your pull request or your repository later, assume your `master` branch
-is always equals the main repo `master` branch, and code on a different branch.
+always equals the main repo `master` branch, and code on a different branch.
 
 When you commit, mention the issue number use the pound sign (#). Avoid making a lot of small commits
 unless they are meaningful. For most analyzers and code fixes a single commit should be enough. If you
@@ -239,9 +236,9 @@ git merge master
 # solve integration conflicts
 ````
 
-You can solve the conflicts in your favorite text editor, or, if you are using Visual Studio, you can use it as well.
+You can solve the conflicts in your favorite text editor or Visual Studio.
 Visual Studio actually presents the conflict in a very nice way to solve them.
-Also, on the `go back to your working branch` step you can go back to using Visual Studio to control git, if you
+Also, on the `go back to your working branch` step you can go back to using Visual Studio to control git if you
 prefer that.
 
 If you know git well, you can rebase your changes instead of merging them. If not, it is ok to merge them.
@@ -270,7 +267,7 @@ discussing and fixing they are accepted. Work with the community to get it to be
 * Your pull requested will be commented by the Coveralls bot. Make sure code coverage has not gone down significantly. Ideally, it should go up.
 
 If you work on something that you have not yet discussed with the maintainers
-there is a chance the code might be denied because they might find the analyzer/fix is not necessary, or duplicated, or some other reason.
+there is a chance the code might be denied because they might find the analyzer/fix is not necessary, duplicated, or some other reason.
 They are easily reachable through Twitter or on Github. Before you code discuss it with it them.
 
 Small code changes or updates outside code files will eventually be made by the core team directly on `master`, without a PR.
@@ -284,7 +281,7 @@ Small code changes or updates outside code files will eventually be made by the 
 
 Contributors can be found at the [contributors](https://github.com/code-cracker/code-cracker/graphs/contributors) page on Github.
 
-### What are the maintainers responsibilities?
+### What are the maintainers' responsibilities?
 
 The maintainers have to:
 
@@ -307,5 +304,5 @@ Please see our [contact page](http://code-cracker.github.io/contact.html).
 This software is open source, licensed under the Apache License, Version 2.0.
 See [LICENSE.txt](https://github.com/code-cracker/code-cracker/blob/master/LICENSE.txt) for details.
 Check out the terms of the license before you contribute, fork, copy or do anything
-with the code. If you decide to contribute you agree to grant copyright of all your contribution to this project, and agree to
+with the code. If you decide to contribute you agree to grant copyright of all your contribution to this project and agree to
 mention clearly if do not agree to these terms. Your work will be licensed with the project at Apache V2, along the rest of the code.
