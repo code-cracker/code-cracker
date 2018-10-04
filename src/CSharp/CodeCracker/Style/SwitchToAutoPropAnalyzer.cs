@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -57,6 +56,12 @@ namespace CodeCracker.CSharp.Style
             if (returnIdentifier == null) return;
             var semanticModel = context.SemanticModel;
             var fieldSymbol = semanticModel.GetSymbolInfo(returnIdentifier).Symbol;
+            var outerClass = context.Node.Ancestors().OfType<ClassDeclarationSyntax>().LastOrDefault();
+            if (outerClass != null && IsBackingFieldRefOrOutParam(fieldSymbol, outerClass, semanticModel))
+            {
+                return;
+            }
+
             if (fieldSymbol == null) return;
             var assignmentLeftIdentifier = (setterAssignmentExpression.Left is MemberAccessExpressionSyntax &&
                 ((MemberAccessExpressionSyntax)setterAssignmentExpression.Left).Expression is ThisExpressionSyntax ? ((MemberAccessExpressionSyntax)setterAssignmentExpression.Left).Name : setterAssignmentExpression.Left) as IdentifierNameSyntax;
@@ -78,6 +83,26 @@ namespace CodeCracker.CSharp.Style
             }
             var diag = Diagnostic.Create(Rule, property.GetLocation(), property.Identifier.Text);
             context.ReportDiagnostic(diag);
+        }
+
+        private static bool IsBackingFieldRefOrOutParam(ISymbol fieldSymbol, ClassDeclarationSyntax outerClass, SemanticModel semanticModel)
+        {
+            foreach (var descendant in outerClass.DescendantNodes().OfType<IdentifierNameSyntax>())
+            {
+                var descendentSymbol = semanticModel.GetSymbolInfo(descendant).Symbol;
+                if (descendentSymbol != null && descendentSymbol.Equals(fieldSymbol))
+                {
+                    // The field is being referenced
+                    // Next we check whether it is referenced as an argument and passed by ref/out
+                    var argument = descendant.AncestorsAndSelf().OfType<ArgumentSyntax>().FirstOrDefault();
+                    if (argument != null && !argument.RefOrOutKeyword.IsKind(SyntaxKind.None))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
