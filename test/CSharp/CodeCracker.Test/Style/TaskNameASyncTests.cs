@@ -275,7 +275,7 @@ public class Bar : IBar
         {
             public methodTest()
             {
-                await Test();
+                await TestAsyncFoo();
             }
 
             public Task<bool> TestAsyncFoo()
@@ -294,7 +294,7 @@ public class Bar : IBar
         {
             public methodTest()
             {
-                await TestAsync();
+                await TestFooAsync();
             }
 
             public Task<bool> TestFooAsync()
@@ -319,7 +319,7 @@ public class Bar : IBar
         {
             public methodTest()
             {
-                await Test();
+                await TestAsync_Foo();
             }
 
             public Task<bool> TestAsync_Foo()
@@ -338,7 +338,7 @@ public class Bar : IBar
         {
             public methodTest()
             {
-                await TestAsync();
+                await Test_FooAsync();
             }
 
             public Task<bool> Test_FooAsync()
@@ -363,7 +363,7 @@ public class Bar : IBar
         {
             public methodTest()
             {
-                await Test();
+                await TestAsync0Foo();
             }
 
             public Task<bool> TestAsync0Foo()
@@ -382,7 +382,7 @@ public class Bar : IBar
         {
             public methodTest()
             {
-                await TestAsync();
+                await Test0FooAsync();
             }
 
             public Task<bool> Test0FooAsync()
