@@ -262,5 +262,137 @@ public class Bar : IBar
             };
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
+
+        [Fact]
+        public async Task ChangeTaskNameWithAsyncNotAtTheEndWithUpperCaseLetter()
+        {
+            const string source = @"
+    using System.Threading.Tasks;
+
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            public methodTest()
+            {
+                await Test();
+            }
+
+            public Task<bool> TestAsyncFoo()
+            {
+                return true;
+            }
+        }
+
+    }";
+            const string fixtest = @"
+    using System.Threading.Tasks;
+
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            public methodTest()
+            {
+                await TestAsync();
+            }
+
+            public Task<bool> TestFooAsync()
+            {
+                return true;
+            }
+        }
+
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task ChangeTaskNameWithAsyncNotAtTheEndWithUnderline()
+        {
+            const string source = @"
+    using System.Threading.Tasks;
+
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            public methodTest()
+            {
+                await Test();
+            }
+
+            public Task<bool> TestAsync_Foo()
+            {
+                return true;
+            }
+        }
+
+    }";
+            const string fixtest = @"
+    using System.Threading.Tasks;
+
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            public methodTest()
+            {
+                await TestAsync();
+            }
+
+            public Task<bool> Test_FooAsync()
+            {
+                return true;
+            }
+        }
+
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+        [Fact]
+        public async Task ChangeTaskNameWithAsyncNotAtTheEndWithDigit()
+        {
+            const string source = @"
+    using System.Threading.Tasks;
+
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            public methodTest()
+            {
+                await Test();
+            }
+
+            public Task<bool> TestAsync0Foo()
+            {
+                return true;
+            }
+        }
+
+    }";
+            const string fixtest = @"
+    using System.Threading.Tasks;
+
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            public methodTest()
+            {
+                await TestAsync();
+            }
+
+            public Task<bool> Test0FooAsync()
+            {
+                return true;
+            }
+        }
+
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
     }
 }

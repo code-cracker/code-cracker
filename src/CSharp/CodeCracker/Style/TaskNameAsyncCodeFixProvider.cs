@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Style
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TaskNameAsyncCodeFixProvider)), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CodeFixProvider)), Shared]
     public class TaskNameAsyncCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.TaskNameAsync.ToDiagnosticId());
@@ -46,13 +46,38 @@ namespace CodeCracker.CSharp.Style
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var methodStatement = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var newName = methodStatement.Identifier.ToString() + "Async";
+            var oldName = methodStatement.Identifier.ToString();
+            if (HasAsyncCorrectlyInName(oldName))
+            {
+                oldName = oldName.Remove(oldName.IndexOf("Async"), "Async".Length);
+            }
+            var newName = oldName + "Async";
             var solution = document.Project.Solution;
             var symbol = semanticModel.GetDeclaredSymbol(methodStatement, cancellationToken);
             var options = solution.Workspace.Options;
             var newSolution = await Renamer.RenameSymbolAsync(solution, symbol, newName,
                 options, cancellationToken).ConfigureAwait(false);
             return newSolution;
+        }
+
+        private static bool HasAsyncCorrectlyInName(string name)
+        {
+            var index = name.IndexOf("Async");
+            if (index < 0)
+            {
+                return false;
+            }
+
+            var postAsyncLetterIndex = index + "Async".Length;
+            if (postAsyncLetterIndex >= name.Length)
+            {
+                return false;
+            }
+
+            var valueAfterAsync = name[postAsyncLetterIndex];
+            return char.IsDigit(valueAfterAsync)
+                || (char.IsLetter(valueAfterAsync) && char.IsUpper(valueAfterAsync))
+                || valueAfterAsync == '_';
         }
     }
 }
