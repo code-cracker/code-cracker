@@ -25,15 +25,7 @@ namespace CodeCracker.CSharp.Performance
             "Any",
             "Single",
             "SingleOrDefault",
-            "Count",
-            "FirstAsync",
-            "FirstOrDefaultAsync",
-            "LastAsync",
-            "LastOrDefaultAsync",
-            "AnyAsync",
-            "SingleAsync",
-            "SingleOrDefaultAsync",
-            "CountAsync"
+            "Count"
         };
 
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
