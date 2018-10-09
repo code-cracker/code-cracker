@@ -180,7 +180,7 @@ The DoD is still evolving. At the present time the checklist is as follows:
 
         1. Always named `<featurename>CodeFixProvider`
         2. Always use the same diagnostic id added to the `DiagnosticIds.cs` file, unless you are writing a code fix for a diagnostic id raised by the C# compiler itself (starting with `CS`).
-6. Fix all scenarios (fix all in document, fix all in project and fix all in solution) work. You might need to write a `FixAllProvider`. Check the `DisposableVariableNotDisposedFixAllProvider` as an example.
+6. Fix all scenarios (fix all in a document, fix all in a project and fix all in solution) work. You might need to write a `FixAllProvider`. Check the `DisposableVariableNotDisposedFixAllProvider` as an example.
 7. Follow the coding standards present on the project code files.
 8. Works in Visual Studio
 9. Uses localizable strings
