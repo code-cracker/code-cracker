@@ -27,6 +27,7 @@ namespace CodeCracker.CSharp.Performance
             "SingleOrDefault",
             "Count"
         };
+
         internal static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId(),
             Title,
