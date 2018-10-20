@@ -23,4 +23,4 @@ Create a remote to link the repository on github to your local workspace. use "g
 Push the commit. For example, type "git push [remote-name] master".
 Go back to the original repo.
 Hit "new pull request" and compare between forks.
-Confirm the pull request and that's it!
+Confirm the pull request and that's it!!!
