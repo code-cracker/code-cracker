@@ -123,6 +123,7 @@ namespace CodeCracker
         }
         public static IEnumerable<SyntaxToken> EnsureProtectedBeforeInternal(this IEnumerable<SyntaxToken> modifiers) => modifiers.OrderByDescending(token => token.RawKind);
 
+        
         public static string GetFullName(this ISymbol symbol, bool addGlobal = true)
         {
             if (symbol.Kind == SymbolKind.TypeParameter)
