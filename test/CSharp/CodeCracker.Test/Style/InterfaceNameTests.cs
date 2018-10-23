@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,13 +33,9 @@ namespace CodeCracker.Test.CSharp.Style
             void Test();
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.InterfaceName.ToDiagnosticId(),
-                Message = InterfaceNameAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 9) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.InterfaceName.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 9)
+                .WithMessage(InterfaceNameAnalyzer.MessageFormat);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

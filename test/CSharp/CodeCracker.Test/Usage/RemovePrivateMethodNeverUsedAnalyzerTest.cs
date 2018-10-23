@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Usage
@@ -427,14 +428,12 @@ private void ResetPropertyXXX() { };
             await VerifyCSharpHasNoDiagnosticsAsync(source);
         }
 
-        private static DiagnosticResult CreateDiagnosticResult(int line, int column) =>
-            new DiagnosticResult
-            {
-                Id = DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId(),
-                Locations = new DiagnosticResultLocation[] { new DiagnosticResultLocation("Test0.cs", line, column) },
-                Message = RemovePrivateMethodNeverUsedAnalyzer.Message,
-                Severity = DiagnosticSeverity.Info,
-            };
+        private static DiagnosticResult CreateDiagnosticResult(int line, int column)
+        {
+            return new DiagnosticResult(DiagnosticId.RemovePrivateMethodNeverUsed.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(line, column)
+                .WithMessage(RemovePrivateMethodNeverUsedAnalyzer.Message);
+        }
 
         [Fact]
         public async void WinFormsPropertyDefaultValueDefinitionMethodsMustHaveCorrectSignature()

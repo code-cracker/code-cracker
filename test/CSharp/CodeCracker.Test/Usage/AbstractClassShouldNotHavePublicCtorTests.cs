@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -18,13 +19,9 @@ namespace CodeCracker.Test.CSharp.Usage
                 public Foo() { /* .. */ }
             }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId(),
-                Message = "Constructor should not be public.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(4, 17)
+                .WithMessage("Constructor should not be public.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

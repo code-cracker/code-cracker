@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Performance;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,13 +17,9 @@ namespace CodeCracker.Test.CSharp.Performance
 
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.SealedAttribute.ToDiagnosticId(),
-                Message = "Mark 'MyAttribute' as sealed.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 2, 30) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.SealedAttribute.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(2, 30)
+                .WithMessage("Mark 'MyAttribute' as sealed.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -41,13 +38,9 @@ namespace CodeCracker.Test.CSharp.Performance
 
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.SealedAttribute.ToDiagnosticId(),
-                Message = "Mark 'OtherAttribute' as sealed.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 30) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.SealedAttribute.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(7, 30)
+                .WithMessage("Mark 'OtherAttribute' as sealed.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

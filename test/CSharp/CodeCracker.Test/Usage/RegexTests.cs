@@ -1,6 +1,7 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -76,13 +77,9 @@ namespace CodeCracker.Test.CSharp.Usage
                 message = e.Message;
             }
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.Regex.ToDiagnosticId(),
-                Message = message,
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 64) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.Regex.ToDiagnosticId(), DiagnosticSeverity.Error)
+                .WithLocation(11, 64)
+                .WithMessage(message);
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -116,13 +113,9 @@ namespace CodeCracker.Test.CSharp.Usage
                 message = e.Message;
             }
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.Regex.ToDiagnosticId(),
-                Message = message,
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 33) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.Regex.ToDiagnosticId(), DiagnosticSeverity.Error)
+                .WithLocation(11, 33)
+                .WithMessage(message);
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }

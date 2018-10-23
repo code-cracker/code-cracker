@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,13 +27,9 @@ namespace CodeCracker.Test.CSharp.Style
                     { }
                 }
             }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
-                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat, "FooAsync"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 26) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.TaskNameAsync.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(8, 26)
+                .WithMessage(string.Format(TaskNameAsyncAnalyzer.MessageFormat, "FooAsync"));
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -100,13 +97,9 @@ namespace CodeCracker.Test.CSharp.Style
             Task Test() {};
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
-                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat, "TestAsync"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 18) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.TaskNameAsync.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(8, 18)
+                .WithMessage(string.Format(TaskNameAsyncAnalyzer.MessageFormat, "TestAsync"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -226,13 +219,9 @@ public class Bar : IBar
     }
 }";
             //we still get the diagnostic for the interface itself
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
-                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat, "FooAsync"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 5, 10) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.TaskNameAsync.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(5, 10)
+                .WithMessage(string.Format(TaskNameAsyncAnalyzer.MessageFormat, "FooAsync"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -253,13 +242,9 @@ public class Bar : IBar
     }
 }";
             //we still get the diagnostic for the interface itself
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.TaskNameAsync.ToDiagnosticId(),
-                Message = string.Format(TaskNameAsyncAnalyzer.MessageFormat, "FooAsync"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 5, 10) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.TaskNameAsync.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(5, 10)
+                .WithMessage(string.Format(TaskNameAsyncAnalyzer.MessageFormat, "FooAsync"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

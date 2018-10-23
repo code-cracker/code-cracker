@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
@@ -55,13 +56,9 @@ class C
     }
 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringRepresentation_RegularString.ToDiagnosticId(),
-                Message = "Change to regular string",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringRepresentation_RegularString.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(6, 17)
+                .WithMessage("Change to regular string");
             return VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -77,13 +74,9 @@ class C
     }
 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringRepresentation_VerbatimString.ToDiagnosticId(),
-                Message = "Change to verbatim string",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringRepresentation_VerbatimString.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(6, 17)
+                .WithMessage("Change to verbatim string");
             return VerifyCSharpDiagnosticAsync(source, expected);
         }
 

@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Style
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Style
@@ -144,12 +145,9 @@ End Namespace"
 
         <Fact>
         Public Async Function WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic() As Task
-            Dim expected As New DiagnosticResult With {
-                .Id = DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(),
-                .Message = "You can use a ternary operator.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 8, 13)}
-                }
+            Dim expected = New DiagnosticResult(DiagnosticId.TernaryOperator_Assignment.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(8, 13) _
+                .WithMessage("You can use a ternary operator.")
             Await VerifyBasicDiagnosticAsync(sourceAssign, expected)
         End Function
 
@@ -793,12 +791,9 @@ End Namespace"
 
         <Fact>
         Public Async Function WhenUsingIfAndElseWithDirectReturnAnalyzerCreatesDiagnostic() As Task
-            Dim expected As New DiagnosticResult With {
-                .Id = DiagnosticId.TernaryOperator_Return.ToDiagnosticId(),
-                .Message = "You can use a ternary operator.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 6, 13)}
-                }
+            Dim expected = New DiagnosticResult(DiagnosticId.TernaryOperator_Return.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(6, 13) _
+                .WithMessage("You can use a ternary operator.")
             Await VerifyBasicDiagnosticAsync(sourceReturn, expected)
         End Function
 
@@ -1005,12 +1000,9 @@ Class MyType
     End Function
 End Class"
 
-            Dim expected As New DiagnosticResult With {
-                .Id = DiagnosticId.TernaryOperator_Iif.ToDiagnosticId(),
-                .Message = "You can use a ternary operator.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 16)}
-                }
+            Dim expected = New DiagnosticResult(DiagnosticId.TernaryOperator_Iif.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(5, 16) _
+                .WithMessage("You can use a ternary operator.")
 
             Await VerifyBasicDiagnosticAsync(source, expected)
             Await VerifyBasicFixAsync(source, fix)

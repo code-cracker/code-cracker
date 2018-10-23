@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -39,13 +40,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
                         var a = 1;
                     }
                 }".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.MergeNestedIf.ToDiagnosticId(),
-                Message = MergeNestedIfAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.MergeNestedIf.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(11, 17)
+                .WithMessage(MergeNestedIfAnalyzer.MessageFormat);
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 

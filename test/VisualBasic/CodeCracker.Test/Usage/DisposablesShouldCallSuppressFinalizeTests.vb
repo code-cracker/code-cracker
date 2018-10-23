@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Usage
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Usage
@@ -15,12 +16,9 @@ Public Class MyType
     End Sub
 End Class
 "
-            Dim expected = New DiagnosticResult With {
-                .Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
-                .Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 16)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(5, 16) _
+                .WithMessage("'MyType' should call GC.SuppressFinalize inside the Dispose method.")
 
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
@@ -109,12 +107,9 @@ Public NotInheritable Class MyType
 End Class
 "
 
-            Dim expected = New DiagnosticResult With {
-                .Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
-                .Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 5, 16)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(5, 16) _
+                .WithMessage("'MyType' should call GC.SuppressFinalize inside the Dispose method.")
 
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function

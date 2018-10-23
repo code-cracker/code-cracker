@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,13 +30,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
         public async Task AnyAndAllWithLinqCreatesDiagnostic(string code, int column, DiagnosticId diagnosticId)
         {
             var source = code.WrapInCSharpMethod(usings: "\nusing System.Linq;");
-            var expected = new DiagnosticResult
-            {
-                Id = diagnosticId.ToDiagnosticId(),
-                Message = diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, column) }
-            };
+            var expected = new DiagnosticResult(diagnosticId.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(13, column)
+                .WithMessage(diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -200,13 +197,9 @@ class TypeName
         var y = typeSymbol?.AllInterfaces.{methodName}(i => i == 1);
     }}
 }}";
-            var expected = new DiagnosticResult
-            {
-                Id = diagnosticId.ToDiagnosticId(),
-                Message = diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 43) }
-            };
+            var expected = new DiagnosticResult(diagnosticId.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(13, 43)
+                .WithMessage(diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -246,13 +239,9 @@ class TypeName
     private System.Collections.Generic.IList<int> xs;
     bool Foo() => xs.{methodName}(i => i == 1);
 }}";
-            var expected = new DiagnosticResult
-            {
-                Id = diagnosticId.ToDiagnosticId(),
-                Message = diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 22) }
-            };
+            var expected = new DiagnosticResult(diagnosticId.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(7, 22)
+                .WithMessage(diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -280,13 +269,9 @@ class TypeName
             var source = $@"
 var ints = new [] {{ 1 }};
 var query = !ints?.{methodName}(i => i == 1) ?? true;";
-            var expected = new DiagnosticResult
-            {
-                Id = diagnosticId.ToDiagnosticId(),
-                Message = diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll,
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 20) }
-            };
+            var expected = new DiagnosticResult(diagnosticId.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(13, 20)
+                .WithMessage(diagnosticId == DiagnosticId.ChangeAnyToAll ? ChangeAnyToAllAnalyzer.MessageAny : ChangeAnyToAllAnalyzer.MessageAll);
             await VerifyCSharpDiagnosticAsync(source.WrapInCSharpMethod(usings: "\nusing System.Linq;"), expected);
         }
 

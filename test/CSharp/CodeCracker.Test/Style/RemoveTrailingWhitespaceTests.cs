@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -94,14 +95,9 @@ namespace Foo
 
         public static DiagnosticResult CreateDiagnostic(int line, int column)
         {
-            var diagnostic = new DiagnosticResult
-            {
-                Id = DiagnosticId.RemoveTrailingWhitespace.ToDiagnosticId(),
-                Message = RemoveTrailingWhitespaceAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-            };
-            return diagnostic;
+            return new DiagnosticResult(DiagnosticId.RemoveTrailingWhitespace.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(line, column)
+                .WithMessage(RemoveTrailingWhitespaceAnalyzer.MessageFormat);
         }
 
         [Fact]

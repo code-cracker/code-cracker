@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,13 +32,9 @@ namespace CodeCracker.Test.CSharp.Usage
             column += 10;                   // adjust column for added declaration
             var test = sample.WrapInCSharpMethod();
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.SimplifyRedundantBooleanComparisons.ToDiagnosticId(),
-                Message = "You can remove this comparison.",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, column) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.SimplifyRedundantBooleanComparisons.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, column)
+                .WithMessage("You can remove this comparison.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

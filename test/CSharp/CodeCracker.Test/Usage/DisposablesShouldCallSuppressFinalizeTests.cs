@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -57,13 +58,9 @@ namespace CodeCracker.Test.CSharp.Usage
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
-                Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 33) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(4, 33)
+                .WithMessage("'MyType' should call GC.SuppressFinalize inside the Dispose method.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -263,13 +260,9 @@ namespace CodeCracker.Test.CSharp.Usage
                     ~MyType() {}
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(),
-                Message = "'MyType' should call GC.SuppressFinalize inside the Dispose method.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 33) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.DisposablesShouldCallSuppressFinalize.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(4, 33)
+                .WithMessage("'MyType' should call GC.SuppressFinalize inside the Dispose method.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

@@ -1,6 +1,7 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -64,13 +65,9 @@ static class Exts
                         }
                     }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
-                Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 33) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 33)
+                .WithMessage("Do not call 'Any' method of class 'Enumerable' as a static method");
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -91,13 +88,9 @@ static class Exts
                             }
                         }
                     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
-                Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 33) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 33)
+                .WithMessage("Do not call 'Any' method of class 'Enumerable' as a static method");
             await VerifyCSharpDiagnosticAsync(source, expected, LanguageVersion.CSharp5);
         }
 
@@ -116,13 +109,9 @@ public static class C
 {
     public static string M(this string s) => s;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
-                Message = "Do not call 'M' method of class 'C' as a static method",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 9) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 9)
+                .WithMessage("Do not call 'M' method of class 'C' as a static method");
             await VerifyCSharpDiagnosticAsync(source, expected, LanguageVersion.CSharp5);
         }
 
@@ -142,13 +131,9 @@ public static class C
                         }
                     }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
-                Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 33) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(9, 33)
+                .WithMessage("Do not call 'Any' method of class 'Enumerable' as a static method");
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -358,13 +343,9 @@ public static class ExtensionsTestCase
                         }
                     }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
-                Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 37) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(11, 37)
+                .WithMessage("Do not call 'Any' method of class 'Enumerable' as a static method");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -383,13 +364,9 @@ public static class ExtensionsTestCase
                   }
               }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(),
-                Message = "Do not call 'Any' method of class 'Enumerable' as a static method",
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 51) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.CallExtensionMethodAsExtension.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(8, 51)
+                .WithMessage("Do not call 'Any' method of class 'Enumerable' as a static method");
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }

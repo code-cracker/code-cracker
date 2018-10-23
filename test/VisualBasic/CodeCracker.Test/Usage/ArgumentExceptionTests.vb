@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Usage
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Usage
@@ -24,12 +25,9 @@ Public Async Function Foo(a As Integer, b As Integer) As Task
 End Function
 ")
 
-            Dim expected = New DiagnosticResult With {
-                .Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
-                .Message = "Type argument 'c' is not in the argument list.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 8, 44)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.ArgumentException.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(8, 44) _
+                .WithMessage("Type argument 'c' is not in the argument list.")
 
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
@@ -42,12 +40,9 @@ Public Sub New(a As Integer, b As Integer)
 End Sub
 ")
 
-            Dim expected = New DiagnosticResult With {
-                .Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
-                .Message = "Type argument 'c' is not in the argument list.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 8, 44)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.ArgumentException.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(8, 44) _
+                .WithMessage("Type argument 'c' is not in the argument list.")
 
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
@@ -147,12 +142,9 @@ End Sub
             End Set
         End Property
 ")
-            Dim expected = New DiagnosticResult With {
-                        .Id = DiagnosticId.ArgumentException.ToDiagnosticId(),
-                        .Message = "Type argument 'paramName' is not in the argument list.",
-                        .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                        .Locations = {New DiagnosticResultLocation("Test0.vb", 11, 56)}
-                    }
+            Dim expected = New DiagnosticResult(DiagnosticId.ArgumentException.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(11, 56) _
+                .WithMessage("Type argument 'paramName' is not in the argument list.")
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 

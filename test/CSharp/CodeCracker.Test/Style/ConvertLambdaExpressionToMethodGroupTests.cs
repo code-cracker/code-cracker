@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,13 +13,9 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task CreateDiagnosticForSimpleLambdaExpression()
         {
             const string test = @"var f = a.Where(item => filter(item));";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(),
-                Message = "You should remove the lambda expression and pass just 'filter' instead.",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(1, 17)
+                .WithMessage("You should remove the lambda expression and pass just 'filter' instead.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -27,13 +24,9 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task CreateDiagnosticForSimpleLambdaExpressionWithBlockInBody()
         {
             const string test = @"var f = a.Where(item => { return filter(item); });";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(),
-                Message = "You should remove the lambda expression and pass just 'filter' instead.",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(1, 17)
+                .WithMessage("You should remove the lambda expression and pass just 'filter' instead.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -42,13 +35,9 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task CreateDiagnosticForParenthesizedLambdaExpressionWithBlockInBody()
         {
             const string test = @"var f = a.Foo((param1, param2) => { return filter(param1, param2); });";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(),
-                Message = "You should remove the lambda expression and pass just 'filter' instead.",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 1, 15) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ConvertLambdaExpressionToMethodGroup.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(1, 15)
+                .WithMessage("You should remove the lambda expression and pass just 'filter' instead.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

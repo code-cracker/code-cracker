@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -125,13 +126,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
         {
             var test = WrapInCSharpMethod(@"for (var i = 0; i < n; i++){}");
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.InvertFor.ToDiagnosticId(),
-                Message = "Make it a for loop that decrement the counter.",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.InvertFor.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 17)
+                .WithMessage("Make it a for loop that decrement the counter.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -141,13 +138,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
         {
             var test = WrapInCSharpMethod(@"int i = 0; for (i = 0; i < n; i++){}");
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.InvertFor.ToDiagnosticId(),
-                Message = "Make it a for loop that decrement the counter.",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 28) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.InvertFor.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 28)
+                .WithMessage("Make it a for loop that decrement the counter.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -157,13 +150,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
         {
             var test = WrapInCSharpMethod(@"for (var i = n - 1; i >= 0; i--){}");
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.InvertFor.ToDiagnosticId(),
-                Message = "Make it a for loop that increment the counter.",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.InvertFor.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 17)
+                .WithMessage("Make it a for loop that increment the counter.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

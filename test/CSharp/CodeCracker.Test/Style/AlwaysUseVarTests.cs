@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -130,13 +131,9 @@ namespace CodeCracker.Test.CSharp.Style
             dynamic Fee() { return 42; }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.AlwaysUseVar.ToDiagnosticId(),
-                Message = "Use 'var' instead of specifying the type name.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.AlwaysUseVar.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(9, 17)
+                .WithMessage("Use 'var' instead of specifying the type name.");
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
 
@@ -158,13 +155,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.AlwaysUseVarOnPrimitives.ToDiagnosticId(),
-                Message = "Use 'var' instead of specifying the type name.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.AlwaysUseVarOnPrimitives.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 17)
+                .WithMessage("Use 'var' instead of specifying the type name.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -187,13 +180,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.AlwaysUseVar.ToDiagnosticId(),
-                Message = "Use 'var' instead of specifying the type name.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.AlwaysUseVar.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 17)
+                .WithMessage("Use 'var' instead of specifying the type name.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

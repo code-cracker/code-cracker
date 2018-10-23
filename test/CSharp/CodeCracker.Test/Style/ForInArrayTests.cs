@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 using System;
+using Microsoft.CodeAnalysis.Testing;
 
 namespace CodeCracker.Test.CSharp.Style
 {
@@ -384,13 +385,9 @@ for (var i = 0; i < array.Length; i++)
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
-                Message = "You can use foreach instead of for.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ForInArray.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(9, 17)
+                .WithMessage("You can use foreach instead of for.");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -417,13 +414,9 @@ for (var i = 0; i < array.Length; i++)
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
-                Message = "You can use foreach instead of for.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ForInArray.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(13, 17)
+                .WithMessage("You can use foreach instead of for.");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -448,13 +441,9 @@ for (var i = 0; i < array.Length; i++)
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
-                Message = "You can use foreach instead of for.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ForInArray.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(10, 17)
+                .WithMessage("You can use foreach instead of for.");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -661,13 +650,9 @@ class MyList
         yield return 1;
     }
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
-                Message = ForInArrayAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 9) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ForInArray.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(7, 9)
+                .WithMessage(ForInArrayAnalyzer.MessageFormat);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -701,13 +686,9 @@ class MyList
         yield return 1;
     }
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
-                Message = ForInArrayAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 9) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ForInArray.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(7, 9)
+                .WithMessage(ForInArrayAnalyzer.MessageFormat);
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -723,13 +704,9 @@ public int Foo()
         var item = array[i];
     }
 }".WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
-                Message = "You can use foreach instead of for.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 5) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ForInArray.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(12, 5)
+                .WithMessage("You can use foreach instead of for.");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -748,13 +725,9 @@ public int[] Foo
     }
 }
 }".WrapInCSharpClass();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ForInArray.ToDiagnosticId(),
-                Message = "You can use foreach instead of for.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 9) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ForInArray.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(13, 9)
+                .WithMessage("You can use foreach instead of for.");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

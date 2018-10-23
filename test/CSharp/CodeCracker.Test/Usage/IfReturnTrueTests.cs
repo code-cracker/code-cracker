@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -153,13 +154,9 @@ namespace CodeCracker.Test.CSharp.Usage
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.IfReturnTrue.ToDiagnosticId(),
-                Message = "You should return the boolean directly.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.IfReturnTrue.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(9, 17)
+                .WithMessage("You should return the boolean directly.");
 
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -186,13 +183,9 @@ namespace CodeCracker.Test.CSharp.Usage
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.IfReturnTrue.ToDiagnosticId(),
-                Message = "You should return the boolean directly.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 9, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.IfReturnTrue.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(9, 17)
+                .WithMessage("You should return the boolean directly.");
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

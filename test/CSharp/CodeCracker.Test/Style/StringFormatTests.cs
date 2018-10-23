@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -174,13 +175,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
-                Message = StringFormatAnalyzer.MessageFormat.ToString(),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormat.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(11, 25)
+                .WithMessage(StringFormatAnalyzer.MessageFormat.ToString());
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -200,13 +197,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
-                Message = StringFormatAnalyzer.MessageFormat.ToString(),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormat.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 25)
+                .WithMessage(StringFormatAnalyzer.MessageFormat.ToString());
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -404,13 +397,9 @@ namespace CodeCracker.Test.CSharp.Style
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
-                Message = StringFormatAnalyzer.MessageFormat.ToString(),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StringFormat.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(11, 25)
+                .WithMessage(StringFormatAnalyzer.MessageFormat.ToString());
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -641,20 +630,12 @@ var baz = $""{foo + ""baz"" + ""boo""}"";".WrapInCSharpMethod();
         public async Task NestedStringFormatCreatesDiagnostic()
         {
             var source = @"var foo = string.Format(""{0}"", string.Format(""{0}"", 1 ) );".WrapInCSharpMethod();
-            var expected1 = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
-                Message = StringFormatAnalyzer.MessageFormat.ToString(),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 27) }
-            };
-            var expected2 = new DiagnosticResult
-            {
-                Id = DiagnosticId.StringFormat.ToDiagnosticId(),
-                Message = StringFormatAnalyzer.MessageFormat.ToString(),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 48) }
-            };
+            var expected1 = new DiagnosticResult(DiagnosticId.StringFormat.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 27)
+                .WithMessage(StringFormatAnalyzer.MessageFormat.ToString());
+            var expected2 = new DiagnosticResult(DiagnosticId.StringFormat.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 48)
+                .WithMessage(StringFormatAnalyzer.MessageFormat.ToString());
             await VerifyCSharpDiagnosticAsync(source, expected1, expected2);
         }
 

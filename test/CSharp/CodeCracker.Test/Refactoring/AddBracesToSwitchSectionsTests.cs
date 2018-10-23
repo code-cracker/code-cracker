@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Refactoring
@@ -69,13 +70,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
         Foo();
         break;
 }";
-            var diagnostic = new DiagnosticResult
-            {
-                Id = DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(),
-                Message = "Add braces for each section in this switch",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] {new DiagnosticResultLocation("Test0.cs", 10, 17)}
-            };
+            var diagnostic = new DiagnosticResult(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 17)
+                .WithMessage("Add braces for each section in this switch");
             await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), diagnostic);
         }
 
@@ -98,13 +95,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
         break;
     }
 }";
-            var diagnostic = new DiagnosticResult
-            {
-                Id = DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(),
-                Message = "Add braces for each section in this switch",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var diagnostic = new DiagnosticResult(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 17)
+                .WithMessage("Add braces for each section in this switch");
             await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), diagnostic);
         }
 
@@ -127,13 +120,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
         Baz();
         break;
 }";
-            var diagnostic = new DiagnosticResult
-            {
-                Id = DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(),
-                Message = "Add braces for each section in this switch",
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var diagnostic = new DiagnosticResult(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 17)
+                .WithMessage("Add braces for each section in this switch");
             await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), diagnostic);
         }
 

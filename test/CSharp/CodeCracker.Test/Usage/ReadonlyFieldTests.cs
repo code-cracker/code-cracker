@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -182,13 +183,9 @@ class TypeName2
             private int i = 1;
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -203,13 +200,9 @@ class TypeName2
             int i = 1;
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 17)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -225,20 +218,12 @@ class TypeName2
             private int j = 1;
         }
     }";
-            var expected1 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
-            };
-            var expected2 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "j"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 25) }
-            };
+            var expected1 = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
+            var expected2 = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(7, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "j"));
             await VerifyCSharpDiagnosticAsync(source, expected1, expected2);
         }
 
@@ -259,34 +244,18 @@ class TypeName2
             private int l = 1;
         }
     }";
-            var expected1 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
-            };
-            var expected2 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "j"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, 25) }
-            };
-            var expected3 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "k"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 25) }
-            };
-            var expected4 = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "l"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 12, 25) }
-            };
+            var expected1 = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
+            var expected2 = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(7, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "j"));
+            var expected3 = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(11, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "k"));
+            var expected4 = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(12, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "l"));
             await VerifyCSharpDiagnosticAsync(source, new[] { expected1, expected2, expected3, expected4 });
         }
 
@@ -304,13 +273,9 @@ class TypeName2
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, 29) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(8, 29)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -325,13 +290,9 @@ class TypeName2
             private int i = 1;
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -401,13 +362,9 @@ class TypeName
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -426,13 +383,9 @@ class TypeName
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 25)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -491,13 +444,9 @@ class TypeName
             private int i, j = 1;
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "j"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 28) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 28)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "j"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -747,13 +696,9 @@ class TypeName
             }
         }
    }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 32) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 32)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -768,13 +713,9 @@ class TypeName
             private static int i = 1;
         }
    }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "i"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 32) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 32)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "i"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -953,13 +894,9 @@ class C
     }
     ";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "car"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 33) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 33)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "car"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -981,13 +918,9 @@ class C
     }
     ";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ReadonlyField.ToDiagnosticId(),
-                Message = string.Format(ReadonlyFieldAnalyzer.Message, "name"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 28) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ReadonlyField.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(6, 28)
+                .WithMessage(string.Format(ReadonlyFieldAnalyzer.Message, "name"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

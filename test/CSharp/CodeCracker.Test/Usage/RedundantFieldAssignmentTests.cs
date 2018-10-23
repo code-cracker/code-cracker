@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -170,13 +171,9 @@ class TypeName
 {
     private int i = 0;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", 0),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 17)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", 0));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -188,13 +185,9 @@ class TypeName
 {
     private int i = default(int);
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "default(int)"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 17)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "default(int)"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -206,13 +199,9 @@ class TypeName
 {
     private string s = null;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "s", "null"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 20) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 20)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "s", "null"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -224,13 +213,9 @@ class TypeName
 {
     private long i = 0L;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "0L"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 18) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 18)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "0L"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -242,13 +227,9 @@ class TypeName
 {
     private long i = 0;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "0"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 18) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 18)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "0"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -260,13 +241,9 @@ class TypeName
 {
     private System.IntPtr i = System.IntPtr.Zero;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "System.IntPtr.Zero"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 27) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 27)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "System.IntPtr.Zero"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -279,13 +256,9 @@ class TypeName
 {
     private IntPtr i = IntPtr.Zero;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "IntPtr.Zero"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 5, 20) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(5, 20)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "IntPtr.Zero"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -297,13 +270,9 @@ class TypeName
 {
     private System.UIntPtr i = System.UIntPtr.Zero;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "System.UIntPtr.Zero"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 28) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 28)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "i", "System.UIntPtr.Zero"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -315,13 +284,9 @@ class TypeName
 {
     private System.DateTime d = System.DateTime.MinValue;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "d", "System.DateTime.MinValue"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 29) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 29)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "d", "System.DateTime.MinValue"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -334,13 +299,9 @@ class TypeName
 {
     private E e = 0;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "e", "0"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 5, 15) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(5, 15)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "e", "0"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -353,13 +314,9 @@ class TypeName
 {
     private E e = 0.0;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "e", "0.0"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 5, 15) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(5, 15)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "e", "0.0"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -371,13 +328,9 @@ class TypeName
 {
     private bool b = false;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "b", "false"),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 18) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 18)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "b", "false"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 
@@ -389,13 +342,9 @@ class TypeName
 {
     private int i, j, k = 0;
 }";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(),
-                Message = string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "k", 0),
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, 23) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RedundantFieldAssignment.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(4, 23)
+                .WithMessage(string.Format(RedundantFieldAssignmentAnalyzer.MessageFormat, "k", 0));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

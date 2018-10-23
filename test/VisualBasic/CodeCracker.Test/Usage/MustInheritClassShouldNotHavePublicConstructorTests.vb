@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Usage
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Usage
@@ -14,12 +15,9 @@ MustInherit Class Foo
     End Sub
 End Class"
 
-            Dim expected = New DiagnosticResult With {
-                .Id = DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId(),
-                .Message = "Constructor should not be public.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Warning,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 3, 5)}
-                }
+            Dim expected = New DiagnosticResult(DiagnosticId.AbstractClassShouldNotHavePublicCtors.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Warning) _
+                .WithLocation(3, 5) _
+                .WithMessage("Constructor should not be public.")
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 

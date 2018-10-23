@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CodeCracker.CSharp.Usage;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Usage
@@ -78,12 +79,9 @@ namespace ConsoleApplication1
 
 
         private static DiagnosticResult CreateDiagnosticResult(int line, int column, Action getErrorMessageAction) {
-            return new DiagnosticResult {
-                Id = DiagnosticId.IPAddress.ToDiagnosticId(),
-                Message = GetErrorMessage(getErrorMessageAction),
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] {new DiagnosticResultLocation("Test0.cs", line, column)}
-            };
+            return new DiagnosticResult(DiagnosticId.IPAddress.ToDiagnosticId(), DiagnosticSeverity.Error)
+                .WithLocation(line, column)
+                .WithMessage(GetErrorMessage(getErrorMessageAction));
         }
 
         private static string GetErrorMessage(Action action)

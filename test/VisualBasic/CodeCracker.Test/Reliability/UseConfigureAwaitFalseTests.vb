@@ -1,4 +1,5 @@
 ﻿Imports CodeCracker.VisualBasic.Reliability
+Imports Microsoft.CodeAnalysis.Testing
 Imports Xunit
 
 Namespace Reliability
@@ -14,12 +15,9 @@ Namespace Reliability
         <InlineData("Dim f As Func(Of System.Threading.Tasks.Task) : Await f()", 61)>
         Public Async Function WhenAwaitingTaskAnalyzerCreatesDiagnostic(sample As String, column As Integer) As Task
             Dim test = sample.WrapInVBMethod(isAsync:=True)
-            Dim expected = New DiagnosticResult With {
-                .Id = DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId(),
-                .Message = "Consider using ConfigureAwait(False) on the awaited task.",
-                .Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden,
-                .Locations = {New DiagnosticResultLocation("Test0.vb", 6, column)}
-            }
+            Dim expected = New DiagnosticResult(DiagnosticId.UseConfigureAwaitFalse.ToDiagnosticId(), Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden) _
+                .WithLocation(6, column) _
+                .WithMessage("Consider using ConfigureAwait(False) on the awaited task.")
             Await VerifyBasicDiagnosticAsync(test, expected)
         End Function
 

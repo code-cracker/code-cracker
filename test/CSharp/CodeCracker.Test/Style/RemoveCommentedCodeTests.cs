@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Style;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -25,13 +26,9 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task CreateDiagnosticForSingleLineCommentedCode()
         {
             var test = @"// a = 10;".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RemoveCommentedCode.ToDiagnosticId(),
-                Message = RemoveCommentedCodeAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RemoveCommentedCode.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(10, 17)
+                .WithMessage(RemoveCommentedCodeAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }
@@ -57,13 +54,9 @@ namespace CodeCracker.Test.CSharp.Style
             // {
             //   DoStuff();
             // }".WrapInCSharpMethod();
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RemoveCommentedCode.ToDiagnosticId(),
-                Message = RemoveCommentedCodeAnalyzer.MessageFormat,
-                Severity = DiagnosticSeverity.Info,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 13) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.RemoveCommentedCode.ToDiagnosticId(), DiagnosticSeverity.Info)
+                .WithLocation(11, 13)
+                .WithMessage(RemoveCommentedCodeAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

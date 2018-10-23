@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,13 +20,9 @@ namespace CodeCracker.Test.CSharp.Design
                     }
                 }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.StaticConstructorException.ToDiagnosticId(),
-                Message = "Don't throw exceptions inside static constructors.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, 25) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.StaticConstructorException.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(6, 25)
+                .WithMessage("Don't throw exceptions inside static constructors.");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
         }

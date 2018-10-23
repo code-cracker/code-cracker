@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -38,13 +39,9 @@ namespace CodeCracker.Test.CSharp.Refactoring
         {
             var source = original.WrapInCSharpMethod();
             var expression = original.Substring(columnOffset, original.Length - columnOffset - columnRightTrim - 1);
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.ComputeExpression.ToDiagnosticId(),
-                Message = string.Format(ComputeExpressionAnalyzer.Message, expression),
-                Severity = DiagnosticSeverity.Hidden,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 10, 17 + columnOffset) }
-            };
+            var expected = new DiagnosticResult(DiagnosticId.ComputeExpression.ToDiagnosticId(), DiagnosticSeverity.Hidden)
+                .WithLocation(10, 17 + columnOffset)
+                .WithMessage(string.Format(ComputeExpressionAnalyzer.Message, expression));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
 

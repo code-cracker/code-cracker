@@ -1,5 +1,6 @@
 ﻿using CodeCracker.CSharp.Design;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -728,13 +729,9 @@ public class TypeName
 
         private static DiagnosticResult CreateNameofDiagnosticResult(string nameofArgument, int diagnosticLine, int diagnosticColumn, DiagnosticId id = DiagnosticId.NameOf)
         {
-            return new DiagnosticResult
-            {
-                Id = id.ToDiagnosticId(),
-                Message = $"Use 'nameof({nameofArgument})' instead of specifying the program element name.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", diagnosticLine, diagnosticColumn) }
-            };
+            return new DiagnosticResult(id.ToDiagnosticId(), DiagnosticSeverity.Warning)
+                .WithLocation(diagnosticLine, diagnosticColumn)
+                .WithMessage($"Use 'nameof({nameofArgument})' instead of specifying the program element name.");
         }
     }
 }
