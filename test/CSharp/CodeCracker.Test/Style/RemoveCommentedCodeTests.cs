@@ -27,7 +27,7 @@ namespace CodeCracker.Test.CSharp.Style
         {
             var test = @"// a = 10;".WrapInCSharpMethod();
             var expected = new DiagnosticResult(DiagnosticId.RemoveCommentedCode.ToDiagnosticId(), DiagnosticSeverity.Info)
-                .WithLocation(10, 17)
+                .WithLocation(10, 13)
                 .WithMessage(RemoveCommentedCodeAnalyzer.MessageFormat);
 
             await VerifyCSharpDiagnosticAsync(test, expected);

@@ -122,7 +122,7 @@ namespace CodeCracker.Test.CSharp.Usage
             var test = @"if(1 == 2){ return 1; } else { }".WrapInCSharpMethod();
 
             var expected = new DiagnosticResult(DiagnosticId.RemoveRedundantElseClause.ToDiagnosticId(), DiagnosticSeverity.Info)
-                .WithLocation(10, 41)
+                .WithLocation(10, 37)
                 .WithMessage("Remove redundant else");
 
             await VerifyCSharpDiagnosticAsync(test, expected);
@@ -134,7 +134,7 @@ namespace CodeCracker.Test.CSharp.Usage
             var test = @"if(1 == 2) return 1; else { }".WrapInCSharpMethod();
 
             var expected = new DiagnosticResult(DiagnosticId.RemoveRedundantElseClause.ToDiagnosticId(), DiagnosticSeverity.Info)
-                .WithLocation(10, 38)
+                .WithLocation(10, 34)
                 .WithMessage("Remove redundant else");
 
             await VerifyCSharpDiagnosticAsync(test, expected);

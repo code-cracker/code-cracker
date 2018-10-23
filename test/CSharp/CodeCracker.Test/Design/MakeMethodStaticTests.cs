@@ -102,7 +102,7 @@ static string i;")]
         {
             var source = code.WrapInCSharpClass();
             var expected = new DiagnosticResult(DiagnosticId.MakeMethodStatic.ToDiagnosticId(), DiagnosticSeverity.Warning)
-                .WithLocation(8, 18)
+                .WithLocation(8, 14)
                 .WithMessage(string.Format(MakeMethodStaticAnalyzer.MessageFormat, "Foo"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }

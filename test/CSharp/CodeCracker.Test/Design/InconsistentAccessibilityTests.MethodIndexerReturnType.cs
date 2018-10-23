@@ -1,16 +1,19 @@
 ﻿using System.Threading.Tasks;
+using CodeCracker.CSharp.Design.InconsistentAccessibility;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Design
 {
-    public partial class InconsistentAccessibilityTests : CodeFixVerifier
+    using Verify = CSharpCodeFixVerifier<EmptyAnalyzer, InconsistentAccessibilityCodeFixProvider>;
+
+    public partial class InconsistentAccessibilityTests
     {
         [Fact]
         public async Task ShouldFixInconsistentAccessibilityErrorInMethodReturnTypeAsync()
         {
             const string testCode = @"public class Dependent
 {
-    public DependedUpon Method()
+    public DependedUpon {|CS0050:Method|}()
     {
         return null;
     }
@@ -31,7 +34,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
     }";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -39,7 +42,7 @@ namespace CodeCracker.Test.CSharp.Design
         {
             const string testCode = @"public class Dependent
 {
-    public Dependent.DependedUpon Method()
+    public Dependent.DependedUpon {|CS0050:Method|}()
     {
         return null;
     }
@@ -60,7 +63,7 @@ namespace CodeCracker.Test.CSharp.Design
     }
 }";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -68,7 +71,7 @@ namespace CodeCracker.Test.CSharp.Design
         {
             const string testCode = @"public class Dependent
 {
-    public DependedUpon this[int a]
+    public DependedUpon {|CS0054:this|}[int a]
     {
         get { return null; }
         set { }
@@ -91,7 +94,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
     }";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -99,7 +102,7 @@ namespace CodeCracker.Test.CSharp.Design
         {
             const string testCode = @"public class Dependent
 {
-    public Dependent.DependedUpon this[int a]
+    public Dependent.DependedUpon {|CS0054:this|}[int a]
     {
         get { return null; }
         set { }
@@ -122,7 +125,7 @@ namespace CodeCracker.Test.CSharp.Design
     }
 }";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
     }
 }

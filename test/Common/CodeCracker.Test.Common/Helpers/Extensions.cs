@@ -4,33 +4,43 @@
     {
         public static string WrapInCSharpClass(this string code, string typeName = "TypeName", string usings = "")
         {
-            return $@"
-    using System;{usings}
+            if (!code.StartsWith("\r") || code.StartsWith("\n"))
+            {
+                code = "        " + code;
+            }
 
-    namespace ConsoleApplication1
+            return $@"
+using System;{usings}
+
+namespace ConsoleApplication1
+{{
+    class {typeName}
     {{
-        class {typeName}
-        {{
-            {code}
-        }}
-    }}";
+{code}
+    }}
+}}";
         }
 
         public static string WrapInCSharpMethod(this string code, bool isAsync = false, string typeName = "TypeName", string usings = "")
         {
-            return $@"
-    using System;{usings}
+            if (!code.StartsWith("\r") || code.StartsWith("\n"))
+            {
+                code = "            " + code;
+            }
 
-    namespace ConsoleApplication1
+            return $@"
+using System;{usings}
+
+namespace ConsoleApplication1
+{{
+    class {typeName}
     {{
-        class {typeName}
+        public {(isAsync ? "async " : "")}void Foo()
         {{
-            public {(isAsync ? "async " : "")}void Foo()
-            {{
-                {code}
-            }}
+{code}
         }}
-    }}";
+    }}
+}}";
         }
 
         public static string WrapInVBClass(this string code,

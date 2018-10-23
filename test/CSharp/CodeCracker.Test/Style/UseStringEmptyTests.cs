@@ -187,10 +187,10 @@ namespace CodeCracker.Test.CSharp.Style
         {
             var test = @"var s = """" + """";".WrapInCSharpMethod();
             var expected1 = new DiagnosticResult(DiagnosticId.UseStringEmpty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
-                .WithLocation(10, 25)
+                .WithLocation(10, 21)
                 .WithMessage("Use 'String.Empty' instead of \"\"");
             var expected2 = new DiagnosticResult(DiagnosticId.UseStringEmpty.ToDiagnosticId(), DiagnosticSeverity.Hidden)
-                .WithLocation(10, 30)
+                .WithLocation(10, 26)
                 .WithMessage("Use 'String.Empty' instead of \"\"");
             await VerifyCSharpDiagnosticAsync(test, expected1, expected2);
         }

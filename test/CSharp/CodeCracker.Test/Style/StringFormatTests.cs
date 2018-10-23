@@ -631,10 +631,10 @@ var baz = $""{foo + ""baz"" + ""boo""}"";".WrapInCSharpMethod();
         {
             var source = @"var foo = string.Format(""{0}"", string.Format(""{0}"", 1 ) );".WrapInCSharpMethod();
             var expected1 = new DiagnosticResult(DiagnosticId.StringFormat.ToDiagnosticId(), DiagnosticSeverity.Info)
-                .WithLocation(10, 27)
+                .WithLocation(10, 23)
                 .WithMessage(StringFormatAnalyzer.MessageFormat.ToString());
             var expected2 = new DiagnosticResult(DiagnosticId.StringFormat.ToDiagnosticId(), DiagnosticSeverity.Info)
-                .WithLocation(10, 48)
+                .WithLocation(10, 44)
                 .WithMessage(StringFormatAnalyzer.MessageFormat.ToString());
             await VerifyCSharpDiagnosticAsync(source, expected1, expected2);
         }

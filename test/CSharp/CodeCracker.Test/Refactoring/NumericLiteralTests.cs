@@ -81,7 +81,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
-        private static DiagnosticResult CreateDiagnosticResult(string literal, bool isDecimal, int row = 10, int col = 25)
+        private static DiagnosticResult CreateDiagnosticResult(string literal, bool isDecimal, int row = 10, int col = 21)
         {
             return new DiagnosticResult(DiagnosticId.NumericLiteral.ToDiagnosticId(), DiagnosticSeverity.Hidden)
                 .WithLocation(row, col)

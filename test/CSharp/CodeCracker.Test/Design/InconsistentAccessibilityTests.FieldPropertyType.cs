@@ -1,16 +1,19 @@
 ﻿using System.Threading.Tasks;
+using CodeCracker.CSharp.Design.InconsistentAccessibility;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Design
 {
-    public partial class InconsistentAccessibilityTests : CodeFixVerifier
+    using Verify = CSharpCodeFixVerifier<EmptyAnalyzer, InconsistentAccessibilityCodeFixProvider>;
+
+    public partial class InconsistentAccessibilityTests
     {
 		[Fact]
 		public async Task ShouldFixInconsistentAccessibilityErrorInClassFieldTypeAsync()
         {
             const string testCode = @"public class Dependent
 {
-    public DependedUpon field;
+    public DependedUpon {|CS0052:field|};
 }
 
 class DependedUpon
@@ -25,7 +28,7 @@ public class DependedUpon
 {
 }";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
 		[Fact]
@@ -33,7 +36,7 @@ public class DependedUpon
         {
             const string testCode = @"public class Dependent
 {
-    internal Dependent.DependedUpon field;
+    internal Dependent.DependedUpon {|CS0052:field|};
 
 	class DependedUpon
 	{
@@ -49,7 +52,7 @@ public class DependedUpon
 	}
 }";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -57,7 +60,7 @@ public class DependedUpon
         {
             const string testCode = @"public struct Dependent
 {
-    public DependedUpon field, field1;
+    public DependedUpon {|CS0052:field|}, {|CS0052:field1|};
 }
 
 class DependedUpon
@@ -72,7 +75,7 @@ public class DependedUpon
 {
 }";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -80,7 +83,7 @@ public class DependedUpon
         {
             const string testCode = @"public class Dependent
 {
-    public DependedUpon Property
+    public DependedUpon {|CS0053:Property|}
     {
         get { return null; }
         set { }
@@ -104,7 +107,7 @@ public class DependedUpon
 {
 }";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -112,7 +115,7 @@ public class DependedUpon
         {
             const string testCode = @"public class Dependent
 {
-    public DependedUpon Property
+    public DependedUpon {|CS0053:Property|}
     {
         get;
         set;
@@ -136,7 +139,7 @@ public class DependedUpon
 {
 }";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await Verify.VerifyCodeFixAsync(testCode, fixedCode).ConfigureAwait(false);
         }
     }
 }

@@ -1,12 +1,13 @@
-﻿using CodeCracker.CSharp.Design;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using CodeCracker.CSharp.Design;
 using Xunit;
 
 namespace CodeCracker.Test.CSharp.Design
 {
-    public class CatchEmptyTests : CodeFixVerifier<CatchEmptyAnalyzer, CatchEmptyCodeFixProvider>
-    {
+    using Verify = CSharpCodeFixVerifier<CatchEmptyAnalyzer, CatchEmptyCodeFixProvider>;
 
+    public class CatchEmptyTests
+    {
         [Fact]
         public async Task CatchEmptyAnalyserCreateDiagnostic()
         {
@@ -17,7 +18,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
         class TypeName
         {
-            public async Task Foo()
+            public async {|CS0246:Task|} {|CS0161:{|CS1983:Foo|}|}()
             {
                 try
                 {
@@ -31,7 +32,7 @@ namespace CodeCracker.Test.CSharp.Design
         }
     }";
 
-            await VerifyCSharpHasNoDiagnosticsAsync(source);
+            await Verify.VerifyAnalyzerAsync(source);
         }
 
         [Fact]
@@ -44,7 +45,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
         class TypeName
         {
-            public async Task Foo()
+            public async {|CS0246:Task|} {|CS0161:{|CS1983:Foo|}|}()
             {
                 try
                 {
@@ -57,7 +58,7 @@ namespace CodeCracker.Test.CSharp.Design
             }
         }
     }";
-            await VerifyCSharpHasNoDiagnosticsAsync(source);
+            await Verify.VerifyAnalyzerAsync(source);
         }
 
         [Fact]
@@ -87,7 +88,7 @@ namespace CodeCracker.Test.CSharp.Design
             }
         }
     }";
-            await VerifyCSharpHasNoDiagnosticsAsync(source);
+            await Verify.VerifyAnalyzerAsync(source);
         }
         [Fact]
         public async Task NotAllowedToReturnOutOfEmtpyCatchBlock()
@@ -106,13 +107,13 @@ namespace CodeCracker.Test.CSharp.Design
                 {
                     // do something
                 }
-                catch
+                [|catch
                 {
                     if (x == 1)
                         throw;
                     else
                         return;
-                }
+                }|]
             }
         }
     }";
@@ -129,19 +130,19 @@ namespace CodeCracker.Test.CSharp.Design
             {
                 try
                 {
-                   // do something
+                    // do something
                 }
-                catch (Exception ex)
-                {
-                    if (x == 1)
-                        throw;
-                    else
-                        return;
-                }
+            catch (Exception ex)
+            {
+                if (x == 1)
+                    throw;
+                else
+                    return;
             }
         }
+        }
     }";
-            await VerifyCSharpFixAsync(test, fixtest, 0, allowNewCompilerDiagnostics: true);
+            await Verify.VerifyCodeFixAsync(test, fixtest);
         }
         [Fact]
         public async Task WhenFindCatchEmptyThenPutExceptionClass()
@@ -159,10 +160,10 @@ namespace CodeCracker.Test.CSharp.Design
                 {
                    // do something
                 }
-                catch
+                [|catch
                 {
                    int x = 0;
-                }
+                }|]
             }
         }
     }";
@@ -180,14 +181,14 @@ namespace CodeCracker.Test.CSharp.Design
                 {
                    // do something
                 }
-                catch (Exception ex)
-                {
-                   int x = 0;
-                }
+            catch (Exception ex)
+            {
+                int x = 0;
             }
         }
+        }
     }";
-            await VerifyCSharpFixAsync(test, fixtest, 0, allowNewCompilerDiagnostics: true);
+            await Verify.VerifyCodeFixAsync(test, fixtest);
         }
         [Fact]
         public async Task AddCatchEvenIfThereIsReturnInBlock()
@@ -205,11 +206,11 @@ namespace CodeCracker.Test.CSharp.Design
                 {
                    // do something
                 }
-                catch
+                [|catch
                 {
                    int x = 0;
                    return;
-                }
+                }|]
             }
         }
     }";
@@ -227,15 +228,15 @@ namespace CodeCracker.Test.CSharp.Design
                 {
                    // do something
                 }
-                catch (Exception ex)
-                {
-                   int x = 0;
-                   return;
-                }
+            catch (Exception ex)
+            {
+                int x = 0;
+                return;
             }
         }
+        }
     }";
-            await VerifyCSharpFixAsync(test, fixtest, 0, allowNewCompilerDiagnostics: true);
+            await Verify.VerifyCodeFixAsync(test, fixtest);
         }
     }
 }

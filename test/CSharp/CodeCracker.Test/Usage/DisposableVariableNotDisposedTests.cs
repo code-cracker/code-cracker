@@ -159,7 +159,7 @@ public System.Collections.Generic.IEnumerable<System.IDisposable> Foo()
         {
             var source = "new System.IO.MemoryStream();".WrapInCSharpMethod();
             var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
-                .WithLocation(10, 17)
+                .WithLocation(10, 13)
                 .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -176,7 +176,7 @@ public System.Collections.Generic.IEnumerable<System.IDisposable> Foo()
         {
             var source = "System.IO.MemoryStream a, b = new System.IO.MemoryStream();".WrapInCSharpMethod();
             var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
-                .WithLocation(10, 47)
+                .WithLocation(10, 43)
                 .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -446,7 +446,7 @@ class Container
         {
             var source = "string.Format(\"\", new System.IO.MemoryStream());".WrapInCSharpMethod();
             var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
-                .WithLocation(10, 35)
+                .WithLocation(10, 31)
                 .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }
@@ -457,7 +457,7 @@ class Container
             var source = @"var m = new System.IO.MemoryStream();
 m.Dispose(true);".WrapInCSharpMethod();
             var expected = new DiagnosticResult(DiagnosticId.DisposableVariableNotDisposed.ToDiagnosticId(), DiagnosticSeverity.Warning)
-                .WithLocation(10, 25)
+                .WithLocation(10, 21)
                 .WithMessage(string.Format(DisposableVariableNotDisposedAnalyzer.MessageFormat, "MemoryStream"));
             await VerifyCSharpDiagnosticAsync(source, expected);
         }

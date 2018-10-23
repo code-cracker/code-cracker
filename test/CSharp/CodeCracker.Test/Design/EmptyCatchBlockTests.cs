@@ -4,7 +4,9 @@ using Xunit;
 
 namespace CodeCracker.Test.CSharp.Design
 {
-    public class EmptyCatchBlockTests : CodeFixVerifier<EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider>
+    using Verify = CSharpCodeFixVerifier<EmptyCatchBlockAnalyzer, EmptyCatchBlockCodeFixProvider>;
+
+    public class EmptyCatchBlockTests
     {
         readonly string test = @"
     using System;
@@ -20,9 +22,9 @@ namespace CodeCracker.Test.CSharp.Design
                 {
                    // do something
                 }
-                catch
+                [|catch
                 {
-                }
+                }|]
             }
         }
     }";
@@ -36,7 +38,7 @@ namespace CodeCracker.Test.CSharp.Design
     {
         class TypeName
         {
-            public async Task Foo()
+            public async {|CS0246:Task|} {|CS0161:{|CS1983:Foo|}|}()
             {
                 try
                 {
@@ -49,7 +51,7 @@ namespace CodeCracker.Test.CSharp.Design
             }
         }
     }";
-            await VerifyCSharpHasNoDiagnosticsAsync(test);
+            await Verify.VerifyAnalyzerAsync(test);
         }
 
         [Fact]
@@ -72,7 +74,7 @@ namespace CodeCracker.Test.CSharp.Design
             }
         }
     }";
-            await VerifyCSharpFixAsync(test, fixtest, 0, allowNewCompilerDiagnostics: false, formatBeforeCompare: true);
+            await Verify.VerifyCodeFixAsync(test, fixtest);
         }
 
         [Fact]
@@ -88,15 +90,20 @@ namespace CodeCracker.Test.CSharp.Design
         {
             public async Task Foo()
             {
-                {
-                   // do something
-                }
-                //TODO: Consider reading MSDN Documentation about how to use Try...Catch => http://msdn.microsoft.com/en-us/library/0yd65esw.aspx
+            {
+                // do something
             }
+            //TODO: Consider reading MSDN Documentation about how to use Try...Catch => http://msdn.microsoft.com/en-us/library/0yd65esw.aspx
+        }
         }
     }";
 
-            await VerifyCSharpFixAsync(test, fixtest, 1, allowNewCompilerDiagnostics: false, formatBeforeCompare: true);
+            await new Verify.Test
+            {
+                TestCode = test,
+                FixedCode = fixtest,
+                CodeFixIndex = 1,
+            }.RunAsync();
         }
 
         [Fact]
@@ -116,14 +123,19 @@ namespace CodeCracker.Test.CSharp.Design
                 {
                    // do something
                 }
-                catch (Exception ex)
-                {
-                   throw;
-                }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
+        }
     }";
-            await VerifyCSharpFixAsync(test, fixtest, 2, allowNewCompilerDiagnostics: true, formatBeforeCompare: true);
+            await new Verify.Test
+            {
+                TestCode = test,
+                FixedCode = fixtest,
+                CodeFixIndex = 2,
+            }.RunAsync();
         }
 
 
@@ -137,16 +149,16 @@ namespace ConsoleApplication1
 {
     class TypeName
     {
-        public async Task Foo()
+        public async {|CS0246:Task|} {|CS0161:{|CS1983:Foo|}|}()
         {
             int x;
             try
             {
                 // do something
             }
-            catch (System.ArgumentException ae)
+            [|catch (System.ArgumentException ae)
             {
-            }
+            }|]
             catch (System.Exception ex)
             {
                 x = 1;
@@ -162,7 +174,7 @@ namespace ConsoleApplication1
 {
     class TypeName
     {
-        public async Task Foo()
+        public async {|CS0246:Task|} {|CS0161:{|CS1983:Foo|}|}()
         {
             int x;
             try
@@ -176,7 +188,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-            await VerifyCSharpFixAsync(test, fixtest, 0);
+            await Verify.VerifyCodeFixAsync(test, fixtest);
         }
     }
 }

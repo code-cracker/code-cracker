@@ -71,7 +71,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         break;
 }";
             var diagnostic = new DiagnosticResult(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(), DiagnosticSeverity.Hidden)
-                .WithLocation(10, 17)
+                .WithLocation(10, 13)
                 .WithMessage("Add braces for each section in this switch");
             await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), diagnostic);
         }
@@ -96,7 +96,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
     }
 }";
             var diagnostic = new DiagnosticResult(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(), DiagnosticSeverity.Hidden)
-                .WithLocation(10, 17)
+                .WithLocation(10, 13)
                 .WithMessage("Add braces for each section in this switch");
             await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), diagnostic);
         }
@@ -121,7 +121,7 @@ namespace CodeCracker.Test.CSharp.Refactoring
         break;
 }";
             var diagnostic = new DiagnosticResult(DiagnosticId.AddBracesToSwitchSections.ToDiagnosticId(), DiagnosticSeverity.Hidden)
-                .WithLocation(10, 17)
+                .WithLocation(10, 13)
                 .WithMessage("Add braces for each section in this switch");
             await VerifyCSharpDiagnosticAsync(test.WrapInCSharpMethod(), diagnostic);
         }

@@ -194,8 +194,8 @@ namespace CodeCracker.Test.CSharp.Style
         public async Task TwoEmptyStringsGenerateTwoDiagnostics()
         {
             var test = "var s = string.Empty + string.Empty;".WrapInCSharpMethod();
-            var expected1 = CreateEmptyStringDiagnosticResult(10, 25);
-            var expected2 = CreateEmptyStringDiagnosticResult(10, 40);
+            var expected1 = CreateEmptyStringDiagnosticResult(10, 21);
+            var expected2 = CreateEmptyStringDiagnosticResult(10, 36);
 
             await VerifyCSharpDiagnosticAsync(test, expected1, expected2);
         }
