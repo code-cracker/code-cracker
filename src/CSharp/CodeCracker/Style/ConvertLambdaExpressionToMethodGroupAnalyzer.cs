@@ -65,7 +65,13 @@ namespace CodeCracker.CSharp.Style
                 : (node as ParenthesizedLambdaExpressionSyntax)?.Body;
 
             var invocation = body as InvocationExpressionSyntax;
-            if (invocation != null) return invocation;
+
+            if (invocation != null)
+            {
+                if (invocation.Expression is GenericNameSyntax && (((GenericNameSyntax)invocation.Expression).TypeArgumentList.Arguments.Count > 0)) return null;
+
+                return invocation;
+            }
 
             var possibleBlock = body as BlockSyntax;
             if (possibleBlock == null || possibleBlock.Statements.Count != 1) return null;
