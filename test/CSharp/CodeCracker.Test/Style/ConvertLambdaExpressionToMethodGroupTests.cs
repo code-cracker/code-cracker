@@ -598,5 +598,23 @@ namespace ConsoleApplication4
 ";
             await VerifyCSharpHasNoDiagnosticsAsync(oldCode);
         }
+
+        [Fact]
+        public async Task DoNotCreateDiagnosticWhenSubstitutionMayBreakTypeConversion()
+        {
+            const string oldCode = @"
+using System.Linq;
+class Foo
+{
+    void M()
+    {
+        var xs = new System.Collections.Generic.List<int>();
+        xs.Select(x => Func<int>(x));
+    }
+    object Func<T>(object x) => x;
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(oldCode);
+        }
+
     }
 }
