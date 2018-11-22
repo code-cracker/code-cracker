@@ -268,6 +268,92 @@ namespace ConsoleApplication1
         }
 
         [Fact]
+        public async Task IgnoresWhenAssigningToAFieldFromAnotherClassWithUsingStatic()
+        {
+            const string source = @"
+namespace ConsoleApplication1
+{
+    using static AnotherType;
+    class AnotherType
+    {
+        public static int otherId = 1;
+    }
+    class TypeName
+    {
+        public int Id
+        {
+            get { return otherId; }
+            set { otherId = value; }
+        }
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoresWhenPropertyIsUsedWithOut()
+        {
+            const string source = @"
+namespace ConsoleApplication1
+{
+    class CC0017
+    {
+        public int MyThing
+        {
+            get { return _myThing; }
+            set { _myThing = value; }
+        }
+        private int _myThing;
+
+        public static void SetOut(ref int field)
+        {
+            field = 42;
+        }
+        
+        public CC0017()
+        {
+            SetOut(ref _myThing);
+        }
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
+        public async Task IgnoresWhenPropertyIsUsedWithRef()
+        {
+            const string source = @"
+namespace ConsoleApplication1
+{
+    class CC0017
+    {
+        public int MyThing
+        {
+            get { return _myThing; }
+            set { _myThing = value; }
+        }
+        private int _myThing;
+
+        public void IncrementRef()
+        {
+            Interlocked.Increment(ref _myThing);
+        }
+
+        public static void SetOut(out int field)
+        {
+            field = 42;
+        }
+        
+        public CC0017()
+        {
+            SetOut(out _myThing);
+        }
+    }
+}";
+            await VerifyCSharpHasNoDiagnosticsAsync(source);
+        }
+
+        [Fact]
         public async Task SimplePropertyCreatesDiagnostic()
         {
             var source = @"
