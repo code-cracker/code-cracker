@@ -268,29 +268,6 @@ namespace ConsoleApplication1
         }
 
         [Fact]
-        public async Task IgnoresWhenAssigningToAFieldFromAnotherClassWithUsingStatic()
-        {
-            const string source = @"
-namespace ConsoleApplication1
-{
-    using static AnotherType;
-    class AnotherType
-    {
-        public static int otherId = 1;
-    }
-    class TypeName
-    {
-        public int Id
-        {
-            get { return otherId; }
-            set { otherId = value; }
-        }
-    }
-}";
-            await VerifyCSharpHasNoDiagnosticsAsync(source);
-        }
-
-        [Fact]
         public async Task IgnoresWhenPropertyIsUsedWithOut()
         {
             const string source = @"
