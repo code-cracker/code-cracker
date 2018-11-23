@@ -179,43 +179,6 @@ namespace Sample
         [InlineData("SingleAsync")]
         [InlineData("SingleOrDefaultAsync")]
         [InlineData("CountAsync")]
-        public async Task CreateDiagnosticWhenUsingWhereWithAsync(string method)
-        {
-            var test = @"
-using System.Linq;
-
-namespace Sample
-{
-    public class Foo
-    {
-        public async Task DoSomething()
-        {
-            var a = new int[10];
-            var f = a.Where(item => item > 10)." + method + @"();
-        }
-    }
-}";
-            var expected = new DiagnosticResult
-            {
-                Id = DiagnosticId.RemoveWhereWhenItIsPossible.ToDiagnosticId(),
-                Message = "You can remove 'Where' moving the predicate to '" + method + "'.",
-                Severity = DiagnosticSeverity.Warning,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, 23) }
-            };
-
-            await VerifyCSharpDiagnosticAsync(test, expected);
-
-        }
-
-        [Theory]
-        [InlineData("FirstAsync")]
-        [InlineData("FirstOrDefaultAsync")]
-        [InlineData("LastAsync")]
-        [InlineData("LastOrDefaultAsync")]
-        [InlineData("AnyAsync")]
-        [InlineData("SingleAsync")]
-        [InlineData("SingleOrDefaultAsync")]
-        [InlineData("CountAsync")]
         public async Task DoNotCreateDiagnosticWhenUsingWhereAndAnotherMethodWithPredicatesAsync(string method)
         {
             var test = @"
