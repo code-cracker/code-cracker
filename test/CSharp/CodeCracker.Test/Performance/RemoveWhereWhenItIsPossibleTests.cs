@@ -170,7 +170,6 @@ namespace Sample
 
         }
 
-        // Async
         [Theory]
         [InlineData("FirstAsync")]
         [InlineData("FirstOrDefaultAsync")]
