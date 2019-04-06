@@ -35,7 +35,7 @@ namespace CodeCracker.CSharp.Style
             {
                 newRoot = root.ReplaceTrivia(trivia, new SyntaxTrivia[] { });
             }
-            else if (trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia, SyntaxKind.MultiLineDocumentationCommentTrivia))
+            else if (trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia, SyntaxKind.MultiLineDocumentationCommentTrivia, SyntaxKind.PragmaWarningDirectiveTrivia))
             {
                 var commentText = trivia.ToFullString();
                 var commentLines = commentText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
