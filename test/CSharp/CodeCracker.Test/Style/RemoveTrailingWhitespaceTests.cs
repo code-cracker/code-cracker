@@ -135,5 +135,21 @@ class Foo { }";
 class Foo { }";
             await VerifyCSharpFixAsync(source, expected, formatBeforeCompare: false);
         }
+
+        [Fact]
+        public async Task PragmaWithTrailingSpace()
+        {
+            const string source = @"
+#pragma warning disable CC0072 
+#pragma warning restore CC0072
+";
+
+            const string expected = @"
+#pragma warning disable CC0072
+#pragma warning restore CC0072
+";
+
+            await VerifyCSharpFixAsync(source, expected, formatBeforeCompare: false);
+        }
     }
 }
