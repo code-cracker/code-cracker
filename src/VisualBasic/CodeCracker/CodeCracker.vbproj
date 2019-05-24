@@ -61,7 +61,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="codecracker.VisualBasic" Version="1.1.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.6.1" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" Version="1.3.2" />
   </ItemGroup>
   <ItemGroup>
