@@ -13,7 +13,7 @@ using System.Threading;
 
 namespace CodeCracker.CSharp.Refactoring
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, nameof(StringRepresentationCodeFixProvider)), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(StringRepresentationCodeFixProvider)), Shared]
     public class StringRepresentationCodeFixProvider : CodeFixProvider
     {
         public const string Id = nameof(StringRepresentationCodeFixProvider);

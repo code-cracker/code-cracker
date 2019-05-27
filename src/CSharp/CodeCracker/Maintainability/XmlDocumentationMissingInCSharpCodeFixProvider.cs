@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Maintainability
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, nameof(XmlDocumentationCodeFixProvider)), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(XmlDocumentationCodeFixProvider)), Shared]
     public sealed class XmlDocumentationMissingInCSharpCodeFixProvider : XmlDocumentationCodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.XmlDocumentation_MissingInCSharp.ToDiagnosticId());

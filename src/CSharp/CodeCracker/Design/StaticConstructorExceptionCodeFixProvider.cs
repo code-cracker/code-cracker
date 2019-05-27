@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CodeCracker.CSharp.Design
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, nameof(StaticConstructorExceptionCodeFixProvider)), Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(StaticConstructorExceptionCodeFixProvider)), Shared]
     public class StaticConstructorExceptionCodeFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds =>
