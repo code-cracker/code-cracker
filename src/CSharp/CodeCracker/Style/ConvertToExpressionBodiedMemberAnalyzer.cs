@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ConvertToExpressionBodiedMember],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ConvertToExpressionBodiedMember],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ConvertToExpressionBodiedMember));

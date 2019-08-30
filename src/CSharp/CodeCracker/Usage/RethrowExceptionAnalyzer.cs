@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.RethrowException],
+            SeverityConfigurations.CurrentCS[DiagnosticId.RethrowException],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RethrowException));

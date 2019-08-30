@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.RemoveCommentedCode],
+            SeverityConfigurations.CurrentCS[DiagnosticId.RemoveCommentedCode],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveCommentedCode));
 

@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.MergeNestedIf],
+            SeverityConfigurations.CurrentCS[DiagnosticId.MergeNestedIf],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.MergeNestedIf));
 

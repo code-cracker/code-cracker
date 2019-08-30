@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.CallExtensionMethodAsExtension],
+            SeverityConfigurations.CurrentCS[DiagnosticId.CallExtensionMethodAsExtension],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.CallExtensionMethodAsExtension));
 

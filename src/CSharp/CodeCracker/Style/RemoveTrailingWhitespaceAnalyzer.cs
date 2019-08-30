@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.RemoveTrailingWhitespace],
+            SeverityConfigurations.CurrentCS[DiagnosticId.RemoveTrailingWhitespace],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveTrailingWhitespace));

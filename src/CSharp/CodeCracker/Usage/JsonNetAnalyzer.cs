@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.JsonNet],
+            SeverityConfigurations.CurrentCS[DiagnosticId.JsonNet],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.JsonNet));

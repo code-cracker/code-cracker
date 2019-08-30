@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.RemoveRedundantElseClause],
+            SeverityConfigurations.CurrentCS[DiagnosticId.RemoveRedundantElseClause],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveRedundantElseClause));

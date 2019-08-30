@@ -20,7 +20,7 @@ Namespace Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.NameOf),
+            SeverityConfigurations.CurrentVB(DiagnosticId.NameOf),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.NameOf))
@@ -29,7 +29,7 @@ Namespace Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.NameOf_External),
+            SeverityConfigurations.CurrentVB(DiagnosticId.NameOf_External),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.NameOf_External))

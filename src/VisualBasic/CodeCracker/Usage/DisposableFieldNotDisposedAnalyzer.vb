@@ -18,7 +18,7 @@ Namespace Usage
             Title,
             MessageFormat,
             SupportedCategories.Usage,
-            SeverityConfigurations.Current(DiagnosticId.DisposableFieldNotDisposed_Returned),
+            SeverityConfigurations.CurrentVB(DiagnosticId.DisposableFieldNotDisposed_Returned),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Returned))
@@ -28,7 +28,7 @@ Namespace Usage
             Title,
             MessageFormat,
             SupportedCategories.Usage,
-            SeverityConfigurations.Current(DiagnosticId.DisposableFieldNotDisposed_Created),
+            SeverityConfigurations.CurrentVB(DiagnosticId.DisposableFieldNotDisposed_Created),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Created))

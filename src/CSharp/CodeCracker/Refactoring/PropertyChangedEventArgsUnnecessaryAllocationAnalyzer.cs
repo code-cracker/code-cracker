@@ -34,7 +34,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.PropertyChangedEventArgsUnnecessaryAllocation],
+            SeverityConfigurations.CurrentCS[DiagnosticId.PropertyChangedEventArgsUnnecessaryAllocation],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.PropertyChangedEventArgsUnnecessaryAllocation));

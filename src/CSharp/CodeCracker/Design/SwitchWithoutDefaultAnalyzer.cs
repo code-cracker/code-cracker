@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.SwitchCaseWithoutDefault],
+            SeverityConfigurations.CurrentCS[DiagnosticId.SwitchCaseWithoutDefault],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.SwitchCaseWithoutDefault));
 

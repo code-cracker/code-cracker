@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Maintainability
             Title,
             Title,
             SupportedCategories.Maintainability,
-            SeverityConfigurations.Current[DiagnosticId.XmlDocumentation_MissingInCSharp],
+            SeverityConfigurations.CurrentCS[DiagnosticId.XmlDocumentation_MissingInCSharp],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.XmlDocumentation_MissingInCSharp));
 
@@ -29,7 +29,7 @@ namespace CodeCracker.CSharp.Maintainability
             Title,
             Title,
             SupportedCategories.Maintainability,
-            SeverityConfigurations.Current[DiagnosticId.XmlDocumentation_MissingInXml],
+            SeverityConfigurations.CurrentCS[DiagnosticId.XmlDocumentation_MissingInXml],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.XmlDocumentation_MissingInXml));
 

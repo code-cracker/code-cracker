@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Performance
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.SealedAttribute],
+            SeverityConfigurations.CurrentCS[DiagnosticId.SealedAttribute],
             true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.SealedAttribute));

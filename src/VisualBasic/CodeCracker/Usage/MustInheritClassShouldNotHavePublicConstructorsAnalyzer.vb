@@ -17,7 +17,7 @@ Namespace Usage
             Title,
             MessageFormat,
             SupportedCategories.Usage,
-            SeverityConfigurations.Current(DiagnosticId.AbstractClassShouldNotHavePublicCtors),
+            SeverityConfigurations.CurrentVB(DiagnosticId.AbstractClassShouldNotHavePublicCtors),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.AbstractClassShouldNotHavePublicCtors))
 

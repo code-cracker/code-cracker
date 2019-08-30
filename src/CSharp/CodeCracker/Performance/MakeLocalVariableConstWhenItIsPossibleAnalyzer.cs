@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Performance
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.MakeLocalVariableConstWhenItIsPossible],
+            SeverityConfigurations.CurrentCS[DiagnosticId.MakeLocalVariableConstWhenItIsPossible],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.MakeLocalVariableConstWhenItIsPossible));

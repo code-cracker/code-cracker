@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.IPAddress],
+            SeverityConfigurations.CurrentCS[DiagnosticId.IPAddress],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.IPAddress));

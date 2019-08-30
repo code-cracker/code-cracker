@@ -20,7 +20,7 @@ Namespace Refactoring
             TitleAny,
             MessageAny,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.ChangeAnyToAll),
+            SeverityConfigurations.CurrentVB(DiagnosticId.ChangeAnyToAll),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.ChangeAnyToAll))
         Friend Shared RuleAll As New DiagnosticDescriptor(
@@ -28,7 +28,7 @@ Namespace Refactoring
             TitleAll,
             MessageAll,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.ChangeAllToAny),
+            SeverityConfigurations.CurrentVB(DiagnosticId.ChangeAllToAny),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.ChangeAllToAny))
 

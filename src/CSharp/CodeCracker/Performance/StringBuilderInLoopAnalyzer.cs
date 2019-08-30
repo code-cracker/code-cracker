@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.StringBuilderInLoop],
+            SeverityConfigurations.CurrentCS[DiagnosticId.StringBuilderInLoop],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringBuilderInLoop));

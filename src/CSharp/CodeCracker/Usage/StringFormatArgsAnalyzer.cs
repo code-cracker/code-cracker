@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             IncorrectNumberOfArgsMessage,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.StringFormatArgs_ExtraArgs],
+            SeverityConfigurations.CurrentCS[DiagnosticId.StringFormatArgs_ExtraArgs],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringFormatArgs_ExtraArgs));
@@ -33,7 +33,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             InvalidArgsReferenceMessage,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.StringFormatArgs_InvalidArgs],
+            SeverityConfigurations.CurrentCS[DiagnosticId.StringFormatArgs_InvalidArgs],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringFormatArgs_InvalidArgs));

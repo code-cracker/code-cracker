@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.RemoveAsyncFromMethod],
+            SeverityConfigurations.CurrentCS[DiagnosticId.RemoveAsyncFromMethod],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveAsyncFromMethod));

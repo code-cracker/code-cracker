@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.InvertFor],
+            SeverityConfigurations.CurrentCS[DiagnosticId.InvertFor],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.InvertFor));
 

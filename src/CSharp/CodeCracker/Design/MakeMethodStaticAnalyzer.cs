@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.MakeMethodStatic],
+            SeverityConfigurations.CurrentCS[DiagnosticId.MakeMethodStatic],
             true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.MakeMethodStatic));

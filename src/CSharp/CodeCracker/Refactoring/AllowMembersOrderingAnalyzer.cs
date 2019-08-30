@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.AllowMembersOrdering],
+            SeverityConfigurations.CurrentCS[DiagnosticId.AllowMembersOrdering],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AllowMembersOrdering));
 

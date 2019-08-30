@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.DisposableVariableNotDisposed],
+            SeverityConfigurations.CurrentCS[DiagnosticId.DisposableVariableNotDisposed],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposableVariableNotDisposed));

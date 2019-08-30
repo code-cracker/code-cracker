@@ -18,7 +18,7 @@ Namespace Usage
             Title,
             Message,
             SupportedCategories.Usage,
-            SeverityConfigurations.Current(DiagnosticId.RemovePrivateMethodNeverUsed),
+            SeverityConfigurations.CurrentVB(DiagnosticId.RemovePrivateMethodNeverUsed),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed))

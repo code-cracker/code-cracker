@@ -17,7 +17,7 @@ Namespace Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.CatchEmpty),
+            SeverityConfigurations.CurrentVB(DiagnosticId.CatchEmpty),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.CatchEmpty))
 

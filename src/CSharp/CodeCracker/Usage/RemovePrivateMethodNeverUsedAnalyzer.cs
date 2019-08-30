@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             Message,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.RemovePrivateMethodNeverUsed],
+            SeverityConfigurations.CurrentCS[DiagnosticId.RemovePrivateMethodNeverUsed],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed));

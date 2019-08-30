@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.DisposableFieldNotDisposed_Returned],
+            SeverityConfigurations.CurrentCS[DiagnosticId.DisposableFieldNotDisposed_Returned],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Returned));
@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.DisposableFieldNotDisposed_Created],
+            SeverityConfigurations.CurrentCS[DiagnosticId.DisposableFieldNotDisposed_Created],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Created));

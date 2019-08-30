@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ArgumentException],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ArgumentException],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ArgumentException));

@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ConvertLambdaExpressionToMethodGroup],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ConvertLambdaExpressionToMethodGroup],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ConvertLambdaExpressionToMethodGroup));

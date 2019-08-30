@@ -1,9 +1,11 @@
 using Microsoft.CodeAnalysis;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeCracker
@@ -14,26 +16,50 @@ namespace CodeCracker
     public class SeverityConfigurations
     {
         /// <summary>
-        /// Gets the DiagnosticSeverities that is configured by the user.
+        /// Gets the DiagnosticSeverities that is configured by the user in VB language.
         /// </summary>
-        public static SeverityConfigurations Current { get; } = new SeverityConfigurations();
+        public static SeverityConfigurations CurrentVB => _vbDefault.Value;
+
+        /// <summary>
+        /// Gets the DiagnosticSeverities that is configured by the user in C# language.
+        /// </summary>
+        public static SeverityConfigurations CurrentCS => _csDefault.Value;
 
         /// <summary>
         /// Gets the default DiagnosticSeverities of all DiagnosticIds.
         /// </summary>
-        public static SeverityConfigurations Default { get; } = new SeverityConfigurations();
-
-        /// <summary>
-        /// Stores all the DiagnosticSeverities.
-        /// </summary>
-        private readonly ConcurrentDictionary<DiagnosticId, DiagnosticSeverity> _diagnosticSeverities;
+        public static SeverityConfigurations Default => _default.Value;
 
         /// <summary>
         /// Initialize a new instance of <see cref="SeverityConfigurations"/>.
         /// </summary>
-        private SeverityConfigurations()
+        /// <param name="additional">The differential to the default values.</param>
+        private SeverityConfigurations(IDictionary<DiagnosticId, DiagnosticSeverity> additional = null)
         {
-            var values = new Dictionary<DiagnosticId, DiagnosticSeverity>
+            if (additional != null)
+            {
+                foreach (var pair in additional)
+                {
+                    _diagnosticSeverities[pair.Key] = pair.Value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="DiagnosticSeverity"/> of the specified <paramref name="id"/>.
+        /// </summary>
+        /// <param name="id">The <see cref="DiagnosticId"/> which you want to get the <see cref="DiagnosticSeverity"/>.</param>
+        /// <returns>The <see cref="DiagnosticSeverity"/> of the specified <paramref name="id"/>.</returns>
+        public DiagnosticSeverity this[DiagnosticId id]
+            => _diagnosticSeverities.TryGetValue(id, out var value)
+                ? value
+                : DiagnosticSeverity.Warning;
+
+        /// <summary>
+        /// Stores all the DiagnosticSeverities.
+        /// </summary>
+        private readonly ConcurrentDictionary<DiagnosticId, DiagnosticSeverity> _diagnosticSeverities
+            = new ConcurrentDictionary<DiagnosticId, DiagnosticSeverity>(new Dictionary<DiagnosticId, DiagnosticSeverity>
             {
                 { DiagnosticId.None, DiagnosticSeverity.Hidden },
                 { DiagnosticId.AlwaysUseVar, DiagnosticSeverity.Warning },
@@ -118,18 +144,29 @@ namespace CodeCracker
                 { DiagnosticId.SwitchCaseWithoutDefault, DiagnosticSeverity.Warning },
                 { DiagnosticId.ReadOnlyComplexTypes, DiagnosticSeverity.Warning },
                 { DiagnosticId.ReplaceWithGetterOnlyAutoProperty, DiagnosticSeverity.Hidden },
-            };
-            _diagnosticSeverities = new ConcurrentDictionary<DiagnosticId, DiagnosticSeverity>(values);
-        }
+            });
 
         /// <summary>
-        /// Gets the <see cref="DiagnosticSeverity"/> of the specified <paramref name="id"/>.
+        /// Lazy initialize value for <see cref="CurrentVB"/>.
         /// </summary>
-        /// <param name="id">The <see cref="DiagnosticId"/> which you want to get the <see cref="DiagnosticSeverity"/>.</param>
-        /// <returns>The <see cref="DiagnosticSeverity"/> of the specified <paramref name="id"/>.</returns>
-        public DiagnosticSeverity this[DiagnosticId id]
-            => _diagnosticSeverities.TryGetValue(id, out var value)
-                ? value
-                : DiagnosticSeverity.Warning;
+        private static readonly Lazy<SeverityConfigurations> _vbDefault = new Lazy<SeverityConfigurations>(()
+            => new SeverityConfigurations(new Dictionary<DiagnosticId, DiagnosticSeverity>
+            {
+                // These are the differantials to the C# version.
+                { DiagnosticId.TernaryOperator_Assignment, DiagnosticSeverity.Warning },
+                { DiagnosticId.TernaryOperator_Return, DiagnosticSeverity.Warning },
+            }), LazyThreadSafetyMode.ExecutionAndPublication);
+
+        /// <summary>
+        /// Lazy initialize value for <see cref="CurrentCS"/>.
+        /// </summary>
+        private static readonly Lazy<SeverityConfigurations> _csDefault = new Lazy<SeverityConfigurations>(()
+            => new SeverityConfigurations(), LazyThreadSafetyMode.ExecutionAndPublication);
+
+        /// <summary>
+        /// Lazy initialize value for default.
+        /// </summary>
+        private static readonly Lazy<SeverityConfigurations> _default = new Lazy<SeverityConfigurations>(()
+            => new SeverityConfigurations(), LazyThreadSafetyMode.ExecutionAndPublication);
     }
 }

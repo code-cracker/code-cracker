@@ -19,7 +19,7 @@ Namespace Usage
             Title,
             MessageFormat,
             SupportedCategories.Usage,
-            SeverityConfigurations.Current(DiagnosticId.JsonNet),
+            SeverityConfigurations.CurrentVB(DiagnosticId.JsonNet),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.JsonNet))

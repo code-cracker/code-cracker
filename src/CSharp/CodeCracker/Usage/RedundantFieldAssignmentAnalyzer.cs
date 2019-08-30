@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.RedundantFieldAssignment],
+            SeverityConfigurations.CurrentCS[DiagnosticId.RedundantFieldAssignment],
             isEnabledByDefault: true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             description: Description,

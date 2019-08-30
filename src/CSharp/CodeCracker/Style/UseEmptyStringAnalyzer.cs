@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.UseEmptyString],
+            SeverityConfigurations.CurrentCS[DiagnosticId.UseEmptyString],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UseEmptyString));

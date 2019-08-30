@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.StaticConstructorException],
+            SeverityConfigurations.CurrentCS[DiagnosticId.StaticConstructorException],
             true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StaticConstructorException));

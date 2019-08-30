@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.AbstractClassShouldNotHavePublicCtors],
+            SeverityConfigurations.CurrentCS[DiagnosticId.AbstractClassShouldNotHavePublicCtors],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AbstractClassShouldNotHavePublicCtors));
 

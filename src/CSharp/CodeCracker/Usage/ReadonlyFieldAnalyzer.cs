@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             Message,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ReadonlyField],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ReadonlyField],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ReadonlyField));

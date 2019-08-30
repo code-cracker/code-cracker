@@ -19,7 +19,7 @@ Namespace Refactoring
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.AllowMembersOrdering),
+            SeverityConfigurations.CurrentVB(DiagnosticId.AllowMembersOrdering),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.AllowMembersOrdering))
 

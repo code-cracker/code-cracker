@@ -17,7 +17,7 @@ Namespace Performance
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.SealedAttribute),
+            SeverityConfigurations.CurrentVB(DiagnosticId.SealedAttribute),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.SealedAttribute))

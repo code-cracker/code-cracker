@@ -20,7 +20,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         Title,
         MessageFormat,
         SupportedCategories.Naming,
-        SeverityConfigurations.Current(DiagnosticId.DisposablesShouldCallSuppressFinalize),
+        SeverityConfigurations.CurrentVB(DiagnosticId.DisposablesShouldCallSuppressFinalize),
         isEnabledByDefault:=True,
         description:=Description,
         helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize))

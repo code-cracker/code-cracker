@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.UnnecessaryParenthesis],
+            SeverityConfigurations.CurrentCS[DiagnosticId.UnnecessaryParenthesis],
             customTags: WellKnownDiagnosticTags.Unnecessary,
             isEnabledByDefault: true,
             description: Description,

@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             Message,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.NumericLiteral],
+            SeverityConfigurations.CurrentCS[DiagnosticId.NumericLiteral],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.NumericLiteral));
 

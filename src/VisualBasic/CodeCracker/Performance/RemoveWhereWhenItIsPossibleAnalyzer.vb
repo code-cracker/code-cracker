@@ -19,7 +19,7 @@ Namespace Performance
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.RemoveWhereWhenItIsPossible),
+            SeverityConfigurations.CurrentVB(DiagnosticId.RemoveWhereWhenItIsPossible),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.RemoveWhereWhenItIsPossible))

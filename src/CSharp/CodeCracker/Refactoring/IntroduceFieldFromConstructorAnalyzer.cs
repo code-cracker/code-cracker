@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.IntroduceFieldFromConstructor],
+            SeverityConfigurations.CurrentCS[DiagnosticId.IntroduceFieldFromConstructor],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.IntroduceFieldFromConstructor));

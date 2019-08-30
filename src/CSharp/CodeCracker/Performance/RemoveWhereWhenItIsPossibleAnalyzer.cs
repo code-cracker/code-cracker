@@ -41,7 +41,7 @@ namespace CodeCracker.CSharp.Performance
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.RemoveWhereWhenItIsPossible],
+            SeverityConfigurations.CurrentCS[DiagnosticId.RemoveWhereWhenItIsPossible],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.RemoveWhereWhenItIsPossible));

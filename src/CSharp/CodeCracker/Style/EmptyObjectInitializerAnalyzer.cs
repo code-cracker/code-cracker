@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.EmptyObjectInitializer],
+            SeverityConfigurations.CurrentCS[DiagnosticId.EmptyObjectInitializer],
             isEnabledByDefault: true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             description: Description,

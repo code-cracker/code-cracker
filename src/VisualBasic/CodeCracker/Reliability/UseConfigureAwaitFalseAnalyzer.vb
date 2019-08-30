@@ -20,7 +20,7 @@ Namespace Reliability
         Title,
         MessageFormat,
         Category,
-        SeverityConfigurations.Current(DiagnosticId.UseConfigureAwaitFalse),
+        SeverityConfigurations.CurrentVB(DiagnosticId.UseConfigureAwaitFalse),
         isEnabledByDefault:=True,
         helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.UseConfigureAwaitFalse))
 

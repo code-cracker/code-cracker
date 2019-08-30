@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.UseInvokeMethodToFireEvent],
+            SeverityConfigurations.CurrentCS[DiagnosticId.UseInvokeMethodToFireEvent],
             true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UseInvokeMethodToFireEvent));

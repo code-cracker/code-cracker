@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ParameterRefactory],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ParameterRefactory],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ParameterRefactory));
 

@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ReplaceWithGetterOnlyAutoProperty],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ReplaceWithGetterOnlyAutoProperty],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ReplaceWithGetterOnlyAutoProperty));

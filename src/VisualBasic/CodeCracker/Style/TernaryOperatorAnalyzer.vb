@@ -17,7 +17,7 @@ Namespace Style
             Title,
             MessageFormat,
             SupportedCategories.Style,
-            SeverityConfigurations.Current(DiagnosticId.TernaryOperator_Return),
+            SeverityConfigurations.CurrentVB(DiagnosticId.TernaryOperator_Return),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return))
 
@@ -26,7 +26,7 @@ Namespace Style
             Title,
             MessageFormat,
             SupportedCategories.Style,
-            SeverityConfigurations.Current(DiagnosticId.TernaryOperator_Assignment),
+            SeverityConfigurations.CurrentVB(DiagnosticId.TernaryOperator_Assignment),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Assignment))
 
@@ -35,7 +35,7 @@ Namespace Style
             Title,
             MessageFormat,
             SupportedCategories.Style,
-            SeverityConfigurations.Current(DiagnosticId.TernaryOperator_Iif),
+            SeverityConfigurations.CurrentVB(DiagnosticId.TernaryOperator_Iif),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Iif))
 

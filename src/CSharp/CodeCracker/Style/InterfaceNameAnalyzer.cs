@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.InterfaceName],
+            SeverityConfigurations.CurrentCS[DiagnosticId.InterfaceName],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.InterfaceName));

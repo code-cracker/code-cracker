@@ -24,7 +24,7 @@ namespace CodeCracker.CSharp.Style
             TitleLocalDeclaration,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ObjectInitializer_Assignment],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ObjectInitializer_Assignment],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_Assignment));
@@ -34,7 +34,7 @@ namespace CodeCracker.CSharp.Style
             TitleLocalDeclaration,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ObjectInitializer_LocalDeclaration],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ObjectInitializer_LocalDeclaration],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ObjectInitializer_LocalDeclaration));

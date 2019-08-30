@@ -20,7 +20,7 @@ If the error is expected, consider logging it or changing the control flow such 
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.EmptyCatchBlock),
+            SeverityConfigurations.CurrentVB(DiagnosticId.EmptyCatchBlock),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.EmptyCatchBlock))

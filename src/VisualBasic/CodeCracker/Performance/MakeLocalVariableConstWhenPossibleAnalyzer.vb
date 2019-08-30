@@ -19,7 +19,7 @@ Namespace Performance
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.MakeLocalVariableConstWhenItIsPossible),
+            SeverityConfigurations.CurrentVB(DiagnosticId.MakeLocalVariableConstWhenItIsPossible),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.MakeLocalVariableConstWhenItIsPossible))

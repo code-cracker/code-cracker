@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Performance
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.EmptyFinalizer],
+            SeverityConfigurations.CurrentCS[DiagnosticId.EmptyFinalizer],
             true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             description: Description,

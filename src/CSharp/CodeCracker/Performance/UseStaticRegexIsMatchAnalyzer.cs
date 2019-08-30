@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Performance
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.UseStaticRegexIsMatch],
+            SeverityConfigurations.CurrentCS[DiagnosticId.UseStaticRegexIsMatch],
             true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UseStaticRegexIsMatch));

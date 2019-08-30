@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Reliability
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.UseConfigureAwaitFalse],
+            SeverityConfigurations.CurrentCS[DiagnosticId.UseConfigureAwaitFalse],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.UseConfigureAwaitFalse));
 

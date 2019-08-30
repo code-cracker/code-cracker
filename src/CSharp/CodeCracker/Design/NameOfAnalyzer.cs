@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.NameOf],
+            SeverityConfigurations.CurrentCS[DiagnosticId.NameOf],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.NameOf));
@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.NameOf_External],
+            SeverityConfigurations.CurrentCS[DiagnosticId.NameOf_External],
             isEnabledByDefault: false,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.NameOf_External));

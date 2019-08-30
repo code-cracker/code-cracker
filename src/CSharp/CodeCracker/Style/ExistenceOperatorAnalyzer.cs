@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ExistenceOperator],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ExistenceOperator],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ExistenceOperator));

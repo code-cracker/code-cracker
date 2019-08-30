@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.DisposablesShouldCallSuppressFinalize],
+            SeverityConfigurations.CurrentCS[DiagnosticId.DisposablesShouldCallSuppressFinalize],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize));

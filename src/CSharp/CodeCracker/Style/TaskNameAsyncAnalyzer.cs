@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.TaskNameAsync],
+            SeverityConfigurations.CurrentCS[DiagnosticId.TaskNameAsync],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.TaskNameAsync));

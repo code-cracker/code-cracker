@@ -18,7 +18,7 @@ Public Class IPAddressAnalyzer
         Title,
         MessageFormat,
         SupportedCategories.Usage,
-        SeverityConfigurations.Current(DiagnosticId.IPAddress),
+        SeverityConfigurations.CurrentVB(DiagnosticId.IPAddress),
         isEnabledByDefault:=True,
         description:=Description,
         helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.IPAddress))

@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.PropertyPrivateSet],
+            SeverityConfigurations.CurrentCS[DiagnosticId.PropertyPrivateSet],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.PropertyPrivateSet));

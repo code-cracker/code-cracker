@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.SwitchToAutoProp],
+            SeverityConfigurations.CurrentCS[DiagnosticId.SwitchToAutoProp],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.SwitchToAutoProp));

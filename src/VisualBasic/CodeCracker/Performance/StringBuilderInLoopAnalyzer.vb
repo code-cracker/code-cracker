@@ -19,7 +19,7 @@ Namespace Performance
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current(DiagnosticId.StringBuilderInLoop),
+            SeverityConfigurations.CurrentVB(DiagnosticId.StringBuilderInLoop),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.StringBuilderInLoop))

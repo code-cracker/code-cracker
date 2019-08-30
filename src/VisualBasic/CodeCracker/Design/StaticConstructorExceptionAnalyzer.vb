@@ -19,7 +19,7 @@ Namespace Design
                 Title,
                 MessageFormat,
                 Category,
-                SeverityConfigurations.Current(DiagnosticId.StaticConstructorException),
+                SeverityConfigurations.CurrentVB(DiagnosticId.StaticConstructorException),
                 isEnabledByDefault:=True,
                 description:=Description,
                 helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.StaticConstructorException))

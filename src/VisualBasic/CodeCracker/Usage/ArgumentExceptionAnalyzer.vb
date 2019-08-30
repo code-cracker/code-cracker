@@ -18,7 +18,7 @@ It can be either specified directly or using nameof() (VB 14 and above only)."
         Title,
         MessageFormat,
         SupportedCategories.Naming,
-        SeverityConfigurations.Current(DiagnosticId.ArgumentException),
+        SeverityConfigurations.CurrentVB(DiagnosticId.ArgumentException),
         isEnabledByDefault:=True,
         description:=Description,
         helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.ArgumentException))

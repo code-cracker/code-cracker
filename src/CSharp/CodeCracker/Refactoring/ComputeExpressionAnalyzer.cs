@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             Message,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ComputeExpression],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ComputeExpression],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ComputeExpression));

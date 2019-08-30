@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.ConvertToSwitch],
+            SeverityConfigurations.CurrentCS[DiagnosticId.ConvertToSwitch],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ConvertToSwitch));

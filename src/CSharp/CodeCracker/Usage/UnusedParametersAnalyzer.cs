@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             Message,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.UnusedParameters],
+            SeverityConfigurations.CurrentCS[DiagnosticId.UnusedParameters],
             isEnabledByDefault: true,
             description: Description,
             customTags: WellKnownDiagnosticTags.Unnecessary,

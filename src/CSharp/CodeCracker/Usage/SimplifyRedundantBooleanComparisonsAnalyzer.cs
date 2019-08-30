@@ -18,7 +18,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.SimplifyRedundantBooleanComparisons],
+            SeverityConfigurations.CurrentCS[DiagnosticId.SimplifyRedundantBooleanComparisons],
             isEnabledByDefault: true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.SimplifyRedundantBooleanComparisons));

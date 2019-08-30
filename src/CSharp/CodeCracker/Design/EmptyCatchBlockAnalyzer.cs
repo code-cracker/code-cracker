@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Design
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.EmptyCatchBlock],
+            SeverityConfigurations.CurrentCS[DiagnosticId.EmptyCatchBlock],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.EmptyCatchBlock));

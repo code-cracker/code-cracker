@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.AddBracesToSwitchSections],
+            SeverityConfigurations.CurrentCS[DiagnosticId.AddBracesToSwitchSections],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AddBracesToSwitchSections));
 

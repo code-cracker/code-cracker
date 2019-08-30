@@ -26,7 +26,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            SeverityConfigurations.Current[DiagnosticId.UnnecessaryToStringInStringConcatenation],
+            SeverityConfigurations.CurrentCS[DiagnosticId.UnnecessaryToStringInStringConcatenation],
             customTags: WellKnownDiagnosticTags.Unnecessary,
             isEnabledByDefault: true,
             description: Description,
