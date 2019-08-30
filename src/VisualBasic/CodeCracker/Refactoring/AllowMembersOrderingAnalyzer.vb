@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -19,7 +19,7 @@ Namespace Refactoring
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Hidden,
+            SeverityConfigurations.Current(DiagnosticId.AllowMembersOrdering),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.AllowMembersOrdering))
 

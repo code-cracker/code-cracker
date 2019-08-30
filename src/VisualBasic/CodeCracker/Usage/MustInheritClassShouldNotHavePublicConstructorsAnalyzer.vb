@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -17,7 +17,7 @@ Namespace Usage
             Title,
             MessageFormat,
             SupportedCategories.Usage,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.Current(DiagnosticId.AbstractClassShouldNotHavePublicCtors),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.AbstractClassShouldNotHavePublicCtors))
 

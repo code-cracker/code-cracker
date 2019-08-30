@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -17,7 +17,7 @@ Namespace Style
             Title,
             MessageFormat,
             SupportedCategories.Style,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.Current(DiagnosticId.TernaryOperator_Return),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return))
 
@@ -26,7 +26,7 @@ Namespace Style
             Title,
             MessageFormat,
             SupportedCategories.Style,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.Current(DiagnosticId.TernaryOperator_Assignment),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Assignment))
 
@@ -35,7 +35,7 @@ Namespace Style
             Title,
             MessageFormat,
             SupportedCategories.Style,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.Current(DiagnosticId.TernaryOperator_Iif),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Iif))
 

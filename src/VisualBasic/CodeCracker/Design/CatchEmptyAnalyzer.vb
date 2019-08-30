@@ -1,4 +1,4 @@
-﻿Imports Microsoft.CodeAnalysis
+Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports System.Collections.Immutable
@@ -17,7 +17,7 @@ Namespace Design
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.Current(DiagnosticId.CatchEmpty),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.CatchEmpty))
 

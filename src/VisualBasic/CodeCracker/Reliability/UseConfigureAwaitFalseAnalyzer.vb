@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports System.Threading
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
@@ -20,7 +20,7 @@ Namespace Reliability
         Title,
         MessageFormat,
         Category,
-        DiagnosticSeverity.Hidden,
+        SeverityConfigurations.Current(DiagnosticId.UseConfigureAwaitFalse),
         isEnabledByDefault:=True,
         helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.UseConfigureAwaitFalse))
 

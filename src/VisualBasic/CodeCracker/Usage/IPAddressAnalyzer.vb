@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports System.Reflection
 Imports CodeCracker.VisualBasic.Usage.MethodAnalyzers
 Imports Microsoft.CodeAnalysis
@@ -18,7 +18,7 @@ Public Class IPAddressAnalyzer
         Title,
         MessageFormat,
         SupportedCategories.Usage,
-        DiagnosticSeverity.Error,
+        SeverityConfigurations.Current(DiagnosticId.IPAddress),
         isEnabledByDefault:=True,
         description:=Description,
         helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.IPAddress))
