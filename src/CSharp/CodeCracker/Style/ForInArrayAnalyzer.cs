@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using CodeCracker;
 
 namespace CodeCracker.CSharp.Style
 {
@@ -21,7 +22,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.Current[DiagnosticId.ForInArray],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ForInArray));
 

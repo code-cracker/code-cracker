@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             Message,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.Current[DiagnosticId.IfReturnTrue],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.IfReturnTrue));

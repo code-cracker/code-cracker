@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormatForIfWithReturn,
             Category,
-            DiagnosticSeverity.Info,
+            SeverityConfigurations.Current[DiagnosticId.TernaryOperator_Return],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Return));
 
@@ -29,7 +29,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormatForIfWithAssignment,
             Category,
-            DiagnosticSeverity.Info,
+            SeverityConfigurations.Current[DiagnosticId.TernaryOperator_Assignment],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.TernaryOperator_Assignment));
 

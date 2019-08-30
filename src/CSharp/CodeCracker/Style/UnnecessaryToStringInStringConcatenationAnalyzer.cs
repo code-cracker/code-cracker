@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+using CodeCracker;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -25,7 +26,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Info,
+            SeverityConfigurations.Current[DiagnosticId.UnnecessaryToStringInStringConcatenation],
             customTags: WellKnownDiagnosticTags.Unnecessary,
             isEnabledByDefault: true,
             description: Description,

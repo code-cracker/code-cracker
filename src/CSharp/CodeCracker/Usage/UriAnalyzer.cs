@@ -1,4 +1,4 @@
-﻿using CodeCracker.CSharp.Usage.MethodAnalyzers;
+using CodeCracker.CSharp.Usage.MethodAnalyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -22,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Error,
+            SeverityConfigurations.Current[DiagnosticId.Uri],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.Uri));

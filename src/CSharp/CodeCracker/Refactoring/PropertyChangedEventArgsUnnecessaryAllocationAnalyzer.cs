@@ -1,4 +1,5 @@
-﻿using CodeCracker.Properties;
+using CodeCracker;
+using CodeCracker.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,7 +34,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Hidden,
+            SeverityConfigurations.Current[DiagnosticId.PropertyChangedEventArgsUnnecessaryAllocation],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.PropertyChangedEventArgsUnnecessaryAllocation));

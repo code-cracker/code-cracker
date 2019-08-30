@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using CodeCracker.Properties;
+using CodeCracker;
 
 namespace CodeCracker.CSharp.Maintainability
 {
@@ -19,7 +20,7 @@ namespace CodeCracker.CSharp.Maintainability
             Title,
             Title,
             SupportedCategories.Maintainability,
-            DiagnosticSeverity.Info,
+            SeverityConfigurations.Current[DiagnosticId.XmlDocumentation_MissingInCSharp],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.XmlDocumentation_MissingInCSharp));
 
@@ -28,7 +29,7 @@ namespace CodeCracker.CSharp.Maintainability
             Title,
             Title,
             SupportedCategories.Maintainability,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.Current[DiagnosticId.XmlDocumentation_MissingInXml],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.XmlDocumentation_MissingInXml));
 

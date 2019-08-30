@@ -16,7 +16,7 @@ namespace CodeCracker.CSharp.Refactoring
             "Regular string",
             "Change to regular string",
             SupportedCategories.Refactoring,
-            DiagnosticSeverity.Hidden,
+            SeverityConfigurations.Current[DiagnosticId.StringRepresentation_RegularString],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_RegularString));
 
@@ -25,7 +25,7 @@ namespace CodeCracker.CSharp.Refactoring
             "Verbatim string",
             "Change to verbatim string",
             SupportedCategories.Refactoring,
-            DiagnosticSeverity.Hidden,
+            SeverityConfigurations.Current[DiagnosticId.StringRepresentation_VerbatimString],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.StringRepresentation_VerbatimString));
 

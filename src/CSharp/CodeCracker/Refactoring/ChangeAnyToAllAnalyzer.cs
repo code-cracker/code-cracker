@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Refactoring
             TitleAny,
             MessageAny,
             Category,
-            DiagnosticSeverity.Hidden,
+            SeverityConfigurations.Current[DiagnosticId.ChangeAnyToAll],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ChangeAnyToAll));
         internal static readonly DiagnosticDescriptor RuleAll = new DiagnosticDescriptor(
@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Refactoring
             TitleAll,
             MessageAll,
             Category,
-            DiagnosticSeverity.Hidden,
+            SeverityConfigurations.Current[DiagnosticId.ChangeAllToAny],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ChangeAllToAny));
 
