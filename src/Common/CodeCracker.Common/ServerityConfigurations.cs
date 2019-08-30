@@ -8,14 +8,29 @@ using System.Threading.Tasks;
 
 namespace CodeCracker
 {
+    /// <summary>
+    /// Contains all DiagnosticSeverities for all DiagnosticIds.
+    /// </summary>
     public class SeverityConfigurations
     {
+        /// <summary>
+        /// Gets the DiagnosticSeverities that is configured by the user.
+        /// </summary>
         public static SeverityConfigurations Current { get; } = new SeverityConfigurations();
 
+        /// <summary>
+        /// Gets the default DiagnosticSeverities of all DiagnosticIds.
+        /// </summary>
         public static SeverityConfigurations Default { get; } = new SeverityConfigurations();
 
+        /// <summary>
+        /// Stores all the DiagnosticSeverities.
+        /// </summary>
         private readonly ConcurrentDictionary<DiagnosticId, DiagnosticSeverity> _diagnosticServerities;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="SeverityConfigurations"/>.
+        /// </summary>
         private SeverityConfigurations()
         {
             var values = new Dictionary<DiagnosticId, DiagnosticSeverity>
@@ -107,6 +122,11 @@ namespace CodeCracker
             _diagnosticServerities = new ConcurrentDictionary<DiagnosticId, DiagnosticSeverity>(values);
         }
 
+        /// <summary>
+        /// Gets the <see cref="DiagnosticSeverity"/> of the specified <paramref name="id"/>.
+        /// </summary>
+        /// <param name="id">The <see cref="DiagnosticId"/> which you want to get the <see cref="DiagnosticSeverity"/>.</param>
+        /// <returns>The <see cref="DiagnosticSeverity"/> of the specified <paramref name="id"/>.</returns>
         public DiagnosticSeverity this[DiagnosticId id]
             => _diagnosticServerities.TryGetValue(id, out var value)
                 ? value
