@@ -26,7 +26,7 @@ namespace CodeCracker
         /// <summary>
         /// Stores all the DiagnosticSeverities.
         /// </summary>
-        private readonly ConcurrentDictionary<DiagnosticId, DiagnosticSeverity> _diagnosticServerities;
+        private readonly ConcurrentDictionary<DiagnosticId, DiagnosticSeverity> _diagnosticSeverities;
 
         /// <summary>
         /// Initialize a new instance of <see cref="SeverityConfigurations"/>.
@@ -119,7 +119,7 @@ namespace CodeCracker
                 { DiagnosticId.ReadOnlyComplexTypes, DiagnosticSeverity.Warning },
                 { DiagnosticId.ReplaceWithGetterOnlyAutoProperty, DiagnosticSeverity.Hidden },
             };
-            _diagnosticServerities = new ConcurrentDictionary<DiagnosticId, DiagnosticSeverity>(values);
+            _diagnosticSeverities = new ConcurrentDictionary<DiagnosticId, DiagnosticSeverity>(values);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace CodeCracker
         /// <param name="id">The <see cref="DiagnosticId"/> which you want to get the <see cref="DiagnosticSeverity"/>.</param>
         /// <returns>The <see cref="DiagnosticSeverity"/> of the specified <paramref name="id"/>.</returns>
         public DiagnosticSeverity this[DiagnosticId id]
-            => _diagnosticServerities.TryGetValue(id, out var value)
+            => _diagnosticSeverities.TryGetValue(id, out var value)
                 ? value
                 : DiagnosticSeverity.Warning;
     }
