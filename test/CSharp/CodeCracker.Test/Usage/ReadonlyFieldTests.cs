@@ -483,12 +483,12 @@ class TypeName
             const string source = @"
     namespace ConsoleApplication1
     {
-	    public class Foo
-	    {
-		    #region standard
-		    Foo foo1, foo2 = new Foo(), foo3;
+        public class Foo
+        {
+            #region standard
+            Foo foo1, foo2 = new Foo(), foo3;
             #endregion
-	    }
+        }
     }";
             const string fixtest = @"
     namespace ConsoleApplication1
@@ -502,7 +502,7 @@ class TypeName
         }
     }";
             await VerifyCSharpFixAsync(source, fixtest);
-        }
+        }    
 
         [Fact]
         public async Task FieldsWithAssignmentOnDeclarationWithSingleDeclarationCreatesDiagnostic()
