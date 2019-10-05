@@ -44,10 +44,13 @@ namespace CodeCracker.CSharp.Usage
 
         private static SyntaxNode MakeSingleFieldReadonly(SyntaxNode root, FieldDeclarationSyntax fieldDeclaration)
         {
-            var newFieldDeclaration = fieldDeclaration.AddModifiers(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
-                .WithTrailingTrivia(fieldDeclaration.GetTrailingTrivia())
-                .WithLeadingTrivia(fieldDeclaration.GetLeadingTrivia())
-                .WithAdditionalAnnotations(Formatter.Annotation);
+
+            var newFieldDeclaration = fieldDeclaration
+                                        .WithoutLeadingTrivia()
+                                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
+                                        .WithTrailingTrivia(fieldDeclaration.GetTrailingTrivia())
+                                        .WithLeadingTrivia(fieldDeclaration.GetLeadingTrivia())
+                                        .WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = root.ReplaceNode(fieldDeclaration, newFieldDeclaration);
             return newRoot;
         }
@@ -57,7 +60,7 @@ namespace CodeCracker.CSharp.Usage
             var newFieldDeclaration = fieldDeclaration.WithDeclaration(newDeclaration);
             var newReadonlyFieldDeclaration = fieldDeclaration.WithDeclaration(SyntaxFactory.VariableDeclaration(fieldDeclaration.Declaration.Type, SyntaxFactory.SeparatedList(new[] { variableToMakeReadonly })))
                 .WithoutLeadingTrivia()
-                .WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia("\n"))
+                .WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia("\r\n"))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
                 .WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = root.ReplaceNode(fieldDeclaration, new[] { newFieldDeclaration, newReadonlyFieldDeclaration });
