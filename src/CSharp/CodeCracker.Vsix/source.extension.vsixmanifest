@@ -2,7 +2,7 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
     <Identity Id="CodeCracker.Vsix.2019" Version="1.1.1" Language="en-US" Publisher="Code Cracker"/>
-    <DisplayName>Code Cracker for C#</DisplayName>
+    <DisplayName>Code Cracker for C# (2019)</DisplayName>
     <Description xml:space="preserve">An analyzer library for C# that uses Roslyn to produce refactorings, code analysis, and other niceties.
 Check the official project site on code-cracker.github.io.
 Build status Nuget count Nuget downloads Issues open
