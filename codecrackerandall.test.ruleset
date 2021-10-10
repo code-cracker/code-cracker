@@ -1,5 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="CodeCrackerTestAndAllRules" ToolsVersion="14.0">
-  <Include Path="codecrackerandall.ruleset" Action="Default" />
-  <Include Path="codecracker.test.ruleset" Action="Default" />
-</RuleSet>
