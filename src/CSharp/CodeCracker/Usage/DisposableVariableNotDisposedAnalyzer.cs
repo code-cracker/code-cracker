@@ -78,6 +78,28 @@ namespace CodeCracker.CSharp.Usage
                 var usingStatement = variableDeclaration?.Parent as UsingStatementSyntax;
                 if (usingStatement != null) return;
                 statement = variableDeclaration.Parent as LocalDeclarationStatementSyntax;
+                if (statement != null)
+                {
+                    //Check inline using
+                    var isUsing = false;
+                    var isSemicolon = false;
+                    var firstToken = statement.GetFirstToken();
+                    if (firstToken != null)
+                    {
+                        isUsing = firstToken.Text == "using";
+                    }
+
+                    var lastToken = statement.GetLastToken();
+                    if (lastToken != null)
+                    {
+                        isSemicolon = lastToken.Text == ";";
+                    }
+
+                    var isVariableDeclaration = statement.ChildNodes().First() is VariableDeclarationSyntax;
+
+                    if (isUsing && isVariableDeclaration && isSemicolon) return;
+                }
+
                 if ((statement?.FirstAncestorOrSelf<MethodDeclarationSyntax>()) == null) return;
             }
             else if (topSyntaxNode.Parent.IsAnyKind(SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression))
