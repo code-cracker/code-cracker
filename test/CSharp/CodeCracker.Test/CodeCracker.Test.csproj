@@ -74,6 +74,7 @@
     <Compile Include="Refactoring\ComputeExpressionTests.cs" />
     <Compile Include="Refactoring\ReplaceWithGetterOnlyAutoPropertyTests.cs" />
     <Compile Include="Refactoring\PropertyChangedEventArgsUnnecessaryAllocationTests.cs" />
+    <Compile Include="Refactoring\SortUsingsTest.cs" />
     <Compile Include="Refactoring\SplitIntoNestedIfTests.cs" />
     <Compile Include="Refactoring\ParameterRefectoryTests.cs" />
     <Compile Include="Refactoring\AllowMembersOrderingCodeFixProviderTests.StyleCop.cs" />
