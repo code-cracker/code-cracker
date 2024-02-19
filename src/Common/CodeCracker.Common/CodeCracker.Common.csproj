@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiagnosticId.cs" />
+    <Compile Include="SeverityConfigurations.cs" />
     <Compile Include="Extensions\AnalyzerExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Extensions\GeneratedCodeAnalysisExtensions.cs" />

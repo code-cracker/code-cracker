@@ -1,3 +1,4 @@
+using CodeCracker;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -21,7 +22,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Info,
+            SeverityConfigurations.CurrentCS[DiagnosticId.RedundantFieldAssignment],
             isEnabledByDefault: true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             description: Description,

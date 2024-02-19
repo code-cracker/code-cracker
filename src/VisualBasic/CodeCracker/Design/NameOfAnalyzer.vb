@@ -1,4 +1,4 @@
-﻿Imports Microsoft.CodeAnalysis
+Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
@@ -20,7 +20,7 @@ Namespace Design
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.CurrentVB(DiagnosticId.NameOf),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.NameOf))
@@ -29,7 +29,7 @@ Namespace Design
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.CurrentVB(DiagnosticId.NameOf_External),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.NameOf_External))

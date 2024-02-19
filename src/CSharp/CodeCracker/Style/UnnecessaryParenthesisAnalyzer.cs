@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -20,7 +20,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.CurrentCS[DiagnosticId.UnnecessaryParenthesis],
             customTags: WellKnownDiagnosticTags.Unnecessary,
             isEnabledByDefault: true,
             description: Description,

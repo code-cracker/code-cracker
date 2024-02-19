@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -21,7 +21,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.CurrentCS[DiagnosticId.AlwaysUseVar],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AlwaysUseVar));
@@ -31,7 +31,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.CurrentCS[DiagnosticId.AlwaysUseVarOnPrimitives],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.AlwaysUseVarOnPrimitives));

@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports System.Reflection
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
@@ -19,7 +19,7 @@ Namespace Usage
             Title,
             MessageFormat,
             SupportedCategories.Usage,
-            DiagnosticSeverity.Error,
+            SeverityConfigurations.CurrentVB(DiagnosticId.JsonNet),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.JsonNet))

@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -19,7 +19,7 @@ Namespace Design
                 Title,
                 MessageFormat,
                 Category,
-                DiagnosticSeverity.Warning,
+                SeverityConfigurations.CurrentVB(DiagnosticId.StaticConstructorException),
                 isEnabledByDefault:=True,
                 description:=Description,
                 helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.StaticConstructorException))

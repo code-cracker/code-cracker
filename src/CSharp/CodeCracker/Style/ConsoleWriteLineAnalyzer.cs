@@ -19,7 +19,7 @@ namespace CodeCracker.CSharp.Style
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Info,
+            SeverityConfigurations.CurrentCS[DiagnosticId.ConsoleWriteLine],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ConsoleWriteLine));

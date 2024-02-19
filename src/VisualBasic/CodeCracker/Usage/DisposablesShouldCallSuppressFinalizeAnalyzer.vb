@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
@@ -20,7 +20,7 @@ This rule should be followed even if the class doesn't have a finalizer in a der
         Title,
         MessageFormat,
         SupportedCategories.Naming,
-        DiagnosticSeverity.Warning,
+        SeverityConfigurations.CurrentVB(DiagnosticId.DisposablesShouldCallSuppressFinalize),
         isEnabledByDefault:=True,
         description:=Description,
         helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposablesShouldCallSuppressFinalize))

@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+using CodeCracker;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -19,7 +20,7 @@ namespace CodeCracker.CSharp.Refactoring
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Hidden,
+            SeverityConfigurations.CurrentCS[DiagnosticId.ParameterRefactory],
             isEnabledByDefault: true,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.ParameterRefactory));
 

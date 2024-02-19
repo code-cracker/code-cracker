@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Immutable;
 using System.Reflection;
 using CodeCracker.CSharp.Usage.MethodAnalyzers;
@@ -23,7 +23,7 @@ namespace CodeCracker.CSharp.Usage
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Error,
+            SeverityConfigurations.CurrentCS[DiagnosticId.IPAddress],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.IPAddress));

@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -18,7 +18,7 @@ Namespace Usage
             Title,
             Message,
             SupportedCategories.Usage,
-            DiagnosticSeverity.Info,
+            SeverityConfigurations.CurrentVB(DiagnosticId.RemovePrivateMethodNeverUsed),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.RemovePrivateMethodNeverUsed))

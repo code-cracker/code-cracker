@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -18,7 +18,7 @@ Namespace Usage
             Title,
             MessageFormat,
             SupportedCategories.Usage,
-            DiagnosticSeverity.Info,
+            SeverityConfigurations.CurrentVB(DiagnosticId.DisposableFieldNotDisposed_Returned),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Returned))
@@ -28,7 +28,7 @@ Namespace Usage
             Title,
             MessageFormat,
             SupportedCategories.Usage,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.CurrentVB(DiagnosticId.DisposableFieldNotDisposed_Created),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.DisposableFieldNotDisposed_Created))

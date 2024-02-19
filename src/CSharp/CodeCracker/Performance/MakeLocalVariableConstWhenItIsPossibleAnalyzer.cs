@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+using CodeCracker;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -20,7 +21,7 @@ namespace CodeCracker.CSharp.Performance
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Info,
+            SeverityConfigurations.CurrentCS[DiagnosticId.MakeLocalVariableConstWhenItIsPossible],
             isEnabledByDefault: true,
             description: Description,
             helpLinkUri: HelpLink.ForDiagnostic(DiagnosticId.MakeLocalVariableConstWhenItIsPossible));

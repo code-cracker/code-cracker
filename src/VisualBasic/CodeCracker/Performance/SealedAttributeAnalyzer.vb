@@ -1,4 +1,4 @@
-﻿Imports Microsoft.CodeAnalysis
+Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports System.Collections.Immutable
 
@@ -17,7 +17,7 @@ Namespace Performance
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.CurrentVB(DiagnosticId.SealedAttribute),
             isEnabledByDefault:=True,
             description:=Description,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.SealedAttribute))

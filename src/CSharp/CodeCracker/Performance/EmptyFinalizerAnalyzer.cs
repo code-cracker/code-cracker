@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+using CodeCracker;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -22,7 +23,7 @@ namespace CodeCracker.CSharp.Performance
             Title,
             MessageFormat,
             Category,
-            DiagnosticSeverity.Warning,
+            SeverityConfigurations.CurrentCS[DiagnosticId.EmptyFinalizer],
             true,
             customTags: WellKnownDiagnosticTags.Unnecessary,
             description: Description,

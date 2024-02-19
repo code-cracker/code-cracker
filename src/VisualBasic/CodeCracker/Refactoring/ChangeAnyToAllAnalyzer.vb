@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Immutable
+Imports System.Collections.Immutable
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Diagnostics
 Imports Microsoft.CodeAnalysis.VisualBasic
@@ -20,7 +20,7 @@ Namespace Refactoring
             TitleAny,
             MessageAny,
             Category,
-            DiagnosticSeverity.Hidden,
+            SeverityConfigurations.CurrentVB(DiagnosticId.ChangeAnyToAll),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.ChangeAnyToAll))
         Friend Shared RuleAll As New DiagnosticDescriptor(
@@ -28,7 +28,7 @@ Namespace Refactoring
             TitleAll,
             MessageAll,
             Category,
-            DiagnosticSeverity.Hidden,
+            SeverityConfigurations.CurrentVB(DiagnosticId.ChangeAllToAny),
             isEnabledByDefault:=True,
             helpLinkUri:=HelpLink.ForDiagnostic(DiagnosticId.ChangeAllToAny))
 
