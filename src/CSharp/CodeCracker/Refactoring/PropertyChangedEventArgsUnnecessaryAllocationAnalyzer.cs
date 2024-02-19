@@ -89,7 +89,7 @@ namespace CodeCracker.CSharp.Refactoring
         private class IdentifierExtractor : CSharpSyntaxVisitor<SyntaxToken>
         {
             public override SyntaxToken VisitIdentifierName(IdentifierNameSyntax node) => node.Identifier;
-            public override SyntaxToken VisitQualifiedName(QualifiedNameSyntax node) => VisitIdentifierName((IdentifierNameSyntax)node.Right);
+            public override SyntaxToken VisitQualifiedName(QualifiedNameSyntax node) => node.Right.Identifier;
         }
 
         private class IsArgumentALiteralOrNameof : CSharpSyntaxVisitor<bool>
