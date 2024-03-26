@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -44,10 +45,13 @@ namespace CodeCracker.CSharp.Usage
 
         private static SyntaxNode MakeSingleFieldReadonly(SyntaxNode root, FieldDeclarationSyntax fieldDeclaration)
         {
-            var newFieldDeclaration = fieldDeclaration.AddModifiers(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
-                .WithTrailingTrivia(fieldDeclaration.GetTrailingTrivia())
-                .WithLeadingTrivia(fieldDeclaration.GetLeadingTrivia())
-                .WithAdditionalAnnotations(Formatter.Annotation);
+
+            var newFieldDeclaration = fieldDeclaration
+                                        .WithoutLeadingTrivia()
+                                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
+                                        .WithTrailingTrivia(fieldDeclaration.GetTrailingTrivia())
+                                        .WithLeadingTrivia(fieldDeclaration.GetLeadingTrivia())
+                                        .WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = root.ReplaceNode(fieldDeclaration, newFieldDeclaration);
             return newRoot;
         }
@@ -57,8 +61,8 @@ namespace CodeCracker.CSharp.Usage
             var newFieldDeclaration = fieldDeclaration.WithDeclaration(newDeclaration);
             var newReadonlyFieldDeclaration = fieldDeclaration.WithDeclaration(SyntaxFactory.VariableDeclaration(fieldDeclaration.Declaration.Type, SyntaxFactory.SeparatedList(new[] { variableToMakeReadonly })))
                 .WithoutLeadingTrivia()
-                .WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia("\n"))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
+                .WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia(Environment.NewLine))
                 .WithAdditionalAnnotations(Formatter.Annotation);
             var newRoot = root.ReplaceNode(fieldDeclaration, new[] { newFieldDeclaration, newReadonlyFieldDeclaration });
             return newRoot;

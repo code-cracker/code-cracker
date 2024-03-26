@@ -433,6 +433,77 @@ class TypeName
             await VerifyCSharpFixAsync(source, fixtest);
         }
 
+
+        [Fact]
+        public async Task DoesNotDuplicateLeadingDirectivesOnFixSingle()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+	    public class Foo
+	    {
+		    #region standard
+		    Foo foo1 = new Foo();
+		    #endregion
+
+            #region withAccessModifier
+            private Foo foo2 = new Foo();
+            #endregion
+
+            #region withStatic
+            private static Foo foo3 = new Foo();
+            #endregion
+	    }
+    }";
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+	    public class Foo
+	    {
+		    #region standard
+		    readonly Foo foo1 = new Foo();
+		    #endregion
+
+            #region withAccessModifier
+            private readonly Foo foo2 = new Foo();
+            #endregion
+
+            #region withStatic
+            private static readonly Foo foo3 = new Foo();
+            #endregion
+	    }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }
+
+
+        [Fact]
+        public async Task DoesNotDuplicateLeadingDirectivesOnFixAll()
+        {
+            const string source = @"
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            #region standard
+            Foo foo1, foo2 = new Foo(), foo3;
+            #endregion
+        }
+    }";
+            const string fixtest = @"
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+            #region standard
+            Foo foo1, foo3;
+            readonly Foo foo2 = new Foo();
+            #endregion
+        }
+    }";
+            await VerifyCSharpFixAsync(source, fixtest);
+        }    
+
         [Fact]
         public async Task FieldsWithAssignmentOnDeclarationWithSingleDeclarationCreatesDiagnostic()
         {
